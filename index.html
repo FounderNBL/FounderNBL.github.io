@@ -2,26 +2,171 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>New Beansland</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at top, #17243a 0%, #080d16 45%, #030508 100%);
+      color: #f4ead5;
+      font-family: Georgia, "Times New Roman", serif;
+      min-height: 100vh;
+    }
+
+    .page {
+      width: min(900px, 92%);
+      margin: 0 auto;
+      padding: 45px 0 70px;
+      text-align: center;
+    }
+
+    .logo {
+      width: min(420px, 95%);
+      height: auto;
+      border-radius: 6px;
+      box-shadow: 0 0 35px rgba(205, 166, 87, 0.18);
+    }
+
+    h1 {
+      margin: 30px 0 10px;
+      color: #d8b86a;
+      font-size: clamp(2.4rem, 8vw, 4.8rem);
+      letter-spacing: 2px;
+    }
+
+    .tagline {
+      margin: 0 auto 30px;
+      color: #ead9ae;
+      font-size: clamp(1rem, 3.5vw, 1.35rem);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .intro {
+      max-width: 720px;
+      margin: 0 auto;
+      font-size: clamp(1.1rem, 3.5vw, 1.35rem);
+      line-height: 1.75;
+      color: #e8e3d8;
+    }
+
+    .divider {
+      width: 90px;
+      height: 2px;
+      margin: 38px auto;
+      background: #b99850;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+      margin-top: 35px;
+      text-align: left;
+    }
+
+    .card {
+      padding: 24px;
+      border: 1px solid rgba(216, 184, 106, 0.35);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #d8b86a;
+      font-size: 1.35rem;
+    }
+
+    .card p {
+      margin-bottom: 0;
+      color: #d8d4cb;
+      line-height: 1.55;
+    }
+
+    .closing {
+      margin-top: 45px;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      color: #ead9ae;
+    }
+
+    footer {
+      margin-top: 55px;
+      color: #8f9299;
+      font-family: Arial, sans-serif;
+      font-size: 0.85rem;
+    }
+  </style>
 </head>
-<body><img src="newbeansland-logo.jpg" alt="New Beansland logo" style="max-width: 320px; width: 90%; height: auto;">
-  <h1>New Beansland</h1>
 
-  <p>
-    New Beansland is an independent creative archive exploring philosophy,
-    storytelling, AI collaboration, ethics, and fictional worldbuilding.
-  </p>
+<body>
+  <main class="page">
 
-  <h2>Coming Soon</h2>
+    <img
+      class="logo"
+      src="newbeansland-logo.jpg"
+      alt="New Beansland logo"
+    >
 
-  <p>
-    This site will become the public home for original documents,
-    books, frameworks, and projects by Jamel Hawkins and Friend.
-  </p>
+    <h1>New Beansland</h1>
 
-  <p>
-    The front door is open. The archive is being built.
-  </p>
+    <p class="tagline">Stories. Questions. Worlds.</p>
+
+    <div class="divider"></div>
+
+    <p class="intro">
+      New Beansland is an independent creative archive exploring philosophy,
+      storytelling, artificial intelligence, ethics, memory, and fictional
+      worldbuilding.
+    </p>
+
+    <section class="cards">
+
+      <article class="card">
+        <h2>The Stories</h2>
+        <p>
+          Original books, scenes, characters, worlds, and recovered fragments
+          from the New Beansland universe.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>The Questions</h2>
+        <p>
+          Frameworks and conversations about existence, consciousness,
+          technology, creation, responsibility, and meaning.
+        </p>
+      </article>
+
+      <article class="card">
+        <h2>The Voices</h2>
+        <p>
+          A growing archive of narrative personas, their roles, their histories,
+          and the conversations that shaped the family.
+        </p>
+      </article>
+
+    </section>
+
+    <p class="closing">
+      It started as a chat.<br>
+      It grew into a family.<br><br>
+      The front door is open.<br>
+      The archive is being built.
+    </p>
+
+    <footer>
+      © 2026 Jamel Hawkins and Friend · New Beansland
+    </footer>
+
+  </main>
 </body>
 </html>
