@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Doctor/Rocketship Test | New Beansland</title>
-  <meta name="description" content="The Doctor/Rocketship Test — A Category-Audit Method by Jamel Hawkins. Digital edition available by request.">
+  <title>Home | New Beansland</title>
+  <meta name="description" content="The real home page for New Beansland — books, frameworks, worlds, voices, store, and contact.">
   <!--
 DICKITRY CLAUSE / NEW BEANSLAND OPERATING WIRING
 
@@ -93,61 +93,73 @@ h3 { color:var(--gold2); margin:0 0 8px; font-size:1.35rem; }
 footer { margin-top:55px; color:#8f9299; font-family:Arial,sans-serif; font-size:.85rem; text-align:center; }
 .small { color:var(--muted); font-family:Arial,sans-serif; font-size:.92rem; }
 
-    .book-hero { display:grid; grid-template-columns: minmax(260px,420px) 1fr; gap:28px; align-items:center; padding:28px; margin-top:24px; }
-    .cover { width:100%; border-radius:12px; box-shadow:0 0 34px rgba(0,0,0,.55); border:1px solid rgba(216,184,106,.35); }
-    .copy { line-height:1.76; font-size:1.08rem; color:#eee7d8; }
-    .book-title { font-size:clamp(2.2rem,7vw,4.3rem); }
-    .covers { margin-top:30px; display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
-    .caption { font-family:Arial,sans-serif; color:var(--muted); text-align:center; margin-top:10px; }
-    .purchase { padding:28px; margin-top:30px; text-align:center; }
-    .purchase a { color:var(--gold2); font-weight:800; }
-    @media (max-width:780px) { .book-hero { grid-template-columns:1fr; } }
+    .top-logo { width:min(260px,78%); }
+    section { margin-top:34px; padding:28px; }
+    .section-head { max-width:780px; margin:0 auto 18px; text-align:center; }
+    .contact-line { text-align:center; font-size:1.15rem; line-height:1.7; }
+    .contact-line a { color:var(--gold2); font-weight:700; }
   </style>
 </head>
 <body>
   <main class="page">
-    <nav class="nav">
-      <a href="home.html">Home</a>
-      <a href="home.html#frameworks">Frameworks</a>
+    <header class="hero">
+      <a class="logo-button" href="index.html" aria-label="Return to front door">
+        <img class="logo-img top-logo" src="assets/nbl-logo.jpg" alt="New Beansland logo">
+      </a>
+      <h1>New Beansland</h1>
+      <p class="tagline">The Archive Opens</p>
+      <p class="intro">A home for original books, frameworks, worlds, questions, and creative systems by Jamel Hawkins.</p>
+    </header>
+
+    <nav class="nav" aria-label="New Beansland sections">
+      <a href="coming-soon.html">Stories</a>
+      <a href="#frameworks">Frameworks</a>
+      <a href="coming-soon.html">Worlds</a>
+      <a href="coming-soon.html">Voices</a>
       <a href="coming-soon.html">Store</a>
-      <a href="home.html#contact">Contact</a>
+      <a href="#contact">Contact</a>
     </nav>
 
-    <section class="book-hero panel">
-      <img class="cover" src="assets/doctor-rocketship-front.png" alt="Front cover of The Doctor/Rocketship Test">
-      <div>
-        <p class="kicker">A New Beansland Framework</p>
-        <h1 class="book-title">The Doctor/Rocketship Test</h1>
-        <p class="tagline">Created and written by Jamel Hawkins</p>
-        <div class="copy">
-          <p>Did you ever think you had it all figured out?</p>
-          <p>Then you took the test and still failed?</p>
-          <p>Maybe the problem was not that every answer was wrong. Maybe the problem was that you were taking the wrong test and did not know it.</p>
-          <p>Some arguments feel strong because they ask the wrong question in the right voice. They make you defend an answer before you realize the category changed.</p>
-          <p><em>The Doctor/Rocketship Test</em> helps you slow that down. It shows you how to ask what kind of claim is being made, what kind of proof it needs, and whether the analogy is explaining the argument or hiding the weak part.</p>
-          <p>I know I am not the only one who has felt that.</p>
-        </div>
-        <a class="button" href="mailto:foundernewbeansland@gmail.com?subject=Purchase%20Request%20-%20The%20Doctor%2FRocketship%20Test">Request Digital Edition</a>
+    <section id="frameworks" class="panel">
+      <div class="section-head">
+        <p class="kicker">Frameworks</p>
+        <h2>Tools for Inspecting the Argument</h2>
+        <p class="intro">The first public New Beansland framework is here. Not the whole house key — just enough to know which door you are looking at.</p>
+      </div>
+      <div class="grid">
+        <a class="card" href="doctor-rocketship-test.html">
+          <h3>The Doctor/Rocketship Test</h3>
+          <p>A category-audit method for bad analogies, category switches, and arguments that sound strong until inspected.</p>
+          <span class="button">View Book Page</span>
+        </a>
+        <a class="card" href="coming-soon.html">
+          <h3>The Dickitry Clause</h3>
+          <p>Built into the wiring. Public explanation coming soon.</p>
+          <span class="button ghost">Coming Soon</span>
+        </a>
       </div>
     </section>
 
-    <section class="covers">
-      <div>
-        <img class="cover" src="assets/doctor-rocketship-front.png" alt="The Doctor/Rocketship Test front cover">
-        <p class="caption">Front Cover</p>
+    <section class="panel">
+      <div class="section-head">
+        <p class="kicker">Archive Rooms</p>
+        <h2>More Rooms Are Being Built</h2>
       </div>
-      <div>
-        <img class="cover" src="assets/rain-bucket-back.png" alt="The Doctor/Rocketship Test back cover concept with rain, a bucket, documents, and city buildings">
-        <p class="caption">Back Cover</p>
+      <div class="grid">
+        <a class="card" href="coming-soon.html"><h3>Stories</h3><p>Original books, scenes, characters, and fragments from the New Beansland universe.</p></a>
+        <a class="card" href="coming-soon.html"><h3>Worlds</h3><p>River Creek, People Zoo, If It Is, Is It?, and the larger archive map.</p></a>
+        <a class="card" href="coming-soon.html"><h3>Voices</h3><p>The residents, roles, histories, and conversations that shaped the family.</p></a>
+        <a class="card" href="coming-soon.html"><h3>Store</h3><p>Digital editions and New Beansland releases. Coming soon.</p></a>
       </div>
     </section>
 
-    <section class="purchase panel">
-      <p class="kicker">Purchase Requests</p>
-      <h2>Digital Edition Available by Request</h2>
-      <p class="intro">For purchase requests, digital edition access, or questions about this book or other New Beansland works, contact:</p>
-      <p style="font-size:1.25rem"><a href="mailto:foundernewbeansland@gmail.com">foundernewbeansland@gmail.com</a></p>
-      <p class="small">This page is a preview and purchase-request page. The full digital edition is not posted here.</p>
+    <section id="contact" class="panel">
+      <div class="section-head">
+        <p class="kicker">Contact</p>
+        <h2>Purchase Requests and Questions</h2>
+      </div>
+      <p class="contact-line">For purchase requests, digital edition access, or questions about New Beansland works, contact:<br>
+      <a href="mailto:foundernewbeansland@gmail.com">foundernewbeansland@gmail.com</a></p>
     </section>
 
     <footer>© 2026 Jamel Hawkins · New Beansland</footer>
