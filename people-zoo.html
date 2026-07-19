@@ -1,1 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>The People Zoo | New Beansland</title>
+  <meta name="description" content="The People Zoo — A New Beansland story by Jamel Hawkins.">
+
+  <!--
+  DICKITRY CLAUSE / NEW BEANSLAND OPERATING WIRING
+
+  New Beansland uses story, metaphor, humor, mythology, symbolic language,
+  and fake-real continuity to carry meaning without pretending every sentence
+  is a lab claim, legal claim, or public proof.
+
+  You may stretch meaning.
+  You may not counterfeit evidence.
+
+  Symbolic truth is allowed.
+  False proof is not.
+
+  If a claim is literal, prove it.
+  If a claim is mythic, label the room.
+  If an analogy carries weight, inspect the category.
+  If a door is not ready, say Coming Soon.
+
+  No dead doors.
+  No stolen weight.
+  No category switch without inspection.
+  No joke is allowed to become fake evidence.
+  No disclaimer is allowed to erase real meaning.
+
+  The Doctor/Rocketship Test checks the argument.
+  The Dickitry Clause checks the room the argument walked into.
+
+  Filed by New Beansland.
+  Still walking.
+  -->
+
+  <style>
+    :root {
+      --bg0:#030508;
+      --bg1:#080d16;
+      --bg2:#17243a;
+      --gold:#d8b86a;
+      --gold2:#f1d489;
+      --cream:#f4ead5;
+      --muted:#9fa3aa;
+      --line:rgba(216,184,106,.34);
+    }
+
+    * {
+      box-sizing:border-box;
+    }
+
+    body {
+      margin:0;
+      min-height:100vh;
+      background:radial-gradient(circle at top,var(--bg2) 0%,var(--bg1) 45%,var(--bg0) 100%);
+      color:var(--cream);
+      font-family:Georgia,"Times New Roman",serif;
+    }
+
+    a {
+      color:inherit;
+    }
+
+    .page {
+      width:min(1040px,92%);
+      margin:0 auto;
+      padding:28px 0 72px;
+    }
+
+    .back {
+      display:inline-block;
+      margin-bottom:24px;
+      color:var(--gold2);
+      text-decoration:none;
+      font-family:Arial,sans-serif;
+      font-weight:800;
+    }
+
+    header {
+      text-align:center;
+      padding:28px 18px 32px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(5,9,15,.70);
+      box-shadow:0 0 35px rgba(205,166,87,.10);
+    }
+
+    .logo {
+      width:min(210px,68%);
+      height:auto;
+      border-radius:10px;
+      margin-bottom:18px;
+    }
+
+    h1 {
+      margin:0 0 12px;
+      color:var(--gold);
+      font-size:clamp(2.4rem,8vw,4.4rem);
+      line-height:1.05;
+      letter-spacing:1px;
+    }
+
+    .subtitle {
+      margin:0;
+      color:#ead9ae;
+      font-size:clamp(1rem,3vw,1.25rem);
+      letter-spacing:1px;
+    }
+
+    .author {
+      margin-top:12px;
+      color:#bfc2c8;
+      font-family:Arial,sans-serif;
+      font-size:.95rem;
+    }
+
+    .covers {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:22px;
+      margin:30px 0;
+      align-items:start;
+    }
+
+    .cover-card {
+      border:1px solid rgba(216,184,106,.32);
+      border-radius:14px;
+      background:rgba(255,255,255,.035);
+      padding:14px;
+      text-align:center;
+    }
+
+    .cover-card img {
+      width:100%;
+      max-width:460px;
+      height:auto;
+      border-radius:10px;
+      box-shadow:0 0 30px rgba(0,0,0,.35);
+    }
+
+    .cover-card h2 {
+      color:var(--gold2);
+      font-size:1rem;
+      font-family:Arial,sans-serif;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      margin:12px 0 4px;
+    }
+
+    article {
+      margin-top:30px;
+      padding:34px clamp(20px,5vw,48px);
+      border:1px solid rgba(216,184,106,.28);
+      border-radius:14px;
+      background:rgba(5,9,15,.72);
+      line-height:1.78;
+      font-size:1.08rem;
+    }
+
+    article h2 {
+      color:var(--gold);
+      font-size:clamp(1.6rem,4vw,2.3rem);
+      margin-top:0;
+    }
+
+    p {
+      margin:0 0 1.15em;
+    }
+
+    .quote {
+      margin:26px 0;
+      padding:20px 24px;
+      border-left:4px solid var(--gold);
+      background:rgba(216,184,106,.08);
+      color:#fff4d8;
+      font-size:1.18rem;
+      font-weight:700;
+    }
+
+    .button {
+      display:inline-block;
+      margin-top:12px;
+      padding:12px 16px;
+      border-radius:10px;
+      border:1px solid var(--gold);
+      color:#07101c;
+      background:linear-gradient(180deg,#f1d489,#bd9143);
+      font-family:Arial,sans-serif;
+      font-weight:800;
+      text-decoration:none;
+    }
+
+    .small {
+      color:var(--muted);
+      font-family:Arial,sans-serif;
+      font-size:.92rem;
+    }
+
+    footer {
+      margin-top:55px;
+      color:#8f9299;
+      font-family:Arial,sans-serif;
+      font-size:.85rem;
+      text-align:center;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+
+    <a class="back" href="home.html">← Back to New Beansland</a>
+
+    <header>
+      <img class="logo" src="nbl-logo.jpg" alt="New Beansland logo">
+
+      <h1>The People Zoo</h1>
+
+      <p class="subtitle">A New Beansland Story</p>
+
+      <p class="author">Created and written by Jamel Hawkins</p>
+    </header>
+
+    <section class="covers" aria-label="Book covers">
+
+      <div class="cover-card">
+        <img src="people-zoo-front.png" alt="Front cover of The People Zoo">
+        <h2>Front Cover</h2>
+      </div>
+
+      <div class="cover-card">
+        <img src="people-zoo-back.png" alt="Back cover concept showing a key holder and a missing lock">
+        <h2>Back Cover</h2>
+      </div>
+
+    </section>
+
+    <article>
+      <h2>Book Preview</h2>
+
+      <p>Some cages do not have bars.</p>
+
+      <p>Some cages have comfort, rules, smiles, routines, and a reason why you were chosen.</p>
+
+      <p>
+        <strong>The People Zoo</strong> is a New Beansland story about curated environments,
+        hidden control, and what happens when a place starts treating people like exhibits
+        before they realize they were placed there.
+      </p>
+
+      <div class="quote">
+        What happens when the key holder has no lock to use?
+      </div>
+
+      <p>
+        This story asks what freedom means when the cage was designed to look like protection.
+      </p>
+
+      <p>This digital edition is available by request.</p>
+
+      <p>
+        For purchase requests, digital edition access, or questions about New Beansland works, contact:
+      </p>
+
+      <p>
+        <strong>foundernewbeansland@gmail.com</strong>
+      </p>
+
+      <a class="button" href="mailto:foundernewbeansland@gmail.com?subject=Purchase%20Request%20-%20The%20People%20Zoo">
+        Request the Book
+      </a>
+
+      <p class="small" style="margin-top:18px;">
+        This page is a public preview only. The full digital edition is not posted here.
+      </p>
+    </article>
+
+    <footer>
+      © 2026 Jamel Hawkins · New Beansland
+    </footer>
+
+  </main>
+</body>
+</html>
