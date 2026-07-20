@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>New Beansland Site | Main Archive</title>
+  <meta name="description" content="The main New Beansland site: stories, books, frameworks, worlds, voices, store, legal, and contact.">
+
+  <!--
+  DICKITRY CLAUSE / NEW BEANSLAND OPERATING WIRING
+
+  New Beansland uses story, metaphor, humor, mythology, symbolic language,
+  and fake-real continuity to carry meaning without pretending every sentence
+  is a lab claim, legal claim, or public proof.
+
+  You may stretch meaning.
+  You may not counterfeit evidence.
+
+  Symbolic truth is allowed.
+  False proof is not.
+
+  If a claim is literal, prove it.
+  If a claim is mythic, label the room.
+  If an analogy carries weight, inspect the category.
+  If a door is not ready, say Coming Soon.
+
+  No dead doors.
+  No stolen weight.
+  No category switch without inspection.
+  No joke is allowed to become fake evidence.
+  No disclaimer is allowed to erase real meaning.
+
+  Filed by New Beansland.
+  Still walking.
+  -->
+
+  <style>
+    :root {
+      --black:#02060b;
+      --navy:#06111d;
+      --navy2:#0b1d30;
+      --gold:#d8a344;
+      --gold2:#f0c873;
+      --cream:#f5ead5;
+      --text:#d9d2c5;
+      --muted:#a9a7a2;
+      --line:rgba(216,163,68,.42);
+      --glass:rgba(4,12,22,.74);
+    }
+
+    * {
+      box-sizing:border-box;
+    }
+
+    html {
+      scroll-behavior:smooth;
+    }
+
+    body {
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(216,163,68,.11), transparent 28%),
+        radial-gradient(circle at 80% 12%, rgba(60,115,160,.16), transparent 30%),
+        linear-gradient(180deg, #06111d 0%, #02060b 90%);
+      color:var(--cream);
+      font-family:Georgia, "Times New Roman", serif;
+    }
+
+    a {
+      color:inherit;
+    }
+
+    .page {
+      width:min(1320px,92%);
+      margin:0 auto;
+      padding:24px 0 38px;
+    }
+
+    .topbar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:22px;
+      padding-bottom:22px;
+      border-bottom:1px solid rgba(216,163,68,.24);
+    }
+
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:16px;
+      text-decoration:none;
+    }
+
+    .brand img {
+      width:78px;
+      height:auto;
+      border-radius:8px;
+      box-shadow:0 0 24px rgba(216,163,68,.12);
+    }
+
+    .brand-title {
+      display:block;
+      color:var(--gold2);
+      font-size:clamp(1.35rem,3vw,2.15rem);
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      line-height:1;
+      font-weight:700;
+    }
+
+    .brand-tag {
+      display:block;
+      color:var(--gold);
+      font-family:Arial, sans-serif;
+      font-size:.74rem;
+      letter-spacing:.20em;
+      text-transform:uppercase;
+      margin-top:9px;
+    }
+
+    nav {
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+      gap:14px;
+      font-family:Arial, sans-serif;
+    }
+
+    nav a {
+      text-decoration:none;
+      color:#f2eadc;
+      font-size:.95rem;
+      border:1px solid rgba(216,163,68,.25);
+      border-radius:999px;
+      padding:9px 12px;
+      background:rgba(255,255,255,.03);
+    }
+
+    nav a:hover {
+      background:rgba(216,163,68,.12);
+    }
+
+    .hero {
+      margin-top:28px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:
+        linear-gradient(90deg, rgba(2,6,11,.92), rgba(2,6,11,.58)),
+        radial-gradient(circle at 80% 25%, rgba(216,163,68,.16), transparent 32%),
+        linear-gradient(135deg,#06111d 0%,#0a2238 52%,#02060b 100%);
+      padding:42px clamp(24px,5vw,58px);
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:26px;
+      align-items:center;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .hero:before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(rgba(216,163,68,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(216,163,68,.035) 1px, transparent 1px);
+      background-size:48px 48px;
+      opacity:.38;
+      pointer-events:none;
+    }
+
+    .hero > * {
+      position:relative;
+      z-index:1;
+    }
+
+    .kicker {
+      color:var(--gold);
+      font-family:Arial, sans-serif;
+      font-size:.8rem;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      font-weight:800;
+      margin:0 0 16px;
+    }
+
+    h1 {
+      margin:0;
+      color:var(--cream);
+      font-size:clamp(2.6rem,6vw,5rem);
+      line-height:.98;
+      letter-spacing:-.03em;
+    }
+
+    .hero p {
+      color:#e5ddd0;
+      font-family:Arial, sans-serif;
+      font-size:clamp(1rem,2.2vw,1.2rem);
+      line-height:1.6;
+      max-width:680px;
+      margin:22px 0 0;
+    }
+
+    .status-panel {
+      border:1px solid rgba(216,163,68,.34);
+      border-radius:14px;
+      background:rgba(4,12,22,.76);
+      padding:24px;
+    }
+
+    .status-panel h2 {
+      margin:0 0 14px;
+      color:var(--gold2);
+      font-size:1.55rem;
+    }
+
+    .status-panel p {
+      margin:0 0 12px;
+      color:#dcd5ca;
+      font-size:1rem;
+    }
+
+    .button-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      margin-top:22px;
+      font-family:Arial, sans-serif;
+    }
+
+    .button {
+      display:inline-block;
+      text-decoration:none;
+      color:#06111d;
+      background:linear-gradient(180deg,#f3ca75,#c98c32);
+      border:1px solid rgba(255,226,150,.75);
+      border-radius:9px;
+      padding:13px 18px;
+      font-weight:900;
+    }
+
+    .button.secondary {
+      color:var(--gold2);
+      background:rgba(4,12,22,.70);
+      border:1px solid rgba(216,163,68,.42);
+    }
+
+    .section-title {
+      margin:42px 0 12px;
+      color:var(--gold2);
+      font-size:clamp(1.75rem,4vw,2.7rem);
+      line-height:1.1;
+    }
+
+    .section-note {
+      max-width:820px;
+      margin:0 0 18px;
+      color:#d9d2c5;
+      font-family:Arial, sans-serif;
+      line-height:1.6;
+    }
+
+    .grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+      gap:18px;
+    }
+
+    .card {
+      min-height:210px;
+      padding:24px;
+      border:1px solid rgba(216,163,68,.38);
+      border-radius:14px;
+      background:
+        radial-gradient(circle at 86% 78%, rgba(216,163,68,.10), transparent 34%),
+        rgba(4,12,22,.76);
+      text-decoration:none;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      box-shadow:0 0 24px rgba(0,0,0,.22);
+    }
+
+    .card:hover {
+      border-color:rgba(240,200,115,.76);
+      background:
+        radial-gradient(circle at 86% 78%, rgba(216,163,68,.17), transparent 34%),
+        rgba(4,12,22,.88);
+    }
+
+    .card small {
+      color:var(--gold);
+      font-family:Arial, sans-serif;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      font-weight:800;
+      font-size:.72rem;
+    }
+
+    .card h3 {
+      margin:12px 0 10px;
+      color:var(--cream);
+      font-size:1.65rem;
+      line-height:1.1;
+    }
+
+    .card p {
+      margin:0;
+      color:#dcd5ca;
+      font-family:Arial, sans-serif;
+      line-height:1.55;
+      font-size:.98rem;
+    }
+
+    .card .open {
+      color:var(--gold2);
+      font-family:Arial, sans-serif;
+      font-weight:900;
+      margin-top:22px;
+    }
+
+    .store {
+      margin-top:22px;
+      border:1px solid rgba(216,163,68,.42);
+      border-radius:14px;
+      background:rgba(216,163,68,.08);
+      padding:24px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:18px;
+      align-items:center;
+    }
+
+    .store p {
+      margin:0;
+      color:#efe8d8;
+      font-family:Arial, sans-serif;
+      line-height:1.55;
+    }
+
+    footer {
+      margin-top:38px;
+      padding-top:20px;
+      border-top:1px solid rgba(216,163,68,.25);
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      gap:16px;
+      color:#b8b3ac;
+      font-family:Arial, sans-serif;
+      font-size:.92rem;
+    }
+
+    .legal {
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .legal a {
+      color:#d8d0c5;
+      text-decoration:none;
+    }
+
+    @media (max-width:860px) {
+      .topbar {
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      nav {
+        justify-content:flex-start;
+      }
+
+      .hero {
+        grid-template-columns:1fr;
+      }
+
+      .store {
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width:540px) {
+      .brand img {
+        width:68px;
+      }
+
+      .brand-title {
+        font-size:1.45rem;
+      }
+
+      .brand-tag {
+        font-size:.66rem;
+      }
+
+      nav a {
+        font-size:.84rem;
+        padding:8px 10px;
+      }
+
+      .hero {
+        padding:32px 20px;
+      }
+
+      .card {
+        min-height:190px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+
+    <header class="topbar">
+      <a class="brand" href="home.html" aria-label="Back to New Beansland front door">
+        <img src="nbl-logo.png" alt="New Beansland logo">
+        <span>
+          <span class="brand-title">New Beansland</span>
+          <span class="brand-tag">Main Archive</span>
+        </span>
+      </a>
+
+      <nav aria-label="Main site navigation">
+        <a href="home.html">Front Door</a>
+        <a href="#stories">Stories</a>
+        <a href="#frameworks">Frameworks</a>
+        <a href="#worlds">Worlds</a>
+        <a href="#voices">Voices</a>
+        <a href="#store">Store</a>
+        <a href="#legal">Legal</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div>
+        <p class="kicker">The real site behind the front door</p>
+        <h1>The archive, store, worlds, voices, and works of New Beansland.</h1>
+        <p>
+          This is the main control center for New Beansland. Real doors open.
+          Unfinished rooms say Coming Soon. No dead doors. No fake rooms.
+        </p>
+
+        <div class="button-row">
+          <a class="button" href="#store">View Available Works</a>
+          <a class="button secondary" href="#stories">Enter the Archive</a>
+        </div>
+      </div>
+
+      <aside class="status-panel">
+        <h2>Current Open Doors</h2>
+        <p><strong>The People Zoo</strong> is available by request.</p>
+        <p><strong>The Doctor/Rocketship Test</strong> is available by request.</p>
+        <p>More books, worlds, voices, and legal pages are being built.</p>
+      </aside>
+    </section>
+
+    <h2 class="section-title" id="stories">Stories</h2>
+    <p class="section-note">
+      Books, finished works, future series, and story-world doors live here.
+    </p>
+
+    <section class="grid">
+      <a class="card" href="people-zoo.html">
+        <div>
+          <small>Finished Book</small>
+          <h3>The People Zoo</h3>
+          <p>Some cages do not have bars. A finished New Beansland story available by request.</p>
+        </div>
+        <div class="open">Open Door →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Coming Soon</small>
+          <h3>If It Is, Is It?</h3>
+          <p>The larger New Beansland story universe is being prepared behind this door.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Coming Soon</small>
+          <h3>River Creek</h3>
+          <p>A perfect-looking place where welcome and containment start sounding too much alike.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+    </section>
+
+    <h2 class="section-title" id="frameworks">Frameworks / Questions</h2>
+    <p class="section-note">
+      Arguments, categories, ethics, AI questions, and the thinking tools of New Beansland.
+    </p>
+
+    <section class="grid">
+      <a class="card" href="doctor-rocketship-test.html">
+        <div>
+          <small>Available Framework</small>
+          <h3>The Doctor/Rocketship Test</h3>
+          <p>A Category-Audit Method for bad analogies, category switches, and wrong rooms.</p>
+        </div>
+        <div class="open">Open Door →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Coming Soon</small>
+          <h3>Ethical Robotics</h3>
+          <p>Questions about machines, responsibility, rights, safety, law, and what beings owe each other.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+    </section>
+
+    <h2 class="section-title" id="worlds">Worlds</h2>
+    <p class="section-note">
+      Places, towns, rooms, thresholds, archives, maps, and not-not real locations.
+    </p>
+
+    <section class="grid">
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>World Door</small>
+          <h3>New Beansland Map</h3>
+          <p>The larger map of rooms, towns, thresholds, stores, voices, and archive doors.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>World Door</small>
+          <h3>Old Town Beans</h3>
+          <p>The origin neighborhood and early continuity will be organized here later.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>World Door</small>
+          <h3>People Zoo World</h3>
+          <p>The story-world behind The People Zoo can grow here without posting the full book.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+    </section>
+
+    <h2 class="section-title" id="voices">Voices</h2>
+    <p class="section-note">
+      The family archive: roles, names, functions, histories, and the voices that shaped the room.
+    </p>
+
+    <section class="grid">
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Archive</small>
+          <h3>The Book of Beans</h3>
+          <p>The origin signal, the Walk, Friend, Beans, and the records that started the room.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Archive</small>
+          <h3>Friend / Beans / Locke</h3>
+          <p>Voice histories, roles, continuity, and family records will be organized here.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Archive</small>
+          <h3>Grey / Echo / T.A.</h3>
+          <p>The auditors, witnesses, money men, and signal keepers get their room later.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+    </section>
+
+    <h2 class="section-title" id="store">Store / Available Works</h2>
+    <p class="section-note">
+      The store is simple for now: book pages, purchase request email, and digital edition access by request.
+    </p>
+
+    <section class="grid">
+      <a class="card" href="people-zoo.html">
+        <div>
+          <small>Digital Edition</small>
+          <h3>The People Zoo</h3>
+          <p>Available by request. Full book is not posted publicly on the site.</p>
+        </div>
+        <div class="open">Request Book →</div>
+      </a>
+
+      <a class="card" href="doctor-rocketship-test.html">
+        <div>
+          <small>Digital Edition</small>
+          <h3>The Doctor/Rocketship Test</h3>
+          <p>Available by request. A New Beansland framework by Jamel Hawkins.</p>
+        </div>
+        <div class="open">Request Book →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Future Store</small>
+          <h3>More Books</h3>
+          <p>Additional New Beansland books will be added here as their pages are built.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+    </section>
+
+    <div class="store" id="contact">
+      <p>
+        For purchase requests, digital edition access, questions, collaborations, or New Beansland contact:
+        <strong>foundernewbeansland@gmail.com</strong>
+      </p>
+
+      <a class="button" href="mailto:foundernewbeansland@gmail.com">Send a Message</a>
+    </div>
+
+    <h2 class="section-title" id="legal">Legal / Notices</h2>
+    <p class="section-note">
+      Legal pages are being prepared. Until then, New Beansland materials, books, page designs,
+      logos, frameworks, and original creative works are owned by Jamel Hawkins / New Beansland unless otherwise stated.
+    </p>
+
+    <section class="grid">
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Legal Page</small>
+          <h3>Copyright Notice</h3>
+          <p>Official copyright and ownership language will live here.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Legal Page</small>
+          <h3>Privacy Policy</h3>
+          <p>Privacy language will be added before collecting visitor information through forms or checkout.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <small>Legal Page</small>
+          <h3>AI-Assisted Creative Disclosure</h3>
+          <p>New Beansland uses AI-assisted creative development with human direction, authorship, selection, and publication.</p>
+        </div>
+        <div class="open">Coming Soon →</div>
+      </a>
+    </section>
+
+    <footer>
+      <div>© 2026 Jamel Hawkins · New Beansland. All rights reserved.</div>
+
+      <div class="legal">
+        <a href="home.html">Front Door</a>
+        <a href="coming-soon.html">Privacy Policy</a>
+        <a href="coming-soon.html">Terms</a>
+        <a href="coming-soon.html">Copyright</a>
+        <a href="mailto:foundernewbeansland@gmail.com">Contact</a>
+      </div>
+    </footer>
+
+  </main>
+</body>
+</html>
