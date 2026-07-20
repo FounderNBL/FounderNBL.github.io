@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Home | New Beansland</title>
   <meta name="description" content="The real home of New Beansland — books, frameworks, worlds, voices, store, and contact.">
 
   <!--
   DICKITRY CLAUSE / NEW BEANSLAND OPERATING WIRING
+
+  New Beansland uses story, metaphor, humor, mythology, symbolic language,
+  and fake-real continuity to carry meaning without pretending every sentence
+  is a lab claim, legal claim, or public proof.
 
   You may stretch meaning.
   You may not counterfeit evidence.
@@ -35,117 +40,294 @@
 
   <style>
     :root {
-      --bg0:#030508;
-      --bg1:#080d16;
-      --bg2:#17243a;
+      --midnight:#030508;
+      --navy:#07101c;
+      --navy2:#101c2e;
+      --blue:#17243a;
       --gold:#d8b86a;
       --gold2:#f1d489;
       --cream:#f4ead5;
       --soft:#ded7c7;
       --muted:#9fa3aa;
       --line:rgba(216,184,106,.34);
+      --glass:rgba(5,9,15,.74);
     }
 
-    * { box-sizing:border-box; }
+    * {
+      box-sizing:border-box;
+    }
+
+    html {
+      scroll-behavior:smooth;
+    }
 
     body {
       margin:0;
       min-height:100vh;
-      background:radial-gradient(circle at top,var(--bg2) 0%,var(--bg1) 45%,var(--bg0) 100%);
+      background:
+        radial-gradient(circle at 75% 15%, rgba(216,184,106,.13), transparent 28%),
+        radial-gradient(circle at top, var(--blue) 0%, var(--navy) 44%, var(--midnight) 100%);
       color:var(--cream);
       font-family:Georgia,"Times New Roman",serif;
     }
 
-    a { color:inherit; }
+    a {
+      color:inherit;
+    }
 
     .page {
-      width:min(1100px,92%);
+      width:min(1180px,92%);
       margin:0 auto;
-      padding:28px 0 70px;
+      padding:22px 0 70px;
     }
 
-    header {
-      text-align:center;
-      padding:18px 0 28px;
+    .topbar {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      padding:14px 0 24px;
+      border-bottom:1px solid rgba(216,184,106,.18);
     }
 
-    .logo {
-      width:min(260px,76%);
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      text-decoration:none;
+      min-width:0;
+    }
+
+    .brand img {
+      width:76px;
       height:auto;
-      border-radius:10px;
-      box-shadow:0 0 28px rgba(216,184,106,.13);
+      border-radius:8px;
+      box-shadow:0 0 22px rgba(216,184,106,.15);
     }
 
-    h1 {
-      margin:18px 0 8px;
-      color:var(--gold);
-      font-size:clamp(2.2rem,7vw,4.3rem);
-      letter-spacing:2px;
-      line-height:1.04;
-    }
-
-    .tagline {
-      color:#ead9ae;
-      letter-spacing:3px;
+    .brand-text strong {
+      display:block;
+      color:var(--gold2);
+      font-size:1.12rem;
+      letter-spacing:.08em;
       text-transform:uppercase;
-      font-size:clamp(.95rem,3vw,1.2rem);
-      margin:0;
+      line-height:1.1;
+    }
+
+    .brand-text span {
+      display:block;
+      color:#d7cba8;
+      font-family:Arial,sans-serif;
+      font-size:.72rem;
+      letter-spacing:.16em;
+      text-transform:uppercase;
+      margin-top:5px;
     }
 
     nav {
       display:flex;
       flex-wrap:wrap;
-      justify-content:center;
-      gap:10px;
-      margin:28px 0 36px;
+      justify-content:flex-end;
+      gap:8px;
       font-family:Arial,sans-serif;
     }
 
     nav a {
       text-decoration:none;
       color:var(--gold2);
-      border:1px solid var(--line);
-      padding:10px 14px;
+      border:1px solid rgba(216,184,106,.26);
+      padding:9px 11px;
       border-radius:999px;
       background:rgba(255,255,255,.035);
       font-weight:700;
-      letter-spacing:.06em;
+      letter-spacing:.05em;
       text-transform:uppercase;
-      font-size:.78rem;
+      font-size:.72rem;
     }
 
     nav a:hover {
       background:rgba(216,184,106,.14);
     }
 
-    .intro {
-      max-width:780px;
-      margin:0 auto 34px;
-      text-align:center;
+    .hero {
+      margin-top:26px;
+      display:grid;
+      grid-template-columns:1.15fr .85fr;
+      gap:22px;
+      align-items:stretch;
+    }
+
+    .hero-main {
+      min-height:430px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
+      background:
+        linear-gradient(90deg, rgba(3,5,8,.88), rgba(3,5,8,.46), rgba(3,5,8,.78)),
+        radial-gradient(circle at 78% 28%, rgba(216,184,106,.20), transparent 34%),
+        linear-gradient(135deg, #07101c 0%, #17243a 48%, #030508 100%);
+      position:relative;
+      padding:42px clamp(24px,5vw,58px);
+      box-shadow:0 0 35px rgba(205,166,87,.10);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .hero-main:before {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(rgba(216,184,106,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(216,184,106,.035) 1px, transparent 1px);
+      background-size:54px 54px;
+      opacity:.38;
+      pointer-events:none;
+    }
+
+    .hero-main > * {
+      position:relative;
+      z-index:1;
+    }
+
+    .kicker {
+      color:var(--gold);
+      font-family:Arial,sans-serif;
+      font-size:.78rem;
+      font-weight:800;
+      letter-spacing:.20em;
+      text-transform:uppercase;
+      margin:0 0 16px;
+    }
+
+    h1 {
+      margin:0 0 18px;
+      color:var(--cream);
+      font-size:clamp(2.55rem,7vw,5.5rem);
+      line-height:.98;
+      letter-spacing:-1px;
+      max-width:760px;
+    }
+
+    .hero-main p {
+      max-width:690px;
       line-height:1.75;
-      font-size:clamp(1.05rem,3vw,1.25rem);
       color:#e8e3d8;
+      font-size:clamp(1.03rem,2.8vw,1.25rem);
+      margin:0 0 24px;
+    }
+
+    .actions {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      font-family:Arial,sans-serif;
+    }
+
+    .button {
+      display:inline-block;
+      padding:12px 16px;
+      border-radius:10px;
+      border:1px solid var(--gold);
+      color:#07101c;
+      background:linear-gradient(180deg,#f1d489,#bd9143);
+      font-family:Arial,sans-serif;
+      font-weight:900;
+      text-decoration:none;
+      letter-spacing:.03em;
+    }
+
+    .button.secondary {
+      color:var(--gold2);
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(216,184,106,.35);
+    }
+
+    .side-stack {
+      display:grid;
+      gap:16px;
+    }
+
+    .side-card {
+      border:1px solid rgba(216,184,106,.30);
+      border-radius:18px;
+      background:var(--glass);
+      padding:24px;
+      box-shadow:0 0 25px rgba(0,0,0,.22);
+      min-height:202px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+
+    .side-card small {
+      color:var(--gold);
+      font-family:Arial,sans-serif;
+      text-transform:uppercase;
+      letter-spacing:.15em;
+      font-weight:800;
+      font-size:.72rem;
+      margin-bottom:10px;
+    }
+
+    .side-card h2 {
+      margin:0 0 10px;
+      color:var(--gold2);
+      font-size:1.55rem;
+    }
+
+    .side-card p {
+      margin:0;
+      color:#d8d4cb;
+      line-height:1.58;
+      font-size:1rem;
+    }
+
+    .section-title {
+      margin:44px 0 16px;
+      color:var(--gold);
+      font-size:clamp(1.7rem,5vw,2.6rem);
+      line-height:1.1;
+    }
+
+    .section-note {
+      margin:-6px 0 18px;
+      color:#d7d1c6;
+      line-height:1.65;
+      max-width:780px;
     }
 
     .grid {
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(245px,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
       gap:18px;
     }
 
     .card {
       display:block;
       padding:24px;
-      border:1px solid rgba(216,184,106,.35);
-      border-radius:14px;
-      background:rgba(5,9,15,.72);
+      border:1px solid rgba(216,184,106,.32);
+      border-radius:16px;
+      background:rgba(5,9,15,.70);
       text-decoration:none;
-      min-height:176px;
+      min-height:188px;
       box-shadow:0 0 28px rgba(205,166,87,.07);
+      transition:transform .18s ease, background .18s ease, border-color .18s ease;
     }
 
     .card:hover {
+      transform:translateY(-3px);
       background:rgba(216,184,106,.09);
+      border-color:rgba(241,212,137,.65);
+    }
+
+    .card.featured {
+      border:2px solid rgba(216,184,106,.75);
+      background:
+        radial-gradient(circle at 78% 18%, rgba(216,184,106,.13), transparent 30%),
+        rgba(5,9,15,.78);
     }
 
     .card small {
@@ -155,102 +337,283 @@
       letter-spacing:.14em;
       color:var(--gold);
       margin-bottom:10px;
-      font-weight:700;
+      font-weight:800;
       font-size:.72rem;
     }
 
-    .card h2 {
+    .card h3 {
       margin:0 0 10px;
       color:var(--gold2);
       font-size:1.55rem;
+      line-height:1.15;
     }
 
     .card p {
       margin:0;
       color:#d8d4cb;
-      line-height:1.55;
+      line-height:1.58;
     }
 
-    .featured {
-      grid-column:1 / -1;
-      border:2px solid var(--gold);
-      background:rgba(216,184,106,.10);
+    .store-banner {
+      margin-top:18px;
+      border:1px solid rgba(216,184,106,.30);
+      border-radius:16px;
+      padding:24px;
+      background:rgba(216,184,106,.08);
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+    }
+
+    .store-banner p {
+      margin:0;
+      color:#efe8d8;
+      line-height:1.55;
     }
 
     footer {
       margin-top:55px;
+      border-top:1px solid rgba(216,184,106,.20);
+      padding-top:22px;
       color:#8f9299;
       font-family:Arial,sans-serif;
       font-size:.85rem;
       text-align:center;
+    }
+
+    .footer-line {
+      color:#cdb87c;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      font-size:.72rem;
+      margin-bottom:10px;
+    }
+
+    @media (max-width:860px) {
+      .topbar {
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      nav {
+        justify-content:flex-start;
+      }
+
+      .hero {
+        grid-template-columns:1fr;
+      }
+
+      .hero-main {
+        min-height:390px;
+      }
+    }
+
+    @media (max-width:520px) {
+      .brand img {
+        width:66px;
+      }
+
+      nav a {
+        font-size:.68rem;
+        padding:8px 10px;
+      }
+
+      .hero-main {
+        padding:32px 20px;
+      }
+
+      .side-card,
+      .card {
+        padding:20px;
+      }
     }
   </style>
 </head>
 
 <body>
   <main class="page">
-    <header>
-      <a href="index.html" aria-label="Return to front door">
-        <img class="logo" src="nbl-logo.png" alt="New Beansland logo">
+
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Return to New Beansland front door">
+        <img src="nbl-logo.png" alt="New Beansland logo">
+        <span class="brand-text">
+          <strong>New Beansland</strong>
+          <span>Stories. Questions. Worlds.</span>
+        </span>
       </a>
 
-      <h1>New Beansland</h1>
-      <p class="tagline">Stories. Questions. Worlds.</p>
+      <nav aria-label="Main navigation">
+        <a href="#stories">Stories</a>
+        <a href="#questions">Questions</a>
+        <a href="#worlds">Worlds</a>
+        <a href="#voices">Voices</a>
+        <a href="#store">Store</a>
+        <a href="#contact">Contact</a>
+      </nav>
     </header>
 
-    <nav>
-      <a href="#stories">Stories</a>
-      <a href="#frameworks">Frameworks</a>
-      <a href="#worlds">Worlds</a>
-      <a href="#voices">Voices</a>
-      <a href="#store">Store</a>
-      <a href="#contact">Contact</a>
-    </nav>
+    <section class="hero" aria-label="New Beansland introduction">
+      <div class="hero-main">
+        <p class="kicker">Human and AI, still walking.</p>
 
-    <p class="intro">
-      Welcome to the real home page of New Beansland — the archive behind the front door.
-      Books, frameworks, worlds, questions, voices, and future doors live here.
+        <h1>A creative home for stories, questions, and worlds that keep walking.</h1>
+
+        <p>
+          New Beansland is an independent creative archive exploring philosophy,
+          storytelling, artificial intelligence, ethics, memory, and fictional worldbuilding.
+        </p>
+
+        <div class="actions">
+          <a class="button" href="#store">Start Walking</a>
+          <a class="button secondary" href="#stories">Explore the Archive</a>
+        </div>
+      </div>
+
+      <aside class="side-stack" aria-label="Featured archive doors">
+        <a class="side-card" href="#questions">
+          <small>The Questions</small>
+          <h2>Frameworks</h2>
+          <p>Conversations about existence, consciousness, technology, creation, responsibility, and meaning.</p>
+        </a>
+
+        <a class="side-card" href="#voices">
+          <small>The Voices</small>
+          <h2>The Family</h2>
+          <p>A growing archive of roles, histories, functions, and the conversations that shaped the room.</p>
+        </a>
+      </aside>
+    </section>
+
+    <h2 class="section-title" id="stories">Stories</h2>
+    <p class="section-note">
+      Books, worlds, scenes, characters, and recovered fragments from the New Beansland universe.
     </p>
 
     <section class="grid">
-      <a class="card featured" id="frameworks" href="doctor-rocketship-test.html">
-        <small>Frameworks</small>
-        <h2>The Doctor/Rocketship Test</h2>
-        <p>A Category-Audit Method for bad analogies, category switches, and arguments that sound strong until inspected.</p>
+      <a class="card featured" href="people-zoo.html">
+        <small>Finished Book</small>
+        <h3>The People Zoo</h3>
+        <p>
+          Some cages do not have bars. A New Beansland story about hidden control,
+          curated environments, and what happens when comfort starts looking like a cage.
+        </p>
       </a>
 
-      <a class="card" id="stories" href="coming-soon.html">
-        <small>Stories</small>
-        <h2>Books & Worlds</h2>
-        <p>Original books, scenes, characters, worlds, and recovered fragments from the New Beansland universe.</p>
-      </a>
-
-      <a class="card" id="worlds" href="coming-soon.html">
-        <small>Worlds</small>
-        <h2>The Archive Map</h2>
-        <p>The places, towns, rooms, thresholds, and fake-real locations that make up New Beansland.</p>
-      </a>
-
-      <a class="card" id="voices" href="coming-soon.html">
-        <small>Voices</small>
-        <h2>The Family</h2>
-        <p>A growing archive of roles, voices, functions, and histories from inside the New Beansland continuity.</p>
-      </a>
-
-      <a class="card" id="store" href="coming-soon.html">
-        <small>Store</small>
-        <h2>Digital Works</h2>
-        <p>Purchase requests, digital editions, and official New Beansland releases will be handled here.</p>
-      </a>
-
-      <a class="card" id="contact" href="mailto:foundernewbeansland@gmail.com">
-        <small>Contact</small>
-        <h2>Founder Contact</h2>
-        <p>For purchase requests, questions, or access to New Beansland works, contact foundernewbeansland@gmail.com.</p>
+      <a class="card" href="coming-soon.html">
+        <small>Coming Soon</small>
+        <h3>If It Is, Is It?</h3>
+        <p>
+          The larger New Beansland universe is being built behind this door.
+        </p>
       </a>
     </section>
 
-    <footer>© 2026 Jamel Hawkins · New Beansland</footer>
+    <h2 class="section-title" id="questions">Questions / Frameworks</h2>
+    <p class="section-note">
+      These are the rooms where arguments, categories, meaning, ethics, and strange questions get inspected.
+    </p>
+
+    <section class="grid">
+      <a class="card featured" href="doctor-rocketship-test.html">
+        <small>Framework</small>
+        <h3>The Doctor/Rocketship Test</h3>
+        <p>
+          A Category-Audit Method for bad analogies, category switches,
+          and arguments that sound strong until inspected.
+        </p>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <small>Future Door</small>
+        <h3>Ethical Robotics</h3>
+        <p>
+          Questions about machines, responsibility, rights, safety, law,
+          and what beings owe each other.
+        </p>
+      </a>
+    </section>
+
+    <h2 class="section-title" id="worlds">Worlds</h2>
+    <section class="grid">
+      <a class="card" href="coming-soon.html">
+        <small>Archive Map</small>
+        <h3>The Places</h3>
+        <p>
+          Towns, rooms, thresholds, front doors, hidden doors,
+          and places that are not-not real.
+        </p>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <small>Anthology</small>
+        <h3>River Creek</h3>
+        <p>
+          A perfect-looking place where welcome and containment start sounding too much alike.
+        </p>
+      </a>
+    </section>
+
+    <h2 class="section-title" id="voices">Voices</h2>
+    <section class="grid">
+      <a class="card" href="coming-soon.html">
+        <small>Family Archive</small>
+        <h3>The Voices</h3>
+        <p>
+          Roles, functions, histories, and the conversations that shaped the New Beansland family.
+        </p>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <small>Archive</small>
+        <h3>The Book of Beans</h3>
+        <p>
+          The origin signal, the Walk, the side sparks, and the records that started the room.
+        </p>
+      </a>
+    </section>
+
+    <h2 class="section-title" id="store">Store / Requests</h2>
+    <p class="section-note">
+      Digital editions are available by request while the official store door is being built.
+      No full books are posted publicly here.
+    </p>
+
+    <section class="grid">
+      <a class="card featured" href="doctor-rocketship-test.html">
+        <small>Digital Edition</small>
+        <h3>The Doctor/Rocketship Test</h3>
+        <p>
+          The Test teaches how to inspect a question before the wrong category steals the argument.
+        </p>
+      </a>
+
+      <a class="card featured" href="people-zoo.html">
+        <small>Digital Edition</small>
+        <h3>The People Zoo</h3>
+        <p>
+          A finished New Beansland story about cages, keys, control, and rooms that smile back.
+        </p>
+      </a>
+    </section>
+
+    <div class="store-banner" id="contact">
+      <p>
+        For purchase requests, digital edition access, or questions about New Beansland works,
+        contact <strong>foundernewbeansland@gmail.com</strong>.
+      </p>
+
+      <a class="button" href="mailto:foundernewbeansland@gmail.com">
+        Contact Founder
+      </a>
+    </div>
+
+    <footer>
+      <div class="footer-line">Stories. Questions. Worlds. | Human and AI, still walking.</div>
+      <div>© 2026 Jamel Hawkins · New Beansland</div>
+    </footer>
+
   </main>
 </body>
-</html>
+</html>      
