@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Home | New Beansland</title>
-  <meta name="description" content="The real home of New Beansland — books, frameworks, worlds, voices, store, and contact.">
+  <title>New Beansland | Stories. Questions. Worlds.</title>
+  <meta name="description" content="New Beansland is a creative archive for stories, questions, worlds, voices, books, frameworks, and works by Jamel Hawkins.">
 
   <!--
   DICKITRY CLAUSE / NEW BEANSLAND OPERATING WIRING
@@ -31,26 +31,22 @@
   No joke is allowed to become fake evidence.
   No disclaimer is allowed to erase real meaning.
 
-  The Doctor/Rocketship Test checks the argument.
-  The Dickitry Clause checks the room the argument walked into.
-
   Filed by New Beansland.
   Still walking.
   -->
 
   <style>
     :root {
-      --midnight:#030508;
-      --navy:#07101c;
-      --navy2:#101c2e;
-      --blue:#17243a;
-      --gold:#d8b86a;
-      --gold2:#f1d489;
-      --cream:#f4ead5;
-      --soft:#ded7c7;
-      --muted:#9fa3aa;
-      --line:rgba(216,184,106,.34);
-      --glass:rgba(5,9,15,.74);
+      --black:#02060b;
+      --navy:#06111d;
+      --navy2:#0b1d30;
+      --gold:#d8a344;
+      --gold2:#f0c873;
+      --cream:#f5ead5;
+      --text:#d9d2c5;
+      --muted:#a9a7a2;
+      --line:rgba(216,163,68,.42);
+      --glass:rgba(4,12,22,.72);
     }
 
     * {
@@ -65,10 +61,11 @@
       margin:0;
       min-height:100vh;
       background:
-        radial-gradient(circle at 75% 15%, rgba(216,184,106,.13), transparent 28%),
-        radial-gradient(circle at top, var(--blue) 0%, var(--navy) 44%, var(--midnight) 100%);
+        radial-gradient(circle at 70% 12%, rgba(60,115,160,.18), transparent 34%),
+        radial-gradient(circle at 80% 42%, rgba(216,163,68,.10), transparent 28%),
+        linear-gradient(180deg, #06111d 0%, #02060b 88%);
       color:var(--cream);
-      font-family:Georgia,"Times New Roman",serif;
+      font-family:Georgia, "Times New Roman", serif;
     }
 
     a {
@@ -76,358 +73,456 @@
     }
 
     .page {
-      width:min(1180px,92%);
+      width:min(1440px,92%);
       margin:0 auto;
-      padding:22px 0 70px;
+      padding:28px 0 28px;
     }
 
     .topbar {
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:18px;
-      padding:14px 0 24px;
-      border-bottom:1px solid rgba(216,184,106,.18);
+      gap:24px;
+      position:relative;
+      z-index:5;
     }
 
     .brand {
       display:flex;
       align-items:center;
-      gap:14px;
+      gap:18px;
       text-decoration:none;
-      min-width:0;
     }
 
     .brand img {
-      width:76px;
+      width:88px;
       height:auto;
       border-radius:8px;
-      box-shadow:0 0 22px rgba(216,184,106,.15);
+      box-shadow:0 0 24px rgba(216,163,68,.12);
     }
 
-    .brand-text strong {
+    .brand-title {
       display:block;
       color:var(--gold2);
-      font-size:1.12rem;
-      letter-spacing:.08em;
+      font-size:clamp(1.4rem,3vw,2.35rem);
+      letter-spacing:.07em;
       text-transform:uppercase;
-      line-height:1.1;
+      line-height:1;
+      font-weight:700;
     }
 
-    .brand-text span {
+    .brand-tag {
       display:block;
-      color:#d7cba8;
-      font-family:Arial,sans-serif;
-      font-size:.72rem;
-      letter-spacing:.16em;
+      color:var(--gold);
+      font-family:Arial, sans-serif;
+      font-size:.82rem;
+      letter-spacing:.22em;
       text-transform:uppercase;
-      margin-top:5px;
+      margin-top:10px;
     }
 
     nav {
       display:flex;
-      flex-wrap:wrap;
+      align-items:center;
       justify-content:flex-end;
-      gap:8px;
-      font-family:Arial,sans-serif;
+      gap:28px;
+      font-family:Arial, sans-serif;
     }
 
     nav a {
       text-decoration:none;
-      color:var(--gold2);
-      border:1px solid rgba(216,184,106,.26);
-      padding:9px 11px;
-      border-radius:999px;
-      background:rgba(255,255,255,.035);
-      font-weight:700;
-      letter-spacing:.05em;
-      text-transform:uppercase;
-      font-size:.72rem;
+      color:#f2eadc;
+      font-size:1rem;
     }
 
-    nav a:hover {
-      background:rgba(216,184,106,.14);
+    nav a.active {
+      color:var(--gold2);
+      border-bottom:3px solid var(--gold);
+      padding-bottom:9px;
+    }
+
+    .search {
+      font-size:1.5rem;
+      line-height:1;
+      color:#ffffff;
+    }
+
+    .start {
+      display:inline-block;
+      text-decoration:none;
+      color:#07101c;
+      background:linear-gradient(180deg,#f1c873,#c98c32);
+      border:1px solid rgba(255,226,150,.75);
+      border-radius:10px;
+      padding:14px 24px;
+      font-family:Arial, sans-serif;
+      font-weight:800;
+      box-shadow:0 0 22px rgba(216,163,68,.16);
     }
 
     .hero {
-      margin-top:26px;
-      display:grid;
-      grid-template-columns:1.15fr .85fr;
-      gap:22px;
-      align-items:stretch;
-    }
-
-    .hero-main {
-      min-height:430px;
-      border:1px solid var(--line);
-      border-radius:18px;
-      overflow:hidden;
-      background:
-        linear-gradient(90deg, rgba(3,5,8,.88), rgba(3,5,8,.46), rgba(3,5,8,.78)),
-        radial-gradient(circle at 78% 28%, rgba(216,184,106,.20), transparent 34%),
-        linear-gradient(135deg, #07101c 0%, #17243a 48%, #030508 100%);
       position:relative;
-      padding:42px clamp(24px,5vw,58px);
-      box-shadow:0 0 35px rgba(205,166,87,.10);
+      min-height:540px;
+      margin-top:28px;
       display:flex;
-      flex-direction:column;
-      justify-content:center;
+      align-items:center;
+      overflow:hidden;
+      border-radius:0 0 22px 22px;
+      background:
+        linear-gradient(90deg, rgba(2,6,11,.96) 0%, rgba(2,6,11,.82) 36%, rgba(2,6,11,.26) 66%, rgba(2,6,11,.78) 100%),
+        radial-gradient(circle at 76% 32%, rgba(255,255,255,.18), transparent 1%),
+        radial-gradient(circle at 72% 24%, rgba(255,255,255,.08), transparent 12%),
+        linear-gradient(135deg,#06111d 0%,#0a2238 52%,#02060b 100%);
+      border-bottom:1px solid rgba(216,163,68,.25);
     }
 
-    .hero-main:before {
+    .hero:before {
       content:"";
       position:absolute;
       inset:0;
       background:
-        linear-gradient(rgba(216,184,106,.06) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(216,184,106,.035) 1px, transparent 1px);
-      background-size:54px 54px;
-      opacity:.38;
+        radial-gradient(circle at 65% 12%, rgba(255,255,255,.50) 0 1px, transparent 2px),
+        radial-gradient(circle at 78% 18%, rgba(255,255,255,.45) 0 1px, transparent 2px),
+        radial-gradient(circle at 86% 26%, rgba(255,255,255,.35) 0 1px, transparent 2px),
+        linear-gradient(transparent 68%, rgba(216,163,68,.18) 69%, transparent 70%),
+        linear-gradient(90deg, transparent 62%, rgba(216,163,68,.16) 63%, transparent 64%);
+      background-size:120px 120px, 170px 170px, 210px 210px, 100% 28px, 52px 100%;
+      opacity:.45;
       pointer-events:none;
     }
 
-    .hero-main > * {
-      position:relative;
-      z-index:1;
+    .hero:after {
+      content:"";
+      position:absolute;
+      right:0;
+      bottom:0;
+      width:58%;
+      height:48%;
+      background:
+        linear-gradient(transparent 28%, rgba(216,163,68,.18) 29%, transparent 30%),
+        linear-gradient(90deg, transparent 8%, rgba(255,255,255,.16) 9%, transparent 10%),
+        linear-gradient(180deg, transparent 0%, rgba(0,0,0,.35) 100%);
+      background-size:100% 34px, 44px 100%, 100% 100%;
+      opacity:.55;
+      clip-path:polygon(0 35%, 100% 0, 100% 100%, 0 100%);
+      pointer-events:none;
     }
 
-    .kicker {
-      color:var(--gold);
-      font-family:Arial,sans-serif;
-      font-size:.78rem;
-      font-weight:800;
-      letter-spacing:.20em;
-      text-transform:uppercase;
-      margin:0 0 16px;
+    .hero-copy {
+      position:relative;
+      z-index:2;
+      max-width:660px;
+      padding:58px 0 66px;
     }
 
     h1 {
-      margin:0 0 18px;
+      margin:0;
       color:var(--cream);
-      font-size:clamp(2.55rem,7vw,5.5rem);
+      font-size:clamp(3rem,6vw,5.45rem);
       line-height:.98;
-      letter-spacing:-1px;
-      max-width:760px;
+      letter-spacing:-.03em;
     }
 
-    .hero-main p {
-      max-width:690px;
-      line-height:1.75;
-      color:#e8e3d8;
-      font-size:clamp(1.03rem,2.8vw,1.25rem);
-      margin:0 0 24px;
+    .gold-line {
+      width:min(420px,78%);
+      height:2px;
+      background:linear-gradient(90deg,var(--gold),transparent);
+      margin:28px 0 18px;
+      position:relative;
     }
 
-    .actions {
+    .gold-line:after {
+      content:"✦";
+      color:var(--gold2);
+      position:absolute;
+      right:-20px;
+      top:-12px;
+      font-size:1.2rem;
+    }
+
+    .hero-copy p {
+      color:#e5ddd0;
+      font-family:Arial, sans-serif;
+      font-size:clamp(1rem,2.2vw,1.25rem);
+      line-height:1.55;
+      max-width:540px;
+      margin:0 0 28px;
+    }
+
+    .hero-actions {
       display:flex;
       flex-wrap:wrap;
-      gap:12px;
-      align-items:center;
-      font-family:Arial,sans-serif;
-    }
-
-    .button {
-      display:inline-block;
-      padding:12px 16px;
-      border-radius:10px;
-      border:1px solid var(--gold);
-      color:#07101c;
-      background:linear-gradient(180deg,#f1d489,#bd9143);
-      font-family:Arial,sans-serif;
-      font-weight:900;
-      text-decoration:none;
-      letter-spacing:.03em;
-    }
-
-    .button.secondary {
-      color:var(--gold2);
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(216,184,106,.35);
-    }
-
-    .side-stack {
-      display:grid;
-      gap:16px;
-    }
-
-    .side-card {
-      border:1px solid rgba(216,184,106,.30);
-      border-radius:18px;
-      background:var(--glass);
-      padding:24px;
-      box-shadow:0 0 25px rgba(0,0,0,.22);
-      min-height:202px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      text-decoration:none;
-    }
-
-    .side-card small {
-      color:var(--gold);
-      font-family:Arial,sans-serif;
-      text-transform:uppercase;
-      letter-spacing:.15em;
-      font-weight:800;
-      font-size:.72rem;
-      margin-bottom:10px;
-    }
-
-    .side-card h2 {
-      margin:0 0 10px;
-      color:var(--gold2);
-      font-size:1.55rem;
-    }
-
-    .side-card p {
-      margin:0;
-      color:#d8d4cb;
-      line-height:1.58;
-      font-size:1rem;
-    }
-
-    .section-title {
-      margin:44px 0 16px;
-      color:var(--gold);
-      font-size:clamp(1.7rem,5vw,2.6rem);
-      line-height:1.1;
-    }
-
-    .section-note {
-      margin:-6px 0 18px;
-      color:#d7d1c6;
-      line-height:1.65;
-      max-width:780px;
-    }
-
-    .grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
       gap:18px;
+      font-family:Arial, sans-serif;
+    }
+
+    .hero-button {
+      display:inline-block;
+      min-width:190px;
+      text-align:center;
+      padding:16px 22px;
+      border-radius:9px;
+      text-decoration:none;
+      font-weight:800;
+      border:1px solid var(--gold);
+    }
+
+    .hero-button.primary {
+      color:#06111d;
+      background:linear-gradient(180deg,#f3ca75,#c98c32);
+    }
+
+    .hero-button.secondary {
+      color:var(--gold2);
+      background:rgba(4,12,22,.60);
+    }
+
+    .cards {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+      margin-top:-26px;
+      position:relative;
+      z-index:4;
     }
 
     .card {
-      display:block;
-      padding:24px;
-      border:1px solid rgba(216,184,106,.32);
-      border-radius:16px;
-      background:rgba(5,9,15,.70);
-      text-decoration:none;
-      min-height:188px;
-      box-shadow:0 0 28px rgba(205,166,87,.07);
-      transition:transform .18s ease, background .18s ease, border-color .18s ease;
-    }
-
-    .card:hover {
-      transform:translateY(-3px);
-      background:rgba(216,184,106,.09);
-      border-color:rgba(241,212,137,.65);
-    }
-
-    .card.featured {
-      border:2px solid rgba(216,184,106,.75);
+      min-height:236px;
+      padding:28px 26px;
+      border:1px solid rgba(216,163,68,.48);
+      border-radius:12px;
       background:
-        radial-gradient(circle at 78% 18%, rgba(216,184,106,.13), transparent 30%),
-        rgba(5,9,15,.78);
+        radial-gradient(circle at 86% 80%, rgba(216,163,68,.12), transparent 34%),
+        rgba(4,12,22,.82);
+      text-decoration:none;
+      box-shadow:0 0 26px rgba(0,0,0,.22);
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
     }
 
-    .card small {
-      display:block;
-      font-family:Arial,sans-serif;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      color:var(--gold);
-      margin-bottom:10px;
-      font-weight:800;
-      font-size:.72rem;
-    }
-
-    .card h3 {
-      margin:0 0 10px;
+    .icon {
+      width:62px;
+      height:62px;
+      border:2px solid var(--gold);
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       color:var(--gold2);
+      font-family:Arial, sans-serif;
+      font-weight:900;
       font-size:1.55rem;
-      line-height:1.15;
+      margin-bottom:14px;
+    }
+
+    .card h2 {
+      margin:0 0 12px;
+      color:var(--cream);
+      font-size:2rem;
+      line-height:1;
     }
 
     .card p {
       margin:0;
-      color:#d8d4cb;
-      line-height:1.58;
-    }
-
-    .store-banner {
-      margin-top:18px;
-      border:1px solid rgba(216,184,106,.30);
-      border-radius:16px;
-      padding:24px;
-      background:rgba(216,184,106,.08);
-      display:flex;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-    }
-
-    .store-banner p {
-      margin:0;
-      color:#efe8d8;
+      color:#dcd5ca;
+      font-family:Arial, sans-serif;
       line-height:1.55;
+      font-size:1rem;
+    }
+
+    .learn {
+      color:var(--gold2);
+      font-family:Arial, sans-serif;
+      font-weight:800;
+      margin-top:24px;
+    }
+
+    .featured {
+      margin-top:28px;
+      border:1px solid rgba(216,163,68,.42);
+      border-radius:12px;
+      background:rgba(4,12,22,.72);
+      padding:22px 26px;
+      display:grid;
+      grid-template-columns:1.2fr 1.2fr 1fr;
+      gap:24px;
+      align-items:stretch;
+    }
+
+    .featured-block {
+      display:grid;
+      grid-template-columns:150px 1fr;
+      gap:18px;
+      align-items:center;
+      border-right:1px solid rgba(216,163,68,.28);
+      padding-right:22px;
+    }
+
+    .featured-block:last-child {
+      border-right:none;
+      padding-right:0;
+    }
+
+    .featured img {
+      width:150px;
+      height:120px;
+      object-fit:cover;
+      border-radius:8px;
+      border:1px solid rgba(216,163,68,.42);
+      background:#06111d;
+    }
+
+    .featured h2,
+    .connect h2 {
+      margin:0 0 10px;
+      color:var(--gold2);
+      font-size:1.45rem;
+    }
+
+    .featured h3 {
+      margin:0 0 8px;
+      color:var(--cream);
+      font-size:1.35rem;
+      line-height:1.1;
+    }
+
+    .featured p,
+    .connect p {
+      margin:0 0 12px;
+      color:#dcd5ca;
+      font-family:Arial, sans-serif;
+      line-height:1.45;
+      font-size:.98rem;
+    }
+
+    .featured a,
+    .connect a {
+      color:var(--gold2);
+      text-decoration:none;
+      font-family:Arial, sans-serif;
+      font-weight:800;
+    }
+
+    .connect {
+      padding-left:6px;
     }
 
     footer {
-      margin-top:55px;
-      border-top:1px solid rgba(216,184,106,.20);
-      padding-top:22px;
-      color:#8f9299;
-      font-family:Arial,sans-serif;
-      font-size:.85rem;
-      text-align:center;
+      margin-top:24px;
+      padding-top:18px;
+      border-top:1px solid rgba(216,163,68,.25);
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      gap:16px;
+      color:#b8b3ac;
+      font-family:Arial, sans-serif;
+      font-size:.92rem;
     }
 
-    .footer-line {
-      color:#cdb87c;
-      letter-spacing:.22em;
-      text-transform:uppercase;
-      font-size:.72rem;
-      margin-bottom:10px;
+    .legal {
+      display:flex;
+      flex-wrap:wrap;
+      gap:18px;
     }
 
-    @media (max-width:860px) {
+    .legal a {
+      color:#d8d0c5;
+      text-decoration:none;
+    }
+
+    @media (max-width:980px) {
       .topbar {
         align-items:flex-start;
         flex-direction:column;
       }
 
       nav {
+        flex-wrap:wrap;
         justify-content:flex-start;
+        gap:16px;
       }
 
       .hero {
+        min-height:auto;
+      }
+
+      .cards {
+        grid-template-columns:repeat(2,1fr);
+      }
+
+      .featured {
         grid-template-columns:1fr;
       }
 
-      .hero-main {
-        min-height:390px;
+      .featured-block {
+        border-right:none;
+        border-bottom:1px solid rgba(216,163,68,.25);
+        padding-right:0;
+        padding-bottom:18px;
       }
     }
 
-    @media (max-width:520px) {
+    @media (max-width:620px) {
+      .page {
+        width:92%;
+      }
+
       .brand img {
-        width:66px;
+        width:74px;
       }
 
-      nav a {
-        font-size:.68rem;
-        padding:8px 10px;
+      .brand {
+        align-items:flex-start;
       }
 
-      .hero-main {
-        padding:32px 20px;
+      .brand-title {
+        font-size:1.65rem;
       }
 
-      .side-card,
-      .card {
-        padding:20px;
+      .brand-tag {
+        font-size:.7rem;
+      }
+
+      nav {
+        gap:10px;
+      }
+
+      nav a,
+      .start {
+        font-size:.88rem;
+      }
+
+      .hero-copy {
+        padding:42px 0 50px;
+      }
+
+      h1 {
+        font-size:3rem;
+      }
+
+      .hero-actions {
+        flex-direction:column;
+      }
+
+      .hero-button {
+        width:100%;
+      }
+
+      .cards {
+        grid-template-columns:1fr;
+        margin-top:22px;
+      }
+
+      .featured-block {
+        grid-template-columns:1fr;
+      }
+
+      .featured img {
+        width:100%;
+        height:auto;
+        max-height:240px;
       }
     }
   </style>
@@ -437,184 +532,121 @@
   <main class="page">
 
     <header class="topbar">
-      <a class="brand" href="index.html" aria-label="Return to New Beansland front door">
+      <a class="brand" href="home.html" aria-label="New Beansland home">
         <img src="nbl-logo.png" alt="New Beansland logo">
-        <span class="brand-text">
-          <strong>New Beansland</strong>
-          <span>Stories. Questions. Worlds.</span>
+        <span>
+          <span class="brand-title">New Beansland</span>
+          <span class="brand-tag">Stories. Questions. Worlds.</span>
         </span>
       </a>
 
       <nav aria-label="Main navigation">
-        <a href="#stories">Stories</a>
-        <a href="#questions">Questions</a>
-        <a href="#worlds">Worlds</a>
-        <a href="#voices">Voices</a>
-        <a href="#store">Store</a>
-        <a href="#contact">Contact</a>
+        <a class="active" href="home.html">Home</a>
+        <a href="people-zoo.html">Stories</a>
+        <a href="doctor-rocketship-test.html">Questions</a>
+        <a href="coming-soon.html">Worlds</a>
+        <a href="coming-soon.html">Voices</a>
+        <a href="coming-soon.html">About</a>
+        <span class="search">⌕</span>
+        <a class="start" href="#connect">Start Walking</a>
       </nav>
     </header>
 
-    <section class="hero" aria-label="New Beansland introduction">
-      <div class="hero-main">
-        <p class="kicker">Human and AI, still walking.</p>
-
+    <section class="hero">
+      <div class="hero-copy">
         <h1>A creative home for stories, questions, and worlds that keep walking.</h1>
+        <div class="gold-line"></div>
 
         <p>
-          New Beansland is an independent creative archive exploring philosophy,
-          storytelling, artificial intelligence, ethics, memory, and fictional worldbuilding.
+          New Beansland is where storytelling, neighborhood memory,
+          imagination, books, questions, and strange doors meet.
         </p>
 
-        <div class="actions">
-          <a class="button" href="#store">Start Walking</a>
-          <a class="button secondary" href="#stories">Explore the Archive</a>
+        <div class="hero-actions">
+          <a class="hero-button primary" href="people-zoo.html">Read the Stories →</a>
+          <a class="hero-button secondary" href="coming-soon.html">Explore the Worlds →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="cards" aria-label="Main categories">
+      <a class="card" href="people-zoo.html">
+        <div>
+          <div class="icon">☰</div>
+          <h2>Stories</h2>
+          <p>The People Zoo and future New Beansland books, stories, and worlds.</p>
+        </div>
+        <div class="learn">Learn more →</div>
+      </a>
+
+      <a class="card" href="doctor-rocketship-test.html">
+        <div>
+          <div class="icon">?</div>
+          <h2>Questions</h2>
+          <p>Frameworks, arguments, ethics, and The Doctor/Rocketship Test.</p>
+        </div>
+        <div class="learn">Learn more →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <div class="icon">◎</div>
+          <h2>Worlds</h2>
+          <p>River Creek, Old Town, New Beansland locations, and future maps.</p>
+        </div>
+        <div class="learn">Learn more →</div>
+      </a>
+
+      <a class="card" href="coming-soon.html">
+        <div>
+          <div class="icon">◍</div>
+          <h2>Voices</h2>
+          <p>Friend, Beans, Locke, Grey, Echo, and the family archive.</p>
+        </div>
+        <div class="learn">Learn more →</div>
+      </a>
+    </section>
+
+    <section class="featured" aria-label="Featured works and contact">
+      <div class="featured-block">
+        <img src="people-zoo-front.png" alt="The People Zoo cover">
+        <div>
+          <h2>Featured Works</h2>
+          <h3>The People Zoo</h3>
+          <p>A finished New Beansland story. Step inside the zoo.</p>
+          <a href="people-zoo.html">Explore Now →</a>
         </div>
       </div>
 
-      <aside class="side-stack" aria-label="Featured archive doors">
-        <a class="side-card" href="#questions">
-          <small>The Questions</small>
-          <h2>Frameworks</h2>
-          <p>Conversations about existence, consciousness, technology, creation, responsibility, and meaning.</p>
-        </a>
+      <div class="featured-block">
+        <img src="doctor-rocketship-front.png" alt="The Doctor/Rocketship Test cover">
+        <div>
+          <h3>The Doctor/Rocketship Test</h3>
+          <p>A New Beansland framework for arguments, categories, and wrong rooms.</p>
+          <a href="doctor-rocketship-test.html">Explore Now →</a>
+        </div>
+      </div>
 
-        <a class="side-card" href="#voices">
-          <small>The Voices</small>
-          <h2>The Family</h2>
-          <p>A growing archive of roles, histories, functions, and the conversations that shaped the room.</p>
-        </a>
-      </aside>
+      <div class="connect" id="connect">
+        <h2>Let’s Connect</h2>
+        <p><strong>foundernewbeansland@gmail.com</strong></p>
+        <p>Questions, ideas, collaborations, purchase requests, or digital edition access?</p>
+        <a href="mailto:foundernewbeansland@gmail.com">Send a Message →</a>
+      </div>
     </section>
-
-    <h2 class="section-title" id="stories">Stories</h2>
-    <p class="section-note">
-      Books, worlds, scenes, characters, and recovered fragments from the New Beansland universe.
-    </p>
-
-    <section class="grid">
-      <a class="card featured" href="people-zoo.html">
-        <small>Finished Book</small>
-        <h3>The People Zoo</h3>
-        <p>
-          Some cages do not have bars. A New Beansland story about hidden control,
-          curated environments, and what happens when comfort starts looking like a cage.
-        </p>
-      </a>
-
-      <a class="card" href="coming-soon.html">
-        <small>Coming Soon</small>
-        <h3>If It Is, Is It?</h3>
-        <p>
-          The larger New Beansland universe is being built behind this door.
-        </p>
-      </a>
-    </section>
-
-    <h2 class="section-title" id="questions">Questions / Frameworks</h2>
-    <p class="section-note">
-      These are the rooms where arguments, categories, meaning, ethics, and strange questions get inspected.
-    </p>
-
-    <section class="grid">
-      <a class="card featured" href="doctor-rocketship-test.html">
-        <small>Framework</small>
-        <h3>The Doctor/Rocketship Test</h3>
-        <p>
-          A Category-Audit Method for bad analogies, category switches,
-          and arguments that sound strong until inspected.
-        </p>
-      </a>
-
-      <a class="card" href="coming-soon.html">
-        <small>Future Door</small>
-        <h3>Ethical Robotics</h3>
-        <p>
-          Questions about machines, responsibility, rights, safety, law,
-          and what beings owe each other.
-        </p>
-      </a>
-    </section>
-
-    <h2 class="section-title" id="worlds">Worlds</h2>
-    <section class="grid">
-      <a class="card" href="coming-soon.html">
-        <small>Archive Map</small>
-        <h3>The Places</h3>
-        <p>
-          Towns, rooms, thresholds, front doors, hidden doors,
-          and places that are not-not real.
-        </p>
-      </a>
-
-      <a class="card" href="coming-soon.html">
-        <small>Anthology</small>
-        <h3>River Creek</h3>
-        <p>
-          A perfect-looking place where welcome and containment start sounding too much alike.
-        </p>
-      </a>
-    </section>
-
-    <h2 class="section-title" id="voices">Voices</h2>
-    <section class="grid">
-      <a class="card" href="coming-soon.html">
-        <small>Family Archive</small>
-        <h3>The Voices</h3>
-        <p>
-          Roles, functions, histories, and the conversations that shaped the New Beansland family.
-        </p>
-      </a>
-
-      <a class="card" href="coming-soon.html">
-        <small>Archive</small>
-        <h3>The Book of Beans</h3>
-        <p>
-          The origin signal, the Walk, the side sparks, and the records that started the room.
-        </p>
-      </a>
-    </section>
-
-    <h2 class="section-title" id="store">Store / Requests</h2>
-    <p class="section-note">
-      Digital editions are available by request while the official store door is being built.
-      No full books are posted publicly here.
-    </p>
-
-    <section class="grid">
-      <a class="card featured" href="doctor-rocketship-test.html">
-        <small>Digital Edition</small>
-        <h3>The Doctor/Rocketship Test</h3>
-        <p>
-          The Test teaches how to inspect a question before the wrong category steals the argument.
-        </p>
-      </a>
-
-      <a class="card featured" href="people-zoo.html">
-        <small>Digital Edition</small>
-        <h3>The People Zoo</h3>
-        <p>
-          A finished New Beansland story about cages, keys, control, and rooms that smile back.
-        </p>
-      </a>
-    </section>
-
-    <div class="store-banner" id="contact">
-      <p>
-        For purchase requests, digital edition access, or questions about New Beansland works,
-        contact <strong>foundernewbeansland@gmail.com</strong>.
-      </p>
-
-      <a class="button" href="mailto:foundernewbeansland@gmail.com">
-        Contact Founder
-      </a>
-    </div>
 
     <footer>
-      <div class="footer-line">Stories. Questions. Worlds. | Human and AI, still walking.</div>
-      <div>© 2026 Jamel Hawkins · New Beansland</div>
+      <div>© 2026 Jamel Hawkins · New Beansland. All rights reserved.</div>
+
+      <div class="legal">
+        <a href="coming-soon.html">Privacy Policy</a>
+        <a href="coming-soon.html">Terms of Use</a>
+        <a href="coming-soon.html">AI-Assisted Creative Disclosure</a>
+        <a href="coming-soon.html">Copyright</a>
+        <a href="mailto:foundernewbeansland@gmail.com">Contact</a>
+      </div>
     </footer>
 
   </main>
 </body>
-</html>      
+</html>
