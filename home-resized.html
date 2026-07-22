@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>New Beansland | Stories. Questions. Worlds.</title>
+  <meta name="description" content="New Beansland is a creative home for stories, questions, worlds, voices, books, and ideas.">
+  <meta name="theme-color" content="#02060b">
+  <link rel="icon" type="image/png" href="nbl-logo.png">
+  <style>
+    :root {
+      --bg:#02060b;
+      --panel:#061321;
+      --panel2:#03101c;
+      --gold:#d8a344;
+      --gold2:#f0c873;
+      --cream:#f5ead5;
+      --text:#ddd5c8;
+      --muted:#a9a79f;
+      --line:rgba(216,163,68,.52);
+    }
+
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--bg)}
+    body{color:var(--cream);font-family:Georgia,"Times New Roman",serif;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+    a:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+    img{display:block;max-width:100%}
+
+    .page{
+      width:min(1600px,100vw);
+      height:100dvh;
+      margin:auto;
+      padding:clamp(5px,1vh,12px) clamp(8px,2.8vw,54px);
+      display:grid;
+      grid-template-rows:minmax(52px,8.2vh) minmax(0,39vh) minmax(0,20vh) minmax(0,24vh) minmax(26px,5vh);
+      gap:clamp(4px,.8vh,10px);
+      background:
+        radial-gradient(circle at 70% 8%,rgba(55,108,145,.14),transparent 34%),
+        linear-gradient(180deg,#06111d 0%,#02060b 94%);
+      overflow:hidden;
+    }
+
+    .header{display:flex;align-items:center;justify-content:space-between;gap:18px;min-width:0}
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .logo{width:clamp(46px,5.2vw,78px);height:clamp(46px,5.2vw,78px);object-fit:contain;flex:0 0 auto}
+    .brand-name{display:block;color:var(--gold2);font-size:clamp(16px,2vw,30px);font-weight:700;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap}
+    .brand-tag{display:block;margin-top:5px;color:var(--gold);font-family:Arial,sans-serif;font-size:clamp(7px,.8vw,12px);font-weight:700;letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
+    .nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(10px,2vw,32px);font-family:Arial,sans-serif;font-size:clamp(10px,1vw,16px);font-weight:600;min-width:0}
+    .nav a{white-space:nowrap}
+    .nav .active{color:var(--gold2);border-bottom:2px solid var(--gold);padding-bottom:7px}
+    .start{padding:10px 18px;border:1px solid var(--gold);border-radius:7px;color:var(--gold2)}
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:0 0 14px 14px;
+      background-image:
+        linear-gradient(90deg,rgba(2,6,11,.99) 0%,rgba(2,6,11,.88) 29%,rgba(2,6,11,.44) 51%,rgba(2,6,11,.06) 77%),
+        url("new-beansland-road-hero.png");
+      background-size:cover;
+      background-position:center right;
+      box-shadow:inset 0 -1px 0 rgba(216,163,68,.22);
+    }
+    .hero-copy{height:100%;width:min(46%,670px);display:flex;flex-direction:column;justify-content:center;padding-left:clamp(0px,.4vw,7px)}
+    .hero h1{margin:0;font-size:clamp(28px,4vw,62px);line-height:1.01;letter-spacing:-.035em}
+    .divider{width:68%;height:2px;margin:clamp(8px,1.4vh,18px) 0;background:linear-gradient(90deg,var(--gold),transparent)}
+    .hero p{margin:0 0 clamp(8px,1.5vh,18px);font-family:Arial,sans-serif;font-size:clamp(10px,1.2vw,18px);line-height:1.4;color:#e6ddd0;max-width:530px}
+    .hero-actions{display:flex;gap:14px;font-family:Arial,sans-serif;font-size:clamp(9px,1vw,15px);font-weight:800}
+    .hero-btn{min-width:clamp(132px,13vw,205px);padding:clamp(8px,1.2vh,14px) 16px;border:1px solid var(--gold);border-radius:7px;text-align:center}
+    .hero-btn.primary{color:#06111d;background:linear-gradient(180deg,#f3cc79,#ca8d32)}
+    .hero-btn.secondary{color:var(--gold2);background:rgba(4,12,22,.76)}
+
+    .rooms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(6px,1vw,14px);min-height:0}
+    .room{
+      min-width:0;min-height:0;padding:clamp(9px,1.35vw,20px);
+      display:flex;flex-direction:column;justify-content:space-between;
+      border:1px solid var(--line);border-radius:11px;
+      background:radial-gradient(circle at 88% 85%,rgba(216,163,68,.1),transparent 34%),linear-gradient(145deg,rgba(8,22,37,.98),rgba(3,10,19,.98));
+      overflow:hidden;
+    }
+    .room-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+    .room-icon{width:clamp(30px,3vw,48px);aspect-ratio:1;display:grid;place-items:center;border:1.5px solid var(--gold);border-radius:50%;color:var(--gold2);font-family:Arial,sans-serif;font-size:clamp(12px,1.5vw,20px);font-weight:900;flex:0 0 auto}
+    .room h2{margin:0;font-size:clamp(14px,1.8vw,27px);line-height:1}
+    .room p{margin:0;font-family:Arial,sans-serif;font-size:clamp(8px,.9vw,14px);line-height:1.35;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .room-link{margin-top:6px;color:var(--gold2);font-family:Arial,sans-serif;font-size:clamp(8px,.85vw,13px);font-weight:800}
+
+    .featured{min-height:0;padding:clamp(7px,1vh,12px) clamp(9px,1.1vw,18px);border:1px solid var(--line);border-radius:11px;background:linear-gradient(145deg,rgba(7,20,34,.98),rgba(3,10,18,.98));overflow:hidden}
+    .featured-title{height:clamp(20px,3vh,30px);margin:0;color:var(--gold2);font-size:clamp(13px,1.5vw,23px);line-height:1}
+    .works{height:calc(100% - clamp(20px,3vh,30px));display:grid;grid-template-columns:1fr 1fr 1.36fr;min-height:0}
+    .work{min-width:0;min-height:0;padding:0 clamp(8px,1.2vw,20px);display:grid;grid-template-columns:minmax(72px,38%) minmax(0,1fr);gap:clamp(7px,1vw,16px);align-items:center;border-right:1px solid rgba(216,163,68,.26);overflow:hidden}
+    .work:first-child{padding-left:0}.work:last-child{padding-right:0;border-right:0}
+    .cover{width:100%;height:100%;max-height:calc(21vh - 24px);object-fit:contain;border:1px solid rgba(216,163,68,.42);border-radius:6px;background:#06111d}
+    .work h3{margin:0 0 5px;font-size:clamp(11px,1.3vw,21px);line-height:1.08}
+    .work p{margin:0 0 6px;font-family:Arial,sans-serif;font-size:clamp(7px,.78vw,13px);line-height:1.32;color:var(--text);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .work-action,.coming{color:var(--gold2);font-family:Arial,sans-serif;font-size:clamp(7px,.78vw,13px);font-weight:800}
+    .usb{grid-template-columns:minmax(130px,50%) minmax(0,1fr)}
+    .usb-covers{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:clamp(4px,.7vw,10px);min-width:0;min-height:0}
+    .usb-covers img{width:100%;height:100%;max-height:calc(21vh - 24px);object-fit:contain;object-position:center;border:1px solid rgba(216,163,68,.42);border-radius:6px;background:#06111d}
+    .coming{margin:0 0 4px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(10px,1.15vw,18px);font-weight:400}
+
+    .footer{display:flex;align-items:center;justify-content:space-between;gap:14px;color:var(--muted);font-family:Arial,sans-serif;font-size:clamp(7px,.75vw,12px);min-width:0;overflow:hidden}
+    .footer-links{display:flex;align-items:center;justify-content:flex-end;gap:clamp(8px,1.4vw,20px);white-space:nowrap}
+
+    @media (max-aspect-ratio: 4/5){
+      .page{
+        width:100vw;height:100dvh;
+        padding:max(4px,env(safe-area-inset-top)) 6px max(4px,env(safe-area-inset-bottom));
+        grid-template-rows:7.5dvh 29dvh 29dvh 28dvh 4dvh;
+        gap:.6dvh;
+      }
+      .header{gap:5px}
+      .brand{gap:5px;min-width:0}
+      .logo{width:30px;height:30px}
+      .brand-name{font-size:10px;letter-spacing:.05em}
+      .brand-tag{font-size:4.8px;letter-spacing:.12em;margin-top:2px}
+      .nav{gap:5px;font-size:6.5px;flex:1;justify-content:flex-end}
+      .nav .active{padding-bottom:3px;border-bottom-width:1px}
+      .start{padding:5px 7px;border-radius:4px}
+
+      .hero{border-radius:0 0 8px 8px;background-position:64% center}
+      .hero-copy{width:57%;padding:7px 0 7px 4px}
+      .hero h1{font-size:clamp(18px,5.7vw,25px);line-height:1.02}
+      .divider{margin:5px 0;width:72%;height:1px}
+      .hero p{font-size:7.2px;line-height:1.25;margin-bottom:6px;max-width:190px}
+      .hero-actions{gap:5px;font-size:6.7px}
+      .hero-btn{min-width:0;flex:1;padding:6px 4px;border-radius:4px}
+
+      .rooms{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:4px}
+      .room{padding:7px 8px;border-radius:7px}
+      .room-head{gap:5px;margin-bottom:3px}
+      .room-icon{width:22px;font-size:9px}
+      .room h2{font-size:12px}
+      .room p{font-size:6.8px;line-height:1.24;-webkit-line-clamp:2}
+      .room-link{font-size:6.6px;margin-top:3px}
+
+      .featured{padding:5px 6px;border-radius:7px}
+      .featured-title{height:16px;font-size:10px}
+      .works{height:calc(100% - 16px);grid-template-columns:.86fr .86fr 1.28fr}
+      .work{padding:0 4px;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto;gap:2px;align-items:stretch;text-align:left}
+      .work:first-child{padding-left:0}.work:last-child{padding-right:0}
+      .cover{width:100%;height:100%;max-height:none;object-fit:contain;border-radius:4px}
+      .work-copy{min-height:29px;overflow:hidden}
+      .work h3{font-size:7.8px;margin:1px 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .work p{display:none}
+      .work-action{font-size:6.2px}
+      .usb{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+      .usb-covers{height:100%;gap:2px}
+      .usb-covers img{height:100%;max-height:none;object-fit:contain;border-radius:4px}
+      .coming{font-size:7.4px;margin:1px 0 0}
+      .usb h3{font-size:8px;margin:0}
+      .usb .work-action{font-size:6.2px}
+
+      .footer{font-size:5.5px;gap:4px}
+      .footer-links{gap:5px}
+      .footer-links a:nth-child(3),.footer-links a:nth-child(4){display:none}
+    }
+
+    @media (max-width:380px) and (max-aspect-ratio:4/5){
+      .nav a:nth-child(2),.nav a:nth-child(3),.nav a:nth-child(4),.nav a:nth-child(5),.nav a:nth-child(6){display:none}
+      .hero-copy{width:62%}
+      .rooms{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <a class="brand" href="home.html" aria-label="New Beansland home">
+        <img class="logo" src="nbl-logo.png" alt="New Beansland logo">
+        <span><span class="brand-name">New Beansland</span><span class="brand-tag">Stories. Questions. Worlds.</span></span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a class="active" href="home.html">Home</a>
+        <a href="site.html#stories">Stories</a>
+        <a href="site.html#frameworks">Questions</a>
+        <a href="site.html#worlds">Worlds</a>
+        <a href="site.html#voices">Voices</a>
+        <a href="site.html#about">About</a>
+        <a class="start" href="site.html">Start Here</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>A creative home for stories, questions, and worlds that keep walking.</h1>
+        <div class="divider"></div>
+        <p>New Beansland is where storytelling, neighborhood memory, and imagination meet.</p>
+        <div class="hero-actions">
+          <a class="hero-btn primary" href="site.html#worlds">Explore the Worlds →</a>
+          <a class="hero-btn secondary" href="site.html#stories">Read the Stories →</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="rooms" aria-label="New Beansland rooms">
+      <a class="room" href="site.html#stories"><div><div class="room-head"><span class="room-icon">▤</span><h2>Stories</h2></div><p>Original fiction, essays, and true tales from the New Beansland universe.</p></div><span class="room-link">Learn more →</span></a>
+      <a class="room" href="site.html#frameworks"><div><div class="room-head"><span class="room-icon">?</span><h2>Questions</h2></div><p>We ask. You wonder. Big questions, small questions—and the in-between.</p></div><span class="room-link">Learn more →</span></a>
+      <a class="room" href="site.html#worlds"><div><div class="room-head"><span class="room-icon">✦</span><h2>Worlds</h2></div><p>Places, people, and histories that live beyond the page. Step inside.</p></div><span class="room-link">Learn more →</span></a>
+      <a class="room" href="site.html#voices"><div><div class="room-head"><span class="room-icon">♩</span><h2>Voices</h2></div><p>Conversations, characters, and audio experiences from our creative universe.</p></div><span class="room-link">Learn more →</span></a>
+    </section>
+
+    <section class="featured" aria-labelledby="featured-heading">
+      <h2 class="featured-title" id="featured-heading">✦ Featured Works</h2>
+      <div class="works">
+        <a class="work" href="people-zoo.html">
+          <img class="cover" src="people-zoo-front.png" alt="The People Zoo cover">
+          <div class="work-copy"><h3>The People Zoo</h3><p>A finished New Beansland story. Step inside the zoo.</p><span class="work-action">Explore Now →</span></div>
+        </a>
+        <a class="work" href="doctor-rocketship-test.html">
+          <img class="cover" src="doctor-rocketship-front.png" alt="The Doctor Rocketship Test cover">
+          <div class="work-copy"><h3>The Doctor/<br>Rocketship Test</h3><p>A New Beansland framework and experiment.</p><span class="work-action">Explore Now →</span></div>
+        </a>
+        <a class="work usb" href="coming-soon.html">
+          <div class="usb-covers"><img src="usb-book-front-cover.png" alt="U.S.B. front cover"><img src="usb-book-back-cover.png" alt="U.S.B. back cover"></div>
+          <div class="work-copy"><p class="coming">Coming Soon</p><h3>U.S.B.</h3><p>Book Two of a trilogy.</p><span class="work-action">Explore Now →</span></div>
+        </a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>© 2026 New Beansland. All rights reserved.</span>
+      <nav class="footer-links" aria-label="Footer links"><a href="coming-soon.html">Privacy</a><a href="coming-soon.html">Terms</a><a href="coming-soon.html">AI Disclosure</a><a href="coming-soon.html">Copyright</a><a href="mailto:foundernewbeansland@gmail.com">Contact</a></nav>
+    </footer>
+  </main>
+</body>
+</html>
