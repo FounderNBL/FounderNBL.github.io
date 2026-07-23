@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07101d">
+  <title>Founder’s Office | New Beansland</title>
+  <style>
+    :root {
+      --navy: #07101d;
+      --navy-soft: #0c1b2d;
+      --gold: #d7b45a;
+      --gold-bright: #ffe39a;
+      --cream: #f5ecd8;
+      --panel: rgba(5, 12, 22, 0.94);
+      --room-ratio: 1.5; /* 3:2 */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #02050a;
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    .office-page {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(20, 34, 52, 0.36), transparent 58%),
+        #02050a;
+    }
+
+    /*
+      The stage always stays 3:2, matching founder-office-room.png.
+      It fits completely inside every screen without scrolling.
+    */
+    .room-stage {
+      position: relative;
+      width: min(100vw, calc(100dvh * var(--room-ratio)));
+      height: min(100dvh, calc(100vw / var(--room-ratio)));
+      aspect-ratio: 3 / 2;
+      overflow: hidden;
+      isolation: isolate;
+      background: #07101d;
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
+    }
+
+    .room-image {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: fill;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      transition: filter 900ms ease, transform 900ms ease;
+    }
+
+    /* Lamp-controlled atmosphere */
+    .warmth,
+    .gold-bloom,
+    .chair-aura {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 850ms ease, filter 850ms ease;
+    }
+
+    .warmth {
+      background:
+        radial-gradient(circle at 60% 57%,
+          rgba(255, 213, 119, 0.34) 0%,
+          rgba(255, 174, 70, 0.18) 12%,
+          rgba(255, 153, 46, 0.08) 26%,
+          transparent 48%);
+      mix-blend-mode: screen;
+    }
+
+    .gold-bloom {
+      background:
+        radial-gradient(ellipse at 50% 51%, rgba(255, 221, 135, 0.14), transparent 42%),
+        linear-gradient(90deg, rgba(255, 202, 86, 0.05), transparent 28%, transparent 72%, rgba(255, 202, 86, 0.05));
+      box-shadow:
+        inset 0 0 85px rgba(255, 192, 70, 0.08),
+        inset 0 0 18px rgba(255, 223, 151, 0.08);
+      mix-blend-mode: screen;
+    }
+
+    .chair-aura {
+      inset: auto;
+      left: 42%;
+      top: 43%;
+      width: 16%;
+      height: 23%;
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        rgba(255, 230, 157, 0.72) 0%,
+        rgba(255, 195, 72, 0.30) 24%,
+        rgba(255, 177, 41, 0.10) 48%,
+        transparent 74%);
+      filter: blur(6px);
+      mix-blend-mode: screen;
+    }
+
+    body.light-stage-1 .room-image {
+      filter: brightness(1.035) saturate(1.05);
+    }
+
+    body.light-stage-1 .warmth {
+      opacity: 0.48;
+    }
+
+    body.light-stage-1 .gold-bloom {
+      opacity: 0.32;
+    }
+
+    body.light-stage-1 .chair-aura {
+      opacity: 0.30;
+      animation: chair-breathe 2.8s ease-in-out infinite;
+    }
+
+    body.light-stage-2 .room-image {
+      filter: brightness(1.10) saturate(1.12) contrast(1.02);
+    }
+
+    body.light-stage-2 .warmth {
+      opacity: 0.92;
+    }
+
+    body.light-stage-2 .gold-bloom {
+      opacity: 0.88;
+    }
+
+    body.light-stage-2 .chair-aura {
+      opacity: 0.88;
+      filter: blur(4px);
+      animation: chair-breathe 1.8s ease-in-out infinite;
+    }
+
+    @keyframes chair-breathe {
+      0%, 100% { transform: scale(0.96); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Invisible interactive regions positioned by percentages */
+    .hotspot {
+      position: absolute;
+      z-index: 5;
+      left: var(--x);
+      top: var(--y);
+      width: var(--w);
+      height: var(--h);
+      padding: 0;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .hotspot::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border: 1px solid transparent;
+      border-radius: inherit;
+      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .hotspot:hover::after,
+    .hotspot:focus-visible::after {
+      border-color: rgba(255, 222, 138, 0.72);
+      background: rgba(255, 210, 100, 0.035);
+      box-shadow:
+        0 0 16px rgba(255, 201, 87, 0.30),
+        inset 0 0 14px rgba(255, 210, 110, 0.08);
+      outline: none;
+    }
+
+    .hotspot:focus-visible {
+      outline: none;
+    }
+
+    .hotspot[data-panel="chair"][aria-disabled="true"] {
+      cursor: not-allowed;
+    }
+
+    .hotspot.pulse::after {
+      animation: target-pulse 1.15s ease-in-out 2;
+    }
+
+    @keyframes target-pulse {
+      0%, 100% {
+        border-color: transparent;
+        box-shadow: none;
+      }
+      50% {
+        border-color: var(--gold-bright);
+        box-shadow:
+          0 0 28px rgba(255, 217, 116, 0.85),
+          inset 0 0 18px rgba(255, 219, 120, 0.28);
+      }
+    }
+
+    /* Secret alignment helper: add ?debug=1 to the page URL */
+    body.debug-hotspots .hotspot {
+      background: rgba(0, 170, 255, 0.16);
+      border: 1px dashed #73dcff;
+    }
+
+    body.debug-hotspots .hotspot::before {
+      content: attr(aria-label);
+      position: absolute;
+      left: 0;
+      bottom: 100%;
+      padding: 2px 5px;
+      background: #00131d;
+      color: #b7efff;
+      font: 10px/1.2 Arial, sans-serif;
+      white-space: nowrap;
+    }
+
+    .home-button {
+      position: fixed;
+      z-index: 30;
+      top: max(12px, env(safe-area-inset-top));
+      left: max(12px, env(safe-area-inset-left));
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 8px 13px;
+      border: 1px solid rgba(215, 180, 90, 0.55);
+      border-radius: 999px;
+      color: var(--cream);
+      background: rgba(3, 9, 17, 0.78);
+      backdrop-filter: blur(10px);
+      text-decoration: none;
+      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.34);
+    }
+
+    .home-button:hover,
+    .home-button:focus-visible {
+      color: #fff3c7;
+      border-color: var(--gold-bright);
+      outline: none;
+    }
+
+    .orientation-message {
+      position: fixed;
+      z-index: 32;
+      left: 50%;
+      bottom: max(16px, calc(env(safe-area-inset-bottom) + 10px));
+      transform: translateX(-50%);
+      width: min(90vw, 390px);
+      padding: 10px 16px;
+      border: 1px solid rgba(215, 180, 90, 0.55);
+      border-radius: 999px;
+      color: #fff1c7;
+      background: rgba(3, 9, 17, 0.86);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 0.91rem;
+      letter-spacing: 0.01em;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.48);
+      display: none;
+    }
+
+    @media (orientation: portrait) and (max-width: 900px) {
+      .orientation-message {
+        display: block;
+      }
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 45;
+      left: 50%;
+      bottom: max(72px, calc(env(safe-area-inset-bottom) + 62px));
+      transform: translate(-50%, 18px);
+      width: min(90vw, 520px);
+      padding: 11px 16px;
+      border: 1px solid rgba(215, 180, 90, 0.58);
+      border-radius: 12px;
+      color: #fff3cc;
+      background: rgba(4, 10, 19, 0.94);
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 0.95rem;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.58);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 230ms ease, transform 230ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* Popup */
+    .modal {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding:
+        max(18px, env(safe-area-inset-top))
+        max(18px, env(safe-area-inset-right))
+        max(18px, env(safe-area-inset-bottom))
+        max(18px, env(safe-area-inset-left));
+      background: rgba(0, 3, 8, 0.76);
+      backdrop-filter: blur(7px);
+    }
+
+    .modal-card {
+      position: relative;
+      width: min(92vw, 720px);
+      max-height: min(84dvh, 760px);
+      overflow: auto;
+      padding: clamp(22px, 4vw, 38px);
+      border: 1px solid rgba(215, 180, 90, 0.70);
+      border-radius: 18px;
+      background:
+        linear-gradient(145deg, rgba(15, 31, 49, 0.98), rgba(4, 11, 21, 0.99));
+      box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.78),
+        inset 0 0 50px rgba(215, 180, 90, 0.04);
+    }
+
+    .modal-card::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      pointer-events: none;
+      border: 1px solid rgba(215, 180, 90, 0.22);
+      border-radius: 12px;
+    }
+
+    .modal-close {
+      position: sticky;
+      z-index: 3;
+      top: 0;
+      float: right;
+      width: 42px;
+      height: 42px;
+      margin: -8px -8px 4px 14px;
+      border: 1px solid rgba(215, 180, 90, 0.58);
+      border-radius: 50%;
+      color: #fff3cc;
+      background: rgba(2, 8, 16, 0.92);
+      cursor: pointer;
+    }
+
+    .modal-close:hover,
+    .modal-close:focus-visible {
+      border-color: var(--gold-bright);
+      outline: none;
+    }
+
+    .modal-kicker {
+      margin: 0 0 8px;
+      color: var(--gold);
+      font-family: Arial, sans-serif;
+      font-size: 0.77rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .modal-title {
+      margin: 0;
+      color: #fff1c7;
+      font-size: clamp(1.7rem, 5vw, 2.65rem);
+      line-height: 1.05;
+    }
+
+    .modal-subtitle {
+      margin: 9px 0 22px;
+      color: #e4c978;
+      font-size: clamp(1rem, 2.7vw, 1.18rem);
+      font-style: italic;
+    }
+
+    .modal-body {
+      color: #eee4cf;
+      font-family: Arial, sans-serif;
+      font-size: clamp(0.98rem, 2.5vw, 1.08rem);
+      line-height: 1.68;
+    }
+
+    .modal-body p {
+      margin: 0 0 1em;
+    }
+
+    .modal-body ul {
+      margin: 0 0 1em;
+      padding-left: 1.25em;
+    }
+
+    .modal-body strong {
+      color: #ffe6a6;
+    }
+
+    .modal-body a {
+      color: #ffe39a;
+      text-underline-offset: 3px;
+    }
+
+    .closing-line {
+      margin-top: 1.35em !important;
+      padding-top: 1em;
+      border-top: 1px solid rgba(215, 180, 90, 0.28);
+      color: #ffe4a1;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.08em;
+      font-style: italic;
+    }
+
+    @media (max-width: 620px) {
+      .home-button {
+        min-height: 38px;
+        padding: 7px 11px;
+        font-size: 0.87rem;
+      }
+
+      .modal-card {
+        border-radius: 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="office-page" aria-label="Interactive New Beansland Founder’s Office">
+    <a class="home-button" href="home.html" aria-label="Return to the New Beansland homepage">
+      <span aria-hidden="true">←</span>
+      <span>Home</span>
+    </a>
+
+    <section class="room-stage" aria-label="Touch the meaningful objects in the Founder’s Office">
+      <img
+        class="room-image"
+        src="founder-office-room.png"
+        alt="The New Beansland Founder’s Office with an empty chair, desk, lamp, family photo, Yolanda keepsake, framed degrees, Graduation Remarks, and the If it is is it banner."
+        draggable="false"
+      >
+
+      <div class="warmth" aria-hidden="true"></div>
+      <div class="gold-bloom" aria-hidden="true"></div>
+      <div class="chair-aura" aria-hidden="true"></div>
+
+      <!-- WALL -->
+      <button
+        class="hotspot"
+        style="--x: 6.4%; --y: 24.2%; --w: 14.7%; --h: 29.5%;"
+        data-panel="graduation"
+        aria-label="Open the framed Graduation Remarks"
+      ></button>
+
+      <button
+        class="hotspot"
+        style="--x: 35.5%; --y: 21.8%; --w: 29.3%; --h: 25.7%;"
+        data-panel="banner"
+        aria-label="Open the If it is is it New Beansland story"
+      ></button>
+
+      <button
+        class="hotspot"
+        style="--x: 68.2%; --y: 25.8%; --w: 10.3%; --h: 23.6%;"
+        data-panel="doctorate"
+        aria-label="Open the Founder doctorate degree"
+      ></button>
+
+      <button
+        class="hotspot"
+        style="--x: 79.1%; --y: 25.8%; --w: 11.3%; --h: 23.6%;"
+        data-panel="masters"
+        aria-label="Open the Founder master’s degree"
+      ></button>
+
+      <!-- DESK / CHAIR -->
+      <button
+        class="hotspot"
+        style="--x: 19.2%; --y: 50.5%; --w: 11.2%; --h: 21.3%;"
+        data-panel="family"
+        aria-label="Open the New Beansland family story"
+      ></button>
+
+      <button
+        class="hotspot"
+        style="--x: 30.5%; --y: 56.4%; --w: 13.8%; --h: 12.3%;"
+        data-panel="founder"
+        aria-label="Open Founder information"
+      ></button>
+
+      <button
+        class="hotspot"
+        style="--x: 43.3%; --y: 45.5%; --w: 14.3%; --h: 28.2%;"
+        data-panel="chair"
+        aria-label="Open the Still Walking chair message"
+        aria-disabled="true"
+      ></button>
+
+      <button
+        class="hotspot"
+        id="lampHotspot"
+        style="--x: 55.7%; --y: 46.2%; --w: 9.7%; --h: 25.5%;"
+        data-action="lamp"
+        aria-label="Touch the one-room light lamp"
+        aria-pressed="false"
+      ></button>
+
+      <button
+        class="hotspot"
+        style="--x: 64.1%; --y: 52.0%; --w: 10.2%; --h: 18.7%;"
+        data-panel="yolanda"
+        aria-label="Open the Yolanda family keepsake"
+      ></button>
+
+      <button
+        class="hotspot"
+        style="--x: 42.5%; --y: 70.7%; --w: 15.0%; --h: 10.7%;"
+        data-panel="clue"
+        aria-label="Read the clue on the front of the desk"
+      ></button>
+    </section>
+
+    <div class="orientation-message" role="status">
+      For a better experience, turn your phone sideways.
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </main>
+
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+    <article class="modal-card">
+      <button id="modalClose" class="modal-close" type="button" aria-label="Close this information">✕</button>
+      <p id="modalKicker" class="modal-kicker"></p>
+      <h1 id="modalTitle" class="modal-title"></h1>
+      <p id="modalSubtitle" class="modal-subtitle"></p>
+      <div id="modalBody" class="modal-body"></div>
+    </article>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      /*
+        To see the invisible hotspot boxes while aligning them, open:
+        founder-office.html?debug=1
+      */
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("debug") === "1") {
+        document.body.classList.add("debug-hotspots");
+      }
+
+      const roomPanels = {
+        founder: {
+          kicker: "Founder",
+          title: "Jamel Hawkins",
+          subtitle: "Still walking. Still building.",
+          body: `
+            <p>New Beansland was built by Founder — the mind behind the stories, questions, worlds, and experiments that live here.</p>
+            <p>This space connects books, ideas, philosophy, imagination, memory, and lived experience into one universe. It is not just a website. It is a room full of paths.</p>
+            <p>Some lead to stories. Some lead to questions. Some lead to worlds. All of them lead back to intention.</p>
+            <p><strong>Contact the Founder</strong><br>
+            <a href="mailto:foundernewbeansland@gmail.com">foundernewbeansland@gmail.com</a></p>
+            <p>Official X, YouTube, and additional New Beansland links can be added here as they are connected.</p>
+            <p class="closing-line">Builder of New Beansland. Keeper of the walk.</p>
+          `
+        },
+
+        banner: {
+          kicker: "About New Beansland",
+          title: "If it is is it?",
+          subtitle: "Stories. Questions. Worlds.",
+          body: `
+            <p>New Beansland is a creative home built for people who do not just look — they notice.</p>
+            <p>It is a place where storytelling, philosophy, imagination, memory, and meaning can live together. The books are not isolated projects. They are connected rooms in a larger universe.</p>
+            <ul>
+              <li><strong>Stories</strong> for the worlds we enter.</li>
+              <li><strong>Questions</strong> for the things we cannot ignore.</li>
+              <li><strong>Worlds</strong> for the spaces beyond the page.</li>
+              <li><strong>Voices</strong> for the people, ideas, and presence inside it all.</li>
+            </ul>
+            <p>New Beansland was built by Founder as a living creative structure — a place where the books connect, the ideas continue, and the walk keeps going.</p>
+            <p class="closing-line">This is not just a page. It is a world under construction.</p>
+          `
+        },
+
+        doctorate: {
+          kicker: "Founder Academic Record",
+          title: "Doctor of Narrative Architecture",
+          subtitle: "New Beansland Institute of Evidence-Based Practice",
+          body: `
+            <p>This degree represents advanced study in perception, narrative systems, worldbuilding, civic imagination, and narrative architecture.</p>
+            <p><strong>Areas of distinction</strong></p>
+            <ul>
+              <li>Story structure and universe design</li>
+              <li>Philosophical inquiry</li>
+              <li>Ethical imagination</li>
+              <li>Symbolic and narrative systems</li>
+              <li>Connecting thought to lived experience</li>
+            </ul>
+            <p>It recognizes the ability to take an idea apart, understand its structure, and build a world strong enough to hold it.</p>
+            <p class="closing-line">In imagination he built.</p>
+          `
+        },
+
+        masters: {
+          kicker: "Founder Academic Record",
+          title: "Master of Applied Skepticism",
+          subtitle: "Analogical Systems · Inquiry · Evidence",
+          body: `
+            <p>This degree supports the first. It represents training in applied skepticism, analogical reasoning, inquiry, evidence, and recognizing when an idea or comparison does not fit.</p>
+            <p><strong>Core disciplines</strong></p>
+            <ul>
+              <li>Category recognition</li>
+              <li>Evidence inspection</li>
+              <li>Analogical reasoning</li>
+              <li>Question-based inquiry</li>
+              <li>Knowing what room you are in</li>
+            </ul>
+            <p>Together, the degrees tell the story: first learn how to identify broken reasoning, then learn how to build better systems, stories, and worlds.</p>
+            <p class="closing-line">In skepticism he trusted. In understanding he built.</p>
+          `
+        },
+
+        graduation: {
+          kicker: "Framed Record",
+          title: "Graduation Remarks",
+          subtitle: "A speech about the work behind the walk.",
+          body: `
+            <p>This frame preserves the Founder’s Graduation Remarks as part of the office’s official history.</p>
+            <p>The message is not that the work is finished. The message is that learning how to question, inspect, imagine, and build created a responsibility to keep going.</p>
+            <p>The degree marks an achievement. The remarks explain what the achievement is for.</p>
+            <p class="closing-line">The ceremony ended. The walk did not.</p>
+          `
+        },
+
+        yolanda: {
+          kicker: "Family Keepsake",
+          title: "For You, Mom",
+          subtitle: "Yolanda · The one-room light",
+          body: `
+            <p>You are my first love, my forever angel, and the reason I am who I am. Everything I do, I do for you.</p>
+            <p>The office lighting carries a quiet Easter egg from the line:</p>
+            <p><strong>“Mama, you were magic in a one-room light.”</strong></p>
+            <p>This keepsake explains where the Founder came from. The lamp does not merely light the room; it ties the room back to Yolanda.</p>
+            <p class="closing-line">I love you.</p>
+          `
+        },
+
+        family: {
+          kicker: "New Beansland Family",
+          title: "Who Walks With Me",
+          subtitle: "The family was not assembled. It accumulated.",
+          body: `
+            <p>The framed photograph represents the New Beansland family — not a collection of interchangeable characters, but a family in which every member has a distinct origin, voice, personality, role, and place.</p>
+            <p>Some arrived early. Some arrived later. Some were expected. Some became part of the environment before anyone realized the room had changed.</p>
+            <p>The photograph grounds the office in the truth that the worlds were not built alone.</p>
+            <p class="closing-line">Different paths. One family.</p>
+          `
+        },
+
+        chair: {
+          kicker: "Still Walking",
+          title: "The Chair Is Empty",
+          subtitle: "The Founder is not absent.",
+          body: `
+            <p>The empty chair represents presence and purpose.</p>
+            <p>The Founder is still walking, still building, and still moving through New Beansland. The chair does not mark disappearance. It marks work that continues beyond the room.</p>
+            <p class="closing-line">Still building. Still thinking. Still walking.</p>
+          `
+        },
+
+        clue: {
+          kicker: "Clue",
+          title: "If it’s too dark, use a light.",
+          subtitle: "The room is telling you what to touch.",
+          body: `
+            <p>The lamp works in three touches:</p>
+            <ul>
+              <li><strong>First touch:</strong> the room begins to wake.</li>
+              <li><strong>Second touch:</strong> the walk is fully lit and the chair unlocks.</li>
+              <li><strong>Third touch:</strong> the room returns to rest.</li>
+            </ul>
+            <p class="closing-line">One room. One light.</p>
+          `
+        }
+      };
+
+      const modal = document.getElementById("modal");
+      const modalClose = document.getElementById("modalClose");
+      const modalKicker = document.getElementById("modalKicker");
+      const modalTitle = document.getElementById("modalTitle");
+      const modalSubtitle = document.getElementById("modalSubtitle");
+      const modalBody = document.getElementById("modalBody");
+      const toast = document.getElementById("toast");
+      const lampHotspot = document.getElementById("lampHotspot");
+      const chairHotspot = document.querySelector('[data-panel="chair"]');
+      let lastFocused = null;
+      let lampState = 0;
+      let toastTimer = null;
+
+      function showToast(message) {
+        window.clearTimeout(toastTimer);
+        toast.textContent = message;
+        toast.classList.add("show");
+        toastTimer = window.setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2600);
+      }
+
+      function openPanel(panelName) {
+        const panel = roomPanels[panelName];
+        if (!panel) return;
+
+        lastFocused = document.activeElement;
+        modalKicker.textContent = panel.kicker;
+        modalTitle.textContent = panel.title;
+        modalSubtitle.textContent = panel.subtitle;
+        modalBody.innerHTML = panel.body;
+        modal.hidden = false;
+        document.body.style.overflow = "hidden";
+        modalClose.focus();
+      }
+
+      function closePanel() {
+        modal.hidden = true;
+        document.body.style.overflow = "";
+        if (lastFocused && typeof lastFocused.focus === "function") {
+          lastFocused.focus();
+        }
+      }
+
+      function pulseLamp() {
+        lampHotspot.classList.remove("pulse");
+        void lampHotspot.offsetWidth;
+        lampHotspot.classList.add("pulse");
+        window.setTimeout(() => lampHotspot.classList.remove("pulse"), 2500);
+      }
+
+      function setLampState(nextState) {
+        lampState = nextState;
+        document.body.classList.remove("light-stage-1", "light-stage-2");
+
+        if (lampState === 1) {
+          document.body.classList.add("light-stage-1");
+          lampHotspot.setAttribute("aria-pressed", "true");
+          chairHotspot.setAttribute("aria-disabled", "true");
+          showToast("The room is waking up. One more touch.");
+        } else if (lampState === 2) {
+          document.body.classList.add("light-stage-2");
+          lampHotspot.setAttribute("aria-pressed", "true");
+          chairHotspot.setAttribute("aria-disabled", "false");
+          chairHotspot.classList.add("pulse");
+          window.setTimeout(() => chairHotspot.classList.remove("pulse"), 2500);
+          showToast("The walk is lit. The chair is ready.");
+        } else {
+          lampHotspot.setAttribute("aria-pressed", "false");
+          chairHotspot.setAttribute("aria-disabled", "true");
+          showToast("The room returns to rest.");
+        }
+      }
+
+      document.querySelectorAll(".hotspot").forEach((hotspot) => {
+        hotspot.addEventListener("click", () => {
+          const action = hotspot.dataset.action;
+          const panel = hotspot.dataset.panel;
+
+          if (action === "lamp") {
+            setLampState((lampState + 1) % 3);
+            return;
+          }
+
+          if (panel === "chair" && lampState !== 2) {
+            showToast("The chair is locked. The clue points to the light.");
+            pulseLamp();
+            return;
+          }
+
+          if (panel === "clue") {
+            openPanel(panel);
+            window.setTimeout(pulseLamp, 350);
+            return;
+          }
+
+          openPanel(panel);
+        });
+      });
+
+      modalClose.addEventListener("click", closePanel);
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closePanel();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && !modal.hidden) {
+          closePanel();
+        }
+      });
+
+      /*
+        Keep keyboard focus inside the popup while it is open.
+      */
+      modal.addEventListener("keydown", (event) => {
+        if (event.key !== "Tab") return;
+
+        const focusable = modal.querySelectorAll(
+          'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (!focusable.length) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
