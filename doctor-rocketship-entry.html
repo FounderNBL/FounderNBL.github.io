@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>The Doctor/Rocketship Test | New Beansland</title>
+  <meta name="description" content="Watch the Doctor/Rocketship trailer, enter the framework, or follow the live reference trail.">
+  <meta name="theme-color" content="#020914">
+  <link rel="icon" type="image/png" href="nbl-logo.png">
+  <style>
+    :root{--night:#020914;--panel:rgba(5,14,25,.95);--panel-soft:rgba(10,24,40,.88);--gold:#d8a344;--gold-light:#f2d58d;--cream:#f3eadb;--muted:#c6bdaf;--line:rgba(216,163,68,.36);--shadow:rgba(0,0,0,.58)}
+    *{box-sizing:border-box}html{min-height:100%;background:var(--night)}body{min-height:100vh;margin:0;color:var(--cream);background:radial-gradient(circle at 50% 0%,rgba(48,78,111,.34),transparent 42%),linear-gradient(180deg,#071321 0%,var(--night) 72%);font-family:Georgia,"Times New Roman",serif}button,a{font:inherit}a{color:inherit}.page{width:min(1180px,calc(100% - 28px));min-height:100vh;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 0 max(28px,env(safe-area-inset-bottom));display:grid;align-content:center;gap:18px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:inline-flex;align-items:center;gap:12px;text-decoration:none}.brand img{width:54px;height:54px;object-fit:contain}.brand-copy{display:grid;gap:2px}.brand-name{color:var(--gold-light);font-size:1.1rem;font-weight:800}.brand-tagline{color:var(--muted);font-family:Arial,Helvetica,sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}.home-link{padding:10px 14px;border:1px solid var(--line);border-radius:999px;color:var(--gold-light);background:rgba(3,10,18,.72);font-family:Arial,Helvetica,sans-serif;font-size:.82rem;font-weight:800;text-decoration:none}.experience{position:relative;min-height:min(720px,78vh);overflow:hidden;border:1px solid var(--line);border-radius:22px;background:#000;box-shadow:0 28px 75px var(--shadow);isolation:isolate}.poster,.trailer-stage,.after-stage{position:absolute;inset:0}.poster{z-index:1;display:grid;place-items:center;padding:28px;background:linear-gradient(90deg,rgba(1,6,12,.94),rgba(1,6,12,.44) 55%,rgba(1,6,12,.86)),radial-gradient(circle at 74% 48%,rgba(216,163,68,.18),transparent 26%),linear-gradient(145deg,#0b1d30,#02070d 68%)}.poster-grid{width:min(980px,100%);display:grid;grid-template-columns:minmax(220px,360px) minmax(0,1fr);align-items:center;gap:clamp(28px,6vw,76px)}.cover-wrap{width:min(330px,100%);justify-self:center;border-radius:13px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.7)}.cover-wrap img{width:100%;display:block}.poster-copy{max-width:620px}.eyebrow{margin:0 0 10px;color:var(--gold);font-family:Arial,Helvetica,sans-serif;font-size:.78rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase}h1{margin:0;color:var(--gold-light);font-size:clamp(2.2rem,6vw,5.3rem);line-height:.96;text-wrap:balance}.subtitle{max-width:660px;margin:22px 0 0;color:var(--cream);font-size:clamp(1rem,2vw,1.35rem);line-height:1.55}.button-row{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px}.action{min-height:48px;padding:13px 19px;display:inline-grid;place-items:center;border:1px solid var(--line);border-radius:10px;color:var(--cream);background:rgba(4,14,25,.88);font-family:Arial,Helvetica,sans-serif;font-size:.88rem;font-weight:900;text-align:center;text-decoration:none;cursor:pointer}.action.primary{border-color:rgba(242,213,141,.78);color:#111;background:linear-gradient(180deg,#f3d993,#cf9630)}.action:hover,.action:focus-visible{transform:translateY(-1px);outline:2px solid var(--gold-light);outline-offset:3px}.trailer-stage{z-index:3;display:none;background:#000}.trailer-stage.active{display:grid;place-items:center}video{width:100%;height:100%;display:block;object-fit:contain;background:#000}.video-controls{position:absolute;top:16px;right:16px;z-index:4;display:flex;gap:10px}.small-button{min-height:42px;padding:10px 14px;border:1px solid rgba(242,213,141,.55);border-radius:999px;color:var(--cream);background:rgba(2,8,14,.82);font-family:Arial,Helvetica,sans-serif;font-size:.78rem;font-weight:900;cursor:pointer;backdrop-filter:blur(8px)}.after-stage{z-index:5;display:none;place-items:center;padding:28px;background:linear-gradient(90deg,rgba(1,6,12,.96),rgba(1,6,12,.58)),radial-gradient(circle at 76% 48%,rgba(216,163,68,.18),transparent 30%),linear-gradient(145deg,#0b1d30,#02070d 68%)}.after-stage.active{display:grid}.after-card{width:min(850px,100%);padding:clamp(24px,5vw,54px);border:1px solid var(--line);border-radius:20px;background:var(--panel-soft);box-shadow:0 22px 70px rgba(0,0,0,.55);text-align:center}.after-card h2{margin:0;color:var(--gold-light);font-size:clamp(2rem,5vw,4.2rem);line-height:1}.after-card p{max-width:680px;margin:18px auto 0;color:var(--muted);font-size:1.05rem;line-height:1.55}.after-card .button-row{justify-content:center}.status{min-height:20px;margin:0;color:var(--muted);font-family:Arial,Helvetica,sans-serif;font-size:.76rem;text-align:center}
+    @media(max-width:760px){.page{width:min(100% - 18px,620px);align-content:start}.topbar{padding-top:2px}.brand-tagline{display:none}.experience{min-height:760px}.poster{align-items:start;overflow-y:auto}.poster-grid{grid-template-columns:1fr;gap:22px}.cover-wrap{width:min(220px,58vw)}.poster-copy{text-align:center}.subtitle{margin-left:auto;margin-right:auto}.button-row{justify-content:center}.action{width:100%}.after-stage{overflow-y:auto}}
+    @media(orientation:landscape) and (max-height:620px){.page{padding-top:8px;padding-bottom:8px}.topbar{display:none}.experience{min-height:calc(100vh - 16px)}.poster-grid{grid-template-columns:220px minmax(0,1fr)}.cover-wrap{width:210px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="topbar">
+      <a class="brand" href="home.html" aria-label="Return to New Beansland">
+        <img src="nbl-logo.png" alt="">
+        <span class="brand-copy"><span class="brand-name">New Beansland</span><span class="brand-tagline">Stories. Questions. Worlds.</span></span>
+      </a>
+      <a class="home-link" href="home.html">Back Home</a>
+    </header>
+
+    <section class="experience" aria-label="The Doctor/Rocketship Test trailer entrance">
+      <div class="poster" id="posterStage">
+        <div class="poster-grid">
+          <div class="cover-wrap"><img src="doctor-rocketship-front.png" alt="The Doctor/Rocketship Test cover"></div>
+          <div class="poster-copy">
+            <p class="eyebrow">A New Beansland Framework</p>
+            <h1>The Doctor/<br>Rocketship Test</h1>
+            <p class="subtitle">Before the framework opens, watch the trailer. When it ends, choose whether to enter the full Doctor/Rocketship experience or follow the live reference trail.</p>
+            <div class="button-row">
+              <button class="action primary" id="playTrailer" type="button">Play Trailer</button>
+              <a class="action" href="doctor-rocketship-test.html">Enter Without Trailer</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="trailer-stage" id="trailerStage" aria-hidden="true">
+        <div class="video-controls"><button class="small-button" id="skipTrailer" type="button">Skip Trailer</button></div>
+        <video id="trailer" controls playsinline preload="metadata" poster="doctor-rocketship-front.png">
+          <source src="doctor-rocketship-trailer.mp4" type="video/mp4">
+          Your browser does not support MP4 video playback.
+        </video>
+      </div>
+
+      <div class="after-stage" id="afterStage" aria-hidden="true">
+        <article class="after-card">
+          <p class="eyebrow">The Trailer Has Ended</p>
+          <h2>The argument must earn the door.</h2>
+          <p>Enter the complete Doctor/Rocketship Test, replay the trailer, or follow the live reference trail connected to the framework.</p>
+          <div class="button-row">
+            <a class="action primary" href="doctor-rocketship-test.html">Enter Doctor/Rocketship</a>
+            <button class="action" id="replayTrailer" type="button">Replay Trailer</button>
+            <a class="action" href="references.html">Live Reference Trail</a>
+            <a class="action" href="home.html">Back Home</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <p class="status" id="status" aria-live="polite"></p>
+  </main>
+
+  <script>
+    (()=>{"use strict";const posterStage=document.getElementById("posterStage"),trailerStage=document.getElementById("trailerStage"),afterStage=document.getElementById("afterStage"),trailer=document.getElementById("trailer"),playTrailer=document.getElementById("playTrailer"),replayTrailer=document.getElementById("replayTrailer"),skipTrailer=document.getElementById("skipTrailer"),status=document.getElementById("status");function showPoster(){trailer.pause();trailer.currentTime=0;posterStage.hidden=false;trailerStage.classList.remove("active");trailerStage.setAttribute("aria-hidden","true");afterStage.classList.remove("active");afterStage.setAttribute("aria-hidden","true");status.textContent=""}function showTrailer(){posterStage.hidden=true;afterStage.classList.remove("active");afterStage.setAttribute("aria-hidden","true");trailerStage.classList.add("active");trailerStage.setAttribute("aria-hidden","false");status.textContent="Trailer playing.";trailer.currentTime=0;const p=trailer.play();if(p&&typeof p.catch==="function")p.catch(()=>{status.textContent="Tap the video play button to begin."})}function showAfterTrailer(){trailer.pause();trailerStage.classList.remove("active");trailerStage.setAttribute("aria-hidden","true");afterStage.classList.add("active");afterStage.setAttribute("aria-hidden","false");status.textContent="Choose where to go next."}playTrailer.addEventListener("click",showTrailer);replayTrailer.addEventListener("click",showTrailer);skipTrailer.addEventListener("click",showAfterTrailer);trailer.addEventListener("ended",showAfterTrailer);trailer.addEventListener("error",()=>{status.textContent="The trailer file could not be loaded. Confirm that doctor-rocketship-trailer.mp4 is uploaded beside this HTML file."});showPoster()})();
+  </script>
+</body>
+</html>
