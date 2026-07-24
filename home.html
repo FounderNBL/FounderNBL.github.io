@@ -518,10 +518,90 @@
         cursor: pointer;
       }
     }
+  
+    /* PHONE ORIENTATION GATE — keeps the wide homepage from shrinking into a tiny page */
+    .orientation-gate {
+      display: none;
+    }
+
+    @media (orientation: portrait) and (max-width: 900px) {
+      #viewport {
+        opacity: 0.18;
+        filter: blur(2px);
+        pointer-events: none;
+      }
+
+      .orientation-gate {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        padding:
+          max(24px, env(safe-area-inset-top))
+          24px
+          max(24px, env(safe-area-inset-bottom));
+        color: var(--cream);
+        background:
+          radial-gradient(circle at 50% 20%, rgba(35, 77, 112, 0.32), transparent 42%),
+          rgba(2, 6, 11, 0.96);
+        text-align: center;
+      }
+
+      .orientation-card {
+        width: min(420px, 100%);
+        padding: 32px 24px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: rgba(6, 18, 31, 0.96);
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.58);
+      }
+
+      .orientation-phone {
+        display: block;
+        margin-bottom: 16px;
+        color: var(--gold-light);
+        font-size: 3.2rem;
+        line-height: 1;
+        transform: rotate(90deg);
+      }
+
+      .orientation-card h1 {
+        margin: 0;
+        color: var(--gold-light);
+        font-size: clamp(1.8rem, 8vw, 2.65rem);
+        line-height: 1.05;
+      }
+
+      .orientation-card p {
+        margin: 16px 0 0;
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+
+      .orientation-card strong {
+        color: var(--gold-light);
+      }
+    }
+
   </style>
 </head>
 
 <body>
+
+  <aside class="orientation-gate" aria-label="Turn phone notice">
+    <div class="orientation-card">
+      <span class="orientation-phone" aria-hidden="true">📱</span>
+      <h1>Turn Your Phone Sideways</h1>
+      <p>
+        For a better New Beansland experience, rotate your phone to
+        <strong>landscape mode</strong>. The full homepage will appear automatically.
+      </p>
+    </div>
+  </aside>
+
   <div id="viewport">
     <main id="site-canvas">
       <header class="site-header">
@@ -539,7 +619,7 @@
           <a href="site.html#frameworks">Questions</a>
           <a href="site.html#worlds">Worlds</a>
           <a href="site.html#voices">Voices</a>
-          <a href="site.html#about">About</a>
+          <a href="founder-office.html">About</a>
           <span class="search-mark" aria-hidden="true">⌕</span>
           <a class="start-button" href="site.html">Start Here</a>
         </nav>

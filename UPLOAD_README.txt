@@ -1,34 +1,27 @@
-NEW BEANSLAND MANUAL PUBLISHER STORE v0.1
+NEW BEANSLAND CODE FIX v0.2
 
-UPLOAD THESE FILES TO THE ROOT OF FounderNBL.github.io:
-- home.html (replaces the current homepage)
-- books.html
-- doctor-rocketship-entry.html (replaces the current entrance page)
-- doctor-rocketship-shop.html
-- people-zoo-shop.html
-- purchase-requested.html
-- nbl-store.css
-- doctor-rocketship-standard-front.png
-- doctor-rocketship-standard-back.png
-- doctor-rocketship-islamic-front.png
-- doctor-rocketship-islamic-back.png
+UPLOAD / REPLACE THESE CODE FILES:
+1. home.html
+2. doctor-rocketship-shop.html
+3. people-zoo-shop.html
+4. nbl-store.css
 
-DO NOT UPLOAD THE EPUB FILES TO THE PUBLIC GITHUB REPOSITORY.
-Keep the sale EPUBs private and deliver the correct one after payment is manually confirmed.
+UPLOAD THESE TWO NEW VIDEO FILES:
+5. doctor-rocketship-islamic-trailer.mp4
+6. people-zoo-trailer.mp4
 
-THIS VERSION DOES:
-- Shows the New Beansland bookstore
-- Lets customers choose either Doctor/Rocketship edition
-- Shows matching front and back covers
-- Explains bundle rules
-- Generates a unique purchase-request code
-- Prepares a complete email to foundernewbeansland@gmail.com
-- Provides a copy fallback if the email app does not open
+KEEP THE EXISTING STANDARD VIDEO:
+- doctor-rocketship-trailer.mp4
 
-THIS VERSION DOES NOT AUTOMATICALLY:
-- Charge customers
-- Verify Cash App payments
-- Send EPUBs
-- Enforce download counts
+WHAT THIS FIX DOES:
+- Restores the wide homepage instead of shrinking the entire page in portrait mode.
+- Shows: “Turn Your Phone Sideways” on upright phones.
+- About now opens founder-office.html.
+- The Doctor/Rocketship sales page changes both covers and trailer by edition.
+- The People Zoo sales page displays its own trailer.
+- No EPUB files are included or exposed publicly.
 
-Those steps are handled manually by New Beansland staff in v0.1.
+TEST AFTER GITHUB PAGES DEPLOYS:
+https://newbeansland.org/home.html
+https://newbeansland.org/doctor-rocketship-shop.html
+https://newbeansland.org/people-zoo-shop.html

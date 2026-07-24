@@ -23,6 +23,19 @@
 <figure class="cover-panel"><img id="frontCover" src="doctor-rocketship-standard-front.png" alt="Selected edition front cover"><figcaption class="cover-caption">Front Cover</figcaption></figure>
 <figure class="cover-panel"><img id="backCover" src="doctor-rocketship-standard-back.png" alt="Selected edition back cover"><figcaption class="cover-caption">Back Cover</figcaption></figure>
 </div>
+
+<div class="trailer-card" aria-label="Selected edition trailer">
+  <div class="trailer-card-header">
+    <h2 class="trailer-card-title">Edition Trailer</h2>
+    <span class="trailer-edition-label" id="trailerEditionLabel">Standard Edition</span>
+  </div>
+  <video id="editionTrailer" controls playsinline preload="metadata" poster="doctor-rocketship-standard-front.png">
+    <source id="editionTrailerSource" src="doctor-rocketship-trailer.mp4" type="video/mp4">
+    Your browser does not support MP4 video playback.
+  </video>
+  <p class="trailer-help">Choose an edition below. The covers and trailer change together.</p>
+</div>
+
 <div class="notice"><strong>The complete book remains private.</strong><br>The website displays cover previews and purchase information only. The EPUB is delivered privately after staff confirms payment.</div>
 </section>
 <section>
@@ -57,13 +70,26 @@
 (() => {
  const orderEmail = 'foundernewbeansland@gmail.com';
  const data = {
-  standard: {name:'Standard Edition', code:'STD', front:'doctor-rocketship-standard-front.png', back:'doctor-rocketship-standard-back.png'},
-  islamic: {name:'Islamic Dilemma Edition', code:'IDE', front:'doctor-rocketship-islamic-front.png', back:'doctor-rocketship-islamic-back.png'}
+  standard: {name:'Standard Edition', code:'STD', front:'doctor-rocketship-standard-front.png', back:'doctor-rocketship-standard-back.png', trailer:'doctor-rocketship-trailer.mp4'},
+  islamic: {name:'Islamic Dilemma Edition', code:'IDE', front:'doctor-rocketship-islamic-front.png', back:'doctor-rocketship-islamic-back.png', trailer:'doctor-rocketship-islamic-trailer.mp4'}
  };
  let selected = 'standard';
- const front = document.getElementById('frontCover'), back = document.getElementById('backCover');
+ const front = document.getElementById('frontCover');
+ const back = document.getElementById('backCover');
+ const trailer = document.getElementById('editionTrailer');
+ const trailerSource = document.getElementById('editionTrailerSource');
+ const trailerLabel = document.getElementById('trailerEditionLabel');
  document.querySelectorAll('.edition-option').forEach(btn => btn.addEventListener('click', () => {
-   selected = btn.dataset.edition; const d = data[selected]; front.src = d.front; back.src = d.back;
+   selected = btn.dataset.edition;
+   const d = data[selected];
+   front.src = d.front;
+   back.src = d.back;
+   trailer.pause();
+   trailer.currentTime = 0;
+   trailer.poster = d.front;
+   trailerSource.src = d.trailer;
+   trailerLabel.textContent = d.name;
+   trailer.load();
    front.alt = d.name + ' front cover'; back.alt = d.name + ' back cover';
    document.querySelectorAll('.edition-option').forEach(b => { b.classList.toggle('active', b===btn); b.querySelector('.edition-check').textContent = b===btn ? 'Selected' : 'Choose'; });
  }));
