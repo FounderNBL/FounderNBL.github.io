@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The People Zoo | New Beansland</title><meta name="description" content="Prepare a purchase request for The People Zoo.">
+<link rel="icon" href="nbl-logo.png"><link rel="stylesheet" href="nbl-store.css"></head><body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="home.html" aria-label="New Beansland home">
+      <img src="nbl-logo.png" alt="">
+      <span><span class="brand-name">New Beansland</span><span class="brand-tag">Independent Publishing House</span></span>
+    </a>
+    <nav class="nav" aria-label="Publisher navigation">
+      <a class="nav-main" href="books.html">Books</a>
+      <a href="home.html">Main Site</a>
+      <a href="mailto:foundernewbeansland@gmail.com">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container product-layout">
+<section class="preview-shell"><div class="cover-stage" style="grid-template-columns:minmax(0,420px);justify-content:center"><figure class="cover-panel"><img src="people-zoo-front.png" alt="The People Zoo cover"><figcaption class="cover-caption">Original Edition</figcaption></figure></div>
+<div class="notice"><strong>Trilogy Special Edition:</strong><br>A connected-cover edition for The People Zoo, U.S.B., and the final trilogy book will be offered separately when the full artwork system is ready.</div></section>
+<section><p class="kicker">Published by New Beansland</p><h1 class="product-title">The People Zoo</h1><p class="product-sub">A finished ten-chapter New Beansland story about a curated environment, hidden control, and people chosen because of their flaws.</p>
+<div class="price-card"><div class="price-label">Price</div><div class="price-value">Confirmed by New Beansland staff before payment</div></div>
+<div class="form-card"><h2>Request Purchase</h2><p class="form-intro">Request the Original Edition alone or add either edition of The Doctor / Rocketship Test for the regular two-book bundle discount.</p>
+<form id="purchaseForm"><div class="field-grid"><div class="field"><label for="name">Your name</label><input id="name" required autocomplete="name"></div><div class="field"><label for="email">Your email</label><input id="email" type="email" required autocomplete="email"></div>
+<div class="field full"><label for="bundle">Add another book</label><select id="bundle"><option value="No second book">No second book</option><option value="The Doctor / Rocketship Test — Standard Edition">Add Doctor / Rocketship — Standard Edition</option><option value="The Doctor / Rocketship Test — Islamic Dilemma Edition">Add Doctor / Rocketship — Islamic Dilemma Edition</option></select></div>
+<div class="field full"><label for="notes">Notes for New Beansland staff</label><textarea id="notes" placeholder="Optional"></textarea></div></div>
+<div class="policy-box"><strong>Bundle rule:</strong> Two regular books requested together qualify for the New Beansland bundle discount. Future connected Trilogy Special Editions remain full individual price unless purchased as the complete trilogy set.</div>
+<div class="actions"><button class="btn primary" type="submit">Prepare Purchase Request</button><a class="btn" href="books.html">Back to Books</a></div></form>
+<div class="summary-panel" id="summaryPanel"><pre id="summaryText"></pre><div class="actions" style="margin-top:14px"><a class="btn primary" id="emailButton" href="#">Open Email App</a><button class="btn" id="copyButton" type="button">Copy Request</button><a class="btn" href="purchase-requested.html">I Sent My Request</a></div><div class="status" id="status" aria-live="polite"></div></div>
+</div></section></main>
+<footer class="footer">
+  <div class="container">
+    <strong>Published by New Beansland</strong><br>
+    Sometimes the answer isn't the answer... it's the question you didn't ask.<br>
+    © 2026 New Beansland. All rights reserved.
+  </div>
+</footer>
+
+<script>(()=>{const orderEmail='foundernewbeansland@gmail.com';const form=document.getElementById('purchaseForm'),panel=document.getElementById('summaryPanel'),text=document.getElementById('summaryText'),emailBtn=document.getElementById('emailButton'),status=document.getElementById('status');function code(){const n=new Date(),y=n.getFullYear(),m=String(n.getMonth()+1).padStart(2,'0'),d=String(n.getDate()).padStart(2,'0'),r=Math.random().toString(36).slice(2,6).toUpperCase();return`NBL-REQ-PZ-ORG-${y}${m}${d}-${r}`;}form.addEventListener('submit',e=>{e.preventDefault();if(!form.reportValidity())return;const c=code(),name=document.getElementById('name').value.trim(),email=document.getElementById('email').value.trim(),bundle=document.getElementById('bundle').value,notes=document.getElementById('notes').value.trim()||'None';const s=`NEW BEANSLAND PURCHASE REQUEST
+
+Request Code: ${c}
+Customer: ${name}
+Customer Email: ${email}
+Book: The People Zoo
+Edition: Original Edition
+Second Book: ${bundle}
+Payment Method Requested: Cash App
+Notes: ${notes}
+
+Please confirm the exact total and official payment instructions before I send payment.`;text.textContent=s;emailBtn.href=`mailto:${orderEmail}?subject=${encodeURIComponent('New Beansland Purchase Request — '+c)}&body=${encodeURIComponent(s)}`;panel.classList.add('show');panel.scrollIntoView({behavior:'smooth',block:'nearest'});status.textContent='Your request is ready. Open your email app and press Send.';});document.getElementById('copyButton').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text.textContent);status.textContent='Purchase request copied.';}catch{status.textContent='Select the request text and copy it manually.';}});})();</script></body></html>

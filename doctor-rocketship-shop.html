@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Doctor / Rocketship Test | New Beansland</title><meta name="description" content="Choose an edition of The Doctor / Rocketship Test and prepare a purchase request.">
+<link rel="icon" href="nbl-logo.png"><link rel="stylesheet" href="nbl-store.css"></head><body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="home.html" aria-label="New Beansland home">
+      <img src="nbl-logo.png" alt="">
+      <span><span class="brand-name">New Beansland</span><span class="brand-tag">Independent Publishing House</span></span>
+    </a>
+    <nav class="nav" aria-label="Publisher navigation">
+      <a class="nav-main" href="books.html">Books</a>
+      <a href="home.html">Main Site</a>
+      <a href="mailto:foundernewbeansland@gmail.com">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container product-layout">
+<section class="preview-shell" aria-label="Selected edition preview">
+<div class="cover-stage">
+<figure class="cover-panel"><img id="frontCover" src="doctor-rocketship-standard-front.png" alt="Selected edition front cover"><figcaption class="cover-caption">Front Cover</figcaption></figure>
+<figure class="cover-panel"><img id="backCover" src="doctor-rocketship-standard-back.png" alt="Selected edition back cover"><figcaption class="cover-caption">Back Cover</figcaption></figure>
+</div>
+<div class="notice"><strong>The complete book remains private.</strong><br>The website displays cover previews and purchase information only. The EPUB is delivered privately after staff confirms payment.</div>
+</section>
+<section>
+<p class="kicker">Published by New Beansland</p><h1 class="product-title">The Doctor / Rocketship Test</h1>
+<p class="product-sub">Choose the presentation that speaks to you. Both editions contain the same complete book; the cover experience is different.</p>
+<div class="edition-grid" role="group" aria-label="Choose edition">
+<button class="edition-option active" type="button" data-edition="standard"><span class="edition-icon">📘</span><span><span class="edition-name">Standard Edition</span><span class="edition-note">Medicine and aerospace engineering in one visual system.</span></span><span class="edition-check">Selected</span></button>
+<button class="edition-option" type="button" data-edition="islamic"><span class="edition-icon">☪</span><span><span class="edition-name">Islamic Dilemma Edition</span><span class="edition-note">Revelation and engineering presented as different domains with different rules.</span></span><span class="edition-check">Choose</span></button>
+</div>
+<div class="price-card"><div class="price-label">Price</div><div class="price-value">Confirmed by New Beansland staff before payment</div></div>
+<div class="form-card"><h2>Request Purchase</h2><p class="form-intro">Complete this form to prepare your order email. New Beansland will reply with the confirmed price, any bundle discount, and official Cash App instructions.</p>
+<form id="purchaseForm">
+<div class="field-grid"><div class="field"><label for="name">Your name</label><input id="name" name="name" autocomplete="name" required></div>
+<div class="field"><label for="email">Your email</label><input id="email" name="email" type="email" autocomplete="email" required></div>
+<div class="field full"><label for="bundle">Add another book</label><select id="bundle" name="bundle"><option value="No second book">No second book</option><option value="The People Zoo — Original Edition">Add The People Zoo — Original Edition (bundle discount requested)</option></select></div>
+<div class="field full"><label for="notes">Notes for New Beansland staff</label><textarea id="notes" name="notes" placeholder="Optional"></textarea></div></div>
+<div class="policy-box"><strong>Manual Publisher Process:</strong> This request does not charge you. Staff confirms availability and the exact total first. Do not send payment until an official New Beansland reply provides the amount and Cash App information.</div>
+<div class="actions"><button class="btn primary" type="submit">Prepare Purchase Request</button><a class="btn" href="books.html">Back to Books</a></div>
+</form>
+<div class="summary-panel" id="summaryPanel"><pre id="summaryText"></pre><div class="actions" style="margin-top:14px"><a class="btn primary" id="emailButton" href="#">Open Email App</a><button class="btn" id="copyButton" type="button">Copy Request</button><a class="btn" href="purchase-requested.html">I Sent My Request</a></div><div class="status" id="status" aria-live="polite"></div></div>
+</div></section>
+</main>
+<footer class="footer">
+  <div class="container">
+    <strong>Published by New Beansland</strong><br>
+    Sometimes the answer isn't the answer... it's the question you didn't ask.<br>
+    © 2026 New Beansland. All rights reserved.
+  </div>
+</footer>
+
+<script>
+(() => {
+ const orderEmail = 'foundernewbeansland@gmail.com';
+ const data = {
+  standard: {name:'Standard Edition', code:'STD', front:'doctor-rocketship-standard-front.png', back:'doctor-rocketship-standard-back.png'},
+  islamic: {name:'Islamic Dilemma Edition', code:'IDE', front:'doctor-rocketship-islamic-front.png', back:'doctor-rocketship-islamic-back.png'}
+ };
+ let selected = 'standard';
+ const front = document.getElementById('frontCover'), back = document.getElementById('backCover');
+ document.querySelectorAll('.edition-option').forEach(btn => btn.addEventListener('click', () => {
+   selected = btn.dataset.edition; const d = data[selected]; front.src = d.front; back.src = d.back;
+   front.alt = d.name + ' front cover'; back.alt = d.name + ' back cover';
+   document.querySelectorAll('.edition-option').forEach(b => { b.classList.toggle('active', b===btn); b.querySelector('.edition-check').textContent = b===btn ? 'Selected' : 'Choose'; });
+ }));
+ const form = document.getElementById('purchaseForm');
+ const panel = document.getElementById('summaryPanel'); const text = document.getElementById('summaryText'); const emailBtn = document.getElementById('emailButton'); const status = document.getElementById('status');
+ function requestCode(code) { const now = new Date(); const y=now.getFullYear(); const m=String(now.getMonth()+1).padStart(2,'0'); const d=String(now.getDate()).padStart(2,'0'); const r=Math.random().toString(36).slice(2,6).toUpperCase(); return `NBL-REQ-DRT-${code}-${y}${m}${d}-${r}`; }
+ form.addEventListener('submit', e => { e.preventDefault(); if(!form.reportValidity()) return; const edition=data[selected];
+   const code=requestCode(edition.code); const name=document.getElementById('name').value.trim(); const email=document.getElementById('email').value.trim(); const bundle=document.getElementById('bundle').value; const notes=document.getElementById('notes').value.trim() || 'None';
+   const summary=`NEW BEANSLAND PURCHASE REQUEST
+
+Request Code: ${code}
+Customer: ${name}
+Customer Email: ${email}
+Book: The Doctor / Rocketship Test
+Edition: ${edition.name}
+Second Book: ${bundle}
+Payment Method Requested: Cash App
+Notes: ${notes}
+
+Please confirm the exact total and official payment instructions before I send payment.`;
+   text.textContent=summary; emailBtn.href=`mailto:${orderEmail}?subject=${encodeURIComponent('New Beansland Purchase Request — '+code)}&body=${encodeURIComponent(summary)}`; panel.classList.add('show'); panel.scrollIntoView({behavior:'smooth', block:'nearest'}); status.textContent='Your request is ready. Open your email app and press Send.';
+ });
+ document.getElementById('copyButton').addEventListener('click', async () => { try { await navigator.clipboard.writeText(text.textContent); status.textContent='Purchase request copied.'; } catch { status.textContent='Select the request text and copy it manually.'; } });
+})();
+</script></body></html>

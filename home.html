@@ -4,12 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>New Beansland | Stories. Questions. Worlds.</title>
-  <meta name="description" content="New Beansland — stories, questions, worlds, voices, books, and ideas.">
-  <meta name="theme-color" content="#020914">
+  <meta name="description" content="New Beansland is a creative home for stories, questions, worlds, voices, books, and ideas.">
+  <meta name="theme-color" content="#02060b">
   <link rel="icon" type="image/png" href="nbl-logo.png">
 
   <style>
-    * { box-sizing: border-box; }
+    :root {
+      --gold: #d8a344;
+      --gold-light: #f0c873;
+      --cream: #f5ead5;
+      --text: #ddd5c8;
+      --muted: #aaa79f;
+      --border: rgba(216, 163, 68, 0.52);
+      --panel: rgba(5, 16, 29, 0.94);
+      --base-width: 1600;
+      --base-height: 900;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
 
     html,
     body {
@@ -18,190 +32,658 @@
       min-height: 100%;
       margin: 0;
       overflow: hidden;
-      background: #020914;
+      background: #02060b;
     }
 
     body {
-      display: grid;
-      place-items: center;
-      padding:
-        env(safe-area-inset-top)
-        env(safe-area-inset-right)
-        env(safe-area-inset-bottom)
-        env(safe-area-inset-left);
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
     }
 
-    .homepage {
-      position: relative;
-      width: min(100vw, calc(100dvh * 16 / 9));
-      max-width: 1536px;
-      aspect-ratio: 16 / 9;
-      overflow: hidden;
-      background: #020914;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    .homepage-image {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: contain;
-      pointer-events: none;
-    }
-
-    .hotspot {
-      position: absolute;
-      z-index: 2;
-      display: block;
-      border: 0;
-      background: transparent;
+    a {
+      color: inherit;
+      text-decoration: none;
       -webkit-tap-highlight-color: transparent;
     }
 
-    .hotspot:focus-visible {
-      outline: 3px solid #f0c873;
-      outline-offset: -3px;
+    a:focus-visible {
+      outline: 4px solid var(--gold-light);
+      outline-offset: 4px;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    #viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 68% 12%, rgba(41, 87, 126, 0.18), transparent 36%),
+        linear-gradient(180deg, #06111d 0%, #02060b 100%);
+    }
+
+    #site-canvas {
+      position: absolute;
+      width: 1600px;
+      height: 900px;
+      transform-origin: center center;
+      display: grid;
+      grid-template-rows: 88px 370px 180px 180px 52px;
+      gap: 8px;
+      padding: 18px 54px 12px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 72% 5%, rgba(52, 103, 143, 0.12), transparent 34%),
+        linear-gradient(180deg, #06111d 0%, #02060b 92%);
+    }
+
+    /* HEADER */
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 360px;
+    }
+
+    .brand-logo {
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-name {
+      display: block;
+      color: var(--gold-light);
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .brand-tagline {
+      display: block;
+      margin-top: 8px;
+      color: var(--gold);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 34px;
+      min-width: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .main-nav a:not(.start-button) {
+      position: relative;
+      padding: 12px 0 10px;
+      color: #f3eadc;
+      white-space: nowrap;
+    }
+
+    .main-nav a.active,
+    .main-nav a:hover {
+      color: var(--gold-light);
+    }
+
+    .main-nav a.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 2px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--gold);
+    }
+
+    .search-mark {
+      font-size: 28px;
+      line-height: 1;
+      color: var(--cream);
+    }
+
+    .start-button {
+      min-height: 46px;
+      padding: 12px 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--gold);
+      border-radius: 9px;
+      color: var(--gold-light);
+      background: rgba(5, 14, 24, 0.7);
+      white-space: nowrap;
+    }
+
+    /* HERO */
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 0 0 18px 18px;
+      background-image:
+        linear-gradient(
+          90deg,
+          rgba(2, 6, 11, 0.99) 0%,
+          rgba(2, 6, 11, 0.9) 25%,
+          rgba(2, 6, 11, 0.46) 47%,
+          rgba(2, 6, 11, 0.08) 72%,
+          rgba(2, 6, 11, 0.02) 100%
+        ),
+        url("new-beansland-road-hero.png");
+      background-size: cover;
+      background-position: center right;
+      background-repeat: no-repeat;
+      box-shadow:
+        inset 0 -1px 0 rgba(216, 163, 68, 0.2),
+        0 20px 48px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-content {
+      width: 650px;
+      padding: 26px 0 0;
+    }
+
+    .hero h1 {
+      margin: 0;
+      color: var(--cream);
+      font-size: 56px;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+    }
+
+    .gold-divider {
+      width: 420px;
+      height: 2px;
+      margin: 14px 0 12px;
+      background: linear-gradient(90deg, var(--gold), rgba(216, 163, 68, 0.15));
+    }
+
+    .hero p {
+      width: 540px;
+      margin: 0 0 17px;
+      color: #e7ded1;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 900;
+    }
+
+    .hero-button {
+      min-width: 205px;
+      min-height: 48px;
+      padding: 13px 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--gold);
       border-radius: 8px;
     }
 
-    .mobile-only { display: none; }
+    .hero-button.primary {
+      color: #06111d;
+      background: linear-gradient(180deg, #f3cc79 0%, #ca8d32 100%);
+    }
 
-    /* DESKTOP / LANDSCAPE HOTSPOTS */
-    .d-home       { left:35.2%; top:1.8%; width:5.3%; height:7%; }
-    .d-stories    { left:41.6%; top:1.8%; width:6.5%; height:7%; }
-    .d-questions  { left:48.4%; top:1.8%; width:7.4%; height:7%; }
-    .d-worlds     { left:56%; top:1.8%; width:6.3%; height:7%; }
-    .d-voices     { left:63.5%; top:1.8%; width:6%; height:7%; }
-    .d-about      { left:70.2%; top:1.8%; width:5.7%; height:7%; }
-    .d-start      { left:88.3%; top:1.7%; width:9.7%; height:7.4%; }
+    .hero-button.secondary {
+      color: var(--gold-light);
+      background: rgba(4, 12, 22, 0.78);
+    }
 
-    .d-explore    { left:3.3%; top:42%; width:14.2%; height:6.5%; }
-    .d-read       { left:18.2%; top:42%; width:13.4%; height:6.5%; }
+    /* FOUR CARDS */
 
-    .d-sign-s     { left:84%; top:20.1%; width:10.4%; height:5%; }
-    .d-sign-q     { left:83.3%; top:25%; width:11.2%; height:5.2%; }
-    .d-sign-w     { left:84%; top:30.1%; width:10.1%; height:5.2%; }
-    .d-sign-v     { left:84.6%; top:35%; width:9.4%; height:5.2%; }
+    .room-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
 
-    .d-card-s     { left:3.1%; top:50.7%; width:23.5%; height:20.8%; }
-    .d-card-q     { left:27.5%; top:50.7%; width:22.6%; height:20.8%; }
-    .d-card-w     { left:50.7%; top:50.7%; width:21%; height:20.8%; }
-    .d-card-v     { left:72.5%; top:50.7%; width:24%; height:20.8%; }
+    .room-card {
+      min-width: 0;
+      min-height: 0;
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: 1fr 112px;
+      gap: 8px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background:
+        radial-gradient(circle at 88% 86%, rgba(216, 163, 68, 0.11), transparent 34%),
+        linear-gradient(145deg, rgba(8, 22, 37, 0.97), rgba(3, 10, 19, 0.97));
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
 
-    .d-zoo        { left:3.2%; top:73%; width:27%; height:20.1%; }
-    .d-doctor     { left:30.2%; top:73%; width:25.5%; height:20.1%; }
-    .d-usb        { left:55.7%; top:73%; width:40.8%; height:20.1%; }
+    .room-card:hover,
+    .room-card:focus-visible {
+      transform: translateY(-3px);
+      border-color: var(--gold-light);
+    }
 
-    .d-privacy    { left:23.3%; top:94%; width:7.2%; height:4.5%; }
-    .d-terms      { left:31.4%; top:94%; width:6.7%; height:4.5%; }
-    .d-disclosure { left:39.2%; top:94%; width:14.3%; height:4.5%; }
-    .d-copyright  { left:54.3%; top:94%; width:7.1%; height:4.5%; }
-    .d-contact    { left:61.6%; top:94%; width:6.5%; height:4.5%; }
+    .room-text {
+      min-width: 0;
+    }
 
-    @media (orientation: portrait) {
-      .homepage {
-        width: min(100vw, calc(100dvh / 2));
-        max-width: 720px;
-        aspect-ratio: 1 / 2;
+    .room-title-row {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 10px;
+    }
+
+    .room-icon {
+      width: 49px;
+      height: 49px;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      color: var(--gold-light);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .room-card h2 {
+      margin: 0;
+      color: var(--cream);
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .room-card p {
+      margin: 0;
+      color: #dcd5ca;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.42;
+    }
+
+    .room-link {
+      display: inline-block;
+      margin-top: 10px;
+      color: var(--gold-light);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .room-art {
+      align-self: stretch;
+      opacity: 0.42;
+      border-left: 1px solid rgba(216, 163, 68, 0.16);
+      background:
+        linear-gradient(180deg, transparent, rgba(216, 163, 68, 0.05)),
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 10px,
+          rgba(216, 163, 68, 0.12) 10px 11px
+        );
+    }
+
+    .room-art.wave {
+      background:
+        linear-gradient(180deg, transparent, rgba(216, 163, 68, 0.04)),
+        repeating-linear-gradient(
+          90deg,
+          transparent 0 7px,
+          rgba(216, 163, 68, 0.32) 7px 9px
+        );
+      clip-path: polygon(
+        0 50%, 8% 38%, 16% 56%, 24% 22%, 32% 68%, 40% 30%,
+        48% 78%, 56% 42%, 64% 62%, 72% 28%, 80% 70%, 88% 36%,
+        96% 55%, 100% 50%, 100% 100%, 0 100%
+      );
+    }
+
+    /* FEATURED */
+
+    .featured-strip {
+      padding: 12px 18px 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: linear-gradient(145deg, rgba(7, 20, 34, 0.97), rgba(3, 10, 18, 0.97));
+    }
+
+    .featured-heading {
+      margin: 0 0 8px;
+      color: var(--gold-light);
+      font-size: 24px;
+      line-height: 1;
+    }
+
+    .featured-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.35fr;
+      height: 138px;
+    }
+
+    .featured-card {
+      min-width: 0;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 132px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      border-right: 1px solid rgba(216, 163, 68, 0.28);
+      transition: transform 160ms ease;
+    }
+
+    .featured-card:first-child {
+      padding-left: 0;
+    }
+
+    .featured-card:last-child {
+      padding-right: 0;
+      border-right: 0;
+    }
+
+    .featured-card:hover,
+    .featured-card:focus-visible {
+      transform: translateY(-3px);
+    }
+
+    .featured-cover {
+      width: 132px;
+      height: 120px;
+      object-fit: cover;
+      border: 1px solid rgba(216, 163, 68, 0.45);
+      border-radius: 7px;
+      background: #06111d;
+    }
+
+    .usb-card {
+      grid-template-columns: 286px minmax(0, 1fr);
+    }
+
+    .usb-covers {
+      width: 286px;
+      height: 120px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .usb-covers img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      object-position: center top;
+      border: 1px solid rgba(216, 163, 68, 0.45);
+      border-radius: 7px;
+      background: #06111d;
+    }
+
+    .featured-label {
+      margin: 0 0 6px;
+      color: var(--gold-light);
+      font-size: 18px;
+    }
+
+    .featured-title {
+      margin: 0 0 7px;
+      color: var(--cream);
+      font-size: 22px;
+      line-height: 1.08;
+    }
+
+    .featured-copy {
+      margin: 0 0 8px;
+      color: #dcd5ca;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .featured-action {
+      color: var(--gold-light);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    /* FOOTER */
+
+    .site-footer {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 26px;
+      color: var(--muted);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13px;
+      line-height: 1.2;
+    }
+
+    .footer-links,
+    .social-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      white-space: nowrap;
+    }
+
+    .social-links {
+      color: var(--cream);
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    /* Touch devices still use the same one-screen canvas, scaled to fit. */
+    @media (pointer: coarse) {
+      .room-card,
+      .featured-card,
+      .hero-button,
+      .main-nav a {
+        cursor: pointer;
       }
-
-      .desktop-only { display: none; }
-      .mobile-only { display: block; }
-
-      /* PHONE HOTSPOTS — coordinates match the portrait image */
-      .m-brand      { left:2.8%; top:.7%; width:46%; height:5%; }
-
-      .m-home       { left:4.5%; top:5.9%; width:8%; height:4.3%; }
-      .m-stories    { left:14.5%; top:5.9%; width:10%; height:4.3%; }
-      .m-questions  { left:25.5%; top:5.9%; width:13%; height:4.3%; }
-      .m-worlds     { left:39%; top:5.9%; width:10%; height:4.3%; }
-      .m-voices     { left:50%; top:5.9%; width:10%; height:4.3%; }
-      .m-about      { left:61%; top:5.9%; width:9%; height:4.3%; }
-      .m-start      { left:82%; top:5.8%; width:15%; height:4.4%; }
-
-      .m-hero       { left:2.8%; top:10.4%; width:94.4%; height:11.1%; }
-
-      .m-card-s     { left:2.8%; top:22.2%; width:45.8%; height:11.7%; }
-      .m-card-q     { left:51.4%; top:22.2%; width:45.8%; height:11.7%; }
-      .m-card-w     { left:2.8%; top:34.4%; width:45.8%; height:11.7%; }
-      .m-card-v     { left:51.4%; top:34.4%; width:45.8%; height:11.7%; }
-
-      .m-zoo        { left:2.8%; top:49.1%; width:94.4%; height:17.3%; }
-      .m-doctor     { left:2.8%; top:66.9%; width:94.4%; height:17.8%; }
-      .m-usb        { left:2.8%; top:85.3%; width:94.4%; height:12.6%; }
-
-      .m-footer     { left:2.8%; top:98.2%; width:94.4%; height:1.8%; }
     }
   </style>
 </head>
 
 <body>
-  <main class="homepage" aria-label="New Beansland homepage">
-    <picture>
-      <source media="(orientation: portrait)" srcset="new-beansland-homepage-mobile.png">
-      <img
-        class="homepage-image"
-        src="new-beansland-homepage.png"
-        alt="New Beansland homepage with navigation, stories, questions, worlds, voices, and featured books."
-      >
-    </picture>
+  <div id="viewport">
+    <main id="site-canvas">
+      <header class="site-header">
+        <a class="brand" href="home.html" aria-label="New Beansland home">
+          <img class="brand-logo" src="nbl-logo.png" alt="New Beansland logo">
+          <span class="brand-copy">
+            <span class="brand-name">New Beansland</span>
+            <span class="brand-tagline">Stories. Questions. Worlds.</span>
+          </span>
+        </a>
 
-    <!-- DESKTOP / LANDSCAPE -->
-    <a class="hotspot desktop-only d-home" href="home.html" aria-label="Home"></a>
-    <a class="hotspot desktop-only d-stories" href="site.html#stories" aria-label="Stories"></a>
-    <a class="hotspot desktop-only d-questions" href="site.html#frameworks" aria-label="Questions"></a>
-    <a class="hotspot desktop-only d-worlds" href="site.html#worlds" aria-label="Worlds"></a>
-    <a class="hotspot desktop-only d-voices" href="site.html#voices" aria-label="Voices"></a>
-    <a class="hotspot desktop-only d-about" href="site.html#about" aria-label="About"></a>
-    <a class="hotspot desktop-only d-start" href="site.html" aria-label="Start Here"></a>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a class="active" href="home.html">Home</a>
+          <a href="site.html#stories">Stories</a>
+          <a href="site.html#frameworks">Questions</a>
+          <a href="site.html#worlds">Worlds</a>
+          <a href="site.html#voices">Voices</a>
+          <a href="site.html#about">About</a>
+          <span class="search-mark" aria-hidden="true">⌕</span>
+          <a class="start-button" href="site.html">Start Here</a>
+        </nav>
+      </header>
 
-    <a class="hotspot desktop-only d-explore" href="site.html#worlds" aria-label="Explore Worlds"></a>
-    <a class="hotspot desktop-only d-read" href="site.html#stories" aria-label="Read Stories"></a>
+      <section class="hero" aria-label="New Beansland welcome">
+        <div class="hero-content">
+          <h1>A creative home for stories, questions, and worlds that keep walking.</h1>
+          <div class="gold-divider"></div>
+          <p>Published by New Beansland. Sometimes the answer isn't the answer... it's the question you didn't ask.</p>
 
-    <a class="hotspot desktop-only d-sign-s" href="site.html#stories" aria-label="Stories sign"></a>
-    <a class="hotspot desktop-only d-sign-q" href="site.html#frameworks" aria-label="Questions sign"></a>
-    <a class="hotspot desktop-only d-sign-w" href="site.html#worlds" aria-label="Worlds sign"></a>
-    <a class="hotspot desktop-only d-sign-v" href="site.html#voices" aria-label="Voices sign"></a>
+          <div class="hero-actions">
+            <a class="hero-button primary" href="books.html">Shop the Books →</a>
+            <a class="hero-button secondary" href="site.html#stories">Read the Stories →</a>
+          </div>
+        </div>
+      </section>
 
-    <a class="hotspot desktop-only d-card-s" href="site.html#stories" aria-label="Open Stories"></a>
-    <a class="hotspot desktop-only d-card-q" href="site.html#frameworks" aria-label="Open Questions"></a>
-    <a class="hotspot desktop-only d-card-w" href="site.html#worlds" aria-label="Open Worlds"></a>
-    <a class="hotspot desktop-only d-card-v" href="site.html#voices" aria-label="Open Voices"></a>
+      <section class="room-grid" aria-label="New Beansland rooms">
+        <a class="room-card" href="site.html#stories">
+          <div class="room-text">
+            <div class="room-title-row">
+              <div class="room-icon">▤</div>
+              <h2>Stories</h2>
+            </div>
+            <p>Original fiction, essays, and true tales from the New Beansland universe.</p>
+            <span class="room-link">Learn more →</span>
+          </div>
+          <div class="room-art" aria-hidden="true"></div>
+        </a>
 
-    <a class="hotspot desktop-only d-zoo" href="people-zoo.html" aria-label="Open The People Zoo"></a>
-    <a class="hotspot desktop-only d-doctor" href="doctor-rocketship-test.html" aria-label="Open Doctor Rocketship Test"></a>
-    <a class="hotspot desktop-only d-usb" href="coming-soon.html" aria-label="Open U.S.B."></a>
+        <a class="room-card" href="site.html#frameworks">
+          <div class="room-text">
+            <div class="room-title-row">
+              <div class="room-icon">?</div>
+              <h2>Questions</h2>
+            </div>
+            <p>We ask. You wonder. Big questions, small questions—and the in-between.</p>
+            <span class="room-link">Learn more →</span>
+          </div>
+          <div class="room-art" aria-hidden="true"></div>
+        </a>
 
-    <a class="hotspot desktop-only d-privacy" href="coming-soon.html" aria-label="Privacy"></a>
-    <a class="hotspot desktop-only d-terms" href="coming-soon.html" aria-label="Terms"></a>
-    <a class="hotspot desktop-only d-disclosure" href="coming-soon.html" aria-label="AI Disclosure"></a>
-    <a class="hotspot desktop-only d-copyright" href="coming-soon.html" aria-label="Copyright"></a>
-    <a class="hotspot desktop-only d-contact" href="mailto:foundernewbeansland@gmail.com" aria-label="Contact"></a>
+        <a class="room-card" href="site.html#worlds">
+          <div class="room-text">
+            <div class="room-title-row">
+              <div class="room-icon">✦</div>
+              <h2>Worlds</h2>
+            </div>
+            <p>Places, people, and histories that live beyond the page. Step inside.</p>
+            <span class="room-link">Learn more →</span>
+          </div>
+          <div class="room-art" aria-hidden="true"></div>
+        </a>
 
-    <!-- PHONE / PORTRAIT -->
-    <a class="hotspot mobile-only m-brand" href="home.html" aria-label="New Beansland home"></a>
+        <a class="room-card" href="site.html#voices">
+          <div class="room-text">
+            <div class="room-title-row">
+              <div class="room-icon">♩</div>
+              <h2>Voices</h2>
+            </div>
+            <p>Conversations, characters, and audio experiences from our creative universe.</p>
+            <span class="room-link">Learn more →</span>
+          </div>
+          <div class="room-art wave" aria-hidden="true"></div>
+        </a>
+      </section>
 
-    <a class="hotspot mobile-only m-home" href="home.html" aria-label="Home"></a>
-    <a class="hotspot mobile-only m-stories" href="site.html#stories" aria-label="Stories"></a>
-    <a class="hotspot mobile-only m-questions" href="site.html#frameworks" aria-label="Questions"></a>
-    <a class="hotspot mobile-only m-worlds" href="site.html#worlds" aria-label="Worlds"></a>
-    <a class="hotspot mobile-only m-voices" href="site.html#voices" aria-label="Voices"></a>
-    <a class="hotspot mobile-only m-about" href="site.html#about" aria-label="About"></a>
-    <a class="hotspot mobile-only m-start" href="site.html" aria-label="Start Here"></a>
+      <section class="featured-strip" aria-labelledby="featured-heading">
+        <h2 class="featured-heading" id="featured-heading">✦ Featured Works</h2>
 
-    <a class="hotspot mobile-only m-hero" href="site.html" aria-label="Explore New Beansland"></a>
+        <div class="featured-grid">
+          <a class="featured-card" href="people-zoo-shop.html">
+            <img class="featured-cover" src="people-zoo-front.png" alt="The People Zoo cover">
+            <div>
+              <h3 class="featured-title">The People Zoo</h3>
+              <p class="featured-copy">A finished New Beansland story. Step inside the zoo.</p>
+              <span class="featured-action">Explore Now →</span>
+            </div>
+          </a>
 
-    <a class="hotspot mobile-only m-card-s" href="site.html#stories" aria-label="Open Stories"></a>
-    <a class="hotspot mobile-only m-card-q" href="site.html#frameworks" aria-label="Open Questions"></a>
-    <a class="hotspot mobile-only m-card-w" href="site.html#worlds" aria-label="Open Worlds"></a>
-    <a class="hotspot mobile-only m-card-v" href="site.html#voices" aria-label="Open Voices"></a>
+          <a class="featured-card" href="doctor-rocketship-entry.html">
+            <img class="featured-cover" src="doctor-rocketship-front.png" alt="The Doctor Rocketship Test cover">
+            <div>
+              <h3 class="featured-title">The Doctor/<br>Rocketship Test</h3>
+              <p class="featured-copy">A New Beansland framework and experiment.</p>
+              <span class="featured-action">Explore Now →</span>
+            </div>
+          </a>
 
-    <a class="hotspot mobile-only m-zoo" href="people-zoo.html" aria-label="Open The People Zoo"></a>
-    <a class="hotspot mobile-only m-doctor" href="doctor-rocketship-test.html" aria-label="Open Doctor Rocketship Test"></a>
-    <a class="hotspot mobile-only m-usb" href="coming-soon.html" aria-label="Open U.S.B."></a>
+          <a class="featured-card usb-card" href="coming-soon.html">
+            <div class="usb-covers" aria-label="U.S.B. book covers">
+              <img src="usb-book-front-cover.png" alt="U.S.B. front cover">
+              <img src="usb-book-back-cover.png" alt="U.S.B. back cover">
+            </div>
+            <div>
+              <p class="featured-label">Coming Soon</p>
+              <h3 class="featured-title">U.S.B.</h3>
+              <p class="featured-copy">Book Two of a trilogy.</p>
+              <span class="featured-action">Explore Now →</span>
+            </div>
+          </a>
+        </div>
+      </section>
 
-    <a class="hotspot mobile-only m-footer" href="mailto:foundernewbeansland@gmail.com" aria-label="Contact New Beansland"></a>
-  </main>
+      <footer class="site-footer">
+        <div>© 2026 New Beansland. All rights reserved.</div>
+
+        <nav class="footer-links" aria-label="Footer links">
+          <a href="coming-soon.html">Privacy Policy</a>
+          <a href="coming-soon.html">Terms of Use</a>
+          <a href="coming-soon.html">AI-Assisted Creative Disclosure</a>
+          <a href="coming-soon.html">Copyright</a>
+          <a href="mailto:foundernewbeansland@gmail.com">Contact</a>
+        </nav>
+
+        <nav class="social-links" aria-label="Social links">
+          <a href="coming-soon.html" aria-label="Facebook">f</a>
+          <a href="coming-soon.html" aria-label="Instagram">◎</a>
+          <a href="coming-soon.html" aria-label="YouTube">▶</a>
+          <a href="coming-soon.html" aria-label="X">𝕏</a>
+        </nav>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const canvas = document.getElementById("site-canvas");
+      const BASE_WIDTH = 1600;
+      const BASE_HEIGHT = 900;
+
+      function fitCanvas() {
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const scale = Math.min(viewportWidth / BASE_WIDTH, viewportHeight / BASE_HEIGHT);
+
+        canvas.style.transform = "scale(" + scale + ")";
+      }
+
+      fitCanvas();
+      window.addEventListener("resize", fitCanvas);
+      window.addEventListener("orientationchange", fitCanvas);
+    })();
+  </script>
 </body>
 </html>
