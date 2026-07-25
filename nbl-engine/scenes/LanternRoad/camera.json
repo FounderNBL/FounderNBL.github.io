@@ -1,0 +1,11 @@
+{
+  "mode": "first-person",
+  "fieldOfView": 62,
+  "startPosition": [0, 1.72, 6.9],
+  "lookAt": [0, 1.6, 0],
+  "movementSpeed": 4.1,
+  "headBob": {
+    "enabled": true,
+    "amount": 0.018
+  }
+}
