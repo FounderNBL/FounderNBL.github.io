@@ -6,6 +6,7 @@
   <title>New Beansland | Stories. Questions. Worlds.</title>
   <meta name="description" content="New Beansland is a creative home for stories, questions, worlds, voices, books, and ideas.">
   <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://newbeansland.org/">
   <link rel="icon" type="image/jpeg" href="nbl-logo.jpg">
   <meta property="og:type" content="website">
@@ -14,19 +15,54 @@
   <meta property="og:description" content="A creative home for stories, questions, worlds, voices, books, and ideas.">
   <meta property="og:url" content="https://newbeansland.org/">
   <meta property="og:image" content="https://newbeansland.org/new-beansland-homepage.png">
+  <meta property="og:image:alt" content="New Beansland homepage artwork">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="New Beansland | Stories. Questions. Worlds.">
   <meta name="twitter:description" content="A creative home for stories, questions, worlds, voices, books, and ideas.">
   <meta name="twitter:image" content="https://newbeansland.org/new-beansland-homepage.png">
-  <meta http-equiv="refresh" content="0; url=home.html">
-  <script>
-    window.location.replace("home.html");
-  </script>
+  <style>
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #02060b;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #02060b;
+    }
+
+    .fallback {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+      box-sizing: border-box;
+      color: #f5ead5;
+      background: #02060b;
+      font-family: Georgia, "Times New Roman", serif;
+      text-align: center;
+    }
+
+    .fallback a { color: #f0c873; }
+  </style>
 </head>
 <body>
-  <p>
-    Entering New Beansland...
-    <a href="home.html">Continue</a>
-  </p>
+  <iframe src="home.html" title="New Beansland homepage"></iframe>
+  <noscript>
+    <main class="fallback">
+      <div>
+        <h1>New Beansland</h1>
+        <p>A creative home for stories, questions, and worlds that keep walking.</p>
+        <p><a href="home.html">Enter New Beansland</a></p>
+        <p><a href="books.html">Shop the books</a></p>
+      </div>
+    </main>
+  </noscript>
 </body>
 </html>
