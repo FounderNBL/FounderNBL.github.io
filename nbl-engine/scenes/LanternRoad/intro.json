@@ -1,0 +1,8 @@
+{
+  "experienceId": "first-arrival",
+  "displayOnce": true,
+  "transition": "fade",
+  "headline": "Welcome, Traveler.",
+  "message": "The road has been waiting for you.",
+  "continueLabel": "Begin the journey"
+}
