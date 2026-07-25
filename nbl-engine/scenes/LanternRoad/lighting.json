@@ -1,0 +1,10 @@
+{
+  "environment": "night",
+  "ambientIntensity": 0.28,
+  "lanternColor": "#ffd58c",
+  "lanternIntensity": 3.2,
+  "fog": {
+    "color": "#02050a",
+    "density": 0.024
+  }
+}
