@@ -47,6 +47,7 @@ const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 const interactive = [];
 const move = { forward: false, back: false, left: false, right: false };
+const imageCache = new Map();
 
 let currentHit = null;
 let highlighted = null;
@@ -55,35 +56,46 @@ let lampState = 0;
 let chairUnlocked = false;
 let transition = null;
 let walkingTime = 0;
+let scale = 1;
+let offsetX = 0;
+let offsetY = 0;
+let dragging = false;
+let dragStart = { x: 0, y: 0 };
 
 const artifacts = {
   graduation: {
     title: "Graduation Remarks",
+    image: "../founder-graduation-remarks.png",
     crop: [0.055, 0.13, 0.15, 0.39],
     story: "The ceremony marks an achievement, but the remarks explain what the achievement is for. The class continues tomorrow. Still walking."
   },
   banner: {
     title: "If it is is it?",
+    image: "../if-it-is-is-it-banner.png",
     crop: [0.355, 0.135, 0.30, 0.22],
     story: "New Beansland is a creative home for stories, questions, worlds, memory, philosophy, and the paths connecting them."
   },
   doctorate: {
     title: "Doctor of Narrative Architecture",
+    image: "../founder-doctorate-degree.png",
     crop: [0.81, 0.14, 0.10, 0.25],
     story: "The degree represents perception, narrative systems, civic imagination, worldbuilding, and the responsibility to build structures strong enough to hold difficult questions."
   },
   masters: {
     title: "Master of Applied Skepticism",
+    image: "../founder-masters-degree.png",
     crop: [0.90, 0.12, 0.085, 0.28],
     story: "The supporting degree represents inquiry, evidence, analogical reasoning, category recognition, and knowing what room you are in."
   },
   family: {
     title: "The New Beansland Family",
+    image: "../new-beansland-family-photo.png",
     crop: [0.215, 0.51, 0.12, 0.14],
     story: "The family was not assembled. It accumulated. Every member has an origin, a voice, a role, and a place in the world."
   },
   founder: {
     title: "Jamel Hawkins — Founder",
+    image: "../founder-nameplate.png",
     crop: [0.345, 0.58, 0.14, 0.075],
     story: "Founder of New Beansland. Builder of stories, questions, worlds, and the rooms connecting them. Still walking."
   },
@@ -111,15 +123,24 @@ const roomTexture = textureLoader.load("../founder-office-room.png");
 roomTexture.colorSpace = THREE.SRGBColorSpace;
 roomTexture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
 
+function loadImage(src) {
+  if (!imageCache.has(src)) {
+    imageCache.set(src, new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+      image.src = src;
+    }));
+  }
+  return imageCache.get(src);
+}
+
 function material(color, roughness = 0.72, metalness = 0.08) {
   return new THREE.MeshStandardMaterial({ color, roughness, metalness });
 }
 
 function box(name, size, position, color, options = {}) {
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(...size),
-    material(color, options.roughness, options.metalness)
-  );
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material(color, options.roughness, options.metalness));
   mesh.name = name;
   mesh.position.set(...position);
   mesh.castShadow = options.castShadow !== false;
@@ -138,6 +159,14 @@ function cropTexture(crop) {
   return texture;
 }
 
+function artifactTexture(data) {
+  if (!data.image) return cropTexture(data.crop);
+  const texture = textureLoader.load(data.image, undefined, undefined, () => {});
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  return texture;
+}
+
 function registerInteractive(mesh, data) {
   mesh.userData = { ...mesh.userData, ...data };
   mesh.userData.originalScale = mesh.scale.clone();
@@ -146,24 +175,14 @@ function registerInteractive(mesh, data) {
 
 function artifactPlane(id, size, position, rotationY = 0) {
   const data = artifacts[id];
-  const frame = box(
-    `${id}-frame`,
-    [size[0] + 0.16, size[1] + 0.16, 0.12],
-    [position[0], position[1], position[2] + 0.03],
-    0x8b6127,
-    { roughness: 0.38, metalness: 0.45 }
-  );
+  const frame = box(`${id}-frame`, [size[0] + 0.16, size[1] + 0.16, 0.12], [position[0], position[1], position[2] + 0.03], 0x8b6127, { roughness: 0.38, metalness: 0.45 });
   frame.rotation.y = rotationY;
-
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(size[0], size[1]),
-    new THREE.MeshStandardMaterial({
-      map: cropTexture(data.crop),
-      roughness: 0.58,
-      emissive: 0xffd47a,
-      emissiveIntensity: 0
-    })
-  );
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size[0], size[1]), new THREE.MeshStandardMaterial({
+    map: artifactTexture(data),
+    roughness: 0.58,
+    emissive: 0xffd47a,
+    emissiveIntensity: 0
+  }));
   mesh.position.set(...position);
   mesh.rotation.y = rotationY;
   scene.add(mesh);
@@ -171,11 +190,7 @@ function artifactPlane(id, size, position, rotationY = 0) {
   return mesh;
 }
 
-// The exact office artwork anchors the 3D set. Geometry in front of it creates depth.
-const backdrop = new THREE.Mesh(
-  new THREE.PlaneGeometry(13.8, 7.76),
-  new THREE.MeshBasicMaterial({ map: roomTexture, toneMapped: false })
-);
+const backdrop = new THREE.Mesh(new THREE.PlaneGeometry(13.8, 7.76), new THREE.MeshBasicMaterial({ map: roomTexture, toneMapped: false }));
 backdrop.position.set(0, 3.05, -4.42);
 scene.add(backdrop);
 
@@ -183,17 +198,14 @@ const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 14), material(0x25170f,
 floor.rotation.x = -Math.PI / 2;
 floor.receiveShadow = true;
 scene.add(floor);
-
 const rug = new THREE.Mesh(new THREE.PlaneGeometry(10.5, 6.4), material(0x071325, 0.88));
 rug.rotation.x = -Math.PI / 2;
 rug.position.set(0, 0.012, 1.5);
 rug.receiveShadow = true;
 scene.add(rug);
-
 box("left-wall", [0.35, 6, 11], [-7, 3, 0.8], 0x17120f, { castShadow: false });
 box("right-wall", [0.35, 6, 11], [7, 3, 0.8], 0x17120f, { castShadow: false });
 box("ceiling", [14, 0.3, 11], [0, 6, 0.8], 0x100b08, { castShadow: false });
-
 box("desk", [8.7, 1.25, 2.2], [0, 0.72, -0.5], 0x3a2011, { roughness: 0.58 });
 box("desk-top", [9.2, 0.18, 2.45], [0, 1.43, -0.5], 0x5a3219, { roughness: 0.48 });
 box("chair-seat", [1.7, 0.32, 1.4], [0, 1.1, -2], 0x151211, { roughness: 0.84 });
@@ -204,13 +216,11 @@ scene.add(new THREE.HemisphereLight(0xb8c9e2, 0x28160d, 0.34));
 const fillLight = new THREE.DirectionalLight(0x8ca8c7, 1.5);
 fillLight.position.set(-4, 5, 5);
 scene.add(fillLight);
-
 const keyLight = new THREE.SpotLight(0xffd58c, 0, 14, Math.PI / 4.5, 0.55, 1.4);
 keyLight.position.set(3.1, 4.6, -0.5);
 keyLight.target.position.set(0.8, 1.3, -1.4);
 keyLight.castShadow = true;
 scene.add(keyLight, keyLight.target);
-
 [-4.8, 0, 4.8].forEach((x) => {
   const light = new THREE.PointLight(0xffd7a2, 3.2, 8, 2);
   light.position.set(x, 5.65, 1.8);
@@ -262,18 +272,8 @@ function updateLamp() {
   renderer.toneMappingExposure = lampState === 0 ? 0.95 : lampState === 1 ? 1.04 : 1.12;
   chairUnlocked = lampState === 2;
   chairBack.userData.prompt = chairUnlocked ? "Inspect the empty chair" : "The chair is waiting for the light";
-  status.textContent = lampState === 1
-    ? "The room is waking. Touch the light again."
-    : lampState === 2
-      ? "The walk is lit. The chair is ready."
-      : "The room returns to rest.";
+  status.textContent = lampState === 1 ? "The room is waking. Touch the light again." : lampState === 2 ? "The walk is lit. The chair is ready." : "The room returns to rest.";
 }
-
-let scale = 1;
-let offsetX = 0;
-let offsetY = 0;
-let dragging = false;
-let dragStart = { x: 0, y: 0 };
 
 function applyArtifact() {
   artifactCanvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
@@ -286,9 +286,29 @@ function resetArtifact() {
   applyArtifact();
 }
 
-function drawArtifact(id) {
+function drawImageToCanvas(image) {
+  artifactCanvas.width = Math.max(900, image.naturalWidth || image.width);
+  artifactCanvas.height = Math.max(650, image.naturalHeight || image.height);
+  ctx.clearRect(0, 0, artifactCanvas.width, artifactCanvas.height);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(image, 0, 0, artifactCanvas.width, artifactCanvas.height);
+  resetArtifact();
+}
+
+async function drawArtifact(id) {
   const data = artifacts[id];
-  if (!data || !roomImage.complete) return;
+  if (!data) return;
+  if (data.image) {
+    try {
+      const image = await loadImage(data.image);
+      drawImageToCanvas(image);
+      return;
+    } catch {
+      status.textContent = `The full-resolution ${data.title} image could not load. Showing the room detail instead.`;
+    }
+  }
+  if (!roomImage.complete) await new Promise((resolve) => roomImage.addEventListener("load", resolve, { once: true }));
   const [x, y, w, h] = data.crop;
   const sx = x * roomImage.naturalWidth;
   const sy = y * roomImage.naturalHeight;
@@ -303,14 +323,14 @@ function drawArtifact(id) {
   resetArtifact();
 }
 
-function revealInspector(id) {
+async function revealInspector(id) {
   const data = artifacts[id];
   artifactTitle.textContent = data.title;
   artifactStory.textContent = data.story;
   artifactStory.hidden = true;
   storyButton.textContent = "Learn its story";
-  drawArtifact(id);
   inspector.hidden = false;
+  await drawArtifact(id);
   closeInspector.focus();
 }
 
@@ -325,25 +345,20 @@ function beginArtifactTransition(mesh, id) {
   clone.scale.copy(mesh.getWorldScale(new THREE.Vector3()));
   scene.add(clone);
   mesh.visible = false;
-
   const cameraDirection = new THREE.Vector3();
   camera.getWorldDirection(cameraDirection);
   const targetPosition = camera.position.clone().add(cameraDirection.multiplyScalar(1.55));
   targetPosition.y = camera.position.y;
-  const startPosition = clone.position.clone();
-  const startQuaternion = clone.quaternion.clone();
-  const targetQuaternion = camera.quaternion.clone();
-
   transition = {
     id,
     mesh,
     clone,
     elapsed: 0,
     duration: matchMedia("(prefers-reduced-motion: reduce)").matches ? 0.02 : 0.72,
-    startPosition,
+    startPosition: clone.position.clone(),
     targetPosition,
-    startQuaternion,
-    targetQuaternion
+    startQuaternion: clone.quaternion.clone(),
+    targetQuaternion: camera.quaternion.clone()
   };
   status.textContent = `Approaching ${artifacts[id].title}…`;
 }
@@ -356,7 +371,6 @@ function updateTransition(delta) {
   transition.clone.position.lerpVectors(transition.startPosition, transition.targetPosition, eased);
   transition.clone.quaternion.slerpQuaternions(transition.startQuaternion, transition.targetQuaternion, eased);
   transition.clone.scale.setScalar(1 + eased * 0.42);
-
   if (raw >= 1) {
     const { id, mesh, clone } = transition;
     scene.remove(clone);
@@ -374,8 +388,7 @@ function openInspector(id, mesh) {
     status.textContent = "The chair is locked. The clue points to the light.";
     return;
   }
-  if (!artifacts[id]) return;
-  beginArtifactTransition(mesh, id);
+  if (artifacts[id]) beginArtifactTransition(mesh, id);
 }
 
 function closeArtifact() {
@@ -409,7 +422,6 @@ function animate() {
   requestAnimationFrame(animate);
   const delta = Math.min(clock.getDelta(), 0.05);
   updateTransition(delta);
-
   const moving = move.forward || move.back || move.left || move.right;
   if (gameStarted && inspector.hidden && !transition) {
     velocity.x -= velocity.x * 10 * delta;
@@ -427,7 +439,6 @@ function animate() {
     camera.position.y = 1.72 + (moving ? Math.sin(walkingTime) * 0.018 : Math.sin(walkingTime) * 0.004);
     updateTarget();
   }
-
   renderer.render(scene, camera);
 }
 
@@ -444,43 +455,30 @@ document.addEventListener("keydown", (event) => {
   if (event.code === "Escape" && !inspector.hidden) closeArtifact();
 });
 document.addEventListener("keyup", (event) => setMove(event.code, false));
-
 renderer.domElement.addEventListener("click", () => {
   if (!gameStarted || !inspector.hidden || transition) return;
   if (currentHit) interact();
   else if (matchMedia("(pointer:fine)").matches && !controls.isLocked) controls.lock();
 });
-
 enterButton.addEventListener("click", () => {
   intro.hidden = true;
   gameStarted = true;
   status.textContent = "You crossed the threshold. Find the light. Look closely.";
   if (matchMedia("(pointer:fine)").matches) controls.lock();
 });
-
 pauseButton.addEventListener("click", () => {
   if (!gameStarted) return;
   controls.isLocked ? controls.unlock() : matchMedia("(pointer:fine)").matches && controls.lock();
 });
-
 closeInspector.addEventListener("click", closeArtifact);
-inspector.addEventListener("click", (event) => {
-  if (event.target === inspector) closeArtifact();
-});
+inspector.addEventListener("click", (event) => { if (event.target === inspector) closeArtifact(); });
 storyButton.addEventListener("click", () => {
   artifactStory.hidden = !artifactStory.hidden;
   storyButton.textContent = artifactStory.hidden ? "Learn its story" : "Hide the story";
 });
-zoomIn.addEventListener("click", () => {
-  scale = Math.min(scale + 0.25, 4);
-  applyArtifact();
-});
-zoomOut.addEventListener("click", () => {
-  scale = Math.max(scale - 0.25, 0.65);
-  applyArtifact();
-});
+zoomIn.addEventListener("click", () => { scale = Math.min(scale + 0.25, 4); applyArtifact(); });
+zoomOut.addEventListener("click", () => { scale = Math.max(scale - 0.25, 0.65); applyArtifact(); });
 resetView.addEventListener("click", resetArtifact);
-
 artifactCanvas.addEventListener("pointerdown", (event) => {
   dragging = true;
   dragStart = { x: event.clientX - offsetX, y: event.clientY - offsetY };
@@ -503,7 +501,6 @@ artifactCanvas.addEventListener("wheel", (event) => {
   scale = THREE.MathUtils.clamp(scale + (event.deltaY < 0 ? 0.16 : -0.16), 0.65, 4);
   applyArtifact();
 }, { passive: false });
-
 document.querySelectorAll("[data-move]").forEach((button) => {
   const key = button.dataset.move;
   const start = (event) => { event.preventDefault(); move[key] = true; };
@@ -513,7 +510,6 @@ document.querySelectorAll("[data-move]").forEach((button) => {
   button.addEventListener("pointercancel", stop);
   button.addEventListener("pointerleave", stop);
 });
-
 let lookPointer = null;
 lookPad.addEventListener("pointerdown", (event) => {
   lookPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
@@ -529,19 +525,14 @@ lookPad.addEventListener("pointermove", (event) => {
   camera.rotation.y -= dx * 0.006;
   camera.rotation.x = THREE.MathUtils.clamp(camera.rotation.x - dy * 0.005, -1.2, 1.2);
 });
-lookPad.addEventListener("pointerup", (event) => {
-  if (lookPointer?.id === event.pointerId) lookPointer = null;
-});
-
+lookPad.addEventListener("pointerup", (event) => { if (lookPointer?.id === event.pointerId) lookPointer = null; });
 addEventListener("resize", () => {
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
 });
-
 roomImage.addEventListener("error", () => {
   status.textContent = "The room loaded, but an inspection image could not be prepared.";
 });
-
 animate();
