@@ -1,12 +1,29 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Doctor / Rocketship Test | New Beansland</title><meta name="description" content="Choose an edition of The Doctor / Rocketship Test and prepare a purchase request.">
-<link rel="icon" href="nbl-logo.png"><link rel="stylesheet" href="nbl-store.css"></head><body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>The Doctor / Rocketship Test — Editions | New Beansland</title>
+  <meta name="description" content="Choose an edition of The Doctor / Rocketship Test and prepare a purchase request.">
+  <meta name="theme-color" content="#02070d">
+  <link rel="canonical" href="https://newbeansland.org/doctor-rocketship-shop.html">
+  <link rel="icon" type="image/jpeg" href="nbl-logo.jpg">
+  <link rel="stylesheet" href="nbl-store.css">
+  <meta property="og:type" content="product">
+  <meta property="og:site_name" content="New Beansland">
+  <meta property="og:title" content="The Doctor / Rocketship Test — Editions | New Beansland">
+  <meta property="og:description" content="Review the Standard and Islamic Dilemma editions and prepare a purchase request.">
+  <meta property="og:url" content="https://newbeansland.org/doctor-rocketship-shop.html">
+  <meta property="og:image" content="https://newbeansland.org/doctor-rocketship-standard-front.png">
+  <meta property="og:image:alt" content="The Doctor / Rocketship Test Standard Edition cover">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
 
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="home.html" aria-label="New Beansland home">
-      <img src="nbl-logo.png" alt="">
+      <img src="nbl-logo.jpg" alt="">
       <span><span class="brand-name">New Beansland</span><span class="brand-tag">Independent Publishing House</span></span>
     </a>
     <nav class="nav" aria-label="Publisher navigation">
@@ -20,8 +37,8 @@
 <main class="container product-layout">
 <section class="preview-shell" aria-label="Selected edition preview">
 <div class="cover-stage">
-<figure class="cover-panel"><img id="frontCover" src="doctor-rocketship-standard-front.png" alt="Selected edition front cover"><figcaption class="cover-caption">Front Cover</figcaption></figure>
-<figure class="cover-panel"><img id="backCover" src="doctor-rocketship-standard-back.png" alt="Selected edition back cover"><figcaption class="cover-caption">Back Cover</figcaption></figure>
+<figure class="cover-panel"><img id="frontCover" src="doctor-rocketship-standard-front.png" alt="Standard Edition front cover" decoding="async"><figcaption class="cover-caption">Front Cover</figcaption></figure>
+<figure class="cover-panel"><img id="backCover" src="doctor-rocketship-standard-back.png" alt="Standard Edition back cover" decoding="async"><figcaption class="cover-caption">Back Cover</figcaption></figure>
 </div>
 
 <div class="trailer-card" aria-label="Selected edition trailer">
@@ -42,8 +59,8 @@
 <p class="kicker">Published by New Beansland</p><h1 class="product-title">The Doctor / Rocketship Test</h1>
 <p class="product-sub">Choose the presentation that speaks to you. Both editions contain the same complete book; the cover experience is different.</p>
 <div class="edition-grid" role="group" aria-label="Choose edition">
-<button class="edition-option active" type="button" data-edition="standard"><span class="edition-icon">📘</span><span><span class="edition-name">Standard Edition</span><span class="edition-note">Medicine and aerospace engineering in one visual system.</span></span><span class="edition-check">Selected</span></button>
-<button class="edition-option" type="button" data-edition="islamic"><span class="edition-icon">☪</span><span><span class="edition-name">Islamic Dilemma Edition</span><span class="edition-note">Revelation and engineering presented as different domains with different rules.</span></span><span class="edition-check">Choose</span></button>
+<button class="edition-option active" type="button" data-edition="standard" aria-pressed="true"><span class="edition-icon" aria-hidden="true">📘</span><span><span class="edition-name">Standard Edition</span><span class="edition-note">Medicine and aerospace engineering in one visual system.</span></span><span class="edition-check">Selected</span></button>
+<button class="edition-option" type="button" data-edition="islamic" aria-pressed="false"><span class="edition-icon" aria-hidden="true">☪</span><span><span class="edition-name">Islamic Dilemma Edition</span><span class="edition-note">Revelation and engineering presented as different domains with different rules.</span></span><span class="edition-check">Choose</span></button>
 </div>
 <div class="price-card"><div class="price-label">Price</div><div class="price-value">Confirmed by New Beansland staff before payment</div></div>
 <div class="form-card"><h2>Request Purchase</h2><p class="form-intro">Complete this form to prepare your order email. New Beansland will reply with the confirmed price, any bundle discount, and official Cash App instructions.</p>
@@ -55,7 +72,7 @@
 <div class="policy-box"><strong>Manual Publisher Process:</strong> This request does not charge you. Staff confirms availability and the exact total first. Do not send payment until an official New Beansland reply provides the amount and Cash App information.</div>
 <div class="actions"><button class="btn primary" type="submit">Prepare Purchase Request</button><a class="btn" href="books.html">Back to Books</a></div>
 </form>
-<div class="summary-panel" id="summaryPanel"><pre id="summaryText"></pre><div class="actions" style="margin-top:14px"><a class="btn primary" id="emailButton" href="#">Open Email App</a><button class="btn" id="copyButton" type="button">Copy Request</button><a class="btn" href="purchase-requested.html">I Sent My Request</a></div><div class="status" id="status" aria-live="polite"></div></div>
+<div class="summary-panel" id="summaryPanel"><pre id="summaryText"></pre><div class="actions" style="margin-top:14px"><a class="btn primary" id="emailButton" href="#">Open Email App</a><button class="btn" id="copyButton" type="button">Copy Request</button><a class="btn" href="purchase-requested.html">View Next Steps</a></div><div class="status" id="status" aria-live="polite"></div></div>
 </div></section>
 </main>
 <footer class="footer">
@@ -91,7 +108,12 @@
    trailerLabel.textContent = d.name;
    trailer.load();
    front.alt = d.name + ' front cover'; back.alt = d.name + ' back cover';
-   document.querySelectorAll('.edition-option').forEach(b => { b.classList.toggle('active', b===btn); b.querySelector('.edition-check').textContent = b===btn ? 'Selected' : 'Choose'; });
+   document.querySelectorAll('.edition-option').forEach(b => {
+     const active = b === btn;
+     b.classList.toggle('active', active);
+     b.setAttribute('aria-pressed', String(active));
+     b.querySelector('.edition-check').textContent = active ? 'Selected' : 'Choose';
+   });
  }));
  const form = document.getElementById('purchaseForm');
  const panel = document.getElementById('summaryPanel'); const text = document.getElementById('summaryText'); const emailBtn = document.getElementById('emailButton'); const status = document.getElementById('status');
@@ -114,4 +136,6 @@ Please confirm the exact total and official payment instructions before I send p
  });
  document.getElementById('copyButton').addEventListener('click', async () => { try { await navigator.clipboard.writeText(text.textContent); status.textContent='Purchase request copied.'; } catch { status.textContent='Select the request text and copy it manually.'; } });
 })();
-</script></body></html>
+</script>
+</body>
+</html>
