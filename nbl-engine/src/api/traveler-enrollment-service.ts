@@ -8,7 +8,10 @@ import {
   type MembershipTier,
   type TravelerProfile
 } from "../traveler/traveler.js";
-import { createArrivalExperience, type ArrivalExperience } from "../engine/arrival-experience.js";
+import {
+  FIRST_ARRIVAL_EXPERIENCE,
+  type ArrivalExperience
+} from "../engine/arrival-experience.js";
 
 export const FIRST_WALK_STEPS: JourneyStep[] = [
   { sceneId: "arrival", title: "Arrival", worldId: "new-beansland" },
@@ -40,7 +43,7 @@ export class TravelerEnrollmentService {
       return {
         traveler: existing,
         arrival: shouldShowArrivalExperience(existing)
-          ? createArrivalExperience(existing)
+          ? FIRST_ARRIVAL_EXPERIENCE
           : null
       };
     }
@@ -74,7 +77,7 @@ export class TravelerEnrollmentService {
 
     return {
       traveler,
-      arrival: createArrivalExperience(traveler)
+      arrival: FIRST_ARRIVAL_EXPERIENCE
     };
   }
 
