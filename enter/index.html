@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Enter New Beansland | The Founder’s Office</title>
+  <meta name="description" content="Enter a playable 3D New Beansland experience and explore the Founder’s Office through movement, discovery, and artifact inspection.">
+  <meta name="theme-color" content="#02050a">
+  <meta name="robots" content="noindex,follow">
+  <link rel="canonical" href="https://newbeansland.org/enter/">
+  <link rel="icon" type="image/jpeg" href="../nbl-logo.jpg">
+  <style>
+    :root {
+      color-scheme: dark;
+      --gold: #d7b45a;
+      --gold-bright: #ffe39a;
+      --cream: #f5ecd8;
+      --night: #02050a;
+      --panel: rgba(4, 9, 16, 0.9);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--night);
+      color: var(--cream);
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    button,
+    a { font: inherit; }
+
+    button { color: inherit; }
+
+    [hidden] { display: none !important; }
+
+    #game {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 40%, #142238, #02050a 70%);
+    }
+
+    #game canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+
+    .hud {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .topbar {
+      position: absolute;
+      top: max(12px, env(safe-area-inset-top));
+      left: max(12px, env(safe-area-inset-left));
+      right: max(12px, env(safe-area-inset-right));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .hud-button {
+      min-height: 42px;
+      padding: 9px 14px;
+      border: 1px solid rgba(215, 180, 90, 0.62);
+      border-radius: 999px;
+      color: var(--cream);
+      background: rgba(2, 7, 13, 0.78);
+      backdrop-filter: blur(10px);
+      text-decoration: none;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .hud-button:hover,
+    .hud-button:focus-visible {
+      border-color: var(--gold-bright);
+      outline: 3px solid rgba(255, 227, 154, 0.38);
+      outline-offset: 2px;
+    }
+
+    .status {
+      max-width: min(62vw, 620px);
+      padding: 9px 14px;
+      border: 1px solid rgba(215, 180, 90, 0.35);
+      border-radius: 999px;
+      color: #fff1c9;
+      background: rgba(2, 7, 13, 0.7);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.9rem;
+    }
+
+    .reticle {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 22px;
+      height: 22px;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(255, 227, 154, 0.7);
+      border-radius: 50%;
+      opacity: 0.78;
+    }
+
+    .reticle::before,
+    .reticle::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      background: var(--gold-bright);
+      transform: translate(-50%, -50%);
+    }
+
+    .reticle::before { width: 4px; height: 1px; }
+    .reticle::after { width: 1px; height: 4px; }
+
+    .prompt {
+      position: absolute;
+      left: 50%;
+      bottom: max(28px, calc(env(safe-area-inset-bottom) + 18px));
+      transform: translateX(-50%);
+      width: min(90vw, 560px);
+      min-height: 44px;
+      padding: 11px 16px;
+      border: 1px solid rgba(215, 180, 90, 0.52);
+      border-radius: 12px;
+      color: #fff1c7;
+      background: rgba(3, 9, 17, 0.84);
+      backdrop-filter: blur(12px);
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      opacity: 0;
+      transition: opacity 160ms ease;
+    }
+
+    .prompt.show { opacity: 1; }
+
+    .intro,
+    .inspector {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: max(18px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+      background: radial-gradient(circle at 50% 34%, rgba(29, 49, 76, 0.52), transparent 44%), rgba(0, 3, 8, 0.92);
+      backdrop-filter: blur(8px);
+    }
+
+    .intro-card,
+    .inspector-card {
+      width: min(94vw, 980px);
+      max-height: 90dvh;
+      overflow: auto;
+      border: 1px solid rgba(215, 180, 90, 0.7);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(15, 31, 49, 0.98), rgba(4, 11, 21, 0.99));
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.8);
+    }
+
+    .intro-card {
+      max-width: 760px;
+      padding: clamp(28px, 6vw, 58px);
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--gold);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .intro h1,
+    .inspector h2 {
+      margin: 0;
+      color: #fff1c7;
+      line-height: 1.05;
+    }
+
+    .intro h1 { font-size: clamp(2.4rem, 8vw, 5rem); }
+
+    .intro-copy {
+      margin: 18px auto 0;
+      max-width: 620px;
+      color: #e8dfcd;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.65;
+    }
+
+    .controls-grid {
+      margin: 28px 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .control-note {
+      padding: 14px;
+      border: 1px solid rgba(215, 180, 90, 0.25);
+      border-radius: 12px;
+      background: rgba(1, 6, 12, 0.54);
+    }
+
+    .control-note strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--gold-bright);
+    }
+
+    .enter-button,
+    .inspect-button {
+      min-height: 50px;
+      padding: 13px 22px;
+      border: 1px solid var(--gold-bright);
+      border-radius: 10px;
+      color: #0a1018;
+      background: linear-gradient(180deg, #f3d994, #c99232);
+      font-family: Arial, Helvetica, sans-serif;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .enter-button:hover,
+    .enter-button:focus-visible,
+    .inspect-button:hover,
+    .inspect-button:focus-visible {
+      outline: 3px solid rgba(255, 227, 154, 0.45);
+      outline-offset: 3px;
+    }
+
+    .inspector-card {
+      position: relative;
+      padding: clamp(18px, 3vw, 30px);
+    }
+
+    .inspector-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.6fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .artifact-stage {
+      min-height: min(62dvh, 680px);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid rgba(215, 180, 90, 0.35);
+      border-radius: 14px;
+      background: radial-gradient(circle at center, #17243a, #030810 72%);
+      touch-action: none;
+    }
+
+    #artifactCanvas {
+      display: block;
+      max-width: none;
+      transform-origin: center;
+      cursor: grab;
+      user-select: none;
+    }
+
+    #artifactCanvas.dragging { cursor: grabbing; }
+
+    .artifact-copy {
+      color: #e8dfcd;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+    }
+
+    .artifact-copy h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+    }
+
+    .artifact-copy p { margin: 14px 0 0; }
+
+    .inspector-actions {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .inspect-button.secondary {
+      color: var(--cream);
+      background: rgba(2, 8, 16, 0.82);
+    }
+
+    .close-inspector {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 4;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(215, 180, 90, 0.62);
+      border-radius: 50%;
+      color: #fff1c7;
+      background: rgba(2, 8, 16, 0.88);
+      cursor: pointer;
+    }
+
+    .story {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(215, 180, 90, 0.25);
+    }
+
+    .mobile-controls {
+      position: absolute;
+      left: max(14px, env(safe-area-inset-left));
+      right: max(14px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      display: none;
+      justify-content: space-between;
+      align-items: end;
+      pointer-events: none;
+    }
+
+    .dpad,
+    .look-pad {
+      pointer-events: auto;
+    }
+
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 48px);
+      grid-template-rows: repeat(2, 48px);
+      gap: 5px;
+    }
+
+    .touch-button {
+      border: 1px solid rgba(215, 180, 90, 0.5);
+      border-radius: 10px;
+      color: #fff1c7;
+      background: rgba(2, 7, 13, 0.68);
+      backdrop-filter: blur(8px);
+      touch-action: none;
+    }
+
+    .look-pad {
+      width: 116px;
+      height: 116px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(215, 180, 90, 0.42);
+      border-radius: 50%;
+      color: #fff1c7;
+      background: rgba(2, 7, 13, 0.46);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 0.75rem;
+      touch-action: none;
+    }
+
+    @media (pointer: coarse), (max-width: 900px) {
+      .mobile-controls { display: flex; }
+      .prompt { bottom: 150px; }
+      .reticle { width: 28px; height: 28px; }
+    }
+
+    @media (max-width: 760px) {
+      .status { display: none; }
+      .controls-grid { grid-template-columns: 1fr; }
+      .inspector-layout { grid-template-columns: 1fr; }
+      .artifact-stage { min-height: 48dvh; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <main id="game" aria-label="Playable 3D Founder’s Office"></main>
+
+  <div class="hud" aria-hidden="false">
+    <div class="topbar">
+      <a class="hud-button" href="../home.html">← Leave the room</a>
+      <div id="status" class="status" role="status" aria-live="polite">Find the light. Look closely.</div>
+      <button id="pauseButton" class="hud-button" type="button">Pause</button>
+    </div>
+    <div class="reticle" aria-hidden="true"></div>
+    <div id="prompt" class="prompt" role="status" aria-live="polite"></div>
+    <div class="mobile-controls" aria-label="Touch movement controls">
+      <div class="dpad">
+        <span></span><button class="touch-button" data-move="forward" type="button" aria-label="Move forward">▲</button><span></span>
+        <button class="touch-button" data-move="left" type="button" aria-label="Move left">◀</button>
+        <button class="touch-button" data-move="back" type="button" aria-label="Move backward">▼</button>
+        <button class="touch-button" data-move="right" type="button" aria-label="Move right">▶</button>
+      </div>
+      <div id="lookPad" class="look-pad" aria-label="Drag to look around">DRAG TO LOOK</div>
+    </div>
+  </div>
+
+  <section id="intro" class="intro" aria-labelledby="introTitle">
+    <div class="intro-card">
+      <p class="eyebrow">The first door</p>
+      <h1 id="introTitle">Enter New Beansland</h1>
+      <p class="intro-copy">You are not opening another page. You are entering the Founder’s Office. Move slowly, look closely, and approach anything that seems meaningful.</p>
+      <div class="controls-grid" aria-label="Game controls">
+        <div class="control-note"><strong>Move</strong>WASD, arrow keys, or touch controls</div>
+        <div class="control-note"><strong>Look</strong>Move the mouse or drag the right control</div>
+        <div class="control-note"><strong>Inspect</strong>Click, tap, or press E when prompted</div>
+      </div>
+      <button id="enterButton" class="enter-button" type="button">Open the Door</button>
+    </div>
+  </section>
+
+  <section id="inspector" class="inspector" role="dialog" aria-modal="true" aria-labelledby="artifactTitle" hidden>
+    <article class="inspector-card">
+      <button id="closeInspector" class="close-inspector" type="button" aria-label="Return artifact to the room">✕</button>
+      <div class="inspector-layout">
+        <div id="artifactStage" class="artifact-stage">
+          <canvas id="artifactCanvas" width="1200" height="900" aria-label="Inspectable artifact"></canvas>
+        </div>
+        <div class="artifact-copy">
+          <p class="eyebrow">Artifact inspection</p>
+          <h2 id="artifactTitle"></h2>
+          <p id="artifactHint">Drag to examine. Use the controls to zoom.</p>
+          <div class="inspector-actions">
+            <button id="zoomIn" class="inspect-button secondary" type="button">Zoom in</button>
+            <button id="zoomOut" class="inspect-button secondary" type="button">Zoom out</button>
+            <button id="resetView" class="inspect-button secondary" type="button">Reset</button>
+            <button id="storyButton" class="inspect-button" type="button">Learn its story</button>
+          </div>
+          <div id="artifactStory" class="story" hidden></div>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+
+    const game = document.getElementById("game");
+    const intro = document.getElementById("intro");
+    const enterButton = document.getElementById("enterButton");
+    const pauseButton = document.getElementById("pauseButton");
+    const prompt = document.getElementById("prompt");
+    const status = document.getElementById("status");
+    const inspector = document.getElementById("inspector");
+    const closeInspector = document.getElementById("closeInspector");
+    const artifactTitle = document.getElementById("artifactTitle");
+    const artifactStory = document.getElementById("artifactStory");
+    const storyButton = document.getElementById("storyButton");
+    const artifactCanvas = document.getElementById("artifactCanvas");
+    const artifactContext = artifactCanvas.getContext("2d");
+    const zoomIn = document.getElementById("zoomIn");
+    const zoomOut = document.getElementById("zoomOut");
+    const resetView = document.getElementById("resetView");
+    const lookPad = document.getElementById("lookPad");
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x03070d);
+    scene.fog = new THREE.FogExp2(0x02050a, 0.035);
+
+    const camera = new THREE.PerspectiveCamera(64, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.72, 6.7);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    game.appendChild(renderer.domElement);
+
+    const controls = new PointerLockControls(camera, renderer.domElement);
+    scene.add(controls.object);
+
+    const clock = new THREE.Clock();
+    const raycaster = new THREE.Raycaster();
+    const center = new THREE.Vector2(0, 0);
+    const move = { forward: false, back: false, left: false, right: false };
+    const velocity = new THREE.Vector3();
+    const direction = new THREE.Vector3();
+    const interactive = [];
+    let activeObject = null;
+    let gameStarted = false;
+    let lampState = 0;
+    let chairUnlocked = false;
+
+    const artifacts = {
+      graduation: {
+        title: "Graduation Remarks",
+        crop: [0.055, 0.13, 0.15, 0.39],
+        story: "The ceremony marks an achievement, but the remarks explain what the achievement is for. The class continues tomorrow. Still walking."
+      },
+      banner: {
+        title: "If it is is it?",
+        crop: [0.355, 0.135, 0.30, 0.22],
+        story: "New Beansland is a creative home for stories, questions, worlds, memory, philosophy, and the paths connecting them."
+      },
+      doctorate: {
+        title: "Doctor of Narrative Architecture",
+        crop: [0.81, 0.14, 0.10, 0.25],
+        story: "The degree represents perception, narrative systems, civic imagination, worldbuilding, and the responsibility to build structures strong enough to hold difficult questions."
+      },
+      masters: {
+        title: "Master of Applied Skepticism",
+        crop: [0.90, 0.12, 0.085, 0.28],
+        story: "The supporting degree represents inquiry, evidence, analogical reasoning, category recognition, and knowing what room you are in."
+      },
+      family: {
+        title: "The New Beansland Family",
+        crop: [0.215, 0.51, 0.12, 0.14],
+        story: "The family was not assembled. It accumulated. Every member has an origin, a voice, a role, and a place in the world."
+      },
+      founder: {
+        title: "Jamel Hawkins — Founder",
+        crop: [0.345, 0.58, 0.14, 0.075],
+        story: "Founder of New Beansland. Builder of stories, questions, worlds, and the rooms connecting them. Still walking."
+      },
+      yolanda: {
+        title: "For You, Mom — Yolanda",
+        crop: [0.68, 0.50, 0.13, 0.18],
+        story: "You are my first love, my forever angel, and the reason I am who I am. Everything I do, I do for you."
+      },
+      clue: {
+        title: "The Desk Clue",
+        crop: [0.43, 0.74, 0.16, 0.105],
+        story: "If it is too dark, use a light. The lamp changes the room in three touches."
+      },
+      chair: {
+        title: "The Empty Chair",
+        crop: [0.42, 0.39, 0.16, 0.24],
+        story: "The chair is empty because the Founder is still walking, still building, and still moving through New Beansland."
+      }
+    };
+
+    const roomImage = new Image();
+    roomImage.src = "../founder-office-room.png";
+
+    function material(color, roughness = 0.72, metalness = 0.08) {
+      return new THREE.MeshStandardMaterial({ color, roughness, metalness });
+    }
+
+    function box(name, size, position, color, options = {}) {
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material(color, options.roughness, options.metalness));
+      mesh.name = name;
+      mesh.position.set(...position);
+      mesh.castShadow = options.castShadow !== false;
+      mesh.receiveShadow = options.receiveShadow !== false;
+      scene.add(mesh);
+      return mesh;
+    }
+
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(18, 14), material(0x25170f, 0.9));
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    const rug = new THREE.Mesh(new THREE.PlaneGeometry(10.5, 6.4), material(0x071325, 0.88));
+    rug.rotation.x = -Math.PI / 2;
+    rug.position.set(0, 0.012, 1.5);
+    rug.receiveShadow = true;
+    scene.add(rug);
+
+    box("back-wall", [14, 6, 0.35], [0, 3, -4.5], 0x101722, { castShadow: false });
+    box("left-wall", [0.35, 6, 11], [-7, 3, 0.8], 0x17120f, { castShadow: false });
+    box("right-wall", [0.35, 6, 11], [7, 3, 0.8], 0x17120f, { castShadow: false });
+    box("ceiling", [14, 0.3, 11], [0, 6, 0.8], 0x100b08, { castShadow: false });
+
+    for (let x = -6.1; x <= 6.1; x += 2.05) {
+      box("wall-trim", [0.08, 5.5, 0.18], [x, 2.75, -4.28], 0x4a2b18, { castShadow: false });
+    }
+    box("wall-trim-top", [13.2, 0.12, 0.18], [0, 5.45, -4.28], 0x6b3d1d, { castShadow: false });
+    box("wall-trim-bottom", [13.2, 0.12, 0.18], [0, 0.48, -4.28], 0x6b3d1d, { castShadow: false });
+
+    box("desk", [8.7, 1.25, 2.2], [0, 0.72, -0.5], 0x3a2011, { roughness: 0.58 });
+    box("desk-top", [9.2, 0.18, 2.45], [0, 1.43, -0.5], 0x5a3219, { roughness: 0.48 });
+    box("chair-seat", [1.7, 0.32, 1.4], [0, 1.1, -2.0], 0x151211, { roughness: 0.84 });
+    const chairBack = box("chair-back", [1.75, 2.25, 0.35], [0, 2.3, -2.45], 0x151211, { roughness: 0.84 });
+
+    const ambient = new THREE.HemisphereLight(0xb8c9e2, 0x28160d, 0.45);
+    scene.add(ambient);
+
+    const keyLight = new THREE.SpotLight(0xffd58c, 32, 14, Math.PI / 4.5, 0.55, 1.4);
+    keyLight.position.set(3.1, 4.6, -0.5);
+    keyLight.target.position.set(0.8, 1.3, -1.4);
+    keyLight.castShadow = true;
+    keyLight.visible = false;
+    scene.add(keyLight, keyLight.target);
+
+    const ceilingLights = [
+      [-4.8, 5.65, 1.8], [0, 5.65, 1.8], [4.8, 5.65, 1.8]
+    ];
+    ceilingLights.forEach(([x, y, z]) => {
+      const light = new THREE.PointLight(0xffd7a2, 6, 8, 2);
+      light.position.set(x, y, z);
+      scene.add(light);
+    });
+
+    const textureLoader = new THREE.TextureLoader();
+    const roomTexture = textureLoader.load("../founder-office-room.png");
+    roomTexture.colorSpace = THREE.SRGBColorSpace;
+
+    function cropTexture(crop) {
+      const texture = roomTexture.clone();
+      texture.needsUpdate = true;
+      texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
+      texture.repeat.set(crop[2], crop[3]);
+      texture.offset.set(crop[0], 1 - crop[1] - crop[3]);
+      return texture;
+    }
+
+    function artifactPlane(id, size, position, rotationY = 0) {
+      const data = artifacts[id];
+      const frame = box(`${id}-frame`, [size[0] + 0.15, size[1] + 0.15, 0.12], [position[0], position[1], position[2] + 0.03], 0x8b6127, { roughness: 0.38, metalness: 0.45 });
+      frame.rotation.y = rotationY;
+      const mesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(size[0], size[1]),
+        new THREE.MeshStandardMaterial({ map: cropTexture(data.crop), roughness: 0.62, metalness: 0.02 })
+      );
+      mesh.position.set(...position);
+      mesh.rotation.y = rotationY;
+      mesh.userData.artifactId = id;
+      mesh.userData.prompt = `Inspect ${data.title}`;
+      scene.add(mesh);
+      interactive.push(mesh);
+      return mesh;
+    }
+
+    artifactPlane("graduation", [1.25, 2.2], [-5.25, 3.15, -4.29]);
+    artifactPlane("banner", [4.15, 1.75], [0, 3.75, -4.29]);
+    artifactPlane("doctorate", [1.35, 2.05], [4.6, 3.25, -4.29]);
+    artifactPlane("masters", [1.35, 2.05], [6.05, 3.25, -4.29]);
+    artifactPlane("family", [1.55, 1.0], [-3.3, 2.0, -1.67]);
+    artifactPlane("founder", [2.05, 0.55], [-1.4, 1.82, -1.67]);
+    artifactPlane("yolanda", [1.55, 1.25], [3.35, 2.05, -1.67]);
+    artifactPlane("clue", [2.3, 0.75], [0, 0.86, 0.63], Math.PI);
+
+    chairBack.userData.artifactId = "chair";
+    chairBack.userData.prompt = "The chair is waiting for the light";
+    interactive.push(chairBack);
+
+    const lampBase = box("lamp-base", [0.75, 0.18, 0.75], [2.1, 1.61, -1.2], 0x9a6e2d, { roughness: 0.35, metalness: 0.7 });
+    const lampStem = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 2.4, 18), material(0xb18438, 0.3, 0.72));
+    lampStem.position.set(2.1, 2.82, -1.2);
+    lampStem.castShadow = true;
+    scene.add(lampStem);
+    const lampShade = new THREE.Mesh(new THREE.ConeGeometry(0.58, 0.78, 24, 1, true), material(0x071325, 0.55, 0.18));
+    lampShade.position.set(2.1, 3.62, -1.2);
+    lampShade.rotation.x = Math.PI;
+    lampShade.userData.action = "lamp";
+    lampShade.userData.prompt = "Touch the one-room light";
+    scene.add(lampShade);
+    interactive.push(lampShade, lampBase);
+    lampBase.userData.action = "lamp";
+    lampBase.userData.prompt = "Touch the one-room light";
+
+    function showPrompt(text) {
+      prompt.textContent = text;
+      prompt.classList.toggle("show", Boolean(text));
+    }
+
+    function updateLamp() {
+      lampState = (lampState + 1) % 3;
+      keyLight.visible = lampState > 0;
+      keyLight.intensity = lampState === 1 ? 16 : lampState === 2 ? 38 : 0;
+      chairUnlocked = lampState === 2;
+      chairBack.userData.prompt = chairUnlocked ? "Inspect the empty chair" : "The chair is waiting for the light";
+      if (lampState === 1) status.textContent = "The room is waking. Touch the light again.";
+      if (lampState === 2) status.textContent = "The walk is lit. The chair is ready.";
+      if (lampState === 0) status.textContent = "The room returns to rest.";
+    }
+
+    function drawArtifact(id) {
+      const data = artifacts[id];
+      if (!data || !roomImage.complete) return;
+      const [x, y, w, h] = data.crop;
+      const sx = x * roomImage.naturalWidth;
+      const sy = y * roomImage.naturalHeight;
+      const sw = w * roomImage.naturalWidth;
+      const sh = h * roomImage.naturalHeight;
+      artifactCanvas.width = Math.max(720, Math.round(sw * 2));
+      artifactCanvas.height = Math.max(520, Math.round(sh * 2));
+      artifactContext.clearRect(0, 0, artifactCanvas.width, artifactCanvas.height);
+      artifactContext.drawImage(roomImage, sx, sy, sw, sh, 0, 0, artifactCanvas.width, artifactCanvas.height);
+      resetArtifactView();
+    }
+
+    let artifactScale = 1;
+    let artifactX = 0;
+    let artifactY = 0;
+    let artifactDragging = false;
+    let artifactPointer = { x: 0, y: 0 };
+
+    function applyArtifactTransform() {
+      artifactCanvas.style.transform = `translate(${artifactX}px, ${artifactY}px) scale(${artifactScale})`;
+    }
+
+    function resetArtifactView() {
+      artifactScale = 1;
+      artifactX = 0;
+      artifactY = 0;
+      applyArtifactTransform();
+    }
+
+    function openInspector(id) {
+      const data = artifacts[id];
+      if (!data) return;
+      if (id === "chair" && !chairUnlocked) {
+        status.textContent = "The chair is locked. The clue points to the light.";
+        return;
+      }
+      activeObject = id;
+      artifactTitle.textContent = data.title;
+      artifactStory.textContent = data.story;
+      artifactStory.hidden = true;
+      storyButton.textContent = "Learn its story";
+      drawArtifact(id);
+      inspector.hidden = false;
+      controls.unlock();
+      closeInspector.focus();
+    }
+
+    function closeArtifact() {
+      inspector.hidden = true;
+      activeObject = null;
+      if (gameStarted && matchMedia("(pointer:fine)").matches) controls.lock();
+    }
+
+    function interact() {
+      if (!activeObject && currentHit) {
+        const object = currentHit.object;
+        if (object.userData.action === "lamp") {
+          updateLamp();
+          return;
+        }
+        if (object.userData.artifactId) openInspector(object.userData.artifactId);
+      }
+    }
+
+    let currentHit = null;
+
+    function updateTarget() {
+      raycaster.setFromCamera(center, camera);
+      const hits = raycaster.intersectObjects(interactive, false);
+      currentHit = hits.find((hit) => hit.distance <= 4.2) || null;
+      if (!currentHit) {
+        showPrompt("");
+        return;
+      }
+      const object = currentHit.object;
+      showPrompt(`${object.userData.prompt} · Click / Tap / E`);
+    }
+
+    function clampPlayer() {
+      const p = controls.object.position;
+      p.x = THREE.MathUtils.clamp(p.x, -5.8, 5.8);
+      p.z = THREE.MathUtils.clamp(p.z, -3.15, 5.4);
+      p.y = 1.72;
+      if (p.z < 1.4 && Math.abs(p.x) < 4.9) p.z = 1.4;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = Math.min(clock.getDelta(), 0.05);
+
+      if (gameStarted && inspector.hidden) {
+        velocity.x -= velocity.x * 10 * delta;
+        velocity.z -= velocity.z * 10 * delta;
+        direction.z = Number(move.forward) - Number(move.back);
+        direction.x = Number(move.right) - Number(move.left);
+        direction.normalize();
+        const speed = 4.25;
+        if (move.forward || move.back) velocity.z -= direction.z * speed * delta;
+        if (move.left || move.right) velocity.x -= direction.x * speed * delta;
+        controls.moveRight(-velocity.x);
+        controls.moveForward(-velocity.z);
+        clampPlayer();
+        updateTarget();
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    function setMove(key, value) {
+      if (key === "KeyW" || key === "ArrowUp") move.forward = value;
+      if (key === "KeyS" || key === "ArrowDown") move.back = value;
+      if (key === "KeyA" || key === "ArrowLeft") move.left = value;
+      if (key === "KeyD" || key === "ArrowRight") move.right = value;
+    }
+
+    document.addEventListener("keydown", (event) => {
+      setMove(event.code, true);
+      if (event.code === "KeyE" && inspector.hidden) interact();
+      if (event.code === "Escape" && !inspector.hidden) closeArtifact();
+    });
+
+    document.addEventListener("keyup", (event) => setMove(event.code, false));
+
+    renderer.domElement.addEventListener("click", () => {
+      if (!gameStarted || !inspector.hidden) return;
+      if (currentHit) interact();
+      else if (matchMedia("(pointer:fine)").matches && !controls.isLocked) controls.lock();
+    });
+
+    enterButton.addEventListener("click", () => {
+      intro.hidden = true;
+      gameStarted = true;
+      status.textContent = "Find the light. Look closely.";
+      if (matchMedia("(pointer:fine)").matches) controls.lock();
+    });
+
+    pauseButton.addEventListener("click", () => {
+      if (!gameStarted) return;
+      if (controls.isLocked) controls.unlock();
+      else if (matchMedia("(pointer:fine)").matches) controls.lock();
+    });
+
+    closeInspector.addEventListener("click", closeArtifact);
+
+    inspector.addEventListener("click", (event) => {
+      if (event.target === inspector) closeArtifact();
+    });
+
+    storyButton.addEventListener("click", () => {
+      artifactStory.hidden = !artifactStory.hidden;
+      storyButton.textContent = artifactStory.hidden ? "Learn its story" : "Hide the story";
+    });
+
+    zoomIn.addEventListener("click", () => {
+      artifactScale = Math.min(artifactScale + 0.25, 3.5);
+      applyArtifactTransform();
+    });
+
+    zoomOut.addEventListener("click", () => {
+      artifactScale = Math.max(artifactScale - 0.25, 0.65);
+      applyArtifactTransform();
+    });
+
+    resetView.addEventListener("click", resetArtifactView);
+
+    artifactCanvas.addEventListener("pointerdown", (event) => {
+      artifactDragging = true;
+      artifactPointer = { x: event.clientX - artifactX, y: event.clientY - artifactY };
+      artifactCanvas.classList.add("dragging");
+      artifactCanvas.setPointerCapture(event.pointerId);
+    });
+
+    artifactCanvas.addEventListener("pointermove", (event) => {
+      if (!artifactDragging) return;
+      artifactX = event.clientX - artifactPointer.x;
+      artifactY = event.clientY - artifactPointer.y;
+      applyArtifactTransform();
+    });
+
+    artifactCanvas.addEventListener("pointerup", (event) => {
+      artifactDragging = false;
+      artifactCanvas.classList.remove("dragging");
+      artifactCanvas.releasePointerCapture(event.pointerId);
+    });
+
+    artifactCanvas.addEventListener("wheel", (event) => {
+      event.preventDefault();
+      artifactScale = THREE.MathUtils.clamp(artifactScale + (event.deltaY < 0 ? 0.16 : -0.16), 0.65, 3.5);
+      applyArtifactTransform();
+    }, { passive: false });
+
+    document.querySelectorAll("[data-move]").forEach((button) => {
+      const key = button.dataset.move;
+      const start = (event) => { event.preventDefault(); move[key] = true; };
+      const stop = (event) => { event.preventDefault(); move[key] = false; };
+      button.addEventListener("pointerdown", start);
+      button.addEventListener("pointerup", stop);
+      button.addEventListener("pointercancel", stop);
+      button.addEventListener("pointerleave", stop);
+    });
+
+    let lookPointer = null;
+    lookPad.addEventListener("pointerdown", (event) => {
+      lookPointer = { id: event.pointerId, x: event.clientX, y: event.clientY };
+      lookPad.setPointerCapture(event.pointerId);
+    });
+
+    lookPad.addEventListener("pointermove", (event) => {
+      if (!lookPointer || lookPointer.id !== event.pointerId) return;
+      const dx = event.clientX - lookPointer.x;
+      const dy = event.clientY - lookPointer.y;
+      lookPointer.x = event.clientX;
+      lookPointer.y = event.clientY;
+      camera.rotation.order = "YXZ";
+      camera.rotation.y -= dx * 0.006;
+      camera.rotation.x = THREE.MathUtils.clamp(camera.rotation.x - dy * 0.005, -1.2, 1.2);
+    });
+
+    lookPad.addEventListener("pointerup", (event) => {
+      if (lookPointer && lookPointer.id === event.pointerId) lookPointer = null;
+    });
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
+    });
+
+    roomImage.addEventListener("error", () => {
+      status.textContent = "The room loaded, but an inspection image could not be prepared.";
+    });
+
+    animate();
+  </script>
+</body>
+</html>
