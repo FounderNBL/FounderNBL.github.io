@@ -69,14 +69,17 @@
         <div class="artifact-copy">
           <p class="eyebrow">Artifact inspection</p>
           <h2 id="artifactTitle"></h2>
-          <p>Drag to examine. Use the controls to zoom.</p>
+          <p>Drag and zoom to read the real object. Its meaning is preserved on the back or beneath it.</p>
           <div class="inspector-actions">
             <button id="zoomIn" class="inspect-button secondary" type="button">Zoom in</button>
             <button id="zoomOut" class="inspect-button secondary" type="button">Zoom out</button>
             <button id="resetView" class="inspect-button secondary" type="button">Reset</button>
-            <button id="storyButton" class="inspect-button" type="button">Learn its story</button>
+            <button id="storyButton" class="inspect-button" type="button" hidden aria-hidden="true" tabindex="-1">Story</button>
           </div>
-          <div id="artifactStory" class="story" hidden></div>
+          <div class="artifact-back" aria-label="Meaning on the back of the artifact">
+            <p class="artifact-back-label">On the back</p>
+            <div id="artifactStory" class="story"></div>
+          </div>
         </div>
       </div>
     </article>
