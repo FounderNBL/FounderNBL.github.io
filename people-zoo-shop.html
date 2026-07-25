@@ -1,12 +1,29 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The People Zoo | New Beansland</title><meta name="description" content="Prepare a purchase request for The People Zoo.">
-<link rel="icon" href="nbl-logo.png"><link rel="stylesheet" href="nbl-store.css"></head><body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>The People Zoo — Purchase Request | New Beansland</title>
+  <meta name="description" content="Watch The People Zoo trailer and prepare a purchase request for the Original Edition.">
+  <meta name="theme-color" content="#02070d">
+  <link rel="canonical" href="https://newbeansland.org/people-zoo-shop.html">
+  <link rel="icon" type="image/jpeg" href="nbl-logo.jpg">
+  <link rel="stylesheet" href="nbl-store.css">
+  <meta property="og:type" content="product">
+  <meta property="og:site_name" content="New Beansland">
+  <meta property="og:title" content="The People Zoo — Purchase Request | New Beansland">
+  <meta property="og:description" content="Watch the trailer and prepare a purchase request for The People Zoo.">
+  <meta property="og:url" content="https://newbeansland.org/people-zoo-shop.html">
+  <meta property="og:image" content="https://newbeansland.org/people-zoo-front.png">
+  <meta property="og:image:alt" content="The People Zoo cover">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
 
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="home.html" aria-label="New Beansland home">
-      <img src="nbl-logo.png" alt="">
+      <img src="nbl-logo.jpg" alt="">
       <span><span class="brand-name">New Beansland</span><span class="brand-tag">Independent Publishing House</span></span>
     </a>
     <nav class="nav" aria-label="Publisher navigation">
@@ -18,7 +35,7 @@
 </header>
 
 <main class="container product-layout">
-<section class="preview-shell"><div class="cover-stage" style="grid-template-columns:minmax(0,420px);justify-content:center"><figure class="cover-panel"><img src="people-zoo-front.png" alt="The People Zoo cover"><figcaption class="cover-caption">Original Edition</figcaption></figure></div>
+<section class="preview-shell"><div class="cover-stage" style="grid-template-columns:minmax(0,420px);justify-content:center"><figure class="cover-panel"><img src="people-zoo-front.png" alt="The People Zoo cover" decoding="async"><figcaption class="cover-caption">Original Edition</figcaption></figure></div>
 
 <div class="trailer-card" aria-label="The People Zoo trailer">
   <div class="trailer-card-header">
@@ -36,12 +53,12 @@
 <section><p class="kicker">Published by New Beansland</p><h1 class="product-title">The People Zoo</h1><p class="product-sub">A finished ten-chapter New Beansland story about a curated environment, hidden control, and people chosen because of their flaws.</p>
 <div class="price-card"><div class="price-label">Price</div><div class="price-value">Confirmed by New Beansland staff before payment</div></div>
 <div class="form-card"><h2>Request Purchase</h2><p class="form-intro">Request the Original Edition alone or add either edition of The Doctor / Rocketship Test for the regular two-book bundle discount.</p>
-<form id="purchaseForm"><div class="field-grid"><div class="field"><label for="name">Your name</label><input id="name" required autocomplete="name"></div><div class="field"><label for="email">Your email</label><input id="email" type="email" required autocomplete="email"></div>
-<div class="field full"><label for="bundle">Add another book</label><select id="bundle"><option value="No second book">No second book</option><option value="The Doctor / Rocketship Test — Standard Edition">Add Doctor / Rocketship — Standard Edition</option><option value="The Doctor / Rocketship Test — Islamic Dilemma Edition">Add Doctor / Rocketship — Islamic Dilemma Edition</option></select></div>
-<div class="field full"><label for="notes">Notes for New Beansland staff</label><textarea id="notes" placeholder="Optional"></textarea></div></div>
+<form id="purchaseForm"><div class="field-grid"><div class="field"><label for="name">Your name</label><input id="name" name="name" required autocomplete="name"></div><div class="field"><label for="email">Your email</label><input id="email" name="email" type="email" required autocomplete="email"></div>
+<div class="field full"><label for="bundle">Add another book</label><select id="bundle" name="bundle"><option value="No second book">No second book</option><option value="The Doctor / Rocketship Test — Standard Edition">Add Doctor / Rocketship — Standard Edition</option><option value="The Doctor / Rocketship Test — Islamic Dilemma Edition">Add Doctor / Rocketship — Islamic Dilemma Edition</option></select></div>
+<div class="field full"><label for="notes">Notes for New Beansland staff</label><textarea id="notes" name="notes" placeholder="Optional"></textarea></div></div>
 <div class="policy-box"><strong>Bundle rule:</strong> Two regular books requested together qualify for the New Beansland bundle discount. Future connected Trilogy Special Editions remain full individual price unless purchased as the complete trilogy set.</div>
 <div class="actions"><button class="btn primary" type="submit">Prepare Purchase Request</button><a class="btn" href="books.html">Back to Books</a></div></form>
-<div class="summary-panel" id="summaryPanel"><pre id="summaryText"></pre><div class="actions" style="margin-top:14px"><a class="btn primary" id="emailButton" href="#">Open Email App</a><button class="btn" id="copyButton" type="button">Copy Request</button><a class="btn" href="purchase-requested.html">I Sent My Request</a></div><div class="status" id="status" aria-live="polite"></div></div>
+<div class="summary-panel" id="summaryPanel"><pre id="summaryText"></pre><div class="actions" style="margin-top:14px"><a class="btn primary" id="emailButton" href="#">Open Email App</a><button class="btn" id="copyButton" type="button">Copy Request</button><a class="btn" href="purchase-requested.html">View Next Steps</a></div><div class="status" id="status" aria-live="polite"></div></div>
 </div></section></main>
 <footer class="footer">
   <div class="container">
@@ -62,4 +79,6 @@ Second Book: ${bundle}
 Payment Method Requested: Cash App
 Notes: ${notes}
 
-Please confirm the exact total and official payment instructions before I send payment.`;text.textContent=s;emailBtn.href=`mailto:${orderEmail}?subject=${encodeURIComponent('New Beansland Purchase Request — '+c)}&body=${encodeURIComponent(s)}`;panel.classList.add('show');panel.scrollIntoView({behavior:'smooth',block:'nearest'});status.textContent='Your request is ready. Open your email app and press Send.';});document.getElementById('copyButton').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text.textContent);status.textContent='Purchase request copied.';}catch{status.textContent='Select the request text and copy it manually.';}});})();</script></body></html>
+Please confirm the exact total and official payment instructions before I send payment.`;text.textContent=s;emailBtn.href=`mailto:${orderEmail}?subject=${encodeURIComponent('New Beansland Purchase Request — '+c)}&body=${encodeURIComponent(s)}`;panel.classList.add('show');panel.scrollIntoView({behavior:'smooth',block:'nearest'});status.textContent='Your request is ready. Open your email app and press Send.';});document.getElementById('copyButton').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text.textContent);status.textContent='Purchase request copied.';}catch{status.textContent='Select the request text and copy it manually.';}});})();</script>
+</body>
+</html>
