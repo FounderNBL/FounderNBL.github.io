@@ -5,7 +5,7 @@ import {
   InMemoryJourneyRepository,
   InMemorySceneRepository,
   InMemoryTravelerRepository
-} from "../storage/in-memory-repositories.js";
+} from "../database/in-memory-repositories.js";
 
 test("a new traveler receives the arrival experience once", async () => {
   const travelers = new InMemoryTravelerRepository();
@@ -22,10 +22,7 @@ test("a new traveler receives the arrival experience once", async () => {
   });
 
   assert.equal(firstEnrollment.arrival?.headline, "Welcome, Traveler.");
-  assert.equal(
-    firstEnrollment.arrival?.message,
-    "The road has been waiting for you."
-  );
+  assert.equal(firstEnrollment.arrival?.message, "The road has been waiting for you.");
 
   const journey = await journeys.findActiveByTravelerId(firstEnrollment.traveler.id);
   assert.equal(journey?.steps[1]?.sceneId, "lantern-road");

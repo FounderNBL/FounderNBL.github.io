@@ -1,13 +1,13 @@
 {
   "name": "@newbeansland/nbl-engine",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Traveler, journey, scene, and orchestration foundation for New Beansland.",
+  "description": "Traveler, journey, scene, membership, and orchestration foundation for New Beansland.",
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "npm run build && node --test dist/src/tests/*.test.js"
+    "test": "npm run build && node --test dist/tests/*.test.js"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

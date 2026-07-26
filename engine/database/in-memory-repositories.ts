@@ -1,6 +1,6 @@
-import type { JourneyProgress } from "../journey/journey.js";
-import type { TravelerProfile } from "../traveler/traveler.js";
-import type { LoadedScene, SceneDefinition } from "../world/scene.js";
+import type { JourneyProgress } from "../journeys/journey.js";
+import type { TravelerProfile } from "../travelers/traveler.js";
+import type { LoadedScene, SceneDefinition } from "../scenes/scene.js";
 import type {
   JourneyRepository,
   SceneRepository,
@@ -43,8 +43,7 @@ export class InMemoryJourneyRepository implements JourneyRepository {
   async findActiveByTravelerId(travelerId: string): Promise<JourneyProgress | null> {
     const journey = [...this.journeys.values()].find(
       (candidate) =>
-        candidate.travelerId === travelerId &&
-        candidate.status !== "completed"
+        candidate.travelerId === travelerId && candidate.status !== "completed"
     );
     return journey ? clone(journey) : null;
   }

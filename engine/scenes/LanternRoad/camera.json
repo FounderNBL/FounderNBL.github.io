@@ -1,0 +1,12 @@
+{
+  "mode": "cinematic-tracking",
+  "aspectRatio": "16:9",
+  "movement": "slow-forward-dolly",
+  "travelerControl": false,
+  "shots": [
+    "wide establishing road",
+    "medium traveler silhouette",
+    "lantern detail",
+    "forward reveal toward the bridge"
+  ]
+}

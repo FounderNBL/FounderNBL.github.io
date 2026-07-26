@@ -4,15 +4,15 @@ import {
   getNextStep,
   startJourney,
   type JourneyProgress
-} from "../journey/journey.js";
-import type { EngineRepositories } from "../storage/repositories.js";
+} from "../journeys/journey.js";
+import type { EngineRepositories } from "../database/repositories.js";
 import {
   markArrivalExperienceSeen,
   shouldShowArrivalExperience,
   type TravelerProfile
-} from "../traveler/traveler.js";
-import type { IVideoGenerator, VideoJob } from "../videos/video-generator.js";
-import type { LoadedScene } from "../world/scene.js";
+} from "../travelers/traveler.js";
+import type { IVideoGenerator, VideoJob } from "../media/video-generator.js";
+import type { LoadedScene } from "./scene.js";
 
 export interface TravelerLocation {
   traveler: TravelerProfile;
@@ -69,12 +69,13 @@ export class SceneDirector {
   async queueScenePreview(travelerId: string): Promise<VideoJob> {
     const location = await this.locateTraveler(travelerId);
     const prompt = this.assemblePrompt(location.traveler, location.currentScene);
+    const referenceImage = location.traveler.profileImage;
 
     return this.dependencies.videoGenerator.generatePreview({
       travelerId,
       sceneId: location.currentScene.definition.id,
       prompt,
-      referenceImageUrl: location.traveler.profileImage ?? undefined,
+      ...(referenceImage ? { referenceImageUrl: referenceImage } : {}),
       metadata: {
         journeyId: location.journey.id,
         membershipTier: location.traveler.membershipTier
@@ -107,7 +108,8 @@ export class SceneDirector {
       `Traveler display name: ${traveler.displayName}.`,
       `Membership tier: ${traveler.membershipTier}.`,
       `Current world: ${traveler.currentWorld}.`,
-      "Preserve the traveler’s identity, the scene’s atmosphere, and New Beansland continuity."
+      "Preserve the traveler’s identity, the scene’s atmosphere, and New Beansland continuity.",
+      "The scene is cinematic. Do not provide direct movement control."
     ].join("\n\n");
   }
 }

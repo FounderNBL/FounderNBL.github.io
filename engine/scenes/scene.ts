@@ -22,6 +22,8 @@ export interface SceneDefinition {
   lightingFile: string;
   musicFile: string;
   introFile: string;
+  cinematic: boolean;
+  allowsDirectMovementControl: false;
   assets: SceneAssetReference[];
   transitions: SceneTransition[];
   membershipTiers: string[];
@@ -44,6 +46,9 @@ export function validateSceneDefinition(scene: SceneDefinition): void {
   if (!scene.title.trim()) throw new Error("Scene title is required.");
   if (!Number.isInteger(scene.version) || scene.version < 1) {
     throw new Error("Scene version must be a positive integer.");
+  }
+  if (!scene.cinematic || scene.allowsDirectMovementControl !== false) {
+    throw new Error(`Scene ${scene.id} must remain cinematic without direct movement control.`);
   }
 
   const requiredFiles = [

@@ -1,6 +1,6 @@
-import type { JourneyProgress } from "../journey/journey.js";
-import type { TravelerProfile } from "../traveler/traveler.js";
-import type { LoadedScene, SceneDefinition } from "../world/scene.js";
+import type { JourneyProgress } from "../journeys/journey.js";
+import type { TravelerProfile } from "../travelers/traveler.js";
+import type { LoadedScene, SceneDefinition } from "../scenes/scene.js";
 
 export interface TravelerRepository {
   findById(id: string): Promise<TravelerProfile | null>;

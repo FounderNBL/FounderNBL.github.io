@@ -1,11 +1,4 @@
-export const MEMBERSHIP_TIERS = [
-  "explorer",
-  "traveler",
-  "still-walking",
-  "founder-circle"
-] as const;
-
-export type MembershipTier = (typeof MEMBERSHIP_TIERS)[number];
+import type { MembershipTier } from "../memberships/membership.js";
 
 export const TRAVELER_STATUSES = [
   "invited",

@@ -2,24 +2,26 @@
   "id": "lantern-road",
   "worldId": "new-beansland",
   "title": "Lantern Road",
-  "version": 1,
-  "description": "The first road a Traveler walks after arrival.",
+  "version": 2,
+  "description": "The first cinematic road a Traveler witnesses after arrival.",
   "promptFile": "prompt.txt",
   "cameraFile": "camera.json",
   "lightingFile": "lighting.json",
   "musicFile": "music.json",
   "introFile": "intro.json",
+  "cinematic": true,
+  "allowsDirectMovementControl": false,
   "assets": [],
   "transitions": [
     {
       "destinationSceneId": "bridge",
-      "label": "Continue toward the bridge"
+      "label": "The road continues toward the bridge"
     }
   ],
   "membershipTiers": ["explorer", "traveler", "still-walking", "founder-circle"],
-  "tags": ["arrival", "road", "lanterns", "first-walk"],
+  "tags": ["arrival", "road", "lanterns", "first-walk", "cinematic"],
   "metadata": {
     "status": "foundation",
-    "interactive": true
+    "interactive": false
   }
 }

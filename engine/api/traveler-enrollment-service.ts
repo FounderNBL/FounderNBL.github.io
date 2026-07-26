@@ -1,17 +1,17 @@
 import { randomUUID } from "node:crypto";
-import { createJourney, startJourney, type JourneyStep } from "../journey/journey.js";
-import type { EngineRepositories } from "../storage/repositories.js";
+import { createJourney, startJourney, type JourneyStep } from "../journeys/journey.js";
+import type { EngineRepositories } from "../database/repositories.js";
 import {
   createTraveler,
   markArrivalExperienceSeen,
   shouldShowArrivalExperience,
-  type MembershipTier,
   type TravelerProfile
-} from "../traveler/traveler.js";
+} from "../travelers/traveler.js";
+import type { MembershipTier } from "../memberships/membership.js";
 import {
   FIRST_ARRIVAL_EXPERIENCE,
   type ArrivalExperience
-} from "../engine/arrival-experience.js";
+} from "../scenes/arrival-experience.js";
 
 export const FIRST_WALK_STEPS: JourneyStep[] = [
   { sceneId: "arrival", title: "Arrival", worldId: "new-beansland" },
@@ -42,24 +42,25 @@ export class TravelerEnrollmentService {
     if (existing) {
       return {
         traveler: existing,
-        arrival: shouldShowArrivalExperience(existing)
-          ? FIRST_ARRIVAL_EXPERIENCE
-          : null
+        arrival: shouldShowArrivalExperience(existing) ? FIRST_ARRIVAL_EXPERIENCE : null
       };
     }
 
     const travelerId = randomUUID();
     const journeyId = randomUUID();
     const now = new Date().toISOString();
+    const optionalTravelerFields = {
+      ...(input.membershipTier !== undefined ? { membershipTier: input.membershipTier } : {}),
+      ...(input.profileImage !== undefined ? { profileImage: input.profileImage } : {})
+    };
 
     const traveler = createTraveler({
       id: travelerId,
       displayName: input.displayName,
       email: input.email,
-      membershipTier: input.membershipTier,
-      profileImage: input.profileImage,
       currentJourney: journeyId,
-      createdAt: now
+      createdAt: now,
+      ...optionalTravelerFields
     });
 
     const journey = startJourney(
@@ -75,10 +76,7 @@ export class TravelerEnrollmentService {
     await this.repositories.travelers.save(traveler);
     await this.repositories.journeys.save(journey);
 
-    return {
-      traveler,
-      arrival: FIRST_ARRIVAL_EXPERIENCE
-    };
+    return { traveler, arrival: FIRST_ARRIVAL_EXPERIENCE };
   }
 
   async acknowledgeArrival(travelerId: string): Promise<TravelerProfile> {
