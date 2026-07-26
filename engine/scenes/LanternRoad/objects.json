@@ -1,0 +1,27 @@
+{
+  "sceneId": "lantern-road",
+  "objects": [
+    {
+      "id": "waiting-lantern",
+      "name": "The Waiting Lantern",
+      "description": "Its flame bends toward the road, though there is no wind.",
+      "canPickUp": false,
+      "tags": ["lantern", "light", "road"]
+    },
+    {
+      "id": "road-token",
+      "name": "Road Token",
+      "description": "A small dark coin marked with a line that never quite ends.",
+      "canPickUp": true,
+      "pickupMessage": "The token warms in your hand. Somewhere ahead, a light answers.",
+      "tags": ["token", "keepsake", "journey"]
+    },
+    {
+      "id": "mile-stone-zero",
+      "name": "Mile Stone Zero",
+      "description": "The stone reads: YOU WERE EXPECTED.",
+      "canPickUp": false,
+      "tags": ["stone", "message", "arrival"]
+    }
+  ]
+}
