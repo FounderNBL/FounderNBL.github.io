@@ -53,7 +53,7 @@
   </style>
 </head>
 <body>
-  <iframe src="home.html" title="New Beansland homepage"></iframe>
+  <iframe id="nbl-home" src="home.html" title="New Beansland homepage"></iframe>
   <noscript>
     <main class="fallback">
       <div>
@@ -64,5 +64,163 @@
       </div>
     </main>
   </noscript>
+
+  <script>
+    (function () {
+      const pages = [
+        { url: "books.html", title: "Books", keywords: "book books shop store buy digital edition epub pdf" },
+        { url: "people-zoo-shop.html", title: "The People Zoo", keywords: "people zoo animal story book purchase" },
+        { url: "people-zoo.html", title: "The People Zoo Story", keywords: "people zoo read story" },
+        { url: "doctor-rocketship-entry.html", title: "The Doctor/Rocketship Test", keywords: "doctor rocketship test category audit method book original islamic dilemma" },
+        { url: "doctor-rocketship-shop.html", title: "Doctor/Rocketship Shop", keywords: "doctor rocketship buy purchase edition book" },
+        { url: "doctor-rocketship-test.html", title: "Take the Doctor/Rocketship Test", keywords: "doctor rocketship test experiment questions" },
+        { url: "stories.html", title: "Stories", keywords: "stories fiction essays true tales read" },
+        { url: "site.html#questions", title: "Questions", keywords: "questions wonder ask ideas" },
+        { url: "site.html#worlds", title: "Worlds", keywords: "world worlds places people histories new beansland" },
+        { url: "site.html#voices", title: "Voices", keywords: "voices audio conversations characters" },
+        { url: "founder-office.html", title: "Founder Office", keywords: "founder jamel hawkins about contact office new beansland" },
+        { url: "still-walking.html", title: "Still Walking", keywords: "still walking traveler lantern road cinematic personalized scene video order" },
+        { url: "engine/", title: "NBL Engine", keywords: "nbl engine traveler journey lantern road world" },
+        { url: "coming-soon.html", title: "U.S.B.", keywords: "usb u.s.b. book two trilogy coming soon" },
+        { url: "site.html", title: "Start Here", keywords: "start here enter new beansland home" }
+      ];
+
+      function normalize(value) {
+        return value.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      }
+
+      function findBestMatch(query) {
+        const cleanQuery = normalize(query);
+        if (!cleanQuery) return null;
+        const terms = cleanQuery.split(/\s+/).filter(Boolean);
+        let best = null;
+        let bestScore = 0;
+
+        pages.forEach(function (page) {
+          const title = normalize(page.title);
+          const haystack = normalize(page.title + " " + page.keywords);
+          let score = 0;
+
+          if (title === cleanQuery) score += 100;
+          if (title.includes(cleanQuery)) score += 45;
+          if (haystack.includes(cleanQuery)) score += 25;
+
+          terms.forEach(function (term) {
+            if (title.split(" ").includes(term)) score += 12;
+            else if (haystack.split(" ").includes(term)) score += 6;
+            else if (haystack.includes(term)) score += 2;
+          });
+
+          if (score > bestScore) {
+            bestScore = score;
+            best = page;
+          }
+        });
+
+        return bestScore >= Math.max(8, query.split(/\s+/).length * 5) ? best : null;
+      }
+
+      function runSearch(query) {
+        const match = findBestMatch(query);
+        if (match) {
+          window.location.href = match.url;
+          return;
+        }
+
+        window.location.href = "https://www.google.com/search?q=" +
+          encodeURIComponent("site:newbeansland.org " + query);
+      }
+
+      function installSearch() {
+        const frame = document.getElementById("nbl-home");
+        const doc = frame.contentDocument || frame.contentWindow.document;
+        const oldMark = doc.querySelector(".search-mark");
+        if (!oldMark || doc.getElementById("nbl-smart-search")) return;
+
+        const style = doc.createElement("style");
+        style.textContent = `
+          .nbl-smart-search {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 46px;
+            font-family: Arial, Helvetica, sans-serif;
+          }
+          .nbl-smart-search input {
+            width: 0;
+            min-width: 0;
+            height: 42px;
+            padding: 0;
+            border: 0;
+            border-bottom: 1px solid transparent;
+            outline: none;
+            color: #f5ead5;
+            background: transparent;
+            font-size: 15px;
+            opacity: 0;
+            transition: width 180ms ease, padding 180ms ease, opacity 180ms ease;
+          }
+          .nbl-smart-search.open input,
+          .nbl-smart-search:focus-within input {
+            width: 210px;
+            padding: 0 10px;
+            border-bottom-color: #d8a344;
+            opacity: 1;
+          }
+          .nbl-smart-search input::placeholder { color: #aaa79f; }
+          .nbl-smart-search button {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            padding: 0;
+            border: 0;
+            color: #f5ead5;
+            background: transparent;
+            font-size: 25px;
+            line-height: 1;
+            cursor: pointer;
+          }
+          .nbl-smart-search button:hover,
+          .nbl-smart-search button:focus-visible { color: #f0c873; }
+        `;
+        doc.head.appendChild(style);
+
+        const form = doc.createElement("form");
+        form.id = "nbl-smart-search";
+        form.className = "nbl-smart-search";
+        form.setAttribute("role", "search");
+        form.innerHTML = `
+          <input type="search" name="q" placeholder="Search New Beansland" aria-label="Search New Beansland" autocomplete="off">
+          <button type="submit" aria-label="Search">⌕</button>
+        `;
+        oldMark.replaceWith(form);
+
+        const input = form.querySelector("input");
+        const button = form.querySelector("button");
+
+        button.addEventListener("click", function (event) {
+          if (!form.classList.contains("open")) {
+            event.preventDefault();
+            form.classList.add("open");
+            input.focus();
+          }
+        });
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          const query = input.value.trim();
+          if (!query) {
+            form.classList.add("open");
+            input.focus();
+            return;
+          }
+          runSearch(query);
+        });
+      }
+
+      document.getElementById("nbl-home").addEventListener("load", installSearch);
+    })();
+  </script>
 </body>
 </html>
