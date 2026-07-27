@@ -1,9 +1,15 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
-import RAPIER from "@dimforge/rapier3d-compat";
+import RAPIER from "https://cdn.skypack.dev/@dimforge/rapier3d-compat@0.19.3";
 
 const originalMoveForward = PointerLockControls.prototype.moveForward;
 const originalMoveRight = PointerLockControls.prototype.moveRight;
+
+function reportPhysics(message, state) {
+  document.documentElement.dataset.nblPhysics = state;
+  const status = document.getElementById("status");
+  if (status) status.textContent = message;
+}
 
 try {
   await RAPIER.init();
@@ -13,6 +19,8 @@ try {
   controller.setUp({ x: 0, y: 1, z: 0 });
   controller.setMaxSlopeClimbAngle(Math.PI / 4);
   controller.setMinSlopeSlideAngle(Math.PI / 6);
+  controller.enableAutostep(0.25, 0.15, true);
+  controller.enableSnapToGround(0.2);
 
   const staticBody = world.createRigidBody(RAPIER.RigidBodyDesc.fixed());
 
@@ -105,8 +113,8 @@ try {
     moveCamera(camera, right);
   };
 
-  document.documentElement.dataset.nblPhysics = "rapier-ready";
+  reportPhysics("Physics ready. The room now has real boundaries.", "rapier-ready");
 } catch (error) {
-  console.warn("Rapier physics could not initialize; using the original room controls.", error);
-  document.documentElement.dataset.nblPhysics = "fallback";
+  console.error("Rapier physics failed to initialize.", error);
+  reportPhysics("Physics failed to load. Using the original room controls.", "fallback");
 }
