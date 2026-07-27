@@ -1,0 +1,45 @@
+name: NBL Engine CI
+
+on:
+  pull_request:
+    paths:
+      - "engine/**"
+      - ".github/workflows/nbl-engine-ci.yml"
+  push:
+    branches:
+      - main
+      - feature/nbl-engine-phase-1
+    paths:
+      - "engine/**"
+      - ".github/workflows/nbl-engine-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-engine:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: engine
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
