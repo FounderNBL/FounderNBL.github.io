@@ -1,0 +1,41 @@
+name: Founder’s Office check
+
+on:
+  pull_request:
+    paths:
+      - "enter/**"
+      - "scripts/check-founder-office.mjs"
+      - ".github/workflows/founder-office-check.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "enter/**"
+      - "scripts/check-founder-office.mjs"
+      - ".github/workflows/founder-office-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-office:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check enter/performance-budget.js
+          node --check enter/retro-room.js
+          node --check enter/game.js
+          node --check enter/game-enhancements.js
+          node --check scripts/check-founder-office.mjs
+
+      - name: Verify puzzles and artifacts
+        run: node scripts/check-founder-office.mjs
