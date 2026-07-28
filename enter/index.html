@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Enter New Beansland | The Founder’s Office</title>
-  <meta name="description" content="Enter a playable 3D New Beansland experience and explore the Founder’s Office through movement, discovery, and artifact inspection.">
+  <meta name="description" content="Enter a playable retro 3D New Beansland experience and explore the Founder’s Office through movement, discovery, and artifact inspection.">
   <meta name="theme-color" content="#02050a">
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://newbeansland.org/enter/">
@@ -13,6 +13,7 @@
   <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
   <link rel="preload" as="image" href="../founder-office-room.png" fetchpriority="high">
   <link rel="modulepreload" href="performance-budget.js">
+  <link rel="modulepreload" href="retro-room.js">
   <link rel="modulepreload" href="game.js">
   <link rel="stylesheet" href="game.css">
   <script type="importmap">
@@ -25,7 +26,7 @@
   </script>
 </head>
 <body>
-  <main id="game" aria-label="Playable 3D Founder’s Office"></main>
+  <main id="game" aria-label="Playable retro 3D Founder’s Office"></main>
 
   <div class="hud">
     <div class="topbar">
@@ -54,7 +55,7 @@
     <div class="intro-card">
       <p class="eyebrow">The first door</p>
       <h1 id="introTitle">Enter New Beansland</h1>
-      <p class="intro-copy">You are not opening another page. You are entering the Founder’s Office. Move slowly, look closely, and approach anything that seems meaningful.</p>
+      <p class="intro-copy">You are not opening another page. You are entering a low-poly Founder’s Office built to feel like a lost late-1990s adventure game. Move slowly, look closely, and approach anything that seems meaningful.</p>
       <div class="controls-grid" aria-label="Game controls">
         <div class="control-note"><strong>Move</strong>WASD, arrow keys, or touch controls</div>
         <div class="control-note"><strong>Look</strong>Move the mouse or drag the right control</div>
@@ -91,6 +92,7 @@
   </section>
 
   <script type="module" src="performance-budget.js"></script>
+  <script type="module" src="retro-room.js"></script>
   <script type="module" src="game.js"></script>
   <script src="game-enhancements.js" defer></script>
 </body>
