@@ -44,6 +44,8 @@ requireText("content", 'position: [0, 0.84, 0.64]', "the clue is not attached to
 requireText("content", 'asset: "../founder-nameplate.png"', "the exact Founder nameplate is not assigned to the desk.");
 requireText("content", 'asset: "../new-beansland-family-photo.png"', "the exact Family photo is not assigned to the desk.");
 requireText("content", 'loadTexture("../official-nbl-emblem.png"', "the exact NBL chair emblem is missing.");
+requireText("content", '["The Desk Clue", "../desk-clue-plaque.png"]', "the clue inspector does not show the exact plaque.");
+requireText("content", '["The Empty Chair", "../official-nbl-emblem.png"]', "the chair inspector does not show the exact emblem.");
 requireText("content", "function buildExactLamp", "the NBL desk lamp model is missing.");
 requireText("content", "function relocateBookcases", "the bookcases are not moved away from the wall artifacts.");
 requireText("content", 'dataset.nblRoomContent = "exact-founder-layout"', "the exact room content marker is missing.");
