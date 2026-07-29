@@ -1,0 +1,7 @@
+# Browser-ready 3D assets
+*.glb binary
+*.ktx2 binary
+*.basis binary
+
+# Text-based 3D metadata
+*.gltf text eol=lf
