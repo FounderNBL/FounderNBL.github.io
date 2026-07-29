@@ -20,11 +20,28 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://newbeansland.org/new-beansland-homepage-landscape.png">
   <style>
-    :root{--navy:#02060b;--gold:#d99b42}
+    :root{--navy:#02060b;--gold:#d99b42;--bright:#f3bf62;--cream:#f5ead7}
     *{box-sizing:border-box}
     html{background:var(--navy)}
-    body{margin:0;background:var(--navy);color:#f5ead7;font-family:Arial,Helvetica,sans-serif}
-    .page{width:min(1800px,100%);margin:auto;background:var(--navy)}
+    body{margin:0;background:var(--navy);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
+    .page{position:relative;width:min(1800px,100%);margin:auto;background:var(--navy)}
+    .site-header{position:absolute;z-index:10;top:0;left:0;right:0;min-height:82px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:11px clamp(18px,3vw,54px);line-height:1.2;background:linear-gradient(180deg,rgba(2,6,11,.99) 0%,rgba(2,6,11,.94) 68%,rgba(2,6,11,.42) 88%,transparent 100%);border-bottom:1px solid rgba(217,155,66,.28)}
+    .real-brand{display:flex;align-items:center;gap:11px;min-width:max-content;color:var(--cream);text-decoration:none}
+    .real-brand img{display:block;width:48px;height:48px;object-fit:contain}
+    .brand-name{display:block;color:#e0ad5b;font-family:Georgia,"Times New Roman",serif;font-size:clamp(1rem,1.55vw,1.45rem);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .brand-tag{display:block;margin-top:4px;color:#d8c6a8;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase}
+    .desktop-nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(10px,1.45vw,25px);font-family:Arial,Helvetica,sans-serif}
+    .desktop-nav a{position:relative;padding:8px 0;color:#f5ead7;text-decoration:none;font-size:clamp(.76rem,1vw,.98rem);font-weight:700;letter-spacing:.025em;white-space:nowrap;text-shadow:0 2px 8px #000}
+    .desktop-nav a:not(.walk-link)::after{content:"";position:absolute;left:0;right:100%;bottom:2px;height:2px;background:var(--bright);transition:right .16s ease}
+    .desktop-nav a:hover::after,.desktop-nav a:focus-visible::after{right:0}
+    .desktop-nav .walk-link{padding:10px 15px;border:1px solid rgba(243,191,98,.75);border-radius:6px;color:#ffe3a4;background:rgba(8,17,28,.82)}
+    .desktop-nav a:focus-visible,.real-brand:focus-visible,.mobile-menu summary:focus-visible,.mobile-links a:focus-visible{outline:3px solid var(--bright);outline-offset:4px}
+    .mobile-menu{display:none;position:relative;margin:0;line-height:1}
+    .mobile-menu summary{display:grid;place-items:center;width:48px;height:48px;border:1px solid rgba(217,155,66,.72);border-radius:8px;color:#f3bf62;background:rgba(2,6,11,.9);font-size:1.65rem;cursor:pointer;list-style:none}
+    .mobile-menu summary::-webkit-details-marker{display:none}
+    .mobile-links{position:absolute;right:0;top:56px;width:min(78vw,310px);padding:10px;display:grid;border:1px solid rgba(217,155,66,.6);border-radius:10px;background:rgba(2,6,11,.98);box-shadow:0 18px 50px rgba(0,0,0,.65)}
+    .mobile-links a{padding:13px 14px;border-bottom:1px solid rgba(217,155,66,.16);color:var(--cream);text-decoration:none;font-weight:700;line-height:1.2}
+    .mobile-links a:last-child{border-bottom:0;color:#f3bf62}
     .art-shell{position:relative;width:100%;line-height:0;overflow:hidden;background:var(--navy)}
     .art-shell.landscape{aspect-ratio:1672/941}
     .art-shell.portrait{display:none;aspect-ratio:2/3}
@@ -33,23 +50,51 @@
     .hotspot:active{background:rgba(243,191,98,.09)}
     .hotspot:focus-visible{outline:3px solid #f3bf62;outline-offset:-3px;background:rgba(243,191,98,.09)}
     @media (hover:none){.hotspot:focus-visible{outline:none;background:transparent}}
+    @media (max-width:1180px){.site-header{gap:14px;padding-inline:18px}.desktop-nav{gap:11px}.desktop-nav a{font-size:.76rem}.desktop-nav .walk-link{padding:9px 11px}.real-brand img{width:42px;height:42px}.brand-name{font-size:1rem}.brand-tag{font-size:.55rem}}
+    @media (max-width:900px){.desktop-nav{display:none}.mobile-menu{display:block}.site-header{min-height:70px}.real-brand img{width:43px;height:43px}.brand-name{font-size:1.05rem}.brand-tag{font-size:.55rem}}
+    @media (max-width:480px){.site-header{padding-inline:13px}.brand-tag{display:none}.brand-name{font-size:.94rem;letter-spacing:.06em}.real-brand{gap:7px}.real-brand img{width:39px;height:39px}.mobile-menu summary{width:44px;height:44px}}
     @media (orientation:portrait){.landscape{display:none}.art-shell.portrait{display:block}}
-    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
 <body>
   <main class="page">
+    <header class="site-header">
+      <a class="real-brand" href="home.html" aria-label="New Beansland home">
+        <img src="nbl-writing-mark.png" alt="" aria-hidden="true">
+        <span><span class="brand-name">New Beansland</span><span class="brand-tag">Stories · Questions · Worlds</span></span>
+      </a>
+
+      <nav class="desktop-nav" aria-label="Main navigation">
+        <a href="home.html" aria-current="page">Home</a>
+        <a href="site.html#stories">Stories</a>
+        <a href="books.html">Books</a>
+        <a href="questions.html">Questions</a>
+        <a href="site.html#worlds">Worlds</a>
+        <a href="site.html#voices">Voices</a>
+        <a href="founder-office.html">About</a>
+        <a href="books.html">Shop</a>
+        <a class="walk-link" href="site.html">Start Walking</a>
+      </nav>
+
+      <details class="mobile-menu">
+        <summary aria-label="Open navigation">☰</summary>
+        <nav class="mobile-links" aria-label="Mobile navigation">
+          <a href="home.html" aria-current="page">Home</a>
+          <a href="site.html#stories">Stories</a>
+          <a href="books.html">Books</a>
+          <a href="questions.html">Questions</a>
+          <a href="site.html#worlds">Worlds</a>
+          <a href="site.html#voices">Voices</a>
+          <a href="founder-office.html">About</a>
+          <a href="books.html">Shop</a>
+          <a href="site.html">Start Walking →</a>
+        </nav>
+      </details>
+    </header>
+
     <section class="art-shell landscape" aria-label="New Beansland landscape homepage">
       <img class="home-art" src="new-beansland-homepage-landscape.png" width="1672" height="941" fetchpriority="high" alt="New Beansland at night, with a lantern road, NBL Books, Questions, Worlds, Voices, featured work, the Family and Beans Square">
-
-      <a class="hotspot" style="left:27.2%;top:.5%;width:4.4%;height:5.5%" href="home.html" aria-label="Home">Home</a>
-      <a class="hotspot" style="left:32%;top:.5%;width:7.7%;height:5.5%" href="books.html" aria-label="NBL Books">NBL Books</a>
-      <a class="hotspot" style="left:39.8%;top:.5%;width:7%;height:5.5%" href="questions.html" aria-label="Questions">Questions</a>
-      <a class="hotspot" style="left:46.8%;top:.5%;width:5.6%;height:5.5%" href="site.html#worlds" aria-label="Worlds">Worlds</a>
-      <a class="hotspot" style="left:52.4%;top:.5%;width:5.8%;height:5.5%" href="site.html#voices" aria-label="Voices">Voices</a>
-      <a class="hotspot" style="left:58.2%;top:.5%;width:5%;height:5.5%" href="founder-office.html" aria-label="About New Beansland">About</a>
-      <a class="hotspot" style="left:63.2%;top:.5%;width:4.7%;height:5.5%" href="books.html" aria-label="Shop">Shop</a>
-      <a class="hotspot" style="left:84.5%;top:.3%;width:12.2%;height:5.8%" href="site.html" aria-label="Start walking">Start Walking</a>
 
       <a class="hotspot" style="left:71.2%;top:6.3%;width:8.5%;height:4%" href="site.html" aria-label="Old Town">Old Town</a>
       <a class="hotspot" style="left:71.2%;top:10.2%;width:8.5%;height:4%" href="coming-soon.html" aria-label="Music">Music</a>
@@ -70,8 +115,6 @@
 
     <section class="art-shell portrait" aria-label="New Beansland portrait homepage">
       <img class="home-art" src="new-beansland-homepage-portrait.png" width="1024" height="1536" fetchpriority="high" alt="Portrait New Beansland homepage with the lantern road, NBL Books, Questions, Worlds, Voices, featured work, the Family and Beans Square">
-
-      <a class="hotspot" style="left:92.5%;top:.5%;width:6%;height:4.2%" href="site.html" aria-label="Open New Beansland navigation">Menu</a>
 
       <a class="hotspot" style="left:65%;top:5.4%;width:14%;height:3.5%" href="site.html" aria-label="Old Town">Old Town</a>
       <a class="hotspot" style="left:65%;top:8.6%;width:14%;height:3.5%" href="coming-soon.html" aria-label="Music">Music</a>
