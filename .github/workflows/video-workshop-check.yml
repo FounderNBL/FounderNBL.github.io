@@ -1,0 +1,42 @@
+name: Video Workshop check
+
+on:
+  pull_request:
+    paths:
+      - "video-workshop.html"
+      - "video-workshop.css"
+      - "video-workshop.js"
+      - "scripts/check-video-workshop.mjs"
+      - ".github/workflows/video-workshop-check.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "video-workshop.html"
+      - "video-workshop.css"
+      - "video-workshop.js"
+      - "scripts/check-video-workshop.mjs"
+      - ".github/workflows/video-workshop-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-workshop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check video-workshop.js
+          node --check scripts/check-video-workshop.mjs
+
+      - name: Verify workshop structure
+        run: node scripts/check-video-workshop.mjs
