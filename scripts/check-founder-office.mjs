@@ -5,6 +5,7 @@ const files = {
   game: await readFile("enter/game.js", "utf8"),
   retro: await readFile("enter/retro-room.js", "utf8"),
   content: await readFile("enter/room-content.js", "utf8"),
+  yolanda: await readFile("enter/yolanda-content.js", "utf8"),
   performance: await readFile("enter/performance-budget.js", "utf8")
 };
 
@@ -16,10 +17,11 @@ const requireText = (fileName, text, reason) => {
 const performanceIndex = files.index.indexOf('src="performance-budget.js"');
 const retroIndex = files.index.indexOf('src="retro-room.js"');
 const contentIndex = files.index.indexOf('src="room-content.js"');
+const yolandaIndex = files.index.indexOf('src="yolanda-content.js"');
 const gameIndex = files.index.indexOf('src="game.js"');
 
-if (!(performanceIndex >= 0 && retroIndex > performanceIndex && contentIndex > retroIndex && gameIndex > contentIndex)) {
-  errors.push("index: performance-budget.js, retro-room.js, room-content.js, and game.js must load in that order.");
+if (!(performanceIndex >= 0 && retroIndex > performanceIndex && contentIndex > retroIndex && yolandaIndex > contentIndex && gameIndex > yolandaIndex)) {
+  errors.push("index: performance-budget.js, retro-room.js, room-content.js, yolanda-content.js, and game.js must load in that order.");
 }
 
 for (const artifact of ["graduation", "banner", "doctorate", "masters", "family", "founder", "yolanda", "clue", "chair"]) {
@@ -50,6 +52,11 @@ requireText("content", "function buildExactLamp", "the NBL desk lamp model is mi
 requireText("content", "function relocateBookcases", "the bookcases are not moved away from the wall artifacts.");
 requireText("content", 'dataset.nblRoomContent = "exact-founder-layout"', "the exact room content marker is missing.");
 
+requireText("yolanda", 'const exactYolandaAsset = "../founders-office-yolanda.png"', "the exact uploaded Yolanda image is not assigned.");
+requireText("yolanda", 'object.userData?.artifactId === "yolanda"', "the exact Yolanda texture is not attached to the room artifact.");
+requireText("yolanda", 'title.textContent.trim() !== "For You, Mom — Yolanda"', "the Yolanda inspection override is missing.");
+requireText("yolanda", 'dataset.nblYolandaAsset = "exact-upload"', "the exact Yolanda room marker is missing.");
+
 const requiredAssets = [
   "if-it-is-is-it-banner.png",
   "founder-graduation-remarks.png",
@@ -60,7 +67,8 @@ const requiredAssets = [
   "desk-clue-plaque.png",
   "official-nbl-emblem.png",
   "nbl-writing-mark.png",
-  "founder-office-room.png"
+  "founder-office-room.png",
+  "founders-office-yolanda.png"
 ];
 
 await Promise.all(requiredAssets.map(async (path) => {
