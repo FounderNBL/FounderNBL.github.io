@@ -293,6 +293,50 @@ function updateLamp(scene) {
   }
 }
 
+const exactInspectionAssets = new Map([
+  ["The Desk Clue", "../desk-clue-plaque.png"],
+  ["The Empty Chair", "../official-nbl-emblem.png"]
+]);
+
+function installExactInspectorOverrides() {
+  const inspector = document.getElementById("inspector");
+  const title = document.getElementById("artifactTitle");
+  const canvas = document.getElementById("artifactCanvas");
+  const context = canvas?.getContext("2d");
+  if (!inspector || !title || !canvas || !context) return;
+
+  let renderVersion = 0;
+  const drawExactInspection = () => {
+    const expectedTitle = title.textContent.trim();
+    const path = exactInspectionAssets.get(expectedTitle);
+    if (!path || inspector.hidden) return;
+
+    const version = ++renderVersion;
+    const image = new Image();
+    image.onload = () => {
+      if (version !== renderVersion || inspector.hidden || title.textContent.trim() !== expectedTitle) return;
+      canvas.width = Math.max(900, image.naturalWidth || image.width);
+      canvas.height = Math.max(650, image.naturalHeight || image.height);
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      canvas.style.transform = "translate(0px, 0px) scale(1)";
+    };
+    image.src = path;
+  };
+
+  const scheduleExactInspection = () => {
+    requestAnimationFrame(drawExactInspection);
+    setTimeout(drawExactInspection, 120);
+    setTimeout(drawExactInspection, 360);
+  };
+
+  const observer = new MutationObserver(scheduleExactInspection);
+  observer.observe(title, { childList: true, subtree: true, characterData: true });
+  observer.observe(inspector, { attributes: true, attributeFilter: ["hidden"] });
+}
+
 function installExactFounderOffice(scene, renderer) {
   const required = ["banner", "graduation", "doctorate", "masters", "family", "founder", "yolanda", "clue", "chair"];
   if (!required.every((id) => findArtifact(scene, id))) return false;
@@ -303,6 +347,7 @@ function installExactFounderOffice(scene, renderer) {
   buildExactLamp(scene, renderer);
   addChairEmblem(scene, renderer);
   retargetPuzzleLight(scene);
+  installExactInspectorOverrides();
 
   document.documentElement.dataset.nblRoomContent = "exact-founder-layout";
   return true;
