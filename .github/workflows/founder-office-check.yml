@@ -34,6 +34,7 @@ jobs:
           node --check enter/performance-budget.js
           node --check enter/retro-room.js
           node --check enter/room-content.js
+          node --check enter/yolanda-content.js
           node --check enter/game.js
           node --check enter/game-enhancements.js
           node --check scripts/check-founder-office.mjs
