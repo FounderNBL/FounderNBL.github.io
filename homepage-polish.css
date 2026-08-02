@@ -1,0 +1,22 @@
+html{scroll-behavior:smooth}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+.site-header{will-change:transform;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.home-art{transform:translateZ(0);backface-visibility:hidden}
+.hotspot{transition:transform .12s ease,background-color .12s ease,opacity .12s ease}
+.hotspot:active{transform:scale(.985)}
+.mobile-menu{display:none!important}
+.desktop-nav{scrollbar-width:none}
+.desktop-nav::-webkit-scrollbar{display:none}
+@media (max-width:900px){
+  .site-header{display:grid;grid-template-columns:1fr;align-items:center;gap:4px;min-height:auto;padding:9px 12px 7px}
+  .real-brand{justify-self:start}
+  .desktop-nav{display:flex!important;width:100%;justify-content:flex-start;gap:18px;overflow-x:auto;padding:2px 1px 8px;scroll-snap-type:x proximity;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;touch-action:pan-x}
+  .desktop-nav a{flex:0 0 auto;scroll-snap-align:start;padding:8px 0;font-size:.76rem}
+  .desktop-nav .walk-link{padding:8px 11px}
+}
+@media (max-width:480px){
+  .site-header{padding-inline:10px}
+  .desktop-nav{gap:15px}
+  .desktop-nav a{font-size:.72rem}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hotspot{transition:none}}
