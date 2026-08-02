@@ -33,7 +33,9 @@ try {
 
   addWall(0.18, 2.8, 5.5, -6.15, 1.4, 0.8);
   addWall(0.18, 2.8, 5.5, 6.15, 1.4, 0.8);
-  addWall(6.15, 2.8, 0.18, 0, 1.4, -3.75);
+  // Match the collision boundary to the visible retro back wall instead of
+  // stopping the visitor in front of the Founder artifacts.
+  addWall(6.15, 2.8, 0.18, 0, 1.4, -4.58);
   addWall(6.15, 2.8, 0.18, 0, 1.4, 5.75);
   addWall(4.62, 1.0, 1.33, 0, 1.0, -0.5);
 
