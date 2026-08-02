@@ -1,0 +1,84 @@
+:root{color-scheme:dark;--navy:#02060b;--navy2:#07131f;--panel:rgba(4,13,22,.94);--gold:#d99b42;--gold2:#f3bf62;--cream:#f5ead7;--muted:#c7b79c;--line:rgba(243,191,98,.3);--shadow:0 24px 80px rgba(0,0,0,.55)}
+*{box-sizing:border-box}
+html{background:var(--navy);scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--cream);background:linear-gradient(180deg,#02060b,#06111c 45%,#02060b);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+button,input{font:inherit}
+button,a{-webkit-tap-highlight-color:transparent}
+button{cursor:pointer}
+.site-header{position:sticky;z-index:50;top:0;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.78rem clamp(.8rem,3vw,2.6rem);border-bottom:1px solid var(--line);background:rgba(2,6,11,.94);backdrop-filter:blur(14px);box-shadow:0 10px 40px rgba(0,0,0,.28)}
+.brand{display:flex;align-items:center;gap:.7rem;min-width:max-content;color:var(--cream);text-decoration:none}
+.brand img{width:46px;height:46px;object-fit:contain}
+.brand strong,.brand small{display:block}
+.brand strong{color:var(--gold2);font:700 clamp(.92rem,1.4vw,1.22rem)/1 Georgia,"Times New Roman",serif;letter-spacing:.09em;text-transform:uppercase}
+.brand small{margin-top:.25rem;color:var(--muted);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase}
+.main-nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(.7rem,1.25vw,1.35rem);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x}
+.main-nav::-webkit-scrollbar{display:none}
+.main-nav a,.main-nav button{flex:0 0 auto;border:0;color:var(--cream);background:transparent;text-decoration:none;font-weight:750;font-size:.82rem;white-space:nowrap}
+.main-nav a{padding:.7rem 0}
+.main-nav a:hover,.main-nav a:focus-visible{color:var(--gold2)}
+.main-nav .start-walking{padding:.72rem .95rem;border:1px solid rgba(243,191,98,.72);border-radius:7px;color:#ffe2a2;background:rgba(10,23,36,.9)}
+main{width:min(1600px,100%);margin:auto}
+.hero{position:relative;min-height:min(76vh,840px);overflow:hidden;border-bottom:1px solid var(--line);isolation:isolate}
+.hero-art{position:absolute;inset:0;background:url('/new-beansland-homepage-landscape.png') center 8%/cover no-repeat;transform:scale(1.015);transition:transform .8s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.hero:hover .hero-art{transform:scale(1.025)}
+.hero-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,6,11,.93) 0%,rgba(2,6,11,.6) 36%,rgba(2,6,11,.14) 67%,rgba(2,6,11,.42) 100%),linear-gradient(180deg,rgba(2,6,11,.22),transparent 52%,rgba(2,6,11,.84));pointer-events:none}
+.hero-copy{position:relative;z-index:3;width:min(650px,92%);padding:clamp(5rem,11vw,9rem) clamp(1.2rem,5vw,5rem) 6rem}
+.eyebrow{margin:0 0 .65rem;color:var(--gold2);font-size:.73rem;font-weight:900;letter-spacing:.19em;text-transform:uppercase}
+h1,h2{margin:0;font-family:Georgia,"Times New Roman",serif}
+h1{color:#efb45e;font-size:clamp(3rem,8vw,7rem);line-height:.92;letter-spacing:.015em;text-shadow:0 5px 30px #000}
+.hero-copy>p:not(.eyebrow){max-width:610px;margin:1.2rem 0 1.5rem;color:#eadfcf;font-size:clamp(1rem,2vw,1.2rem);line-height:1.65;text-shadow:0 3px 20px #000}
+.hero-actions{display:flex;flex-wrap:wrap;gap:.7rem}
+.gold-button,.dark-button,.mode-strip button,.player-controls button,.close-player{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:.72rem 1rem;border-radius:9px;font-weight:850;text-decoration:none;transition:transform .15s ease,border-color .15s ease,background .15s ease}
+.gold-button{border:1px solid #ffd27f;color:#1b1003;background:linear-gradient(180deg,#ffdb91,#d69539)}
+.dark-button,.player-controls button,.close-player{border:1px solid rgba(243,191,98,.52);color:var(--cream);background:rgba(4,13,22,.9)}
+.gold-button:hover,.dark-button:hover,.mode-strip button:hover,.player-controls button:hover,.close-player:hover{transform:translateY(-1px);border-color:var(--gold2)}
+.road-hotspot{position:absolute;z-index:5;left:37%;bottom:4%;width:31%;height:47%;border:0;background:transparent;color:transparent;cursor:pointer;touch-action:manipulation}
+.road-hotspot span{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);min-width:max-content;padding:.58rem .8rem;border:1px solid rgba(243,191,98,.65);border-radius:999px;color:#ffe0a2;background:rgba(2,6,11,.84);box-shadow:0 12px 30px #000;font-size:.76rem;font-weight:850;letter-spacing:.04em;opacity:.92}
+.road-hotspot:focus-visible{outline:3px solid var(--gold2);outline-offset:-5px;border-radius:24px}
+.road-pulse{position:absolute;z-index:4;left:48.5%;bottom:12%;width:70px;height:70px;border:1px solid rgba(243,191,98,.74);border-radius:50%;pointer-events:none;animation:roadPulse 2.2s ease-out infinite}
+@keyframes roadPulse{0%{transform:scale(.35);opacity:.85}80%,100%{transform:scale(1.8);opacity:0}}
+.mode-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;border-bottom:1px solid var(--line);background:var(--line)}
+.mode-strip button{min-height:112px;display:grid;align-content:center;gap:.35rem;border:0;border-radius:0;text-align:left;color:var(--cream);background:#06111c;padding:1rem 1.15rem}
+.mode-strip strong{color:var(--gold2);font-family:Georgia,"Times New Roman",serif;font-size:1.12rem}
+.mode-strip span{color:var(--muted);font-size:.82rem;line-height:1.35}
+.player-shell{padding:clamp(1rem,3vw,2rem);border-bottom:1px solid var(--line);background:radial-gradient(circle at 50% 0%,rgba(217,155,66,.11),transparent 32rem),#02060b}
+.player-heading{display:flex;align-items:end;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+.player-heading h2{font-size:clamp(1.7rem,4vw,3rem);color:#edbd66}
+.video-stage{position:relative;display:grid;place-items:center;overflow:hidden;min-height:320px;aspect-ratio:16/9;border:1px solid rgba(243,191,98,.4);border-radius:18px;background:#000;box-shadow:var(--shadow)}
+.video-stage video{display:block;width:100%;height:100%;object-fit:contain;background:#000}
+.video-fallback{position:absolute;inset:0;overflow:hidden;display:grid;place-items:end center;background:#000}
+.fallback-world{position:absolute;inset:-5%;background:url('/new-beansland-road-hero.png') center/cover no-repeat;transform:scale(1.02);will-change:transform}
+.video-fallback p{position:relative;z-index:2;margin:0 1rem 1rem;padding:.7rem .9rem;border-radius:9px;color:#eadac0;background:rgba(2,6,11,.82);font-size:.8rem;text-align:center}
+.event-card{position:absolute;z-index:6;right:clamp(.6rem,3vw,2rem);bottom:clamp(.6rem,3vw,2rem);width:min(330px,88%);padding:1rem;text-align:left;border:1px solid rgba(243,191,98,.72);border-radius:13px;color:var(--cream);background:rgba(2,6,11,.92);box-shadow:0 18px 55px rgba(0,0,0,.65)}
+.event-card span,.event-card strong,.event-card small{display:block}
+.event-label{color:var(--gold2);font-size:.66rem;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
+.event-card strong{margin:.45rem 0;font-family:Georgia,"Times New Roman",serif;font-size:1.13rem}
+.event-card small{color:var(--muted)}
+.player-controls{display:grid;grid-template-columns:auto auto minmax(120px,1fr) auto auto auto;gap:.55rem;align-items:center;margin-top:.75rem;padding:.8rem;border:1px solid var(--line);border-radius:13px;background:var(--panel)}
+.player-controls input{width:100%;accent-color:var(--gold2)}
+#timeReadout{min-width:105px;color:var(--muted);font-size:.79rem;font-variant-numeric:tabular-nums;text-align:center}
+.player-note{margin:.8rem 0 0;padding:.75rem 1rem;border-left:3px solid var(--gold);color:var(--muted);background:rgba(217,155,66,.08);line-height:1.5;font-size:.82rem}
+.future-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line)}
+.future-grid article{min-height:250px;padding:clamp(1.3rem,4vw,3rem);background:linear-gradient(180deg,#081522,#03080e)}
+.future-grid h2{color:#eab35d;font-size:clamp(1.5rem,3vw,2.3rem)}
+.future-grid article>p:last-child{max-width:620px;color:var(--muted);line-height:1.65}
+dialog{width:min(650px,calc(100% - 1.2rem));max-height:92vh;padding:0;overflow:auto;border:1px solid rgba(243,191,98,.58);border-radius:18px;color:var(--cream);background:#02060b;box-shadow:0 30px 120px rgba(0,0,0,.82)}
+dialog::backdrop{background:rgba(0,0,0,.78);backdrop-filter:blur(8px)}
+.shop-dialog{width:min(820px,calc(100% - 1.2rem));overflow:hidden}
+.shop-scene{height:220px;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(2,6,11,.72)),url('/new-beansland-homepage-landscape.png') 94% 10%/190% auto no-repeat}
+.shop-content,.setup-content{padding:clamp(1.2rem,4vw,2.2rem)}
+.shop-content h2,.setup-content h2{color:#edb861;font-size:clamp(1.8rem,5vw,3rem)}
+.shop-content>p:not(.eyebrow),.setup-content>p:not(.eyebrow){color:var(--muted);line-height:1.6}
+.price-box{display:grid;gap:.25rem;margin:1rem 0;padding:1rem;border:1px solid var(--line);border-radius:12px;background:rgba(217,155,66,.08)}
+.price-box span{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.12em}
+.price-box strong{color:var(--gold2);font-size:1.45rem}
+.price-box small{color:#a99c87}
+.shop-content>.gold-button,.shop-content>.dark-button{width:100%;margin-top:.55rem}
+button:disabled{cursor:not-allowed;opacity:.48;transform:none!important}
+.dialog-close{position:absolute;z-index:4;top:.7rem;right:.7rem;display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(243,191,98,.55);border-radius:50%;color:var(--cream);background:rgba(2,6,11,.85);font-size:1.4rem}
+.setup-content label{display:grid;gap:.45rem;margin:1rem 0;color:#e6d7c0;font-weight:750}
+.setup-content input[type=file]{width:100%;padding:.7rem;border:1px solid var(--line);border-radius:9px;color:var(--muted);background:#07131f}
+.setup-status{margin:1rem 0;padding:.8rem;border-radius:9px;color:#dbc9ad;background:rgba(217,155,66,.09);line-height:1.45}
+@media(max-width:1000px){.site-header{display:grid;grid-template-columns:1fr;gap:.3rem}.main-nav{justify-content:flex-start;width:100%;padding-bottom:.2rem}.mode-strip{grid-template-columns:repeat(2,minmax(0,1fr))}.road-hotspot{left:31%;width:42%}.hero{min-height:650px}}
+@media(max-width:700px){.brand small{display:none}.hero{min-height:690px}.hero-art{background-position:58% 4%}.hero-copy{padding-top:4.5rem}.road-hotspot{left:20%;bottom:2%;width:60%;height:48%}.mode-strip{grid-template-columns:1fr}.mode-strip button{min-height:90px}.player-heading{align-items:start;flex-direction:column}.player-controls{grid-template-columns:repeat(3,1fr)}.player-controls input{grid-column:1/-1}.future-grid{grid-template-columns:1fr}.shop-scene{height:170px;background-size:250% auto}.main-nav a,.main-nav button{font-size:.74rem}.main-nav{gap:1rem}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}

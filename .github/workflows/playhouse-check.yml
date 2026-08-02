@@ -1,0 +1,34 @@
+name: Playhouse check
+
+on:
+  pull_request:
+    paths:
+      - "playhouse/**"
+      - "scripts/check-playhouse.mjs"
+      - ".github/workflows/playhouse-check.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "playhouse/**"
+      - "scripts/check-playhouse.mjs"
+      - ".github/workflows/playhouse-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-playhouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check JavaScript syntax
+        run: |
+          node --check playhouse/playhouse.js
+          node --check playhouse/video-workshop.js
+          node --check scripts/check-playhouse.mjs
+      - name: Verify Playhouse structure
+        run: node scripts/check-playhouse.mjs
