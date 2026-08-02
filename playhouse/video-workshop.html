@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>New Beansland Video Workshop</title>
+  <meta name="description" content="Join, repeat, preview, and export New Beansland video clips directly in your browser.">
+  <meta name="theme-color" content="#02060b">
+  <meta name="robots" content="noindex,follow">
+  <link rel="canonical" href="https://newbeansland.org/video-workshop.html">
+  <link rel="icon" type="image/png" href="nbl-writing-mark.png">
+  <link rel="stylesheet" href="video-workshop.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="home.html" aria-label="Return to New Beansland home">
+      <img src="nbl-writing-mark.png" alt="" aria-hidden="true">
+      <span>
+        <strong>New Beansland</strong>
+        <small>Video Workshop</small>
+      </span>
+    </a>
+    <a class="header-link" href="home.html">← Back home</a>
+  </header>
+
+  <main class="workshop">
+    <section class="hero" aria-labelledby="pageTitle">
+      <p class="eyebrow">Build the sequence</p>
+      <h1 id="pageTitle">Put clips together. Make the walk longer.</h1>
+      <p class="hero-copy">Choose videos from your phone or computer, arrange them, repeat a clip, hold its last frame, preview the sequence, and export one finished video.</p>
+      <p class="privacy-note"><strong>Your files stay on your device.</strong> This first version processes them inside the browser and does not upload them to New Beansland.</p>
+    </section>
+
+    <section class="panel upload-panel" aria-labelledby="addClipsTitle">
+      <div>
+        <p class="eyebrow">Step 1</p>
+        <h2 id="addClipsTitle">Add video clips</h2>
+        <p>MP4, WebM, and other formats supported by your browser can be used.</p>
+      </div>
+      <label class="file-button" for="clipPicker">Choose videos</label>
+      <input id="clipPicker" type="file" accept="video/*" multiple>
+    </section>
+
+    <section class="panel timeline-panel" aria-labelledby="timelineTitle">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">Step 2</p>
+          <h2 id="timelineTitle">Sequence</h2>
+        </div>
+        <button id="clearButton" class="secondary-button" type="button" disabled>Clear all</button>
+      </div>
+
+      <div id="emptyTimeline" class="empty-state">Choose at least two clips to join them. One clip can also be repeated or extended.</div>
+      <ol id="clipList" class="clip-list" aria-live="polite"></ol>
+      <div class="timeline-summary">
+        <span id="clipCount">0 clips</span>
+        <span id="durationSummary">Estimated result: 0:00</span>
+      </div>
+    </section>
+
+    <section class="panel settings-panel" aria-labelledby="settingsTitle">
+      <div>
+        <p class="eyebrow">Step 3</p>
+        <h2 id="settingsTitle">Output</h2>
+      </div>
+      <div class="settings-grid">
+        <label>
+          Shape
+          <select id="outputShape">
+            <option value="auto">Match first clip</option>
+            <option value="landscape">Landscape 16:9</option>
+            <option value="portrait">Portrait 9:16</option>
+            <option value="square">Square 1:1</option>
+          </select>
+        </label>
+        <label>
+          Frame rate
+          <select id="frameRate">
+            <option value="30">30 fps</option>
+            <option value="24">24 fps</option>
+          </select>
+        </label>
+      </div>
+      <p class="format-note" id="formatNote">The workshop will detect the best export format supported by this browser.</p>
+    </section>
+
+    <section class="panel preview-panel" aria-labelledby="previewTitle">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">Step 4</p>
+          <h2 id="previewTitle">Preview and export</h2>
+        </div>
+        <div class="button-row">
+          <button id="previewButton" class="secondary-button" type="button" disabled>Preview sequence</button>
+          <button id="exportButton" class="primary-button" type="button" disabled>Build combined video</button>
+          <button id="stopButton" class="danger-button" type="button" hidden>Stop</button>
+        </div>
+      </div>
+
+      <div class="video-stage">
+        <video id="previewVideo" controls playsinline preload="metadata"></video>
+        <div id="stagePlaceholder" class="stage-placeholder">Your sequence preview will appear here.</div>
+      </div>
+
+      <div class="progress-wrap" aria-live="polite">
+        <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+        <p id="statusText">Add clips to begin.</p>
+      </div>
+
+      <section id="resultPanel" class="result-panel" hidden aria-labelledby="resultTitle">
+        <div>
+          <p class="eyebrow">Finished</p>
+          <h3 id="resultTitle">Combined video</h3>
+        </div>
+        <video id="resultVideo" controls playsinline></video>
+        <a id="downloadLink" class="download-button" href="#">Save combined video</a>
+      </section>
+    </section>
+
+    <section class="limits" aria-label="Current workshop limits">
+      <h2>First-version limits</h2>
+      <p>Export happens in real time and the page must remain open. Short clips work best on phones. This version joins clips with clean cuts; transitions, trimming, captions, music tracks, and MP4 server conversion can be added later.</p>
+    </section>
+  </main>
+
+  <video id="renderVideo" class="render-video" playsinline preload="auto" aria-hidden="true"></video>
+  <canvas id="renderCanvas" class="render-canvas" width="1280" height="720" aria-hidden="true"></canvas>
+
+  <script src="video-workshop.js" defer></script>
+</body>
+</html>
