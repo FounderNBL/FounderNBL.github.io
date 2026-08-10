@@ -4,157 +4,127 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>New Beansland | Stories. Questions. Worlds.</title>
-  <meta name="description" content="New Beansland is a creative home for stories, questions, worlds, voices, books, and ideas.">
-  <meta name="robots" content="index,follow">
+  <meta name="description" content="Enter New Beansland — a creative home for stories, questions, worlds, voices, books, and ideas.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://newbeansland.org/">
   <link rel="icon" type="image/png" href="nbl-writing-mark.png">
-  <link rel="preload" as="image" href="new-beansland-homepage-landscape.png">
+  <link rel="preload" as="image" href="homepage-new-beansland-exterior.png">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="New Beansland">
   <meta property="og:title" content="New Beansland | Stories. Questions. Worlds.">
-  <meta property="og:description" content="A creative home for stories, questions, worlds, voices, books, and ideas.">
+  <meta property="og:description" content="Enter a connected world of books, stories, questions, ideas, and creative experiences.">
   <meta property="og:url" content="https://newbeansland.org/">
-  <meta property="og:image" content="https://newbeansland.org/new-beansland-homepage-landscape.png">
-  <meta property="og:image:alt" content="New Beansland lantern-road homepage">
+  <meta property="og:image" content="https://newbeansland.org/homepage-new-beansland-exterior.png">
+  <meta property="og:image:alt" content="The New Beansland exterior at dusk">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="New Beansland | Stories. Questions. Worlds.</title>
-  <meta name="twitter:description" content="A creative home for stories, questions, worlds, voices, books, and ideas.">
-  <meta name="twitter:image" content="https://newbeansland.org/new-beansland-homepage-landscape.png">
+  <meta name="twitter:title" content="New Beansland | Stories. Questions. Worlds.">
+  <meta name="twitter:description" content="Enter a connected world of books, stories, questions, ideas, and creative experiences.">
+  <meta name="twitter:image" content="https://newbeansland.org/homepage-new-beansland-exterior.png">
   <style>
-    :root{--navy:#02060b;--panel:#06111d;--gold:#d99b42;--bright:#f3bf62;--cream:#f5ead7;--muted:#cbbda7}
+    :root{--navy:#02060b;--panel:#06111d;--gold:#d99b42;--bright:#f3bf62;--cream:#f5ead7;--muted:#cbbda7;--line:rgba(243,191,98,.34)}
     *{box-sizing:border-box}
     html{background:var(--navy);scroll-behavior:smooth}
     body{margin:0;background:var(--navy);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
-    .page{position:relative;width:min(1800px,100%);margin:auto;background:var(--navy)}
-    .site-header{position:absolute;z-index:10;top:0;left:0;right:0;min-height:82px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:11px clamp(18px,3vw,54px);line-height:1.2;background:linear-gradient(180deg,rgba(2,6,11,.99) 0%,rgba(2,6,11,.94) 68%,rgba(2,6,11,.42) 88%,transparent 100%)}
-    .real-brand{display:flex;align-items:center;gap:11px;min-width:max-content;color:var(--cream);text-decoration:none}
-    .real-brand img{display:block;width:48px;height:48px;object-fit:contain}
-    .brand-name{display:block;color:#e0ad5b;font-family:Georgia,"Times New Roman",serif;font-size:clamp(1rem,1.55vw,1.45rem);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    .brand-tag{display:block;margin-top:4px;color:#d8c6a8;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase}
-    .desktop-nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(10px,1.45vw,25px);font-family:Arial,Helvetica,sans-serif;scrollbar-width:none}
-    .desktop-nav::-webkit-scrollbar{display:none}
-    .desktop-nav a{position:relative;padding:8px 0;color:#f5ead7;text-decoration:none;font-size:clamp(.76rem,1vw,.98rem);font-weight:700;letter-spacing:.025em;white-space:nowrap;text-shadow:0 2px 8px #000}
-    .desktop-nav a:not(.walk-link)::after{content:"";position:absolute;left:0;right:100%;bottom:2px;height:2px;background:var(--bright);transition:right .16s ease}
-    .desktop-nav a:hover::after,.desktop-nav a:focus-visible::after{right:0}
-    .desktop-nav .walk-link{padding:10px 15px;border:1px solid rgba(243,191,98,.75);border-radius:6px;color:#ffe3a4;background:rgba(8,17,28,.82)}
-    .desktop-nav a:focus-visible,.real-brand:focus-visible,.mobile-portal a:focus-visible,.mobile-scroll-content a:focus-visible{outline:3px solid var(--bright);outline-offset:4px}
-    .art-shell{position:relative;width:100%;line-height:0;overflow:hidden;background:var(--navy);aspect-ratio:1672/941}
-    .home-art{display:block;width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none}
-    .hotspot{position:absolute;z-index:3;border:0;border-radius:10px;background:transparent;color:transparent;font-size:0;line-height:1;cursor:pointer;touch-action:manipulation;outline:none;-webkit-tap-highlight-color:transparent}
-    .hotspot:active{background:rgba(243,191,98,.09)}
-    .hotspot:focus-visible{outline:3px solid #f3bf62;outline-offset:-3px;background:rgba(243,191,98,.09)}
-    .mobile-portal,.mobile-scroll-content{display:none}
-    @media (hover:none){.hotspot:focus-visible{outline:none;background:transparent}}
-    @media (max-width:1180px){.site-header{gap:14px;padding-inline:18px}.desktop-nav{gap:11px}.desktop-nav a{font-size:.76rem}.desktop-nav .walk-link{padding:9px 11px}.real-brand img{width:42px;height:42px}.brand-name{font-size:1rem}.brand-tag{font-size:.55rem}}
-    @media (max-width:900px){
-      .site-header{position:sticky;top:0;min-height:0;flex-wrap:wrap;gap:7px 14px;padding:10px 13px 9px;background:rgba(2,6,11,.97);box-shadow:0 8px 24px rgba(0,0,0,.34);backdrop-filter:blur(12px)}
-      .real-brand img{width:43px;height:43px}
-      .brand-name{font-size:1.05rem}
-      .brand-tag{font-size:.55rem}
-      .desktop-nav{width:100%;justify-content:flex-start;gap:18px;overflow-x:auto;padding:2px 2px 7px;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
-      .desktop-nav a{font-size:.78rem;flex:0 0 auto}
-      .desktop-nav .walk-link{padding:8px 11px}
-    }
-    @media (max-width:600px) and (orientation:portrait){
-      .page{width:100%}
-      .art-shell{min-height:calc(100svh - 112px);aspect-ratio:auto;overflow:hidden;background:#02060b}
-      .home-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 22%;filter:brightness(.72) saturate(.92);transform:scale(1.02)}
-      .art-shell::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(2,6,11,.06) 0%,rgba(2,6,11,.18) 36%,rgba(2,6,11,.92) 82%,#02060b 100%)}
-      .hotspot{display:none}
-      .mobile-portal{position:relative;z-index:4;display:flex;min-height:calc(100svh - 112px);padding:clamp(210px,47vh,470px) 18px 30px;flex-direction:column;justify-content:flex-end;line-height:1.25;text-align:center}
-      .mobile-portal .welcome{margin:0 0 7px;color:#f3bf62;font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,10vw,3.15rem);letter-spacing:.05em;text-transform:uppercase;text-shadow:0 4px 20px #000}
-      .mobile-portal .tagline{margin:0 auto 17px;max-width:32rem;color:#f5ead7;font-family:Georgia,"Times New Roman",serif;font-size:1rem;font-style:italic;line-height:1.45;text-shadow:0 3px 12px #000}
-      .mobile-destinations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;max-width:520px;margin:0 auto}
-      .mobile-destinations a{display:flex;min-height:48px;align-items:center;justify-content:center;padding:11px 8px;border:1px solid rgba(243,191,98,.64);border-radius:8px;color:#ffe3a4;background:rgba(4,11,19,.84);font-size:.78rem;font-weight:800;letter-spacing:.07em;line-height:1.15;text-decoration:none;text-transform:uppercase;box-shadow:0 8px 20px rgba(0,0,0,.28);backdrop-filter:blur(7px)}
-      .mobile-destinations .primary{grid-column:1/-1;color:#160e04;background:linear-gradient(180deg,#f3c56e,#c98a35)}
-      .mobile-scroll-content{display:block;padding:34px 16px 48px;border-top:1px solid rgba(243,191,98,.35);background:linear-gradient(180deg,#02060b 0%,#06111d 55%,#02060b 100%)}
-      .mobile-scroll-content .eyebrow{margin:0 0 8px;color:var(--bright);font-size:.74rem;font-weight:800;letter-spacing:.18em;text-align:center;text-transform:uppercase}
-      .mobile-scroll-content h2{margin:0 auto 10px;max-width:18ch;color:var(--cream);font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,9vw,3rem);line-height:1.05;text-align:center}
-      .mobile-scroll-content .intro{margin:0 auto 24px;max-width:34rem;color:var(--muted);font-family:Georgia,"Times New Roman",serif;font-size:1rem;line-height:1.55;text-align:center}
-      .mobile-card-grid{display:grid;gap:12px;max-width:560px;margin:0 auto}
-      .mobile-card{display:block;padding:19px 18px;border:1px solid rgba(217,155,66,.48);border-radius:12px;color:var(--cream);background:linear-gradient(145deg,rgba(9,24,39,.96),rgba(3,10,18,.98));text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.28)}
-      .mobile-card strong{display:block;margin-bottom:6px;color:#f0bd68;font-family:Georgia,"Times New Roman",serif;font-size:1.3rem;letter-spacing:.035em}
-      .mobile-card span{display:block;color:#d7c8b1;font-size:.91rem;line-height:1.45}
-      .mobile-card em{display:block;margin-top:12px;color:#f3bf62;font-size:.76rem;font-style:normal;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-      .mobile-scroll-content .closing{margin:30px auto 0;padding:22px 18px;max-width:560px;border-top:1px solid rgba(243,191,98,.4);border-bottom:1px solid rgba(243,191,98,.4);color:#ead7b8;font-family:Georgia,"Times New Roman",serif;font-size:1.08rem;font-style:italic;line-height:1.55;text-align:center}
-    }
-    @media (max-width:480px){.brand-tag{display:none}.brand-name{font-size:.94rem;letter-spacing:.06em}.real-brand{gap:7px}.real-brand img{width:39px;height:39px}}
-    @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.home-art{transform:none!important}}
+    a{color:inherit}
+    .page{min-height:100svh;background:var(--navy)}
+    .site-header{position:sticky;z-index:30;top:0;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:76px;padding:10px clamp(14px,3vw,52px);background:rgba(2,6,11,.94);border-bottom:1px solid rgba(243,191,98,.18);backdrop-filter:blur(14px);box-shadow:0 8px 28px rgba(0,0,0,.24)}
+    .brand{display:flex;align-items:center;gap:11px;min-width:max-content;color:var(--cream);text-decoration:none}
+    .brand img{display:block;width:48px;height:48px;object-fit:contain}
+    .brand-name{display:block;color:#e0ad5b;font-family:Georgia,"Times New Roman",serif;font-size:clamp(.98rem,1.5vw,1.35rem);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .brand-tag{display:block;margin-top:4px;color:#d8c6a8;font-size:.59rem;letter-spacing:.15em;text-transform:uppercase}
+    .nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(10px,1.35vw,23px);overflow-x:auto;scrollbar-width:none}
+    .nav::-webkit-scrollbar{display:none}
+    .nav a{position:relative;flex:0 0 auto;padding:9px 0;color:#f5ead7;text-decoration:none;font-size:clamp(.74rem,.95vw,.94rem);font-weight:750;white-space:nowrap}
+    .nav a:not(.walk)::after{content:"";position:absolute;left:0;right:100%;bottom:3px;height:2px;background:var(--bright);transition:right .16s ease}
+    .nav a:hover::after,.nav a:focus-visible::after{right:0}
+    .nav .walk{padding:10px 14px;border:1px solid rgba(243,191,98,.7);border-radius:7px;color:#160e04;background:linear-gradient(180deg,#f3c56e,#c98a35)}
+    .hero{position:relative;min-height:calc(100svh - 76px);overflow:hidden;isolation:isolate;background:#07101a}
+    .hero-media{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;object-position:center center;user-select:none;-webkit-user-drag:none}
+    .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(1,5,10,.12) 0%,rgba(1,5,10,.08) 44%,rgba(1,5,10,.72) 100%);pointer-events:none}
+    .hero::after{content:"";position:absolute;inset:0;z-index:-1;box-shadow:inset 0 -80px 90px #02060b;pointer-events:none}
+    .hero-content{display:flex;min-height:calc(100svh - 76px);align-items:flex-end;justify-content:center;padding:40px 20px 56px;text-align:center}
+    .hero-card{width:min(760px,100%);padding:24px 24px 22px;border:1px solid rgba(243,191,98,.34);border-radius:16px;background:linear-gradient(180deg,rgba(2,6,11,.34),rgba(2,6,11,.78));box-shadow:0 18px 60px rgba(0,0,0,.38);backdrop-filter:blur(8px)}
+    .eyebrow{margin:0 0 9px;color:#f3bf62;font-size:.72rem;font-weight:850;letter-spacing:.2em;text-transform:uppercase}
+    h1{margin:0;color:#f5ead7;font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.25rem,6vw,5.1rem);line-height:.98;letter-spacing:.01em;text-shadow:0 4px 24px #000}
+    .tagline{margin:12px 0 0;color:#ead8b7;font-family:Georgia,"Times New Roman",serif;font-size:clamp(1rem,2.4vw,1.35rem);font-style:italic}
+    .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:11px;margin-top:22px}
+    .button{display:inline-flex;min-height:48px;align-items:center;justify-content:center;padding:11px 18px;border:1px solid rgba(243,191,98,.66);border-radius:8px;color:#ffe3a4;background:rgba(4,11,19,.84);font-size:.82rem;font-weight:850;letter-spacing:.08em;text-decoration:none;text-transform:uppercase;box-shadow:0 8px 22px rgba(0,0,0,.24)}
+    .button.primary{color:#160e04;background:linear-gradient(180deg,#f3c56e,#c98a35)}
+    .explore{padding:64px clamp(16px,4vw,64px) 78px;background:linear-gradient(180deg,#02060b 0%,#06111d 55%,#02060b 100%)}
+    .section-head{width:min(920px,100%);margin:0 auto 31px;text-align:center}
+    .section-head h2{margin:0;color:var(--cream);font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,5vw,3.5rem);line-height:1.04}
+    .section-head p:last-child{margin:13px auto 0;max-width:720px;color:var(--muted);font-family:Georgia,"Times New Roman",serif;font-size:1.04rem;line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:min(1250px,100%);margin:0 auto}
+    .card{display:flex;min-height:190px;flex-direction:column;padding:22px;border:1px solid rgba(217,155,66,.42);border-radius:12px;background:linear-gradient(145deg,rgba(9,24,39,.96),rgba(3,10,18,.99));color:var(--cream);text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.22);transition:transform .16s ease,border-color .16s ease}
+    .card:hover,.card:focus-visible{transform:translateY(-3px);border-color:rgba(243,191,98,.82);outline:none}
+    .card strong{display:block;color:#f0bd68;font-family:Georgia,"Times New Roman",serif;font-size:1.28rem}
+    .card span{display:block;margin-top:8px;color:#cbbda7;font-size:.91rem;line-height:1.5}
+    .card em{display:block;margin-top:auto;padding-top:18px;color:#f3bf62;font-size:.75rem;font-style:normal;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
+    .closing{width:min(920px,100%);margin:38px auto 0;padding:24px 18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:#ead7b8;font-family:Georgia,"Times New Roman",serif;font-size:1.08rem;font-style:italic;line-height:1.55;text-align:center}
+    footer{padding:28px 18px 38px;color:#948875;font-size:.82rem;text-align:center;background:#02060b}
+    .brand:focus-visible,.button:focus-visible{outline:3px solid var(--bright);outline-offset:4px}
+    @media(max-width:1040px){.site-header{align-items:flex-start;flex-wrap:wrap}.nav{width:100%;justify-content:flex-start;padding-bottom:4px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{min-height:calc(100svh - 120px)}.hero-content{min-height:calc(100svh - 120px)}}
+    @media(max-width:600px){.site-header{padding:9px 12px}.brand img{width:40px;height:40px}.brand-name{font-size:.92rem}.brand-tag{display:none}.nav{gap:17px}.nav a{font-size:.75rem}.hero{min-height:calc(100svh - 108px)}.hero-media{object-position:50% 48%}.hero-content{min-height:calc(100svh - 108px);padding:26px 14px 31px}.hero-card{padding:20px 14px 18px;border-radius:13px}.hero-actions{display:grid;grid-template-columns:1fr;width:100%}.button{width:100%}.explore{padding:48px 14px 60px}.grid{grid-template-columns:1fr}.card{min-height:0}.section-head{margin-bottom:24px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
   </style>
 </head>
 <body>
-  <main class="page">
-    <header class="site-header">
-      <a class="real-brand" href="/" aria-label="New Beansland home">
-        <img src="nbl-writing-mark.png" alt="" aria-hidden="true">
-        <span><span class="brand-name">New Beansland</span><span class="brand-tag">Stories · Questions · Worlds</span></span>
-      </a>
+<div class="page">
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="New Beansland home">
+      <img src="nbl-writing-mark.png" alt="" aria-hidden="true">
+      <span><span class="brand-name">New Beansland</span><span class="brand-tag">Stories · Questions · Worlds</span></span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="/" aria-current="page">Home</a>
+      <a href="site.html#stories">Stories</a>
+      <a href="books.html">Books</a>
+      <a href="questions.html">Questions</a>
+      <a href="site.html#worlds">Worlds</a>
+      <a href="site.html#voices">Voices</a>
+      <a href="founder-office.html">About</a>
+      <a href="books.html">Shop</a>
+      <a class="walk" href="#explore">Start Walking</a>
+    </nav>
+  </header>
 
-      <nav class="desktop-nav" aria-label="Main navigation">
-        <a href="/" aria-current="page">Home</a>
-        <a href="site.html#stories">Stories</a>
-        <a href="books.html">Books</a>
-        <a href="questions.html">Questions</a>
-        <a href="site.html#worlds">Worlds</a>
-        <a href="site.html#voices">Voices</a>
-        <a href="founder-office.html">About</a>
-        <a href="books.html">Shop</a>
-        <a class="walk-link" href="#explore-mobile">Start Walking</a>
-      </nav>
-    </header>
-
-    <section class="art-shell" aria-label="New Beansland homepage">
-      <img class="home-art" src="new-beansland-homepage-landscape.png" width="1672" height="941" fetchpriority="high" alt="New Beansland at night, with a lantern road, NBL Books, Questions, Worlds, Voices, featured work, the Family and Beans Square">
-
-      <div class="mobile-portal" aria-label="Enter New Beansland">
-        <h1 class="welcome">New Beansland</h1>
-        <p class="tagline">Don’t just read about the world. Enter it.</p>
-        <nav class="mobile-destinations" aria-label="New Beansland destinations">
-          <a class="primary" href="#explore-mobile">Start Walking</a>
-          <a href="books.html">Books</a>
-          <a href="questions.html">Questions</a>
-          <a href="site.html#worlds">Worlds</a>
-          <a href="site.html#voices">Voices</a>
-          <a href="people-zoo.html">People Zoo</a>
-          <a href="doctor-rocketship-entry.html">Doctor / Rocketship</a>
-          <a href="founder-office.html">Founder’s Office</a>
-          <a href="coming-soon.html">Beans Square</a>
-        </nav>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <img class="hero-media" src="homepage-new-beansland-exterior.png" alt="The New Beansland exterior at dusk, with the welcome monument, Founder seal and banner flags, and bronze bench" width="1536" height="1024" fetchpriority="high">
+      <div class="hero-content">
+        <div class="hero-card">
+          <p class="eyebrow">Welcome to</p>
+          <h1 id="hero-title">New Beansland</h1>
+          <p class="tagline">Don’t just read about the world. Enter it.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#explore">Start Walking</a>
+            <a class="button" href="founder-office.html">Enter Founder’s Office</a>
+          </div>
+        </div>
       </div>
-
-      <a class="hotspot" style="left:71.2%;top:6.3%;width:8.5%;height:4%" href="site.html" aria-label="Old Town">Old Town</a>
-      <a class="hotspot" style="left:71.2%;top:10.2%;width:8.5%;height:4%" href="coming-soon.html" aria-label="Music">Music</a>
-      <a class="hotspot" style="left:71.2%;top:14.1%;width:9%;height:5%" href="people-zoo.html" aria-label="People Zoo">People Zoo</a>
-      <a class="hotspot" style="left:4.1%;top:36.7%;width:23.1%;height:13.5%" href="books.html" aria-label="Explore NBL Books">NBL Books</a>
-      <a class="hotspot" style="left:27.7%;top:36.7%;width:22%;height:13.5%" href="questions.html" aria-label="Explore Questions">Questions</a>
-      <a class="hotspot" style="left:50.4%;top:36.7%;width:22%;height:13.5%" href="site.html#worlds" aria-label="Explore Worlds">Worlds</a>
-      <a class="hotspot" style="left:72.8%;top:36.7%;width:23.1%;height:13.5%" href="site.html#voices" aria-label="Explore Voices">Voices</a>
-      <a class="hotspot" style="left:4%;top:55.8%;width:35.3%;height:15.4%" href="doctor-rocketship-entry.html" aria-label="Explore The Doctor Rocketship Test">The Doctor Rocketship Test</a>
-      <a class="hotspot" style="left:39.8%;top:55.8%;width:24%;height:15.4%" href="coming-soon.html" aria-label="Explore Music">Music</a>
-      <a class="hotspot" style="left:64.2%;top:55.8%;width:31.5%;height:15.4%" href="site.html#voices" aria-label="Meet the Family">The Family</a>
-      <a class="hotspot" style="left:3.8%;top:72%;width:92%;height:13.7%" href="coming-soon.html" aria-label="Visit Beans Square">Beans Square</a>
-      <a class="hotspot" style="left:77%;top:86.3%;width:14.3%;height:4.2%" href="questions.html" aria-label="Enter the latest conversation">Enter the Conversation</a>
     </section>
 
-    <section class="mobile-scroll-content" id="explore-mobile" aria-labelledby="explore-mobile-title">
-      <p class="eyebrow">The road opens here</p>
-      <h2 id="explore-mobile-title">Choose where the story takes you.</h2>
-      <p class="intro">The opening stays cinematic. From here, the homepage keeps moving instead of sending you away before you can explore.</p>
-
-      <div class="mobile-card-grid">
-        <a class="mobile-card" href="books.html"><strong>NBL Books</strong><span>Stories, frameworks, and questions built to live beyond the page.</span><em>Enter Books →</em></a>
-        <a class="mobile-card" href="questions.html"><strong>Questions</strong><span>The ideas that keep the road open and the conversation moving.</span><em>Ask Something →</em></a>
-        <a class="mobile-card" href="site.html#worlds"><strong>Worlds</strong><span>Places, histories, and experiences waiting beyond the entrance.</span><em>Explore Worlds →</em></a>
-        <a class="mobile-card" href="site.html#voices"><strong>Voices</strong><span>The Family speaking through stories, music, characters, and sound.</span><em>Listen In →</em></a>
-        <a class="mobile-card" href="people-zoo.html"><strong>People Zoo</strong><span>A finished New Beansland story. Step inside carefully.</span><em>Enter the Zoo →</em></a>
-        <a class="mobile-card" href="doctor-rocketship-entry.html"><strong>The Doctor / Rocketship Test</strong><span>A category-audit method for testing belief, engineering, and truth.</span><em>Test the Claim →</em></a>
-        <a class="mobile-card" href="founder-office.html"><strong>Founder’s Office</strong><span>The origin, the mission, the hidden room, and the work behind it all.</span><em>Enter the Office →</em></a>
-        <a class="mobile-card" href="coming-soon.html"><strong>Beans Square</strong><span>The porch, the memory, and the place where the Walk became a world.</span><em>Visit the Square →</em></a>
+    <section class="explore" id="explore" aria-labelledby="explore-title">
+      <div class="section-head">
+        <p class="eyebrow">The road opens here</p>
+        <h2 id="explore-title">Choose where the story takes you.</h2>
+        <p>New Beansland is meant to be explored. These are real links and real destinations — not words painted into the background image.</p>
       </div>
-
+      <div class="grid">
+        <a class="card" href="books.html"><strong>NBL Books</strong><span>Stories, frameworks, and questions built to live beyond the page.</span><em>Enter Books →</em></a>
+        <a class="card" href="questions.html"><strong>Questions</strong><span>The ideas that keep the road open and the conversation moving.</span><em>Ask Something →</em></a>
+        <a class="card" href="site.html#worlds"><strong>Worlds</strong><span>Places, histories, and experiences waiting beyond the entrance.</span><em>Explore Worlds →</em></a>
+        <a class="card" href="site.html#voices"><strong>Voices</strong><span>Stories, music, characters, conversations, and sound from New Beansland.</span><em>Listen In →</em></a>
+        <a class="card" href="people-zoo.html"><strong>People Zoo</strong><span>A finished New Beansland story. Step inside carefully.</span><em>Enter the Zoo →</em></a>
+        <a class="card" href="doctor-rocketship-entry.html"><strong>The Doctor / Rocketship Test</strong><span>A category-audit method for testing belief, engineering, evidence, and truth.</span><em>Test the Claim →</em></a>
+        <a class="card" href="founder-office.html"><strong>Founder’s Office</strong><span>The origin, the mission, the hidden room, and the work behind it all.</span><em>Enter the Office →</em></a>
+        <a class="card" href="coming-soon.html"><strong>Beans Square</strong><span>The porch, the memory, and the place where the Walk became a world.</span><em>Visit the Square →</em></a>
+      </div>
       <p class="closing">We aren’t perfect. We are aware. Every world starts with one conversation.</p>
     </section>
   </main>
+  <footer>© 2026 New Beansland · Stories. Questions. Worlds. · <a href="jamel-hawkins.html">Jamel Hawkins, Founder</a></footer>
+</div>
 </body>
 </html>
