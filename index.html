@@ -2,129 +2,149 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>New Beansland | Stories. Questions. Worlds.</title>
-  <meta name="description" content="Enter New Beansland — a creative home for stories, questions, worlds, voices, books, and ideas.">
+  <meta name="description" content="Enter New Beansland — books, film, ideas, music, questions, worlds, and the Founder’s Office.">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://newbeansland.org/">
-  <link rel="icon" type="image/png" href="nbl-writing-mark.png">
-  <link rel="preload" as="image" href="homepage-new-beansland-exterior.png">
+  <link rel="icon" type="image/png" href="nbl-primary-logo.png">
+  <link rel="preload" as="image" href="New_New_homepage.png">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="New Beansland">
   <meta property="og:title" content="New Beansland | Stories. Questions. Worlds.">
-  <meta property="og:description" content="Enter a connected world of books, stories, questions, ideas, and creative experiences.">
+  <meta property="og:description" content="A creative world of books, film, music, questions, ideas, and connected stories.">
   <meta property="og:url" content="https://newbeansland.org/">
-  <meta property="og:image" content="https://newbeansland.org/homepage-new-beansland-exterior.png">
-  <meta property="og:image:alt" content="The New Beansland exterior at dusk">
+  <meta property="og:image" content="https://newbeansland.org/New_New_homepage.png">
+  <meta property="og:image:alt" content="New Beansland at night">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="New Beansland | Stories. Questions. Worlds.">
-  <meta name="twitter:description" content="Enter a connected world of books, stories, questions, ideas, and creative experiences.">
-  <meta name="twitter:image" content="https://newbeansland.org/homepage-new-beansland-exterior.png">
+  <meta name="twitter:description" content="Books, film, music, questions, ideas, and connected worlds.">
+  <meta name="twitter:image" content="https://newbeansland.org/New_New_homepage.png">
   <style>
-    :root{--navy:#02060b;--panel:#06111d;--gold:#d99b42;--bright:#f3bf62;--cream:#f5ead7;--muted:#cbbda7;--line:rgba(243,191,98,.34)}
+    :root{
+      --black:#02060b;--deep:#040b13;--navy:#071421;--panel:#081726;
+      --gold:#d6a14b;--gold2:#f0c56f;--cream:#f4ead8;--soft:#cfc3ad;
+      --line:rgba(214,161,75,.38);--max:1500px;
+    }
     *{box-sizing:border-box}
-    html{background:var(--navy);scroll-behavior:smooth}
-    body{margin:0;background:var(--navy);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
-    a{color:inherit}
-    .page{min-height:100svh;background:var(--navy)}
-    .site-header{position:sticky;z-index:30;top:0;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:76px;padding:10px clamp(14px,3vw,52px);background:rgba(2,6,11,.94);border-bottom:1px solid rgba(243,191,98,.18);backdrop-filter:blur(14px);box-shadow:0 8px 28px rgba(0,0,0,.24)}
-    .brand{display:flex;align-items:center;gap:11px;min-width:max-content;color:var(--cream);text-decoration:none}
-    .brand img{display:block;width:48px;height:48px;object-fit:contain}
-    .brand-name{display:block;color:#e0ad5b;font-family:Georgia,"Times New Roman",serif;font-size:clamp(.98rem,1.5vw,1.35rem);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    .brand-tag{display:block;margin-top:4px;color:#d8c6a8;font-size:.59rem;letter-spacing:.15em;text-transform:uppercase}
-    .nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(10px,1.35vw,23px);overflow-x:auto;scrollbar-width:none}
+    html{background:var(--black);scroll-behavior:smooth;scroll-padding-top:86px}
+    body{margin:0;overflow-x:hidden;background:radial-gradient(circle at 50% -10%,rgba(76,105,135,.18),transparent 36%),linear-gradient(180deg,#02060b 0%,#06111d 56%,#02060b 100%);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
+    img,video{display:block;max-width:100%}
+    a{color:inherit;text-decoration:none}
+    a:focus-visible{outline:3px solid var(--gold2);outline-offset:4px}
+    .site-header{position:sticky;top:0;z-index:50;min-height:78px;padding:0 max(18px,env(safe-area-inset-left));display:flex;align-items:center;border-bottom:1px solid rgba(214,161,75,.24);background:rgba(2,6,11,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 10px 30px rgba(0,0,0,.28)}
+    .header-inner{width:min(var(--max),100%);margin:0 auto;display:flex;align-items:center;gap:24px}
+    .brand-banner{position:relative;align-self:flex-start;flex:0 0 112px;min-height:136px;margin-bottom:-58px;display:grid;place-items:center;padding:12px 9px 16px;border-left:1px solid rgba(214,161,75,.75);border-right:1px solid rgba(214,161,75,.75);border-bottom:2px solid rgba(214,161,75,.8);background:linear-gradient(180deg,#050a11,#090d15);box-shadow:0 12px 24px rgba(0,0,0,.34);clip-path:polygon(0 0,100% 0,100% 86%,50% 100%,0 86%)}
+    .brand-banner img{width:72px;height:72px;object-fit:contain;filter:drop-shadow(0 0 10px rgba(214,161,75,.22))}
+    .brand-banner span{display:block;margin-top:2px;color:var(--gold2);font:700 .66rem/1.2 Georgia,"Times New Roman",serif;letter-spacing:.14em;text-align:center;text-transform:uppercase}
+    .nav{display:flex;align-items:center;justify-content:flex-end;gap:clamp(14px,1.8vw,32px);width:100%;overflow-x:auto;scrollbar-width:none}
     .nav::-webkit-scrollbar{display:none}
-    .nav a{position:relative;flex:0 0 auto;padding:9px 0;color:#f5ead7;text-decoration:none;font-size:clamp(.74rem,.95vw,.94rem);font-weight:750;white-space:nowrap}
-    .nav a:not(.walk)::after{content:"";position:absolute;left:0;right:100%;bottom:3px;height:2px;background:var(--bright);transition:right .16s ease}
-    .nav a:hover::after,.nav a:focus-visible::after{right:0}
-    .nav .walk{padding:10px 14px;border:1px solid rgba(243,191,98,.7);border-radius:7px;color:#160e04;background:linear-gradient(180deg,#f3c56e,#c98a35)}
-    .hero{position:relative;min-height:calc(100svh - 76px);overflow:hidden;isolation:isolate;background:#07101a}
-    .hero-media{position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;object-position:center center;user-select:none;-webkit-user-drag:none}
-    .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(1,5,10,.12) 0%,rgba(1,5,10,.08) 44%,rgba(1,5,10,.72) 100%);pointer-events:none}
-    .hero::after{content:"";position:absolute;inset:0;z-index:-1;box-shadow:inset 0 -80px 90px #02060b;pointer-events:none}
-    .hero-content{display:flex;min-height:calc(100svh - 76px);align-items:flex-end;justify-content:center;padding:40px 20px 56px;text-align:center}
-    .hero-card{width:min(760px,100%);padding:24px 24px 22px;border:1px solid rgba(243,191,98,.34);border-radius:16px;background:linear-gradient(180deg,rgba(2,6,11,.34),rgba(2,6,11,.78));box-shadow:0 18px 60px rgba(0,0,0,.38);backdrop-filter:blur(8px)}
-    .eyebrow{margin:0 0 9px;color:#f3bf62;font-size:.72rem;font-weight:850;letter-spacing:.2em;text-transform:uppercase}
-    h1{margin:0;color:#f5ead7;font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.25rem,6vw,5.1rem);line-height:.98;letter-spacing:.01em;text-shadow:0 4px 24px #000}
-    .tagline{margin:12px 0 0;color:#ead8b7;font-family:Georgia,"Times New Roman",serif;font-size:clamp(1rem,2.4vw,1.35rem);font-style:italic}
-    .hero-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:11px;margin-top:22px}
-    .button{display:inline-flex;min-height:48px;align-items:center;justify-content:center;padding:11px 18px;border:1px solid rgba(243,191,98,.66);border-radius:8px;color:#ffe3a4;background:rgba(4,11,19,.84);font-size:.82rem;font-weight:850;letter-spacing:.08em;text-decoration:none;text-transform:uppercase;box-shadow:0 8px 22px rgba(0,0,0,.24)}
-    .button.primary{color:#160e04;background:linear-gradient(180deg,#f3c56e,#c98a35)}
-    .explore{padding:64px clamp(16px,4vw,64px) 78px;background:linear-gradient(180deg,#02060b 0%,#06111d 55%,#02060b 100%)}
-    .section-head{width:min(920px,100%);margin:0 auto 31px;text-align:center}
-    .section-head h2{margin:0;color:var(--cream);font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,5vw,3.5rem);line-height:1.04}
-    .section-head p:last-child{margin:13px auto 0;max-width:720px;color:var(--muted);font-family:Georgia,"Times New Roman",serif;font-size:1.04rem;line-height:1.6}
-    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:min(1250px,100%);margin:0 auto}
-    .card{display:flex;min-height:190px;flex-direction:column;padding:22px;border:1px solid rgba(217,155,66,.42);border-radius:12px;background:linear-gradient(145deg,rgba(9,24,39,.96),rgba(3,10,18,.99));color:var(--cream);text-decoration:none;box-shadow:0 12px 30px rgba(0,0,0,.22);transition:transform .16s ease,border-color .16s ease}
-    .card:hover,.card:focus-visible{transform:translateY(-3px);border-color:rgba(243,191,98,.82);outline:none}
-    .card strong{display:block;color:#f0bd68;font-family:Georgia,"Times New Roman",serif;font-size:1.28rem}
-    .card span{display:block;margin-top:8px;color:#cbbda7;font-size:.91rem;line-height:1.5}
-    .card em{display:block;margin-top:auto;padding-top:18px;color:#f3bf62;font-size:.75rem;font-style:normal;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
-    .closing{width:min(920px,100%);margin:38px auto 0;padding:24px 18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);color:#ead7b8;font-family:Georgia,"Times New Roman",serif;font-size:1.08rem;font-style:italic;line-height:1.55;text-align:center}
-    footer{padding:28px 18px 38px;color:#948875;font-size:.82rem;text-align:center;background:#02060b}
-    .brand:focus-visible,.button:focus-visible{outline:3px solid var(--bright);outline-offset:4px}
-    @media(max-width:1040px){.site-header{align-items:flex-start;flex-wrap:wrap}.nav{width:100%;justify-content:flex-start;padding-bottom:4px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{min-height:calc(100svh - 120px)}.hero-content{min-height:calc(100svh - 120px)}}
-    @media(max-width:600px){.site-header{padding:9px 12px}.brand img{width:40px;height:40px}.brand-name{font-size:.92rem}.brand-tag{display:none}.nav{gap:17px}.nav a{font-size:.75rem}.hero{min-height:calc(100svh - 108px)}.hero-media{object-position:50% 48%}.hero-content{min-height:calc(100svh - 108px);padding:26px 14px 31px}.hero-card{padding:20px 14px 18px;border-radius:13px}.hero-actions{display:grid;grid-template-columns:1fr;width:100%}.button{width:100%}.explore{padding:48px 14px 60px}.grid{grid-template-columns:1fr}.card{min-height:0}.section-head{margin-bottom:24px}}
-    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+    .nav a{position:relative;flex:0 0 auto;padding:29px 0 24px;color:#eee5d8;font-size:.76rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+    .nav a::after{content:"";position:absolute;left:0;right:100%;bottom:18px;height:2px;background:var(--gold);transition:right .2s ease}
+    .nav a:hover::after,.nav a:focus-visible::after,.nav a[aria-current="page"]::after{right:0}
+    .nav a[aria-current="page"]{color:var(--gold2)}
+    .hero{position:relative;isolation:isolate;min-height:min(72vw,780px);overflow:hidden;border-bottom:1px solid rgba(214,161,75,.26);background:#050b12}
+    .hero-media{position:absolute;inset:-2%;z-index:-3;width:104%;height:104%;object-fit:cover;object-position:center center;animation:heroDrift 18s ease-in-out infinite alternate}
+    .hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(2,6,11,.15) 0%,rgba(2,6,11,.02) 43%,rgba(2,6,11,.56) 75%,#02060b 100%)}
+    .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at center 54%,transparent 0 44%,rgba(1,4,8,.26) 78%,rgba(1,4,8,.62) 100%)}
+    @keyframes heroDrift{from{transform:scale(1.01) translate3d(0,0,0)}to{transform:scale(1.055) translate3d(0,-.6%,0)}}
+    .hero-content{width:min(1180px,92%);min-height:min(72vw,780px);margin:0 auto;padding:clamp(160px,25vw,350px) 18px 54px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center}
+    .hero-title{margin:0;color:#efd7a7;font:700 clamp(2.8rem,7vw,6.6rem)/.92 Georgia,"Times New Roman",serif;letter-spacing:.075em;text-shadow:0 3px 18px #000,0 0 22px rgba(214,161,75,.12)}
+    .hero-tag{margin:12px 0 0;color:#ead8b7;font:700 clamp(.84rem,1.5vw,1.12rem)/1.3 Arial,sans-serif;letter-spacing:.24em;text-transform:uppercase}
+    .hero-quote{max-width:800px;margin:15px auto 0;color:#ecd6ae;font:italic clamp(1.12rem,2.5vw,2rem)/1.2 Georgia,"Times New Roman",serif;text-shadow:0 3px 14px #000}
+    .hero-signature{margin:7px 0 0;color:var(--gold2);font:italic 1rem Georgia,"Times New Roman",serif}
+    .explore{padding:48px 22px 72px}
+    .section-head{width:min(900px,100%);margin:0 auto 30px;text-align:center}
+    .kicker{margin:0 0 8px;color:var(--gold2);font-size:.74rem;font-weight:900;letter-spacing:.23em;text-transform:uppercase}
+    .section-head h2{margin:0;color:var(--cream);font:700 clamp(1.9rem,4.5vw,3.4rem)/1.03 Georgia,"Times New Roman",serif}
+    .section-head p:last-child{margin:10px auto 0;color:var(--soft);font:1rem/1.6 Arial,sans-serif}
+    .world-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;width:min(1400px,100%);margin:0 auto}
+    .world-card{position:relative;min-height:360px;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#07111d;box-shadow:0 14px 35px rgba(0,0,0,.3);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+    .world-card:hover,.world-card:focus-visible{transform:translateY(-5px);border-color:rgba(240,197,111,.82);box-shadow:0 22px 44px rgba(0,0,0,.44)}
+    .world-card .media{position:absolute;inset:0 0 44%;overflow:hidden;background:#07111d}
+    .world-card .media img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+    .world-card:hover .media img{transform:scale(1.045)}
+    .world-card .media.hero-crop img{object-position:77% 50%}
+    .world-card.timmy .media.hero-crop img{object-position:97% 50%}
+    .world-card::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 0 45%,rgba(2,6,11,.65) 57%,rgba(2,6,11,.97) 71%,#02060b 100%);pointer-events:none}
+    .card-body{position:relative;z-index:2;min-height:360px;padding:205px 18px 18px;display:flex;flex-direction:column}
+    .status{align-self:flex-start;margin-bottom:8px;padding:5px 8px;border:1px solid rgba(214,161,75,.35);border-radius:999px;color:#e8c889;background:rgba(4,11,19,.8);font-size:.62rem;font-weight:900;letter-spacing:.13em;text-transform:uppercase}
+    .world-card h3{margin:0;color:var(--gold2);font:700 1.36rem/1.08 Georgia,"Times New Roman",serif;letter-spacing:.04em;text-transform:uppercase}
+    .world-card p{margin:9px 0 0;color:#d9d0c3;font:.86rem/1.52 Arial,sans-serif}
+    .enter{margin-top:auto;padding-top:15px;color:var(--gold2);font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .live-covers{padding:12px 22px 76px}
+    .live-shell{width:min(1180px,100%);margin:0 auto;padding:28px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(7,20,34,.95),rgba(2,8,15,.98));box-shadow:0 20px 50px rgba(0,0,0,.25)}
+    .live-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+    .live-card{padding:16px;border:1px solid rgba(214,161,75,.28);border-radius:12px;background:rgba(2,8,15,.7);transition:transform .2s ease,border-color .2s ease}
+    .live-card:hover{transform:translateY(-4px);border-color:rgba(240,197,111,.62)}
+    .video-wrap{position:relative;max-width:260px;margin:0 auto;overflow:hidden;border:1px solid rgba(240,197,111,.45);border-radius:9px;background:#010305;box-shadow:0 16px 34px rgba(0,0,0,.45)}
+    .video-wrap video{width:100%;aspect-ratio:2/3;object-fit:cover;background:#010305}
+    .live-card h3{margin:15px 0 7px;color:var(--gold2);font:700 1.2rem Georgia,"Times New Roman",serif;text-align:center}
+    .live-card p{margin:0;color:var(--soft);font:.87rem/1.48 Arial,sans-serif;text-align:center}
+    .live-card a{display:block;margin-top:12px;color:var(--gold2);font-size:.74rem;font-weight:900;letter-spacing:.1em;text-align:center;text-transform:uppercase}
+    .closing{padding:4px 22px 62px}
+    .closing-inner{width:min(1050px,100%);margin:0 auto;padding:24px 22px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
+    .seal-row{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap}
+    .seal-row img{width:78px;height:78px;object-fit:contain}
+    .closing blockquote{margin:11px auto 0;max-width:760px;color:#e6d2ae;font:italic 1.05rem/1.55 Georgia,"Times New Roman",serif}
+    footer{padding:26px 22px 40px;background:#02060b;border-top:1px solid rgba(214,161,75,.16)}
+    .footer-inner{width:min(1400px,100%);margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center}
+    .footer-mark{width:68px;height:68px;object-fit:contain}
+    .footer-copy{color:#b9ae9c;font:.8rem/1.5 Arial,sans-serif}
+    .footer-copy strong{display:block;color:var(--gold2);font:700 1.1rem Georgia,"Times New Roman",serif;letter-spacing:.08em;text-transform:uppercase}
+    .footer-links{display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end;color:#d5c8b5;font-size:.76rem;font-weight:800;text-transform:uppercase}
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+    .reveal.in-view{opacity:1;transform:none}
+    @media(max-width:1120px){.world-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.brand-banner{flex-basis:96px;min-height:120px}.brand-banner img{width:62px;height:62px}.nav{gap:18px}.nav a{font-size:.7rem}}
+    @media(max-width:800px){html{scroll-padding-top:72px}.site-header{min-height:70px;padding:0 10px}.header-inner{gap:12px}.brand-banner{flex:0 0 72px;min-height:88px;margin-bottom:-18px;padding:6px 5px 9px}.brand-banner img{width:46px;height:46px}.brand-banner span{font-size:.48rem;letter-spacing:.09em}.nav{justify-content:flex-start;gap:18px;padding-left:4px}.nav a{padding:25px 0 21px;font-size:.64rem;letter-spacing:.11em}.nav a::after{bottom:15px}.hero{min-height:72svh}.hero-media{inset:0;width:100%;height:100%;animation:none;object-position:50% 50%}.hero-content{min-height:72svh;width:94%;padding:210px 10px 28px}.hero-title{font-size:clamp(2.35rem,12vw,4.2rem);letter-spacing:.045em}.hero-tag{font-size:.68rem;letter-spacing:.17em}.hero-quote{font-size:clamp(1rem,4.8vw,1.35rem)}.explore{padding:38px 14px 54px}.world-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.world-card,.card-body{min-height:330px}.card-body{padding:188px 14px 14px}.live-covers{padding:0 14px 58px}.live-shell{padding:20px 14px}.live-grid{grid-template-columns:1fr}.video-wrap{max-width:300px}.footer-inner{grid-template-columns:auto 1fr}.footer-links{grid-column:1/-1;justify-content:flex-start}}
+    @media(max-width:520px){.world-grid{grid-template-columns:1fr}.world-card,.card-body{min-height:344px}.world-card .media{inset:0 0 42%}.card-body{padding-top:203px}.section-head p:last-child{font-size:.94rem}.closing{padding-left:14px;padding-right:14px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}.hero-media{animation:none}.reveal{opacity:1;transform:none}}
   </style>
 </head>
-<body>
-<div class="page">
+<body id="home">
   <header class="site-header">
-    <a class="brand" href="/" aria-label="New Beansland home">
-      <img src="nbl-writing-mark.png" alt="" aria-hidden="true">
-      <span><span class="brand-name">New Beansland</span><span class="brand-tag">Stories · Questions · Worlds</span></span>
-    </a>
-    <nav class="nav" aria-label="Main navigation">
-      <a href="/" aria-current="page">Home</a>
-      <a href="site.html#stories">Stories</a>
-      <a href="books.html">Books</a>
-      <a href="questions.html">Questions</a>
-      <a href="site.html#worlds">Worlds</a>
-      <a href="site.html#voices">Voices</a>
-      <a href="founder-office.html">About</a>
-      <a href="books.html">Shop</a>
-      <a class="walk" href="#explore">Start Walking</a>
-    </nav>
+    <div class="header-inner">
+      <a class="brand-banner" href="/" aria-label="New Beansland home"><div><img src="nbl-primary-logo.png" alt="New Beansland NBL mark"><span>New Beansland</span></div></a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="/" aria-current="page">Home</a><a href="books.html">Books</a><a href="coming-soon.html?room=city">TV &amp; Film</a><a href="coming-soon.html?room=institute">Institute</a><a href="coming-soon.html?room=timmy-v">Music (Timmy V)</a><a href="founder-office.html">Founder’s Office</a><a href="jamel-hawkins.html">About</a><a href="coming-soon.html?room=news">News</a><a href="mailto:foundernewbeansland@gmail.com">Contact</a>
+      </nav>
+    </div>
   </header>
-
   <main>
     <section class="hero" aria-labelledby="hero-title">
-      <img class="hero-media" src="homepage-new-beansland-exterior.png" alt="The New Beansland exterior at dusk, with the welcome monument, Founder seal and banner flags, and bronze bench" width="1536" height="1024" fetchpriority="high">
-      <div class="hero-content">
-        <div class="hero-card">
-          <p class="eyebrow">Welcome to</p>
-          <h1 id="hero-title">New Beansland</h1>
-          <p class="tagline">Don’t just read about the world. Enter it.</p>
-          <div class="hero-actions">
-            <a class="button primary" href="#explore">Start Walking</a>
-            <a class="button" href="founder-office.html">Enter Founder’s Office</a>
-          </div>
+      <img class="hero-media" src="New_New_homepage.png" alt="New Beansland at night, with NBL Books, The City, The Institute, Timmy V Studios, and Founder’s Office surrounding the central New Beansland building" width="1536" height="1024" fetchpriority="high">
+      <div class="hero-content"><h1 class="hero-title" id="hero-title">NEW BEANSLAND</h1><p class="hero-tag">Stories. Questions. Worlds.</p><p class="hero-quote">“Sometimes the answer isn’t the answer… it’s the question you didn’t ask.”</p><p class="hero-signature">— Jamel Hawkins</p></div>
+    </section>
+    <section class="explore" id="explore" aria-labelledby="explore-title">
+      <div class="section-head reveal"><p class="kicker">Explore the world of New Beansland</p><h2 id="explore-title">Books. Television. Film. Music. Ideas. Connected by purpose.</h2><p>Every open door goes somewhere real. Rooms still being built are clearly marked Coming Soon.</p></div>
+      <div class="world-grid">
+        <a class="world-card reveal" href="books.html"><div class="media"><img src="nbl-books-imprint.png" alt="NBL Books official imprint"></div><div class="card-body"><span class="status">Open</span><h3>NBL Books</h3><p>Books, living covers, frameworks, and stories built to move beyond the page.</p><span class="enter">Enter Books →</span></div></a>
+        <a class="world-card reveal" href="coming-soon.html?room=city"><div class="media"><img src="if-it-is-is-it-banner.png" alt="The City — If It Is… Is It? official banner"></div><div class="card-body"><span class="status">Coming Soon</span><h3>The City</h3><p>The <em>If It Is… Is It?</em> universe. Television and film are being built behind this door.</p><span class="enter">Visit the Door →</span></div></a>
+        <a class="world-card reveal" href="coming-soon.html?room=institute"><div class="media hero-crop"><img src="New_New_homepage.png" alt="The Institute sign inside the New Beansland world"></div><div class="card-body"><span class="status">Coming Soon</span><h3>The Institute</h3><p>Applied inquiry, analytical thinking, and frameworks for examining what we think we know.</p><span class="enter">Visit the Door →</span></div></a>
+        <a class="world-card timmy reveal" href="coming-soon.html?room=timmy-v"><div class="media hero-crop"><img src="New_New_homepage.png" alt="Timmy V Studios inside the New Beansland world"></div><div class="card-body"><span class="status">Coming Soon</span><h3>Timmy V Studios</h3><p>Music. Frequency. Truth. The sound of New Beansland is still being wired.</p><span class="enter">Visit the Door →</span></div></a>
+        <a class="world-card reveal" href="founder-office.html"><div class="media"><img src="Founders-offiice-later.png" alt="Founder’s Office official New Beansland artwork"></div><div class="card-body"><span class="status">Open</span><h3>Founder’s Office</h3><p>The origin story, the mission, the archive, and the mind behind the larger world.</p><span class="enter">Enter Office →</span></div></a>
+      </div>
+    </section>
+    <section class="live-covers" id="live-covers" aria-labelledby="live-covers-title">
+      <div class="live-shell reveal"><div class="section-head"><p class="kicker">The books are alive</p><h2 id="live-covers-title">Live Book Covers</h2><p>Real New Beansland book media — not placeholder motion and not stock filler.</p></div>
+        <div class="live-grid">
+          <article class="live-card"><div class="video-wrap"><video autoplay muted loop playsinline preload="metadata" poster="people-zoo-front.png" aria-label="Animated cover for The People Zoo"><source src="people-zoo-live-cover.mp4" type="video/mp4"></video></div><h3>The People Zoo</h3><p>A New Beansland story about curated environments, hidden control, and the cages we stop noticing.</p><a href="people-zoo.html">Enter The People Zoo →</a></article>
+          <article class="live-card"><div class="video-wrap"><video autoplay muted loop playsinline preload="metadata" poster="doc-rock-ogfront-cover.png" aria-label="Animated cover for The Doctor/Rocketship Test"><source src="doctor-rocketship-live-cover.mp4" type="video/mp4"></video></div><h3>The Doctor / Rocketship Test</h3><p>The Standard Edition category-audit framework in motion.</p><a href="doctor-rocketship-entry.html">Explore the Test →</a></article>
+          <article class="live-card"><div class="video-wrap"><video autoplay muted loop playsinline preload="metadata" poster="doc-rock-islamic-front-cover.png" aria-label="Animated media for The Doctor/Rocketship Test Islamic Dilemma Edition"><source src="doc-rock-islamic-digital.mp4" type="video/mp4"></video></div><h3>Islamic Dilemma Edition</h3><p>Revelation, evidence, engineering, causality, and the standards used to test a claim.</p><a href="books.html">See the Editions →</a></article>
         </div>
       </div>
     </section>
-
-    <section class="explore" id="explore" aria-labelledby="explore-title">
-      <div class="section-head">
-        <p class="eyebrow">The road opens here</p>
-        <h2 id="explore-title">Choose where the story takes you.</h2>
-        <p>New Beansland is meant to be explored. These are real links and real destinations — not words painted into the background image.</p>
-      </div>
-      <div class="grid">
-        <a class="card" href="books.html"><strong>NBL Books</strong><span>Stories, frameworks, and questions built to live beyond the page.</span><em>Enter Books →</em></a>
-        <a class="card" href="questions.html"><strong>Questions</strong><span>The ideas that keep the road open and the conversation moving.</span><em>Ask Something →</em></a>
-        <a class="card" href="site.html#worlds"><strong>Worlds</strong><span>Places, histories, and experiences waiting beyond the entrance.</span><em>Explore Worlds →</em></a>
-        <a class="card" href="site.html#voices"><strong>Voices</strong><span>Stories, music, characters, conversations, and sound from New Beansland.</span><em>Listen In →</em></a>
-        <a class="card" href="people-zoo.html"><strong>People Zoo</strong><span>A finished New Beansland story. Step inside carefully.</span><em>Enter the Zoo →</em></a>
-        <a class="card" href="doctor-rocketship-entry.html"><strong>The Doctor / Rocketship Test</strong><span>A category-audit method for testing belief, engineering, evidence, and truth.</span><em>Test the Claim →</em></a>
-        <a class="card" href="founder-office.html"><strong>Founder’s Office</strong><span>The origin, the mission, the hidden room, and the work behind it all.</span><em>Enter the Office →</em></a>
-        <a class="card" href="coming-soon.html"><strong>Beans Square</strong><span>The porch, the memory, and the place where the Walk became a world.</span><em>Visit the Square →</em></a>
-      </div>
-      <p class="closing">We aren’t perfect. We are aware. Every world starts with one conversation.</p>
-    </section>
+    <section class="closing"><div class="closing-inner reveal"><div class="seal-row"><img src="nbl-official-seal.png" alt="Official New Beansland seal"><img src="Founder-seal.png" alt="Founder’s Office seal"></div><blockquote>We don’t just tell stories. We build worlds that make you think. Still walking.</blockquote></div></section>
   </main>
-  <footer>© 2026 New Beansland · Stories. Questions. Worlds. · <a href="jamel-hawkins.html">Jamel Hawkins, Founder</a></footer>
-</div>
+  <footer><div class="footer-inner"><img class="footer-mark" src="official-nbl-emblem.png" alt="Official New Beansland emblem"><div class="footer-copy"><strong>New Beansland</strong>Stories. Questions. Worlds. · © 2026 New Beansland</div><div class="footer-links"><a href="books.html">Books</a><a href="founder-office.html">Founder’s Office</a><a href="jamel-hawkins.html">About</a><a href="mailto:foundernewbeansland@gmail.com">Contact</a></div></div></footer>
+  <script>
+    (() => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const syncVideos = () => {document.querySelectorAll('video').forEach(video => {if (reduce.matches) {video.pause(); video.controls = true;} else {video.controls = false; video.play().catch(() => {video.controls = true;});}});};
+      syncVideos(); reduce.addEventListener?.('change', syncVideos);
+      if (!reduce.matches && 'IntersectionObserver' in window) {const io = new IntersectionObserver(entries => {entries.forEach(entry => {if (entry.isIntersecting) {entry.target.classList.add('in-view'); io.unobserve(entry.target);}});}, {threshold:.12}); document.querySelectorAll('.reveal').forEach(el => io.observe(el));} else {document.querySelectorAll('.reveal').forEach(el => el.classList.add('in-view'));}
+    })();
+  </script>
 </body>
 </html>
