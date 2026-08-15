@@ -4,8 +4,16 @@
   const game = document.getElementById('game');
   const reticle = document.querySelector('.reticle');
   const prompt = document.getElementById('prompt');
+  const status = document.getElementById('status');
   const lookPad = document.getElementById('lookPad');
   const touchButtons = [...document.querySelectorAll('.touch-button')];
+  const artifactCanvas = document.getElementById('artifactCanvas');
+  const artifactStage = document.querySelector('.artifact-stage');
+  const artifactStory = document.getElementById('artifactStory');
+  const storyButton = document.getElementById('storyButton');
+  const resetView = document.getElementById('resetView');
+  const inspector = document.getElementById('inspector');
+  const inspectorActions = document.querySelector('.inspector-actions');
 
   const style = document.createElement('style');
   style.textContent = `
@@ -18,6 +26,14 @@
     .look-pad.is-looking::after{opacity:1}
     .reticle.interaction-pulse{animation:nblReticlePulse .32s ease-out}
     .prompt.interaction-pulse{animation:nblPromptPulse .38s ease-out}
+    .artifact-stage{perspective:1200px;background:radial-gradient(circle at center,#1a2a44,#030810 72%)}
+    #artifactCanvas{transform-style:preserve-3d;transition:box-shadow .2s ease;box-shadow:0 18px 48px rgba(0,0,0,.55),0 0 0 1px rgba(215,180,90,.18)}
+    #artifactCanvas.turning{cursor:grabbing;box-shadow:0 28px 64px rgba(0,0,0,.7),0 0 24px rgba(215,180,90,.22)}
+    .artifact-stage.holding #artifactCanvas{animation:nblHeldIn .55s cubic-bezier(.22,1,.36,1) both}
+    .story{margin-top:18px;padding:16px 14px;border:1px solid rgba(215,180,90,.28);border-radius:12px;background:rgba(2,8,16,.55);color:#fff1c7;font:1.02rem/1.65 Georgia,'Times New Roman',serif}
+    .artifact-back-label{color:#ffe39a}
+    .inspect-button.turn-active{border-color:#ffe39a;box-shadow:0 0 0 2px rgba(255,227,154,.18) inset}
+    @keyframes nblHeldIn{from{opacity:.35;transform:scale(.82) translateY(28px)}to{opacity:1;transform:scale(1) translateY(0)}}
     @keyframes nblReticlePulse{0%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) scale(1.65);border-color:#ffe39a;box-shadow:0 0 22px rgba(255,227,154,.75)}100%{transform:translate(-50%,-50%) scale(1)}}
     @keyframes nblPromptPulse{0%{transform:translateX(-50%) scale(1)}40%{transform:translateX(-50%) scale(1.035);border-color:#ffe39a}100%{transform:translateX(-50%) scale(1)}}
   `;
@@ -114,4 +130,133 @@
     tactile(10);
     tone(210, 0.045, 0.022);
   });
+
+  // Make the interaction language match the physical action: pick up, hold, turn, read.
+  document.querySelectorAll('.control-note').forEach((note) => {
+    if (note.textContent.trim().startsWith('Inspect')) note.innerHTML = '<strong>Pick up</strong>Click, tap, or press E when prompted';
+  });
+  const inspectorCopy = document.querySelector('.artifact-copy > p:not(.eyebrow)');
+  if (inspectorCopy) inspectorCopy.textContent = 'You picked it up. Drag to move it. Turn mode rotates it. Zoom in and read every inscription.';
+
+  function rewriteLiveText(node) {
+    if (!node) return;
+    let text = node.textContent || '';
+    text = text.replace(/^Inspect /, 'Pick up ')
+      .replace(/^Approaching /, 'Picking up ')
+      .replace(/^Inspecting /, 'You are holding ');
+    if (node.textContent !== text) node.textContent = text;
+  }
+
+  if (prompt) new MutationObserver(() => rewriteLiveText(prompt)).observe(prompt, { childList: true, characterData: true, subtree: true });
+  if (status) new MutationObserver(() => rewriteLiveText(status)).observe(status, { childList: true, characterData: true, subtree: true });
+
+  // The existing game code owns pan/zoom. This layer adds a safe rotation mode without rewriting the core room.
+  if (artifactCanvas && inspectorActions) {
+    const turnButton = document.createElement('button');
+    turnButton.id = 'turnArtifact';
+    turnButton.className = 'inspect-button secondary';
+    turnButton.type = 'button';
+    turnButton.textContent = 'Turn';
+    turnButton.setAttribute('aria-pressed', 'false');
+    inspectorActions.insertBefore(turnButton, storyButton || null);
+
+    let turnMode = false;
+    let turning = false;
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let startRotY = 0;
+    let startRotX = 0;
+    let rotY = 0;
+    let rotX = 0;
+    let applyingTransform = false;
+
+    const stripRotation = (value = '') => value
+      .replace(/\s*rotateY\([^)]*\)/g, '')
+      .replace(/\s*rotateX\([^)]*\)/g, '')
+      .trim();
+
+    function applyRotation() {
+      if (applyingTransform) return;
+      applyingTransform = true;
+      const base = stripRotation(artifactCanvas.style.transform);
+      artifactCanvas.style.transform = `${base} rotateY(${rotY}deg) rotateX(${rotX}deg)`.trim();
+      applyingTransform = false;
+    }
+
+    const styleObserver = new MutationObserver(() => {
+      if (!applyingTransform && (rotY || rotX)) applyRotation();
+    });
+    styleObserver.observe(artifactCanvas, { attributes: true, attributeFilter: ['style'] });
+
+    turnButton.addEventListener('click', () => {
+      turnMode = !turnMode;
+      turnButton.classList.toggle('turn-active', turnMode);
+      turnButton.setAttribute('aria-pressed', String(turnMode));
+      turnButton.textContent = turnMode ? 'Turn: on' : 'Turn';
+    });
+
+    artifactCanvas.addEventListener('pointerdown', (event) => {
+      const forceTurn = turnMode || event.button === 2 || event.button === 1 || event.altKey || event.shiftKey;
+      if (!forceTurn) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      turning = true;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startY = event.clientY;
+      startRotY = rotY;
+      startRotX = rotX;
+      artifactCanvas.classList.add('turning');
+      artifactCanvas.setPointerCapture(event.pointerId);
+    }, true);
+
+    artifactCanvas.addEventListener('pointermove', (event) => {
+      if (!turning || pointerId !== event.pointerId) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      const dx = event.clientX - startX;
+      const dy = event.clientY - startY;
+      rotY = startRotY + dx * 0.35;
+      rotX = Math.max(-28, Math.min(28, startRotX - dy * 0.28));
+      applyRotation();
+    }, true);
+
+    const endTurn = (event) => {
+      if (!turning || (event && pointerId !== event.pointerId)) return;
+      event?.preventDefault();
+      event?.stopImmediatePropagation();
+      turning = false;
+      pointerId = null;
+      artifactCanvas.classList.remove('turning');
+    };
+    artifactCanvas.addEventListener('pointerup', endTurn, true);
+    artifactCanvas.addEventListener('pointercancel', endTurn, true);
+    artifactCanvas.addEventListener('contextmenu', (event) => event.preventDefault());
+
+    resetView?.addEventListener('click', () => {
+      rotY = 0;
+      rotX = 0;
+      applyRotation();
+    });
+
+    if (inspector) {
+      new MutationObserver(() => {
+        if (inspector.hidden) {
+          artifactStage?.classList.remove('holding');
+          return;
+        }
+        artifactStage?.classList.add('holding');
+        rotY = 0;
+        rotX = 0;
+        if (artifactStory) artifactStory.hidden = false;
+        if (storyButton) {
+          storyButton.hidden = false;
+          storyButton.setAttribute('aria-hidden', 'false');
+          storyButton.tabIndex = 0;
+          storyButton.textContent = 'Hide the story';
+        }
+      }).observe(inspector, { attributes: true, attributeFilter: ['hidden'] });
+    }
+  }
 })();
