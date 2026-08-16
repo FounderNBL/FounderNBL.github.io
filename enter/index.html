@@ -3,23 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Enter New Beansland | The Founder’s Office</title>
-  <meta name="description" content="Enter a playable retro 3D New Beansland experience and explore the Founder’s Office through movement, discovery, and artifact inspection.">
-  <meta name="theme-color" content="#02050a">
+  <title>Enter New Beansland | The Mystic Study</title>
+  <meta name="description" content="Enter a cinematic first-person New Beansland mystic study. Inspect three relics and unlock the next chamber.">
+  <meta name="theme-color" content="#05070b">
   <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://newbeansland.org/enter/">
-  <link rel="icon" type="image/png" href="../nbl-writing-mark.png">
+  <link rel="icon" type="image/png" href="../assets/brand/nbl-writing-mark.png">
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
-  <link rel="preload" as="image" href="../founder-office-room.png" fetchpriority="high">
-  <link rel="preload" as="image" href="../if-it-is-is-it-banner.png">
-  <link rel="preload" as="image" href="../desk-clue-plaque.png">
-  <link rel="preload" as="image" href="../founders-office-yolanda.png">
-  <link rel="modulepreload" href="performance-budget.js">
-  <link rel="modulepreload" href="retro-room.js">
-  <link rel="modulepreload" href="room-content.js">
-  <link rel="modulepreload" href="yolanda-content.js">
-  <link rel="modulepreload" href="game.js">
   <link rel="stylesheet" href="game.css">
   <script type="importmap">
     {
@@ -31,76 +21,64 @@
   </script>
 </head>
 <body>
-  <main id="game" aria-label="Playable retro 3D Founder’s Office"></main>
+  <main id="game" aria-label="Playable first-person mystic study"></main>
 
-  <div class="hud">
+  <div class="hud" aria-live="polite">
     <div class="topbar">
-      <a class="hud-button" href="../home.html">← Leave the room</a>
-      <div id="status" class="status" role="status" aria-live="polite">Find the light. Look closely.</div>
-      <div class="topbar-links">
-        <a class="hud-button" href="https://x.com/FounderNBL" target="_blank" rel="noopener noreferrer" aria-label="Open New Beansland on X">X @FounderNBL</a>
-        <a class="hud-button" href="https://cash.app/$FounderNBL" target="_blank" rel="noopener noreferrer" aria-label="Open the New Beansland Cash App page">Cash App $FounderNBL</a>
-        <button id="pauseButton" class="hud-button" type="button">Pause</button>
-      </div>
+      <a class="hud-button" href="../home.html">← Leave chamber</a>
+      <div id="status" class="status">Three relics wait on the table.</div>
+      <button id="pauseButton" class="hud-button" type="button">Pause</button>
     </div>
     <div class="reticle" aria-hidden="true"></div>
-    <div id="prompt" class="prompt" role="status" aria-live="polite"></div>
-    <div class="mobile-controls" aria-label="Touch movement controls">
+    <div id="prompt" class="prompt"></div>
+
+    <div class="mobile-controls" aria-label="Touch controls">
       <div class="dpad">
-        <span></span><button class="touch-button" data-move="forward" type="button" aria-label="Move forward">▲</button><span></span>
-        <button class="touch-button" data-move="left" type="button" aria-label="Move left">◀</button>
-        <button class="touch-button" data-move="back" type="button" aria-label="Move backward">▼</button>
-        <button class="touch-button" data-move="right" type="button" aria-label="Move right">▶</button>
+        <span></span><button class="touch-button" data-move="forward" type="button">▲</button><span></span>
+        <button class="touch-button" data-move="left" type="button">◀</button>
+        <button class="touch-button" data-move="back" type="button">▼</button>
+        <button class="touch-button" data-move="right" type="button">▶</button>
       </div>
-      <div id="lookPad" class="look-pad" aria-label="Drag to look around">DRAG TO LOOK</div>
+      <div id="lookPad" class="look-pad">DRAG TO LOOK</div>
     </div>
   </div>
 
-  <section id="intro" class="intro" aria-labelledby="introTitle">
-    <div class="intro-card">
-      <p class="eyebrow">The first door</p>
-      <h1 id="introTitle">Enter New Beansland</h1>
-      <p class="intro-copy">You are not opening another page. You are entering a low-poly Founder’s Office built to feel like a lost late-1990s adventure game. Move slowly, look closely, and approach anything that seems meaningful.</p>
-      <div class="controls-grid" aria-label="Game controls">
-        <div class="control-note"><strong>Move</strong>WASD, arrow keys, or touch controls</div>
-        <div class="control-note"><strong>Look</strong>Move the mouse or drag the right control</div>
-        <div class="control-note"><strong>Inspect</strong>Click, tap, or press E when prompted</div>
+  <section id="intro" class="overlay intro" aria-labelledby="introTitle">
+    <article class="panel intro-panel">
+      <p class="eyebrow">New Beansland · The First Chamber</p>
+      <h1 id="introTitle">The Mystic Study</h1>
+      <p>A sealed study of stone, candlelight, and old questions. Walk to the center table. Inspect the Tome, the Seal, and the Scale. The next chamber will not answer until all three have been witnessed.</p>
+      <div class="controls-grid">
+        <div><strong>Move</strong><span>W / A / S / D</span></div>
+        <div><strong>Look</strong><span>Mouse or drag</span></div>
+        <div><strong>Inspect</strong><span>Click / tap / E</span></div>
       </div>
-      <button id="enterButton" class="enter-button" type="button">Open the Door</button>
-    </div>
-  </section>
-
-  <section id="inspector" class="inspector" role="dialog" aria-modal="true" aria-labelledby="artifactTitle" hidden>
-    <article class="inspector-card">
-      <button id="closeInspector" class="close-inspector" type="button" aria-label="Return artifact to the room">✕</button>
-      <div class="inspector-layout">
-        <div class="artifact-stage">
-          <canvas id="artifactCanvas" width="1200" height="900" aria-label="Inspectable artifact"></canvas>
-        </div>
-        <div class="artifact-copy">
-          <p class="eyebrow">Artifact inspection</p>
-          <h2 id="artifactTitle"></h2>
-          <p>Drag and zoom to read the real object. Its meaning is preserved on the back or beneath it.</p>
-          <div class="inspector-actions">
-            <button id="zoomIn" class="inspect-button secondary" type="button">Zoom in</button>
-            <button id="zoomOut" class="inspect-button secondary" type="button">Zoom out</button>
-            <button id="resetView" class="inspect-button secondary" type="button">Reset</button>
-            <button id="storyButton" class="inspect-button" type="button" hidden aria-hidden="true" tabindex="-1">Story</button>
-          </div>
-          <div class="artifact-back" aria-label="Meaning on the back of the artifact">
-            <p class="artifact-back-label">On the back</p>
-            <div id="artifactStory" class="story"></div>
-          </div>
-        </div>
-      </div>
+      <button id="enterButton" class="primary-button" type="button">Enter the Study</button>
     </article>
   </section>
 
-  <script type="module" src="performance-budget.js"></script>
-  <script type="module" src="retro-room.js"></script>
-  <script type="module" src="room-content.js"></script>
-  <script type="module" src="yolanda-content.js"></script>
+  <section id="clueBox" class="clue-box" role="dialog" aria-modal="true" aria-labelledby="clueTitle" hidden>
+    <article class="clue-card">
+      <p id="clueKicker" class="eyebrow"></p>
+      <h2 id="clueTitle"></h2>
+      <p id="clueText"></p>
+      <button id="closeClue" class="primary-button" type="button">Return to the chamber</button>
+    </article>
+  </section>
+
+  <section id="gateModal" class="overlay gate-overlay" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
+    <article class="gate-frame">
+      <div class="gate-rune" aria-hidden="true">◈</div>
+      <p class="eyebrow">The Three Witnesses Agree</p>
+      <h2 id="gateTitle">The Next Chamber Opens</h2>
+      <p>You have inspected the Tome, the Seal, and the Scale. The ward has released. Continue deeper into New Beansland for <strong>$2.99</strong>.</p>
+      <div class="gate-price">$2.99 <span>one-time chamber unlock</span></div>
+      <button id="unlockButton" class="primary-button gate-button" type="button">Unlock the Next Chamber</button>
+      <button id="closeGate" class="text-button" type="button">Remain in the study</button>
+      <p id="checkoutStatus" class="checkout-status" role="status"></p>
+    </article>
+  </section>
+
   <script type="module" src="game.js"></script>
-  <script src="game-enhancements.js" defer></script>
 </body>
 </html>
