@@ -1,0 +1,47 @@
+:root{--nbl-portal-duration:600ms}
+
+.nbl-portal-overlay{
+  position:fixed;
+  inset:0;
+  width:100vw;
+  height:100vh;
+  height:100dvh;
+  z-index:9999;
+  opacity:1;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 46%,rgba(214,161,75,.08),transparent 34%),
+    #0d1117;
+  transition:opacity var(--nbl-portal-duration) cubic-bezier(.4,0,.2,1);
+  will-change:opacity;
+}
+
+.nbl-portal-overlay.portal-visible{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.nbl-portal-overlay.portal-hidden{
+  opacity:0;
+  pointer-events:none;
+}
+
+/* Current live homepage uses one baked hero image. Apply a safe atmospheric
+   day/night treatment only there; true sky/window control needs layered art. */
+html.nbl-day body#home .hero-media{
+  filter:brightness(1.08) saturate(.94) contrast(.96) sepia(.035);
+}
+
+html.nbl-night body#home .hero-media{
+  filter:brightness(.88) saturate(1.06) contrast(1.04);
+}
+
+body#home .hero-media{
+  transition:filter 900ms ease;
+}
+
+@media(prefers-reduced-motion:reduce){
+  :root{--nbl-portal-duration:0ms}
+  .nbl-portal-overlay,
+  body#home .hero-media{transition:none!important}
+}

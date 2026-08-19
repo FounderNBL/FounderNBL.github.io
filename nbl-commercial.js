@@ -1,4 +1,12 @@
 (()=>{
+  if(!document.querySelector('script[data-nbl-portal-loader]')){
+    const portal=document.createElement('script');
+    portal.src='nbl-portal.js';
+    portal.defer=true;
+    portal.dataset.nblPortalLoader='true';
+    document.head.appendChild(portal);
+  }
+
   const video=document.getElementById('nblCommercialVideo');
   const audio=document.getElementById('nblCommercialAudio');
   const button=document.getElementById('nblCommercialPlay');
