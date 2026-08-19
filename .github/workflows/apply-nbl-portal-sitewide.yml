@@ -1,0 +1,67 @@
+name: Apply NBL Portal Sitewide
+
+on:
+  push:
+    branches:
+      - feature/nbl-portal-sitewide
+    paths:
+      - .github/workflows/apply-nbl-portal-sitewide.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/nbl-portal-sitewide
+          fetch-depth: 0
+
+      - name: Add portal controller to destination pages
+        shell: python
+        run: |
+          from pathlib import Path
+
+          pages = [
+              'index.html',
+              'books.html',
+              'coming-soon.html',
+              'founder-office.html',
+              'jamel-hawkins.html',
+              'people-zoo.html',
+              'doctor-rocketship-entry.html',
+              'doctor-rocketship-test.html',
+              'people-zoo-shop.html',
+              'doctor-rocketship-shop.html',
+              'purchase-requested.html',
+              '404.html',
+          ]
+          loader = '<script defer src="/nbl-portal.js"></script>'
+          for name in pages:
+              path = Path(name)
+              if not path.exists():
+                  print(f'Skip missing {name}')
+                  continue
+              text = path.read_text(encoding='utf-8')
+              if 'nbl-portal.js' in text:
+                  print(f'Already wired {name}')
+                  continue
+              if '</head>' not in text:
+                  raise SystemExit(f'No </head> in {name}')
+              text = text.replace('</head>', f'  {loader}\n</head>', 1)
+              path.write_text(text, encoding='utf-8')
+              print(f'Wired {name}')
+
+      - name: Commit generated page wiring
+        run: |
+          git config user.name "Founder New Beansland"
+          git config user.email "foundernewbeansland@gmail.com"
+          git add index.html books.html coming-soon.html founder-office.html jamel-hawkins.html people-zoo.html doctor-rocketship-entry.html doctor-rocketship-test.html people-zoo-shop.html doctor-rocketship-shop.html purchase-requested.html 404.html
+          if git diff --cached --quiet; then
+            echo "No page changes needed"
+            exit 0
+          fi
+          git commit -m "Load NBL portal controller across live pages"
+          git push origin HEAD:feature/nbl-portal-sitewide
