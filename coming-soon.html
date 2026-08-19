@@ -13,25 +13,59 @@
     :root{--gold:#d6a14b;--gold2:#f0c56f;--cream:#f4ead8;--soft:#cfc3ad;--line:rgba(214,161,75,.4)}
     *{box-sizing:border-box}
     body{margin:0;min-height:100svh;display:grid;place-items:center;padding:24px;background:linear-gradient(180deg,rgba(2,6,11,.28),rgba(2,6,11,.86)),url("New_New_homepage.png") center/cover fixed;color:var(--cream);font-family:Arial,Helvetica,sans-serif}
-    .box{width:min(760px,100%);padding:34px clamp(22px,6vw,56px);border:1px solid var(--line);border-radius:18px;background:rgba(2,6,11,.88);box-shadow:0 22px 70px rgba(0,0,0,.52);backdrop-filter:blur(10px);text-align:center}
+    .box{width:min(760px,100%);padding:34px clamp(22px,6vw,56px);border:1px solid var(--line);border-radius:18px;background:rgba(2,6,11,.88);box-shadow:0 22px 70px rgba(0,0,0,.52);backdrop-filter:blur(10px);text-align:center;transition:width .25s ease}
+    body.city-mode .box{width:min(1040px,100%)}
     .seal{width:116px;height:116px;object-fit:contain;margin:0 auto 18px;filter:drop-shadow(0 0 16px rgba(214,161,75,.18))}
     .kicker{margin:0 0 8px;color:var(--gold2);font-size:.72rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase}
     h1{margin:0;color:var(--gold2);font:700 clamp(2.4rem,9vw,5rem)/1 Georgia,"Times New Roman",serif}
-    p{max-width:590px;margin:15px auto 0;color:#e0d7c9;font:1.02rem/1.65 Arial,sans-serif}
+    p{max-width:650px;margin:15px auto 0;color:#e0d7c9;font:1.02rem/1.65 Arial,sans-serif}
     .room{color:#f1d298;font-weight:900}
     .actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:24px}
-    a{display:inline-flex;min-height:46px;align-items:center;justify-content:center;padding:11px 17px;border:1px solid var(--gold);border-radius:9px;color:#160e04;background:linear-gradient(180deg,#f0c56f,#c58a34);font-weight:900;text-decoration:none}
+    a,.play-button{display:inline-flex;min-height:46px;align-items:center;justify-content:center;padding:11px 17px;border:1px solid var(--gold);border-radius:9px;color:#160e04;background:linear-gradient(180deg,#f0c56f,#c58a34);font-weight:900;text-decoration:none;cursor:pointer}
     a.secondary{color:var(--gold2);background:rgba(6,17,29,.85)}
-    a:focus-visible{outline:3px solid var(--gold2);outline-offset:4px}
+    a:focus-visible,.play-button:focus-visible{outline:3px solid var(--gold2);outline-offset:4px}
+    .city-media[hidden]{display:none}
+    .city-media{margin:28px auto 0;padding-top:26px;border-top:1px solid var(--line)}
+    .city-grid{display:grid;grid-template-columns:minmax(260px,430px) minmax(0,1fr);gap:28px;align-items:center;text-align:left}
+    .city-video{overflow:hidden;border:1px solid rgba(240,197,111,.55);border-radius:14px;background:#000;box-shadow:0 22px 55px rgba(0,0,0,.55)}
+    .city-video video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;background:#000}
+    .city-copy h2{margin:0;color:var(--gold2);font:700 clamp(2rem,5vw,3.8rem)/.98 Georgia,"Times New Roman",serif;text-transform:uppercase}
+    .city-copy .tagline{margin:10px 0 0;color:#f0dec0;font:italic 1.15rem/1.45 Georgia,"Times New Roman",serif}
+    .city-copy .theme{margin:16px 0 0;color:var(--soft);font-size:.84rem;letter-spacing:.08em;text-transform:uppercase}
+    .city-copy .play-button{margin-top:18px;width:100%;max-width:320px}
+    .city-note{margin:10px 0 0!important;color:#9f927e!important;font-size:.76rem!important;line-height:1.45!important}
+    @media(max-width:760px){body{padding:12px}.box{padding:28px 16px}.city-grid{grid-template-columns:1fr;text-align:center}.city-video{width:min(410px,100%);margin:auto}.city-copy .play-button{margin-left:auto;margin-right:auto}}
   </style>
   <script defer src="/nbl-portal.js"></script>
 </head>
 <body>
   <main class="box">
-    <img class="seal" src="nbl-official-seal.png" alt="Official New Beansland seal">
-    <p class="kicker">New Beansland · Under Construction</p>
-    <h1>Coming Soon</h1>
-    <p><span class="room" id="roomName">This room</span> is marked, but it is still being built. No dead doors. No fake rooms. When it is ready, it opens.</p>
+    <img class="seal" id="roomSeal" src="nbl-official-seal.png" alt="Official New Beansland seal">
+    <p class="kicker" id="roomKicker">New Beansland · Under Construction</p>
+    <h1 id="pageTitle">Coming Soon</h1>
+    <p id="roomCopy"><span class="room" id="roomName">This room</span> is marked, but it is still being built. No dead doors. No fake rooms. When it is ready, it opens.</p>
+
+    <section class="city-media" id="cityMedia" aria-labelledby="cityTrailerTitle" hidden>
+      <div class="city-grid">
+        <div class="city-video">
+          <video id="cityTrailer" controls muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/The-City-promo-poster.png" aria-label="The City official New Beansland trailer">
+            <source src="https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/The_City_New_Beansland_Trailer_Final.mp4" type="video/mp4">
+          </video>
+          <audio id="cityTheme" preload="metadata">
+            <source src="https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/You%20hear%20it%20too.mp3" type="audio/mpeg">
+          </audio>
+        </div>
+        <div class="city-copy">
+          <p class="kicker">NBL Studios · Official Preview</p>
+          <h2 id="cityTrailerTitle">The City</h2>
+          <p class="tagline">The world is still being built. The trailer is already here.</p>
+          <p class="theme">Theme: “You Hear It Too”</p>
+          <button class="play-button" id="cityPlay" type="button">Play Trailer + Theme</button>
+          <p class="city-note">The trailer video stays muted while the full-quality theme track plays in sync, the same way the NBL Clothing commercial is presented.</p>
+        </div>
+      </div>
+    </section>
+
     <div class="actions"><a href="/">Back to New Beansland</a><a class="secondary" href="books.html">Visit NBL Books</a></div>
   </main>
   <script>
@@ -39,6 +73,65 @@
       const names = {city:'The City / TV & Film',institute:'The Institute','timmy-v':'Timmy V Studios',news:'New Beansland News'};
       const key = new URLSearchParams(location.search).get('room');
       if (key && names[key]) document.getElementById('roomName').textContent = names[key];
+      if (key !== 'city') return;
+
+      document.body.classList.add('city-mode');
+      document.title = 'The City | New Beansland';
+      document.getElementById('roomKicker').textContent = 'New Beansland · TV & Film';
+      document.getElementById('pageTitle').textContent = 'THE CITY';
+      document.getElementById('roomCopy').innerHTML = '<span class="room">The City</span> is still in production, but the official New Beansland trailer is ready to watch now.';
+      document.getElementById('roomSeal').src = 'NBL-Films.png';
+      document.getElementById('roomSeal').alt = 'NBL Films';
+      document.getElementById('cityMedia').hidden = false;
+
+      const video = document.getElementById('cityTrailer');
+      const audio = document.getElementById('cityTheme');
+      const button = document.getElementById('cityPlay');
+      if (!video || !audio || !button) return;
+
+      const sync = () => {
+        const t = Math.max(0, video.currentTime || 0);
+        if (audio.readyState > 0) {
+          try { audio.currentTime = t; } catch (_err) {}
+        } else {
+          audio.addEventListener('loadedmetadata', () => {
+            try { audio.currentTime = Math.max(0, video.currentTime || 0); } catch (_err) {}
+          }, {once:true});
+        }
+        audio.playbackRate = video.playbackRate || 1;
+      };
+      const label = () => { button.textContent = video.paused ? 'Play Trailer + Theme' : 'Pause Trailer'; };
+      const startTheme = () => { video.muted = true; sync(); audio.play().catch(() => {}); };
+      const reset = () => {
+        audio.pause();
+        try { video.currentTime = 0; } catch (_err) {}
+        if (audio.readyState > 0) { try { audio.currentTime = 0; } catch (_err) {} }
+        label();
+      };
+
+      button.addEventListener('click', () => {
+        if (video.paused) {
+          if (video.ended) reset();
+          video.muted = true;
+          sync();
+          video.play().catch(() => {});
+          audio.play().catch(() => {});
+        } else {
+          video.pause();
+          audio.pause();
+        }
+        label();
+      });
+      video.addEventListener('play', () => { startTheme(); label(); });
+      video.addEventListener('pause', () => { audio.pause(); label(); });
+      video.addEventListener('seeking', sync);
+      video.addEventListener('ratechange', () => { audio.playbackRate = video.playbackRate || 1; });
+      video.addEventListener('timeupdate', () => {
+        if (!audio.paused && Math.abs((audio.currentTime || 0) - (video.currentTime || 0)) > .35) sync();
+      });
+      video.addEventListener('ended', reset);
+      document.addEventListener('visibilitychange', () => { if (document.hidden) { video.pause(); audio.pause(); } });
+      label();
     })();
   </script>
 </body>
