@@ -23,6 +23,9 @@
     doctorBack:'doc-rock-ogback-cover.png?v=8820a16c'
   };
 
+  const PLAYGROUND_RAW='https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/';
+  const PLAYGROUND_CDN='https://cdn.jsdelivr.net/gh/FounderNBL/New-Beansland-Playground@main/';
+
   const cleanName=value=>{
     if(!value) return '';
     try{
@@ -31,6 +34,14 @@
     }catch{
       return String(value).split('?')[0].split('/').pop()||'';
     }
+  };
+
+  const playgroundCdn=value=>{
+    if(!value||!value.startsWith(PLAYGROUND_RAW)) return value;
+    let relative=value.slice(PLAYGROUND_RAW.length);
+    /* The newest approved front-view file has a space in its actual filename. */
+    relative=relative.replace(/^NBL-model-front\.jpg(?=\?|$)/,'NBL%20model-front.jpg');
+    return PLAYGROUND_CDN+relative;
   };
 
   function applyTrademark(){
@@ -77,14 +88,17 @@
     };
 
     document.querySelectorAll('img').forEach(img=>{
-      const original=img.getAttribute('src')||'';
+      let original=img.getAttribute('src')||'';
+
+      /* Serve approved Playground artwork through a browser-friendly CDN. */
+      const cdnSource=playgroundCdn(original);
+      if(cdnSource!==original){
+        img.setAttribute('src',cdnSource);
+        original=cdnSource;
+      }
+
       const replacement=directMap[cleanName(original)];
       if(replacement && original!==replacement) img.setAttribute('src',replacement);
-
-      /* The newest Playground front-view asset intentionally has a space in its filename. */
-      if(original.includes('raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/NBL-model-front.jpg')){
-        img.setAttribute('src','https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/NBL%20model-front.jpg?v=20260820');
-      }
     });
 
     document.querySelectorAll('video[poster]').forEach(video=>{
