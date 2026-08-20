@@ -77,8 +77,14 @@
     };
 
     document.querySelectorAll('img').forEach(img=>{
-      const replacement=directMap[cleanName(img.getAttribute('src'))];
-      if(replacement && img.getAttribute('src')!==replacement) img.setAttribute('src',replacement);
+      const original=img.getAttribute('src')||'';
+      const replacement=directMap[cleanName(original)];
+      if(replacement && original!==replacement) img.setAttribute('src',replacement);
+
+      /* The newest Playground front-view asset intentionally has a space in its filename. */
+      if(original.includes('raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/NBL-model-front.jpg')){
+        img.setAttribute('src','https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/NBL%20model-front.jpg?v=20260820');
+      }
     });
 
     document.querySelectorAll('video[poster]').forEach(video=>{
