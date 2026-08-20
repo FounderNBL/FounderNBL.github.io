@@ -8,11 +8,11 @@
   <meta name="robots" content="noindex,follow">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://newbeansland.org/coming-soon.html">
-  <link rel="icon" type="image/png" href="nbl-primary-logo.png">
+  <link rel="icon" type="image/png" href="NBL-Brand.png?v=08394b14">
   <style>
     :root{--gold:#d6a14b;--gold2:#f0c56f;--cream:#f4ead8;--soft:#cfc3ad;--line:rgba(214,161,75,.4)}
     *{box-sizing:border-box}
-    body{margin:0;min-height:100svh;display:grid;place-items:center;padding:24px;background:linear-gradient(180deg,rgba(2,6,11,.28),rgba(2,6,11,.86)),url("New_New_homepage.png") center/cover fixed;color:var(--cream);font-family:Arial,Helvetica,sans-serif}
+    body{margin:0;min-height:100svh;display:grid;place-items:center;padding:24px;background:linear-gradient(180deg,rgba(2,6,11,.28),rgba(2,6,11,.86)),url("New_New_homepage.png?v=4b17e759") center/cover fixed;color:var(--cream);font-family:Arial,Helvetica,sans-serif}
     .box{width:min(760px,100%);padding:34px clamp(22px,6vw,56px);border:1px solid var(--line);border-radius:18px;background:rgba(2,6,11,.88);box-shadow:0 22px 70px rgba(0,0,0,.52);backdrop-filter:blur(10px);text-align:center;transition:width .25s ease}
     body.city-mode .box{width:min(1040px,100%)}
     .seal{width:116px;height:116px;object-fit:contain;margin:0 auto 18px;filter:drop-shadow(0 0 16px rgba(214,161,75,.18))}
@@ -23,24 +23,29 @@
     .actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:24px}
     a,.play-button{display:inline-flex;min-height:46px;align-items:center;justify-content:center;padding:11px 17px;border:1px solid var(--gold);border-radius:9px;color:#160e04;background:linear-gradient(180deg,#f0c56f,#c58a34);font-weight:900;text-decoration:none;cursor:pointer}
     a.secondary{color:var(--gold2);background:rgba(6,17,29,.85)}
-    a:focus-visible,.play-button:focus-visible{outline:3px solid var(--gold2);outline-offset:4px}
+    a:focus-visible,.play-button:focus-visible,.city-video video:focus-visible{outline:3px solid var(--gold2);outline-offset:4px}
     .city-media[hidden]{display:none}
     .city-media{margin:28px auto 0;padding-top:26px;border-top:1px solid var(--line)}
     .city-grid{display:grid;grid-template-columns:minmax(260px,430px) minmax(0,1fr);gap:28px;align-items:center;text-align:left}
-    .city-video{overflow:hidden;border:1px solid rgba(240,197,111,.55);border-radius:14px;background:#000;box-shadow:0 22px 55px rgba(0,0,0,.55)}
-    .city-video video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;background:#000}
+    .city-video{position:relative;overflow:hidden;border:1px solid rgba(240,197,111,.55);border-radius:14px;background:#000;box-shadow:0 22px 55px rgba(0,0,0,.55)}
+    .city-video video{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;background:#000;cursor:pointer}
+    .tap-hint{position:absolute;left:12px;right:12px;bottom:12px;padding:8px 10px;border:1px solid rgba(240,197,111,.5);border-radius:999px;color:#f7e9c8;background:rgba(2,6,11,.82);font-size:.68rem;font-weight:900;letter-spacing:.08em;text-align:center;text-transform:uppercase;pointer-events:none;transition:opacity .2s ease}
+    body.city-playing .tap-hint{opacity:0}
     .city-copy h2{margin:0;color:var(--gold2);font:700 clamp(2rem,5vw,3.8rem)/.98 Georgia,"Times New Roman",serif;text-transform:uppercase}
     .city-copy .tagline{margin:10px 0 0;color:#f0dec0;font:italic 1.15rem/1.45 Georgia,"Times New Roman",serif}
     .city-copy .theme{margin:16px 0 0;color:var(--soft);font-size:.84rem;letter-spacing:.08em;text-transform:uppercase}
     .city-copy .play-button{margin-top:18px;width:100%;max-width:320px}
     .city-note{margin:10px 0 0!important;color:#9f927e!important;font-size:.76rem!important;line-height:1.45!important}
-    @media(max-width:760px){body{padding:12px}.box{padding:28px 16px}.city-grid{grid-template-columns:1fr;text-align:center}.city-video{width:min(410px,100%);margin:auto}.city-copy .play-button{margin-left:auto;margin-right:auto}}
+    .city-status{min-height:1.4em;margin:8px 0 0!important;color:#f0c56f!important;font-size:.78rem!important;font-weight:800!important}
+    .city-brand-row{display:flex;align-items:center;gap:10px;margin:0 0 14px}
+    .city-brand-row img{width:70px;height:70px;object-fit:contain;border-radius:10px;background:rgba(255,255,255,.02)}
+    @media(max-width:760px){body{padding:12px}.box{padding:28px 16px}.city-grid{grid-template-columns:1fr;text-align:center}.city-video{width:min(410px,100%);margin:auto}.city-copy .play-button{margin-left:auto;margin-right:auto}.city-brand-row{justify-content:center}}
   </style>
   <script defer src="/nbl-portal.js"></script>
 </head>
 <body>
   <main class="box">
-    <img class="seal" id="roomSeal" src="nbl-official-seal.png" alt="Official New Beansland seal">
+    <img class="seal" id="roomSeal" src="NBL-New-Official-Seal.png?v=c52ddcff" alt="Official New Beansland seal">
     <p class="kicker" id="roomKicker">New Beansland · Under Construction</p>
     <h1 id="pageTitle">Coming Soon</h1>
     <p id="roomCopy"><span class="room" id="roomName">This room</span> is marked, but it is still being built. No dead doors. No fake rooms. When it is ready, it opens.</p>
@@ -48,20 +53,23 @@
     <section class="city-media" id="cityMedia" aria-labelledby="cityTrailerTitle" hidden>
       <div class="city-grid">
         <div class="city-video">
-          <video id="cityTrailer" controls muted playsinline preload="metadata" poster="https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/The-City-promo-poster.png" aria-label="The City official New Beansland trailer">
-            <source src="https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/The_City_New_Beansland_Trailer_Final.mp4" type="video/mp4">
+          <video id="cityTrailer" muted playsinline preload="metadata" poster="NBL-Films.png?v=967b49ef" tabindex="0" aria-label="The City official New Beansland trailer. Tap to play or pause.">
+            <source src="The_City_New_Beansland_Trailer_Final.mp4?v=595423cd" type="video/mp4">
           </video>
-          <audio id="cityTheme" preload="metadata">
-            <source src="https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/You%20hear%20it%20too.mp3" type="audio/mpeg">
+          <span class="tap-hint">Tap trailer to play + hear theme</span>
+          <audio id="cityTheme" preload="auto" crossorigin="anonymous">
+            <source src="https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/880116b329d5b457c69051eba8c08909797e756e/You%20hear%20it%20too.mp3?v=80edee2e" type="audio/mpeg">
           </audio>
         </div>
         <div class="city-copy">
+          <div class="city-brand-row" aria-label="New Beansland film and studio marks"><img src="NBL-Films.png?v=967b49ef" alt="NBL Films"><img src="NBL-Studios.png?v=2b993fb1" alt="NBL Studios"></div>
           <p class="kicker">NBL Studios · Official Preview</p>
           <h2 id="cityTrailerTitle">The City</h2>
           <p class="tagline">The world is still being built. The trailer is already here.</p>
           <p class="theme">Theme: “You Hear It Too”</p>
           <button class="play-button" id="cityPlay" type="button">Play Trailer + Theme</button>
-          <p class="city-note">The trailer video stays muted while the full-quality theme track plays in sync, the same way the NBL Clothing commercial is presented.</p>
+          <p class="city-status" id="cityStatus" aria-live="polite"></p>
+          <p class="city-note">The trailer stays muted because the full theme track is the soundtrack. One tap starts both together.</p>
         </div>
       </div>
     </section>
@@ -80,58 +88,92 @@
       document.getElementById('roomKicker').textContent = 'New Beansland · TV & Film';
       document.getElementById('pageTitle').textContent = 'THE CITY';
       document.getElementById('roomCopy').innerHTML = '<span class="room">The City</span> is still in production, but the official New Beansland trailer is ready to watch now.';
-      document.getElementById('roomSeal').src = 'NBL-Films.png';
+      document.getElementById('roomSeal').src = 'NBL-Films.png?v=967b49ef';
       document.getElementById('roomSeal').alt = 'NBL Films';
       document.getElementById('cityMedia').hidden = false;
 
       const video = document.getElementById('cityTrailer');
       const audio = document.getElementById('cityTheme');
       const button = document.getElementById('cityPlay');
+      const status = document.getElementById('cityStatus');
       if (!video || !audio || !button) return;
 
-      const sync = () => {
-        const t = Math.max(0, video.currentTime || 0);
+      let starting = false;
+      const videoTime = () => Math.max(0, Number.isFinite(video.currentTime) ? video.currentTime : 0);
+      const setAudioTime = () => {
+        const t = videoTime();
         if (audio.readyState > 0) {
           try { audio.currentTime = t; } catch (_err) {}
-        } else {
-          audio.addEventListener('loadedmetadata', () => {
-            try { audio.currentTime = Math.max(0, video.currentTime || 0); } catch (_err) {}
-          }, {once:true});
         }
         audio.playbackRate = video.playbackRate || 1;
       };
-      const label = () => { button.textContent = video.paused ? 'Play Trailer + Theme' : 'Pause Trailer'; };
-      const startTheme = () => { video.muted = true; sync(); audio.play().catch(() => {}); };
-      const reset = () => {
+      const setLabel = () => {
+        const playing = !video.paused && !video.ended;
+        document.body.classList.toggle('city-playing', playing);
+        button.textContent = playing ? 'Pause Trailer' : (video.currentTime > .05 ? 'Resume Trailer + Theme' : 'Play Trailer + Theme');
+      };
+      const pauseBoth = () => {
+        video.pause();
+        audio.pause();
+        setLabel();
+      };
+      const resetBoth = () => {
+        video.pause();
         audio.pause();
         try { video.currentTime = 0; } catch (_err) {}
         if (audio.readyState > 0) { try { audio.currentTime = 0; } catch (_err) {} }
-        label();
+        status.textContent = '';
+        setLabel();
+      };
+      const startBoth = async () => {
+        if (starting) return;
+        starting = true;
+        status.textContent = 'Starting trailer + theme…';
+        if (video.ended) resetBoth();
+        video.muted = true;
+        setAudioTime();
+        try {
+          /* Both play calls happen from the same tap. This is deliberate for mobile browsers. */
+          const audioPromise = audio.play();
+          const videoPromise = video.play();
+          await Promise.all([audioPromise, videoPromise]);
+          status.textContent = 'Trailer + “You Hear It Too” playing.';
+        } catch (_err) {
+          pauseBoth();
+          status.textContent = 'The theme did not start. Tap Play Trailer + Theme again.';
+        } finally {
+          starting = false;
+          setLabel();
+        }
+      };
+      const toggle = () => {
+        if (!video.paused && !video.ended) pauseBoth();
+        else startBoth();
       };
 
-      button.addEventListener('click', () => {
-        if (video.paused) {
-          if (video.ended) reset();
-          video.muted = true;
-          sync();
-          video.play().catch(() => {});
-          audio.play().catch(() => {});
-        } else {
-          video.pause();
-          audio.pause();
+      button.addEventListener('click', toggle);
+      video.addEventListener('click', toggle);
+      video.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggle();
         }
-        label();
       });
-      video.addEventListener('play', () => { startTheme(); label(); });
-      video.addEventListener('pause', () => { audio.pause(); label(); });
-      video.addEventListener('seeking', sync);
+      video.addEventListener('pause', () => {
+        if (!starting) audio.pause();
+        setLabel();
+      });
+      video.addEventListener('seeking', setAudioTime);
       video.addEventListener('ratechange', () => { audio.playbackRate = video.playbackRate || 1; });
       video.addEventListener('timeupdate', () => {
-        if (!audio.paused && Math.abs((audio.currentTime || 0) - (video.currentTime || 0)) > .35) sync();
+        if (!audio.paused && Math.abs((audio.currentTime || 0) - videoTime()) > .40) setAudioTime();
       });
-      video.addEventListener('ended', reset);
-      document.addEventListener('visibilitychange', () => { if (document.hidden) { video.pause(); audio.pause(); } });
-      label();
+      video.addEventListener('ended', resetBoth);
+      video.addEventListener('error', () => { status.textContent = 'The trailer file could not load. Refresh the page and try again.'; pauseBoth(); });
+      audio.addEventListener('error', () => { status.textContent = 'The theme track could not load. Refresh the page and try again.'; pauseBoth(); });
+      audio.addEventListener('loadedmetadata', () => { if (video.currentTime > 0) setAudioTime(); });
+      document.addEventListener('visibilitychange', () => { if (document.hidden) pauseBoth(); });
+      setLabel();
     })();
   </script>
 </body>
