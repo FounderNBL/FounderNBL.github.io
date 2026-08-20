@@ -33,6 +33,29 @@
     }
   };
 
+  function applyTrademark(){
+    const mark=value=>String(value)
+      .replace(/NEW BEANSLAND(?!™)/g,'NEW BEANSLAND™')
+      .replace(/New Beansland(?!™)/g,'New Beansland™');
+
+    if(document.title) document.title=mark(document.title);
+
+    const walker=document.createTreeWalker(document.body||document.documentElement,NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node=>{
+      const parent=node.parentElement;
+      if(!parent||['SCRIPT','STYLE','TEXTAREA','NOSCRIPT'].includes(parent.tagName)) return;
+      if(!/New Beansland|NEW BEANSLAND/.test(node.nodeValue||'')) return;
+      node.nodeValue=mark(node.nodeValue);
+    });
+
+    document.querySelectorAll('img[alt]').forEach(img=>{
+      const next=mark(img.getAttribute('alt')||'');
+      if(next!==img.getAttribute('alt')) img.setAttribute('alt',next);
+    });
+  }
+
   function refreshCurrentAssets(){
     const directMap={
       'nbl-logo.jpg':ASSET.brand,
@@ -54,8 +77,14 @@
     };
 
     document.querySelectorAll('img').forEach(img=>{
-      const replacement=directMap[cleanName(img.getAttribute('src'))];
-      if(replacement && img.getAttribute('src')!==replacement) img.setAttribute('src',replacement);
+      const original=img.getAttribute('src')||'';
+      const replacement=directMap[cleanName(original)];
+      if(replacement && original!==replacement) img.setAttribute('src',replacement);
+
+      /* The newest Playground front-view asset intentionally has a space in its filename. */
+      if(original.includes('raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/NBL-model-front.jpg')){
+        img.setAttribute('src','https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/NBL%20model-front.jpg?v=20260820');
+      }
     });
 
     document.querySelectorAll('video[poster]').forEach(video=>{
@@ -90,7 +119,11 @@
 
   /* Run immediately and once more after DOM construction for late markup. */
   refreshCurrentAssets();
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',refreshCurrentAssets,{once:true});
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();applyTrademark()},{once:true});
+  }else{
+    applyTrademark();
+  }
 
   if(!document.querySelector('link[data-nbl-portal-style]')){
     const style=document.createElement('link');
@@ -116,6 +149,7 @@
 
   function initPortal(){
     refreshCurrentAssets();
+    applyTrademark();
     let gateMask=document.getElementById('nbl-gate-mask');
     if(!gateMask){
       gateMask=document.createElement('div');
@@ -160,7 +194,7 @@
       },reduceMotion.matches?0:PORTAL_MS);
     });
 
-    window.addEventListener('pageshow',()=>{refreshCurrentAssets();hidePortal();});
+    window.addEventListener('pageshow',()=>{refreshCurrentAssets();applyTrademark();hidePortal();});
   }
 
   if(document.readyState==='loading'){
