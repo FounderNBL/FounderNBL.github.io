@@ -7,18 +7,18 @@
   <meta name="description" content="The Doctor/Rocketship Test — a category-audit method by Jamel Hawkins for bad analogies, category switches, and wrong rooms.">
   <meta name="theme-color" content="#030508">
   <link rel="canonical" href="https://newbeansland.org/doctor-rocketship-test.html">
-  <link rel="icon" type="image/jpeg" href="nbl-logo.jpg">
+  <link rel="icon" type="image/png" href="NBL-Brand.png?v=08394b14">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="New Beansland">
   <meta property="og:title" content="The Doctor/Rocketship Category-Audit Framework | New Beansland">
   <meta property="og:description" content="A category-audit method for bad analogies, category switches, and arguments that sound strong until inspected.">
   <meta property="og:url" content="https://newbeansland.org/doctor-rocketship-test.html">
-  <meta property="og:image" content="https://newbeansland.org/doctor-rocketship-front.png">
+  <meta property="og:image" content="https://newbeansland.org/doc-rock-ogfront-cover.png?v=29d94c6f">
   <meta property="og:image:alt" content="The Doctor/Rocketship Test cover">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="The Doctor/Rocketship Test | New Beansland">
   <meta name="twitter:description" content="A category-audit method for bad analogies, category switches, and wrong rooms.">
-  <meta name="twitter:image" content="https://newbeansland.org/doctor-rocketship-front.png">
+  <meta name="twitter:image" content="https://newbeansland.org/doc-rock-ogfront-cover.png?v=29d94c6f">
 
   <!--
   DICKITRY CLAUSE / NEW BEANSLAND OPERATING WIRING
@@ -48,176 +48,29 @@
   -->
 
   <style>
-    :root {
-      --bg0:#030508;
-      --bg1:#080d16;
-      --bg2:#17243a;
-      --gold:#d8b86a;
-      --gold2:#f1d489;
-      --cream:#f4ead5;
-      --soft:#ded7c7;
-      --muted:#9fa3aa;
-      --line:rgba(216,184,106,.34);
-    }
-
+    :root {--bg0:#030508;--bg1:#080d16;--bg2:#17243a;--gold:#d8b86a;--gold2:#f1d489;--cream:#f4ead5;--soft:#ded7c7;--muted:#9fa3aa;--line:rgba(216,184,106,.34)}
     * { box-sizing:border-box; }
-
-    body {
-      margin:0;
-      min-height:100vh;
-      background:radial-gradient(circle at top,var(--bg2) 0%,var(--bg1) 45%,var(--bg0) 100%);
-      color:var(--cream);
-      font-family:Georgia,"Times New Roman",serif;
-    }
-
+    body { margin:0; min-height:100vh; background:radial-gradient(circle at top,var(--bg2) 0%,var(--bg1) 45%,var(--bg0) 100%); color:var(--cream); font-family:Georgia,"Times New Roman",serif; }
     a { color:inherit; }
-
-    .page {
-      width:min(1040px,92%);
-      margin:0 auto;
-      padding:28px 0 72px;
-    }
-
-    .back {
-      display:inline-block;
-      margin-bottom:24px;
-      color:var(--gold2);
-      text-decoration:none;
-      font-family:Arial,sans-serif;
-      font-weight:800;
-    }
-
-    header {
-      text-align:center;
-      padding:28px 18px 32px;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background:rgba(5,9,15,.70);
-      box-shadow:0 0 35px rgba(205,166,87,.10);
-    }
-
-    .logo {
-      width:min(210px,68%);
-      height:auto;
-      border-radius:10px;
-      margin-bottom:18px;
-    }
-
-    h1 {
-      margin:0 0 12px;
-      color:var(--gold);
-      font-size:clamp(2.1rem,7vw,4rem);
-      line-height:1.05;
-      letter-spacing:1px;
-    }
-
-    .subtitle {
-      margin:0;
-      color:#ead9ae;
-      font-size:clamp(1rem,3vw,1.25rem);
-      letter-spacing:1px;
-    }
-
-    .author {
-      margin-top:12px;
-      color:#bfc2c8;
-      font-family:Arial,sans-serif;
-      font-size:.95rem;
-    }
-
-    .covers {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-      gap:22px;
-      margin:30px 0;
-      align-items:start;
-    }
-
-    .cover-card {
-      border:1px solid rgba(216,184,106,.32);
-      border-radius:14px;
-      background:rgba(255,255,255,.035);
-      padding:14px;
-      text-align:center;
-    }
-
-    .cover-card img {
-      width:100%;
-      max-width:460px;
-      height:auto;
-      border-radius:10px;
-      box-shadow:0 0 30px rgba(0,0,0,.35);
-    }
-
-    .cover-card h2 {
-      color:var(--gold2);
-      font-size:1rem;
-      font-family:Arial,sans-serif;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      margin:12px 0 4px;
-    }
-
-    article {
-      margin-top:30px;
-      padding:34px clamp(20px,5vw,48px);
-      border:1px solid rgba(216,184,106,.28);
-      border-radius:14px;
-      background:rgba(5,9,15,.72);
-      line-height:1.78;
-      font-size:1.08rem;
-    }
-
-    article h2 {
-      color:var(--gold);
-      font-size:clamp(1.6rem,4vw,2.3rem);
-      margin-top:0;
-    }
-
+    .page { width:min(1040px,92%); margin:0 auto; padding:28px 0 72px; }
+    .back { display:inline-block; margin-bottom:24px; color:var(--gold2); text-decoration:none; font-family:Arial,sans-serif; font-weight:800; }
+    header { text-align:center; padding:28px 18px 32px; border:1px solid var(--line); border-radius:14px; background:rgba(5,9,15,.70); box-shadow:0 0 35px rgba(205,166,87,.10); }
+    .logo { width:min(210px,68%); height:auto; border-radius:10px; margin-bottom:18px; }
+    h1 { margin:0 0 12px; color:var(--gold); font-size:clamp(2.1rem,7vw,4rem); line-height:1.05; letter-spacing:1px; }
+    .subtitle { margin:0; color:#ead9ae; font-size:clamp(1rem,3vw,1.25rem); letter-spacing:1px; }
+    .author { margin-top:12px; color:#bfc2c8; font-family:Arial,sans-serif; font-size:.95rem; }
+    .covers { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:22px; margin:30px 0; align-items:start; }
+    .cover-card { border:1px solid rgba(216,184,106,.32); border-radius:14px; background:rgba(255,255,255,.035); padding:14px; text-align:center; }
+    .cover-card img { width:100%; max-width:460px; height:auto; border-radius:10px; box-shadow:0 0 30px rgba(0,0,0,.35); }
+    .cover-card h2 { color:var(--gold2); font-size:1rem; font-family:Arial,sans-serif; text-transform:uppercase; letter-spacing:.14em; margin:12px 0 4px; }
+    article { margin-top:30px; padding:34px clamp(20px,5vw,48px); border:1px solid rgba(216,184,106,.28); border-radius:14px; background:rgba(5,9,15,.72); line-height:1.78; font-size:1.08rem; }
+    article h2 { color:var(--gold); font-size:clamp(1.6rem,4vw,2.3rem); margin-top:0; }
     p { margin:0 0 1.15em; }
-
-    .quote {
-      margin:26px 0;
-      padding:20px 24px;
-      border-left:4px solid var(--gold);
-      background:rgba(216,184,106,.08);
-      color:#fff4d8;
-      font-size:1.18rem;
-      font-weight:700;
-    }
-
-    .button {
-      display:inline-block;
-      margin-top:12px;
-      padding:12px 16px;
-      border-radius:10px;
-      border:1px solid var(--gold);
-      color:#07101c;
-      background:linear-gradient(180deg,#f1d489,#bd9143);
-      font-family:Arial,sans-serif;
-      font-weight:800;
-      text-decoration:none;
-    }
-
-    .button:focus-visible,
-    .button:hover {
-      outline:3px solid var(--gold2);
-      outline-offset:4px;
-    }
-
-    .small {
-      color:var(--muted);
-      font-family:Arial,sans-serif;
-      font-size:.92rem;
-    }
-
-    footer {
-      margin-top:55px;
-      color:#8f9299;
-      font-family:Arial,sans-serif;
-      font-size:.85rem;
-      text-align:center;
-    }
+    .quote { margin:26px 0; padding:20px 24px; border-left:4px solid var(--gold); background:rgba(216,184,106,.08); color:#fff4d8; font-size:1.18rem; font-weight:700; }
+    .button { display:inline-block; margin-top:12px; padding:12px 16px; border-radius:10px; border:1px solid var(--gold); color:#07101c; background:linear-gradient(180deg,#f1d489,#bd9143); font-family:Arial,sans-serif; font-weight:800; text-decoration:none; }
+    .button:focus-visible,.button:hover { outline:3px solid var(--gold2); outline-offset:4px; }
+    .small { color:var(--muted); font-family:Arial,sans-serif; font-size:.92rem; }
+    footer { margin-top:55px; color:#8f9299; font-family:Arial,sans-serif; font-size:.85rem; text-align:center; }
   </style>
   <script defer src="/nbl-portal.js"></script>
 </head>
@@ -227,7 +80,7 @@
     <a class="back" href="home.html">← Back to New Beansland</a>
 
     <header>
-      <img class="logo" src="nbl-logo.jpg" alt="New Beansland logo">
+      <img class="logo" src="NBL-Brand.png?v=08394b14" alt="New Beansland brand mark">
       <h1>The Doctor/Rocketship Test</h1>
       <p class="subtitle">A Category-Audit Method for Bad Analogies, Category Switches, and Arguments That Sound Strong Until Inspected</p>
       <p class="author">Created and written by Jamel Hawkins · A New Beansland Framework</p>
@@ -235,48 +88,29 @@
 
     <section class="covers" aria-label="Book covers">
       <div class="cover-card">
-        <img src="doctor-rocketship-front.png" alt="Front cover of The Doctor/Rocketship Test" decoding="async">
+        <img src="doc-rock-ogfront-cover.png?v=29d94c6f" alt="Front cover of The Doctor/Rocketship Test" decoding="async">
         <h2>Front Cover</h2>
       </div>
-
       <div class="cover-card">
-        <img src="doctor-rocketship-standard-back.png" alt="Back cover of The Doctor/Rocketship Test" loading="lazy" decoding="async">
+        <img src="doc-rock-ogback-cover.png?v=8820a16c" alt="Back cover of The Doctor/Rocketship Test" loading="lazy" decoding="async">
         <h2>Back Cover</h2>
       </div>
     </section>
 
     <article>
       <h2>Book Preview</h2>
-
       <p>Did you ever think you had it all figured out?</p>
-
       <p>Then you took the test and still failed?</p>
-
       <p>Maybe the problem was not that every answer was wrong.</p>
-
       <p>Maybe the problem was that you were taking the wrong test and did not know it.</p>
-
       <p>Some arguments feel strong because they ask the wrong question in the right voice. They make you defend an answer before you realize the category changed.</p>
-
       <p><strong>The Doctor/Rocketship Test</strong> helps you slow that down.</p>
-
-      <div class="quote">
-        Because sometimes the issue is not that you answered wrong.
-        <br><br>
-        Sometimes the issue is that nobody told you what room the question belonged in.
-      </div>
-
+      <div class="quote">Because sometimes the issue is not that you answered wrong.<br><br>Sometimes the issue is that nobody told you what room the question belonged in.</div>
       <p>This digital edition is available by request.</p>
-
       <p>For purchase requests, digital edition access, or questions about New Beansland works, contact:</p>
-
       <p><strong>foundernewbeansland@gmail.com</strong></p>
-
       <a class="button" href="doctor-rocketship-shop.html">Choose an Edition</a>
-
-      <p class="small" style="margin-top:18px;">
-        This page is a public preview only. The full digital edition is not posted here.
-      </p>
+      <p class="small" style="margin-top:18px;">This page is a public preview only. The full digital edition is not posted here.</p>
     </article>
 
     <footer>© 2026 Jamel Hawkins · New Beansland</footer>
