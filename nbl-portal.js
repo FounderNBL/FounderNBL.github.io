@@ -3,6 +3,95 @@
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
   const PORTAL_MS=600;
 
+  /*
+    Canonical live asset resolver.
+    The Founder intentionally deleted/re-uploaded several files with the same names.
+    Version tokens below force browsers/CDNs to request the current blobs instead of
+    continuing to show a stale cached image from an older upload.
+  */
+  const ASSET={
+    brand:'NBL-Brand.png?v=08394b14',
+    seal:'NBL-New-Official-Seal.png?v=c52ddcff',
+    founder:'Founder-seal.png?v=e2f2c5bc',
+    books:'NBL-Books.png?v=82ea58bb',
+    clothing:'NBL-Clothing.png?v=d4378f3c',
+    films:'NBL-Films.png?v=967b49ef',
+    music:'NBL-Music.png?v=51ade71f',
+    studios:'NBL-Studios.png?v=2b993fb1',
+    homepage:'New_New_homepage.png?v=4b17e759',
+    doctorFront:'doc-rock-ogfront-cover.png?v=29d94c6f',
+    doctorBack:'doc-rock-ogback-cover.png?v=8820a16c'
+  };
+
+  const cleanName=value=>{
+    if(!value) return '';
+    try{
+      const url=new URL(value,location.href);
+      return decodeURIComponent(url.pathname.split('/').pop()||'');
+    }catch{
+      return String(value).split('?')[0].split('/').pop()||'';
+    }
+  };
+
+  function refreshCurrentAssets(){
+    const directMap={
+      'nbl-logo.jpg':ASSET.brand,
+      'nbl-logo.png':ASSET.brand,
+      'nbl-primary-logo.png':ASSET.brand,
+      'nbl-official-seal.png':ASSET.seal,
+      'official-nbl-emblem.png':ASSET.brand,
+      'nbl-books-imprint.png':ASSET.books,
+      'NBL-Books.png':ASSET.books,
+      'NBL-Clothing.png':ASSET.clothing,
+      'NBL-Films.png':ASSET.films,
+      'NBL-Music.png':ASSET.music,
+      'NBL-Studios.png':ASSET.studios,
+      'Founder-seal.png':ASSET.founder,
+      'doctor-rocketship-front.png':ASSET.doctorFront,
+      'doctor-rocketship-standard-back.png':ASSET.doctorBack,
+      'new-beansland-homepage.png':ASSET.homepage,
+      'New_New_homepage.png':ASSET.homepage
+    };
+
+    document.querySelectorAll('img').forEach(img=>{
+      const replacement=directMap[cleanName(img.getAttribute('src'))];
+      if(replacement && img.getAttribute('src')!==replacement) img.setAttribute('src',replacement);
+    });
+
+    document.querySelectorAll('video[poster]').forEach(video=>{
+      const replacement=directMap[cleanName(video.getAttribute('poster'))];
+      if(replacement && video.getAttribute('poster')!==replacement) video.setAttribute('poster',replacement);
+    });
+
+    document.querySelectorAll('link[rel~="icon"]').forEach(link=>{
+      const name=cleanName(link.getAttribute('href'));
+      if(['nbl-logo.jpg','nbl-logo.png','nbl-primary-logo.png'].includes(name)) link.setAttribute('href',ASSET.brand);
+    });
+
+    /* Homepage destination art: always prefer the latest approved division marks. */
+    document.querySelectorAll('.world-card').forEach(card=>{
+      const title=(card.querySelector('h3')?.textContent||'').trim().toLowerCase();
+      const image=card.querySelector('.media img');
+      if(!image) return;
+      if(title.includes('nbl books')) image.src=ASSET.books;
+      else if(title==='the city'||title.includes('the city')) image.src=ASSET.films;
+      else if(title.includes('timmy v')) image.src=ASSET.music;
+      else if(title.includes('clothing')) image.src=ASSET.clothing;
+    });
+
+    const banner=document.querySelector('.brand-banner img');
+    if(banner) banner.src=ASSET.brand;
+    const footer=document.querySelector('.footer-mark');
+    if(footer) footer.src=ASSET.brand;
+    const seals=document.querySelectorAll('.seal-row img');
+    if(seals[0]) seals[0].src=ASSET.seal;
+    if(seals[1]) seals[1].src=ASSET.founder;
+  }
+
+  /* Run immediately and once more after DOM construction for late markup. */
+  refreshCurrentAssets();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',refreshCurrentAssets,{once:true});
+
   if(!document.querySelector('link[data-nbl-portal-style]')){
     const style=document.createElement('link');
     style.rel='stylesheet';
@@ -26,6 +115,7 @@
   });
 
   function initPortal(){
+    refreshCurrentAssets();
     let gateMask=document.getElementById('nbl-gate-mask');
     if(!gateMask){
       gateMask=document.createElement('div');
@@ -70,7 +160,7 @@
       },reduceMotion.matches?0:PORTAL_MS);
     });
 
-    window.addEventListener('pageshow',hidePortal);
+    window.addEventListener('pageshow',()=>{refreshCurrentAssets();hidePortal();});
   }
 
   if(document.readyState==='loading'){
