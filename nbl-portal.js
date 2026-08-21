@@ -2,6 +2,9 @@
   const root=document.documentElement;
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
   const PORTAL_MS=600;
+  const CONTACT_EMAIL='founder@newbeansland.org';
+  const LEGACY_CONTACT_EMAIL='foundernewbeansland@gmail.com';
+  window.NBL_CONTACT_EMAIL=CONTACT_EMAIL;
 
   /*
     Canonical live asset resolver.
@@ -43,6 +46,31 @@
     relative=relative.replace(/^NBL-model-front\.jpg(?=\?|$)/,'NBL%20model-front.jpg');
     return PLAYGROUND_CDN+relative;
   };
+
+  function refreshContactEmail(){
+    const scope=document.body||document.documentElement;
+    if(!scope) return;
+
+    document.querySelectorAll('a[href^="mailto:"]').forEach(link=>{
+      const href=link.getAttribute('href')||'';
+      if(href.includes(LEGACY_CONTACT_EMAIL)){
+        link.setAttribute('href',href.split(LEGACY_CONTACT_EMAIL).join(CONTACT_EMAIL));
+      }
+      if((link.textContent||'').includes(LEGACY_CONTACT_EMAIL)){
+        link.textContent=(link.textContent||'').split(LEGACY_CONTACT_EMAIL).join(CONTACT_EMAIL);
+      }
+    });
+
+    const walker=document.createTreeWalker(scope,NodeFilter.SHOW_TEXT);
+    const nodes=[];
+    while(walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node=>{
+      const parent=node.parentElement;
+      if(!parent||['SCRIPT','STYLE','TEXTAREA','NOSCRIPT'].includes(parent.tagName)) return;
+      if(!(node.nodeValue||'').includes(LEGACY_CONTACT_EMAIL)) return;
+      node.nodeValue=(node.nodeValue||'').split(LEGACY_CONTACT_EMAIL).join(CONTACT_EMAIL);
+    });
+  }
 
   function applyTrademark(){
     const mark=value=>String(value)
@@ -133,9 +161,11 @@
 
   /* Run immediately and once more after DOM construction for late markup. */
   refreshCurrentAssets();
+  refreshContactEmail();
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();applyTrademark()},{once:true});
+    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark()},{once:true});
   }else{
+    refreshContactEmail();
     applyTrademark();
   }
 
@@ -163,6 +193,7 @@
 
   function initPortal(){
     refreshCurrentAssets();
+    refreshContactEmail();
     applyTrademark();
     let gateMask=document.getElementById('nbl-gate-mask');
     if(!gateMask){
@@ -208,7 +239,7 @@
       },reduceMotion.matches?0:PORTAL_MS);
     });
 
-    window.addEventListener('pageshow',()=>{refreshCurrentAssets();applyTrademark();hidePortal();});
+    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();hidePortal();});
   }
 
   if(document.readyState==='loading'){
