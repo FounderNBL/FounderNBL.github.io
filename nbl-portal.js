@@ -159,14 +159,47 @@
     if(seals[1]) seals[1].src=ASSET.founder;
   }
 
+  function activateIdentityDrop(){
+    if(!/\/clothing\.html$/.test(location.pathname)) return;
+
+    const cards=[...document.querySelectorAll('#statements .product')];
+    const card=cards.find(item=>(item.querySelector('h3')?.textContent||'').includes('Identity'));
+    if(!card) return;
+
+    const heading=card.querySelector('h3');
+    if(heading) heading.textContent='Identity T — NBL Clothing Co.™';
+
+    const description=card.querySelector('.product-copy p');
+    if(description) description.innerHTML='Identity isn’t something you wear. It’s something you own.<br><br><strong>Black · 2X · $34.99</strong><br>Limited first drop: 4 available.';
+
+    const actions=card.querySelector('.actions');
+    if(actions){
+      actions.innerHTML='';
+      const status=document.createElement('span');
+      status.className='status';
+      status.textContent='Available Now · $34.99';
+      const buy=document.createElement('a');
+      buy.className='request-btn';
+      buy.href='https://s.newbeansland.org';
+      buy.textContent='Buy the Identity T';
+      actions.append(status,buy);
+    }
+
+    const intro=document.querySelector('main > .section .section-head p:last-child');
+    if(intro && intro.textContent.includes('Every item below is a preview')){
+      intro.textContent='Most pieces below are previews. The Identity T is available now as the first official NBL Clothing Co.™ drop.';
+    }
+  }
+
   /* Run immediately and once more after DOM construction for late markup. */
   refreshCurrentAssets();
   refreshContactEmail();
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark()},{once:true});
+    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateIdentityDrop()},{once:true});
   }else{
     refreshContactEmail();
     applyTrademark();
+    activateIdentityDrop();
   }
 
   if(!document.querySelector('link[data-nbl-portal-style]')){
@@ -195,6 +228,7 @@
     refreshCurrentAssets();
     refreshContactEmail();
     applyTrademark();
+    activateIdentityDrop();
     let gateMask=document.getElementById('nbl-gate-mask');
     if(!gateMask){
       gateMask=document.createElement('div');
@@ -239,7 +273,7 @@
       },reduceMotion.matches?0:PORTAL_MS);
     });
 
-    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();hidePortal();});
+    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateIdentityDrop();hidePortal();});
   }
 
   if(document.readyState==='loading'){
