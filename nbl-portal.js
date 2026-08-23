@@ -1,6 +1,7 @@
 (()=>{
   const root=document.documentElement;
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const homepageMobile=window.matchMedia('(max-width: 800px)');
   const PORTAL_MS=600;
   const CONTACT_EMAIL='founder@newbeansland.org';
   const LEGACY_CONTACT_EMAIL='foundernewbeansland@gmail.com';
@@ -22,6 +23,8 @@
     music:'NBL-Music.png?v=51ade71f',
     studios:'NBL-Studios.png?v=2b993fb1',
     homepage:'New_New_homepage.png?v=4b17e759',
+    homepageLandscape:'new-beansland-homepage-landscape.png?v=9d77d747',
+    homepagePortrait:'new-beansland-homepage-portrait.png?v=825b2a02',
     doctorFront:'doc-rock-ogfront-cover.png?v=29d94c6f',
     doctorBack:'doc-rock-ogback-cover.png?v=8820a16c'
   };
@@ -95,6 +98,14 @@
     });
   }
 
+  function syncResponsiveHomepageMedia(){
+    if(document.body?.id!=='home') return;
+    const hero=document.querySelector('img.hero-media');
+    if(!hero) return;
+    const next=homepageMobile.matches?ASSET.homepagePortrait:ASSET.homepageLandscape;
+    if(hero.getAttribute('src')!==next) hero.setAttribute('src',next);
+  }
+
   function refreshCurrentAssets(){
     const directMap={
       'nbl-logo.jpg':ASSET.brand,
@@ -128,6 +139,8 @@
       const replacement=directMap[cleanName(original)];
       if(replacement && original!==replacement) img.setAttribute('src',replacement);
     });
+
+    syncResponsiveHomepageMedia();
 
     document.querySelectorAll('video[poster]').forEach(video=>{
       const replacement=directMap[cleanName(video.getAttribute('poster'))];
@@ -259,6 +272,8 @@
     applyTrademark();
     activateIdentityDrop();
   }
+
+  homepageMobile.addEventListener?.('change',syncResponsiveHomepageMedia);
 
   if(!document.querySelector('link[data-nbl-portal-style]')){
     const style=document.createElement('link');
