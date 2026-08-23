@@ -1,6 +1,7 @@
 (()=>{
   const root=document.documentElement;
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const homepageMobile=window.matchMedia('(max-width: 800px)');
   const PORTAL_MS=600;
   const CONTACT_EMAIL='founder@newbeansland.org';
   const LEGACY_CONTACT_EMAIL='foundernewbeansland@gmail.com';
@@ -22,6 +23,8 @@
     music:'NBL-Music.png?v=51ade71f',
     studios:'NBL-Studios.png?v=2b993fb1',
     homepage:'New_New_homepage.png?v=4b17e759',
+    homepageLandscape:'new-beansland-homepage-landscape.png?v=9d77d747',
+    homepagePortrait:'new-beansland-homepage-portrait.png?v=825b2a02',
     doctorFront:'doc-rock-ogfront-cover.png?v=29d94c6f',
     doctorBack:'doc-rock-ogback-cover.png?v=8820a16c'
   };
@@ -95,6 +98,14 @@
     });
   }
 
+  function syncResponsiveHomepageMedia(){
+    if(document.body?.id!=='home') return;
+    const hero=document.querySelector('img.hero-media');
+    if(!hero) return;
+    const next=homepageMobile.matches?ASSET.homepagePortrait:ASSET.homepageLandscape;
+    if(hero.getAttribute('src')!==next) hero.setAttribute('src',next);
+  }
+
   function refreshCurrentAssets(){
     const directMap={
       'nbl-logo.jpg':ASSET.brand,
@@ -128,6 +139,8 @@
       const replacement=directMap[cleanName(original)];
       if(replacement && original!==replacement) img.setAttribute('src',replacement);
     });
+
+    syncResponsiveHomepageMedia();
 
     document.querySelectorAll('video[poster]').forEach(video=>{
       const replacement=directMap[cleanName(video.getAttribute('poster'))];
@@ -191,6 +204,64 @@
     }
   }
 
+  function initMediaPerformance(){
+    if(root.dataset.nblMediaOptimized==='true') return;
+    root.dataset.nblMediaOptimized='true';
+
+    document.querySelectorAll('img').forEach(img=>{
+      if(!img.hasAttribute('decoding')) img.setAttribute('decoding','async');
+      const priority=img.getAttribute('fetchpriority')==='high'||img.classList.contains('hero-media')||Boolean(img.closest('.site-header'));
+      if(!priority&&!img.hasAttribute('loading')) img.setAttribute('loading','lazy');
+    });
+
+    const managedVideos=[...document.querySelectorAll('video[autoplay]')];
+    managedVideos.forEach(video=>{
+      video.removeAttribute('autoplay');
+      video.muted=true;
+      video.setAttribute('muted','');
+      video.setAttribute('playsinline','');
+      if(!video.hasAttribute('preload')) video.setAttribute('preload','metadata');
+      video.pause();
+    });
+
+    if(!managedVideos.length) return;
+
+    const safePlay=video=>{
+      if(document.hidden||reduceMotion.matches) return;
+      const attempt=video.play();
+      if(attempt&&typeof attempt.catch==='function') attempt.catch(()=>{});
+    };
+
+    const syncVisibleVideos=()=>{
+      managedVideos.forEach(video=>{
+        if(document.hidden||reduceMotion.matches){
+          video.pause();
+          return;
+        }
+        const rect=video.getBoundingClientRect();
+        const visible=rect.bottom>0&&rect.top<window.innerHeight;
+        if(visible) safePlay(video);
+        else video.pause();
+      });
+    };
+
+    if('IntersectionObserver' in window){
+      const observer=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          const video=entry.target;
+          if(entry.isIntersecting&&entry.intersectionRatio>=.35&&!document.hidden&&!reduceMotion.matches) safePlay(video);
+          else video.pause();
+        });
+      },{threshold:[0,.35,.6],rootMargin:'80px 0px'});
+      managedVideos.forEach(video=>observer.observe(video));
+    }else{
+      syncVisibleVideos();
+    }
+
+    document.addEventListener('visibilitychange',syncVisibleVideos,{passive:true});
+    reduceMotion.addEventListener?.('change',syncVisibleVideos);
+  }
+
   /* Run immediately and once more after DOM construction for late markup. */
   refreshCurrentAssets();
   refreshContactEmail();
@@ -201,6 +272,8 @@
     applyTrademark();
     activateIdentityDrop();
   }
+
+  homepageMobile.addEventListener?.('change',syncResponsiveHomepageMedia);
 
   if(!document.querySelector('link[data-nbl-portal-style]')){
     const style=document.createElement('link');
@@ -229,6 +302,7 @@
     refreshContactEmail();
     applyTrademark();
     activateIdentityDrop();
+    initMediaPerformance();
     let gateMask=document.getElementById('nbl-gate-mask');
     if(!gateMask){
       gateMask=document.createElement('div');
