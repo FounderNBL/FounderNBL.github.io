@@ -1,4 +1,4 @@
-NEW BEANSLAND SITE UPDATE — FRONT DOOR + REAL HOME + DICKITRY CLAUSE
+NEW BEANSLAND SITE UPDATE — FRONT DOOR + REAL HOME
 
 Upload these files/folders to the root of your GitHub Pages repository:
 
@@ -30,10 +30,6 @@ What this package does:
 
 5. assets/nbl-logo.jpg is the clean logo from the uploaded NBL logo PDF.
    - No “Main Logo” corner text.
-
-6. The Dickitry Clause is added as a hidden HTML code comment in every page.
-   - It is not a visible public section.
-   - It is wiring, not decoration.
 
 Locke ruling:
 Front door stays simple. Logo becomes the handle. Home page becomes the house. No dead doors.
