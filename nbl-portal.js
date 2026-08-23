@@ -191,6 +191,64 @@
     }
   }
 
+  function initMediaPerformance(){
+    if(root.dataset.nblMediaOptimized==='true') return;
+    root.dataset.nblMediaOptimized='true';
+
+    document.querySelectorAll('img').forEach(img=>{
+      if(!img.hasAttribute('decoding')) img.setAttribute('decoding','async');
+      const priority=img.getAttribute('fetchpriority')==='high'||img.classList.contains('hero-media')||Boolean(img.closest('.site-header'));
+      if(!priority&&!img.hasAttribute('loading')) img.setAttribute('loading','lazy');
+    });
+
+    const managedVideos=[...document.querySelectorAll('video[autoplay]')];
+    managedVideos.forEach(video=>{
+      video.removeAttribute('autoplay');
+      video.muted=true;
+      video.setAttribute('muted','');
+      video.setAttribute('playsinline','');
+      if(!video.hasAttribute('preload')) video.setAttribute('preload','metadata');
+      video.pause();
+    });
+
+    if(!managedVideos.length) return;
+
+    const safePlay=video=>{
+      if(document.hidden||reduceMotion.matches) return;
+      const attempt=video.play();
+      if(attempt&&typeof attempt.catch==='function') attempt.catch(()=>{});
+    };
+
+    const syncVisibleVideos=()=>{
+      managedVideos.forEach(video=>{
+        if(document.hidden||reduceMotion.matches){
+          video.pause();
+          return;
+        }
+        const rect=video.getBoundingClientRect();
+        const visible=rect.bottom>0&&rect.top<window.innerHeight;
+        if(visible) safePlay(video);
+        else video.pause();
+      });
+    };
+
+    if('IntersectionObserver' in window){
+      const observer=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{
+          const video=entry.target;
+          if(entry.isIntersecting&&entry.intersectionRatio>=.35&&!document.hidden&&!reduceMotion.matches) safePlay(video);
+          else video.pause();
+        });
+      },{threshold:[0,.35,.6],rootMargin:'80px 0px'});
+      managedVideos.forEach(video=>observer.observe(video));
+    }else{
+      syncVisibleVideos();
+    }
+
+    document.addEventListener('visibilitychange',syncVisibleVideos,{passive:true});
+    reduceMotion.addEventListener?.('change',syncVisibleVideos);
+  }
+
   /* Run immediately and once more after DOM construction for late markup. */
   refreshCurrentAssets();
   refreshContactEmail();
@@ -229,6 +287,7 @@
     refreshContactEmail();
     applyTrademark();
     activateIdentityDrop();
+    initMediaPerformance();
     let gateMask=document.getElementById('nbl-gate-mask');
     if(!gateMask){
       gateMask=document.createElement('div');
