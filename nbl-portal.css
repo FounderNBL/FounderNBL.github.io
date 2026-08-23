@@ -1,5 +1,21 @@
 :root{--nbl-portal-duration:600ms}
 
+/* Shared responsive media safety net. Page-specific component rules can still
+   override these when a deliberate crop or fixed presentation is needed. */
+img{
+  max-width:100%;
+  height:auto;
+}
+
+picture,
+figure{
+  max-width:100%;
+}
+
+video{
+  max-width:100%;
+}
+
 .nbl-portal-overlay{
   position:fixed;
   inset:0;
@@ -38,6 +54,15 @@ html.nbl-night body#home .hero-media{
 
 body#home .hero-media{
   transition:filter 900ms ease;
+}
+
+@media(max-width:800px){
+  /* Prevent oversized inline media from forcing horizontal scroll on phones. */
+  main img,
+  main video,
+  main picture{
+    max-width:100%;
+  }
 }
 
 @media(prefers-reduced-motion:reduce){
