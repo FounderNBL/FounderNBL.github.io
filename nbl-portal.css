@@ -1,7 +1,6 @@
 :root{--nbl-portal-duration:600ms}
 
-/* Shared responsive media safety net. Page-specific component rules can still
-   override these when a deliberate crop or fixed presentation is needed. */
+/* Shared responsive media safety net. */
 img{
   max-width:100%;
   height:auto;
@@ -42,8 +41,7 @@ video{
   pointer-events:none;
 }
 
-/* Current live homepage uses one baked hero image. Apply a safe atmospheric
-   day/night treatment only there; true sky/window control needs layered art. */
+/* Keep the one approved homepage artwork. CSS changes only its framing. */
 html.nbl-day body#home .hero-media{
   filter:brightness(1.08) saturate(.94) contrast(.96) sepia(.035);
 }
@@ -54,10 +52,32 @@ html.nbl-night body#home .hero-media{
 
 body#home .hero-media{
   transition:filter 900ms ease;
+  object-fit:cover;
+  object-position:50% 50%;
+}
+
+@media(max-width:800px) and (orientation:portrait){
+  body#home .hero{
+    min-height:72svh;
+  }
+
+  body#home .hero-media{
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:50% 50%;
+  }
+}
+
+@media(max-width:1000px) and (orientation:landscape){
+  body#home .hero-media{
+    object-fit:cover;
+    object-position:50% 50%;
+  }
 }
 
 @media(max-width:800px){
-  /* Prevent oversized inline media from forcing horizontal scroll on phones. */
   main img,
   main video,
   main picture{

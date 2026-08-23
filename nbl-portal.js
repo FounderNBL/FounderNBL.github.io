@@ -1,7 +1,6 @@
 (()=>{
   const root=document.documentElement;
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const homepageMobile=window.matchMedia('(max-width: 800px)');
   const PORTAL_MS=600;
   const CONTACT_EMAIL='founder@newbeansland.org';
   const LEGACY_CONTACT_EMAIL='foundernewbeansland@gmail.com';
@@ -23,8 +22,6 @@
     music:'NBL-Music.png?v=51ade71f',
     studios:'NBL-Studios.png?v=2b993fb1',
     homepage:'New_New_homepage.png?v=4b17e759',
-    homepageLandscape:'new-beansland-homepage-landscape.png?v=9d77d747',
-    homepagePortrait:'new-beansland-homepage-portrait.png?v=825b2a02',
     doctorFront:'doc-rock-ogfront-cover.png?v=29d94c6f',
     doctorBack:'doc-rock-ogback-cover.png?v=8820a16c'
   };
@@ -45,7 +42,6 @@
   const playgroundCdn=value=>{
     if(!value||!value.startsWith(PLAYGROUND_RAW)) return value;
     let relative=value.slice(PLAYGROUND_RAW.length);
-    /* The newest approved front-view file has a space in its actual filename. */
     relative=relative.replace(/^NBL-model-front\.jpg(?=\?|$)/,'NBL%20model-front.jpg');
     return PLAYGROUND_CDN+relative;
   };
@@ -98,14 +94,6 @@
     });
   }
 
-  function syncResponsiveHomepageMedia(){
-    if(document.body?.id!=='home') return;
-    const hero=document.querySelector('img.hero-media');
-    if(!hero) return;
-    const next=homepageMobile.matches?ASSET.homepagePortrait:ASSET.homepageLandscape;
-    if(hero.getAttribute('src')!==next) hero.setAttribute('src',next);
-  }
-
   function refreshCurrentAssets(){
     const directMap={
       'nbl-logo.jpg':ASSET.brand,
@@ -128,8 +116,6 @@
 
     document.querySelectorAll('img').forEach(img=>{
       let original=img.getAttribute('src')||'';
-
-      /* Serve approved Playground artwork through a browser-friendly CDN. */
       const cdnSource=playgroundCdn(original);
       if(cdnSource!==original){
         img.setAttribute('src',cdnSource);
@@ -139,8 +125,6 @@
       const replacement=directMap[cleanName(original)];
       if(replacement && original!==replacement) img.setAttribute('src',replacement);
     });
-
-    syncResponsiveHomepageMedia();
 
     document.querySelectorAll('video[poster]').forEach(video=>{
       const replacement=directMap[cleanName(video.getAttribute('poster'))];
@@ -152,7 +136,6 @@
       if(['nbl-logo.jpg','nbl-logo.png','nbl-primary-logo.png'].includes(name)) link.setAttribute('href',ASSET.brand);
     });
 
-    /* Homepage destination art: always prefer the latest approved division marks. */
     document.querySelectorAll('.world-card').forEach(card=>{
       const title=(card.querySelector('h3')?.textContent||'').trim().toLowerCase();
       const image=card.querySelector('.media img');
@@ -262,7 +245,6 @@
     reduceMotion.addEventListener?.('change',syncVisibleVideos);
   }
 
-  /* Run immediately and once more after DOM construction for late markup. */
   refreshCurrentAssets();
   refreshContactEmail();
   if(document.readyState==='loading'){
@@ -272,8 +254,6 @@
     applyTrademark();
     activateIdentityDrop();
   }
-
-  homepageMobile.addEventListener?.('change',syncResponsiveHomepageMedia);
 
   if(!document.querySelector('link[data-nbl-portal-style]')){
     const style=document.createElement('link');
