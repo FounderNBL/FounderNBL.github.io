@@ -181,6 +181,52 @@
     }
   }
 
+  function activateLuluDirectBuy(){
+    if(!/\/books\.html$/.test(location.pathname)) return;
+    if(document.querySelector('[data-nbl-lulu-direct]')) return;
+
+    const bookGrid=document.querySelector('.book-grid');
+    if(!bookGrid) return;
+
+    if(!document.querySelector('script[data-nbl-lulu-buy]')){
+      const loader=document.createElement('script');
+      loader.defer=true;
+      loader.src='https://js.lulu.com/lulu-buy.js';
+      loader.dataset.nblLuluBuy='true';
+      document.head.appendChild(loader);
+    }
+
+    const direct=document.createElement('div');
+    direct.dataset.nblLuluDirect='true';
+    direct.style.margin='0 0 24px';
+    direct.style.padding='20px';
+    direct.style.border='1px solid rgba(214,161,74,.34)';
+    direct.style.borderRadius='14px';
+    direct.style.background='linear-gradient(145deg,rgba(11,27,43,.96),rgba(3,11,19,.98))';
+
+    const kicker=document.createElement('p');
+    kicker.className='kicker';
+    kicker.textContent='Buy Direct';
+
+    const heading=document.createElement('h3');
+    heading.style.margin='6px 0 10px';
+    heading.style.color='var(--gold-light,#f0c873)';
+    heading.textContent='New Beansland™ Books · Lulu Direct';
+
+    const note=document.createElement('p');
+    note.style.margin='0 0 16px';
+    note.style.color='var(--muted,#cfc3ad)';
+    note.style.font='0.92rem/1.5 Arial,sans-serif';
+    note.textContent='Buy this print edition directly through New Beansland™. Lulu handles secure checkout, printing, and shipping.';
+
+    const button=document.createElement('lulu-buy-button');
+    button.setAttribute('buy-button-id','b3397f16-c591-4571-88f5-d5bdf5082246');
+    button.setAttribute('variant','product-showcase');
+
+    direct.append(kicker,heading,note,button);
+    bookGrid.before(direct);
+  }
+
   function initMediaPerformance(){
     if(root.dataset.nblMediaOptimized==='true') return;
     root.dataset.nblMediaOptimized='true';
@@ -206,11 +252,12 @@
   refreshCurrentAssets();
   refreshContactEmail();
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateIdentityDrop()},{once:true});
+    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateIdentityDrop();activateLuluDirectBuy()},{once:true});
   }else{
     refreshContactEmail();
     applyTrademark();
     activateIdentityDrop();
+    activateLuluDirectBuy();
   }
 
   if(!document.querySelector('link[data-nbl-portal-style]')){
@@ -240,6 +287,7 @@
     refreshContactEmail();
     applyTrademark();
     activateIdentityDrop();
+    activateLuluDirectBuy();
     initMediaPerformance();
     let gateMask=document.getElementById('nbl-gate-mask');
     if(!gateMask){
@@ -285,7 +333,7 @@
       },reduceMotion.matches?0:PORTAL_MS);
     });
 
-    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateIdentityDrop();hidePortal();});
+    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateIdentityDrop();activateLuluDirectBuy();hidePortal();});
   }
 
   if(document.readyState==='loading'){
