@@ -105,7 +105,12 @@
       'doctor-rocketship-front.png':ASSET.doctorFront,
       'doctor-rocketship-standard-back.png':ASSET.doctorBack,
       'new-beansland-homepage.png':ASSET.homepage,
-      'New_New_homepage.png':ASSET.homepage
+      'New_New_homepage.png':ASSET.homepage,
+      'NBL-pose-template.png':'NBL-pose-template.png?v=52e5072b',
+      'NBL-hat-sweats-outfit.png':'NBL-hat-sweats-outfit.png?v=fc219ae8',
+      'NBL-highs.png':'NBL-highs.png?v=8ecf8bfc',
+      'NBL model-front.jpg':'NBL-Model-Front.png?v=f50ded9c',
+      'NBL-model-front.jpg':'NBL-Model-Front.png?v=f50ded9c'
     };
 
     document.querySelectorAll('img').forEach(img=>{
@@ -147,6 +152,17 @@
     const seals=document.querySelectorAll('.seal-row img');
     if(seals[0]) seals[0].src=ASSET.seal;
     if(seals[1]) seals[1].src=ASSET.founder;
+  }
+
+  function activateClothingLiveFixes(){
+    if(!/\/clothing\.html$/.test(location.pathname)) return;
+    root.classList.add('nbl-clothing-live');
+
+    const audio=document.getElementById('clothingTrack');
+    if(audio && cleanName(audio.getAttribute('src'))==='NBL clothes .mp3'){
+      audio.setAttribute('src','NBL%20clothes2.mp3?v=ffc7ddb4');
+      audio.load();
+    }
   }
 
   function activateIdentityDrop(){
@@ -252,10 +268,11 @@
   refreshCurrentAssets();
   refreshContactEmail();
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateIdentityDrop();activateLuluDirectBuy()},{once:true});
+    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateClothingLiveFixes();activateIdentityDrop();activateLuluDirectBuy()},{once:true});
   }else{
     refreshContactEmail();
     applyTrademark();
+    activateClothingLiveFixes();
     activateIdentityDrop();
     activateLuluDirectBuy();
   }
@@ -286,6 +303,7 @@
     refreshCurrentAssets();
     refreshContactEmail();
     applyTrademark();
+    activateClothingLiveFixes();
     activateIdentityDrop();
     activateLuluDirectBuy();
     initMediaPerformance();
@@ -333,7 +351,7 @@
       },reduceMotion.matches?0:PORTAL_MS);
     });
 
-    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateIdentityDrop();activateLuluDirectBuy();hidePortal();});
+    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateClothingLiveFixes();activateIdentityDrop();activateLuluDirectBuy();hidePortal();});
   }
 
   if(document.readyState==='loading'){
