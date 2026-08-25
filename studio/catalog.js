@@ -1,28 +1,40 @@
 // NBL Studio catalog.
-// Add uploaded audio/video paths here. Video is optional: when omitted, the player uses motion visualization.
+// Media stays still until the visitor chooses a track and presses Play.
 window.NBL_TRACKS = [
   {
-    id: "write-it",
-    title: "Write It",
+    id: "you-hear-it-too",
+    title: "You Hear It Too",
     artist: "Timmy V — The Train Eater",
-    credit: "Original song / lyrics: Timmy V • New Beansland presentation",
+    credit: "TrainEater Productions · New Beansland™",
     cover: "../assets/brand/NBL-Studios.png",
-    audio: "",
+    audio: "../You%20hear%20it%20too.mp3",
     video: "",
-    previewSeconds: 10,
+    previewSeconds: 0,
     purchaseUrl: "",
-    badge: "Train Eater"
+    badge: "Timmy V"
   },
   {
-    id: "city-soundtrack",
-    title: "The City Soundtrack",
-    artist: "NBL Presents",
-    credit: "New Beansland Studios",
-    cover: "../assets/brand/NBL-Films.png",
-    audio: "",
+    id: "still-walking",
+    title: "Still Walking",
+    artist: "Timmy V — The Train Eater",
+    credit: "TrainEater Productions · New Beansland™",
+    cover: "../assets/brand/NBL-Studios.png",
+    audio: "../Still%20Walking%20Again%20.mp3",
     video: "",
-    previewSeconds: 10,
+    previewSeconds: 0,
     purchaseUrl: "",
-    badge: "The City"
+    badge: "Timmy V"
+  },
+  {
+    id: "nbl-clothes2",
+    title: "NBL clothes2",
+    artist: "Timmy V — The Train Eater",
+    credit: "TrainEater Productions · New Beansland™",
+    cover: "../NBL-Clothing.png",
+    audio: "../NBL%20clothes2.mp3",
+    video: "",
+    previewSeconds: 0,
+    purchaseUrl: "",
+    badge: "Timmy V"
   }
 ];
