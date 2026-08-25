@@ -4,17 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#02060b" />
-  <title>NBL Studio | New Beansland</title>
+  <title>NBL Studio | New Beansland™</title>
   <link rel="icon" href="../assets/brand/nbl-primary-logo.png" />
   <link rel="stylesheet" href="./studio.css" />
+  <link rel="stylesheet" href="/nbl-portal.css" data-nbl-portal-style />
+  <script defer src="/nbl-portal.js"></script>
 </head>
 <body>
+  <div id="nbl-gate-mask" class="nbl-portal-overlay portal-visible" aria-hidden="true"></div>
   <main class="studio-shell">
     <header class="studio-header">
-      <a class="back" href="../">← New Beansland</a>
+      <a class="back" href="../">← New Beansland™</a>
       <img class="studio-mark" src="../assets/brand/NBL-Studios.png" alt="NBL Studios" />
       <div class="header-copy">
-        <p class="eyebrow">NEW BEANSLAND PRESENTS</p>
+        <p class="eyebrow">NEW BEANSLAND™ PRESENTS</p>
         <h1>NBL Studio</h1>
         <p>Music, motion and Train Eater energy. Pick a record and press play.</p>
       </div>
@@ -29,7 +32,7 @@
         <div class="now-playing">
           <span id="nowLabel">SELECT A TRACK</span>
           <h2 id="trackTitle">NBL Studio</h2>
-          <p id="trackArtist">New Beansland</p>
+          <p id="trackArtist">New Beansland™</p>
         </div>
       </div>
 
@@ -62,8 +65,51 @@
       <div id="trackList" class="track-list"></div>
     </section>
 
+    <section class="movie-section" id="movie-studio" aria-labelledby="movie-studio-title">
+      <div class="section-heading movie-heading">
+        <p class="eyebrow">NBL STUDIOS</p>
+        <h2 id="movie-studio-title">NBL Movie Studio</h2>
+        <p>Trailers, commercials and music films live here too. Every screen stays on its cover until you press Play.</p>
+      </div>
+
+      <div class="movie-grid">
+        <article class="movie-card">
+          <video controls playsinline preload="metadata" poster="../assets/brand/NBL-Studios.png" aria-label="Still Walking">
+            <source src="../%40FounderNBL.mp4" type="video/mp4" />
+          </video>
+          <div class="movie-copy">
+            <p class="eyebrow">MUSIC FILM</p>
+            <h3>Still Walking</h3>
+            <p>New Beansland™ · @FounderNBL</p>
+          </div>
+        </article>
+
+        <article class="movie-card">
+          <video controls playsinline preload="metadata" poster="../assets/brand/NBL-Films.png" aria-label="The City official trailer">
+            <source src="../The_City_New_Beansland_Trailer_Final.mp4" type="video/mp4" />
+          </video>
+          <div class="movie-copy">
+            <p class="eyebrow">NBL STUDIOS · TV &amp; FILM</p>
+            <h3>The City — Official Trailer</h3>
+            <p>The trailer also remains in its original New Beansland™ location.</p>
+          </div>
+        </article>
+
+        <article class="movie-card">
+          <video controls playsinline preload="metadata" poster="../NBL-Clothing.png" aria-label="NBL Clothing commercial">
+            <source src="../NBL-Commercial-Short-last.mp4" type="video/mp4" />
+          </video>
+          <div class="movie-copy">
+            <p class="eyebrow">NBL CLOTHING CO.</p>
+            <h3>NBL Clothing Commercial</h3>
+            <p>The commercial also remains in the NBL Clothing catalog.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <footer>
-      <p>© 2026 New Beansland. Artist and writing credits remain attached to each release.</p>
+      <p>© 2026 New Beansland™. Artist and writing credits remain attached to each release.</p>
       <p><a href="https://www.youtube.com/@JMeloNBLRecords" target="_blank" rel="noopener noreferrer">J Melo | NBL Records — YouTube</a></p>
     </footer>
   </main>
