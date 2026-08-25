@@ -4,37 +4,37 @@ window.NBL_TRACKS = [
   {
     id: "you-hear-it-too",
     title: "You Hear It Too",
-    artist: "Timmy V — The Train Eater",
-    credit: "TrainEater Productions · New Beansland™",
+    artist: "JMELO",
+    credit: "NBL Records · New Beansland™",
     cover: "../assets/brand/NBL-Studios.png",
     audio: "../You%20hear%20it%20too.mp3",
     video: "",
     previewSeconds: 0,
     purchaseUrl: "",
-    badge: "Timmy V"
+    badge: "JMELO"
   },
   {
     id: "still-walking",
     title: "Still Walking",
-    artist: "Timmy V — The Train Eater",
-    credit: "TrainEater Productions · New Beansland™",
+    artist: "JMELO",
+    credit: "NBL Records · New Beansland™",
     cover: "../assets/brand/NBL-Studios.png",
     audio: "../Still%20Walking%20Again%20.mp3",
     video: "",
     previewSeconds: 0,
     purchaseUrl: "",
-    badge: "Timmy V"
+    badge: "JMELO"
   },
   {
     id: "nbl-clothes2",
     title: "NBL clothes2",
-    artist: "Timmy V — The Train Eater",
-    credit: "TrainEater Productions · New Beansland™",
+    artist: "JMELO",
+    credit: "NBL Records · New Beansland™",
     cover: "../NBL-Clothing.png",
     audio: "../NBL%20clothes2.mp3",
     video: "",
     previewSeconds: 0,
     purchaseUrl: "",
-    badge: "Timmy V"
+    badge: "JMELO"
   }
 ];
