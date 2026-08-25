@@ -29,7 +29,23 @@
     if(!img)return;
     if(title.includes('nbl books')) img.src=asset.books;
     else if(title.includes('the city')) img.src=asset.films;
-    else if(title.includes('timmy v')) img.src=asset.music;
+    else if(title.includes('timmy v')){
+      img.src=asset.music;
+      card.href='studio/';
+      const status=card.querySelector('.status');
+      const heading=card.querySelector('h3');
+      const copy=card.querySelector('.card-body p');
+      const enter=card.querySelector('.enter');
+      if(status)status.textContent='Open';
+      if(heading)heading.textContent='NBL Studio';
+      if(copy)copy.textContent='Music, trailers, commercials and New Beansland studio media — all behind one open door.';
+      if(enter)enter.textContent='Enter Studio →';
+    }
+  });
+
+  document.querySelectorAll('a[href="coming-soon.html?room=timmy-v"]').forEach(link=>{
+    link.href='studio/';
+    if(link.closest('.nav'))link.textContent='NBL Studio';
   });
 
   const sealRow=document.querySelectorAll('.seal-row img');
