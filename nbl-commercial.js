@@ -10,7 +10,7 @@
   const asset={
     brand:'NBL-Brand.png?v=08394b14',
     seal:'NBL-New-Official-Seal.png?v=c52ddcff',
-    founder:'Founder-seal.png?v=e2f2c5bc',
+    founder:'Founders-seal.png?v=be363e50',
     books:'NBL-Books.png?v=82ea58bb',
     clothing:'NBL-Clothing.png?v=d4378f3c',
     films:'NBL-Films.png?v=967b49ef',

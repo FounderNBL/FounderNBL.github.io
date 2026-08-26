@@ -9,7 +9,7 @@
   const ASSET={
     brand:'NBL-Brand.png?v=08394b14',
     seal:'NBL-New-Official-Seal.png?v=c52ddcff',
-    founder:'Founder-seal.png?v=e2f2c5bc',
+    founder:'Founders-seal.png?v=be363e50',
     books:'NBL-Books.png?v=82ea58bb',
     clothing:'NBL-Clothing.png?v=d4378f3c',
     films:'NBL-Films.png?v=967b49ef',
@@ -102,6 +102,7 @@
       'NBL-Music.png':ASSET.music,
       'NBL-Studios.png':ASSET.studios,
       'Founder-seal.png':ASSET.founder,
+      'Founders-seal.png':ASSET.founder,
       'doctor-rocketship-front.png':ASSET.doctorFront,
       'doctor-rocketship-standard-back.png':ASSET.doctorBack,
       'new-beansland-homepage.png':ASSET.homepage,
