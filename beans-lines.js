@@ -52,47 +52,91 @@
 
   function ensureBeansLine() {
     let el = document.getElementById('beans-line');
+    const inFounderOffice = /\/founder-office\.html$/.test(window.location.pathname);
+
     if (!el) {
       el = document.createElement('div');
       el.id = 'beans-line';
       el.setAttribute('role', 'status');
       el.setAttribute('aria-live', 'polite');
-      document.body.appendChild(el);
+
+      if (inFounderOffice) {
+        const room = document.querySelector('.room-stage');
+        if (room) {
+          el.classList.add('beans-room-line');
+          room.appendChild(el);
+        } else {
+          document.body.appendChild(el);
+        }
+      } else {
+        const host = document.querySelector('main') || document.body;
+        host.appendChild(el);
+      }
+    } else if (inFounderOffice) {
+      el.classList.add('beans-room-line');
     }
 
     if (!document.getElementById('beans-presence-style')) {
       const style = document.createElement('style');
       style.id = 'beans-presence-style';
       style.textContent = `
+        /* Beans line – quiet resident comment */
         #beans-line {
-          position: fixed;
-          z-index: 80;
-          left: 50%;
-          bottom: max(22px, calc(env(safe-area-inset-bottom) + 16px));
-          transform: translate(-50%, 8px);
-          width: min(88vw, 680px);
-          margin: 0;
-          color: #cfc3ad;
-          font: italic 0.9rem/1.45 Georgia, 'Times New Roman', serif;
-          text-align: center;
-          text-shadow: 0 2px 10px rgba(0,0,0,.9);
           opacity: 0;
+          font-family: Georgia, "Times New Roman", serif;
+          font-style: italic;
+          font-size: 0.95rem;
+          line-height: 1.5;
+          color: #cfc3ad;
+          letter-spacing: 0.01em;
+          margin: 1.75rem auto 0;
+          max-width: 34rem;
+          text-align: center;
+          transition: opacity 0.7s ease;
           pointer-events: none;
-          transition: opacity .6s ease, transform .6s ease;
         }
-        #beans-line.beans-visible {
-          opacity: .92;
-          transform: translate(-50%, 0);
+
+        #beans-line.visible {
+          opacity: 1;
         }
+
+        /* Optional warmer Beans line */
+        #beans-line.warm {
+          color: #d6c3a0;
+        }
+
+        /* Founder’s Office has no normal page flow, so keep Beans inside the room itself. */
+        #beans-line.beans-room-line {
+          position: absolute;
+          z-index: 24;
+          left: 50%;
+          bottom: 4.5%;
+          width: min(82%, 34rem);
+          margin: 0;
+          transform: translateX(-50%);
+          text-shadow: 0 2px 10px rgba(0,0,0,.9);
+        }
+
         .beans-family-profile {
           margin-top: 1.25em;
           padding-top: 1em;
           border-top: 1px solid rgba(215,180,90,.22);
           color: #d9cdb8;
         }
-        .beans-family-profile strong { color: #ffe6a6; }
+
+        .beans-family-profile strong {
+          color: #ffe6a6;
+        }
+
         @media (max-width: 620px) {
-          #beans-line { bottom: max(16px, calc(env(safe-area-inset-bottom) + 12px)); font-size: .84rem; }
+          #beans-line {
+            font-size: 0.88rem;
+          }
+
+          #beans-line.beans-room-line {
+            width: min(88%, 34rem);
+            bottom: 5.5%;
+          }
         }
       `;
       document.head.appendChild(style);
@@ -101,17 +145,34 @@
     return el;
   }
 
+  function showBeans(category, elementId = 'beans-line') {
+    const el = document.getElementById(elementId);
+    if (!el) return '';
+
+    el.textContent = 'Beans: ' + sayBeans(category);
+    el.classList.remove('visible');
+
+    // Force reflow so the fade works every time.
+    void el.offsetWidth;
+
+    el.classList.add('visible');
+    return el.textContent;
+  }
+
   let lineTimer = null;
   function showBeansLine(category, options = {}) {
-    const el = ensureBeansLine();
+    ensureBeansLine();
     window.clearTimeout(lineTimer);
-    el.textContent = 'Beans: ' + sayBeans(category);
-    el.classList.add('beans-visible');
+    const text = showBeans(category);
     const duration = Number.isFinite(options.duration) ? options.duration : 4200;
+
     if (duration > 0) {
-      lineTimer = window.setTimeout(() => el.classList.remove('beans-visible'), duration);
+      lineTimer = window.setTimeout(() => {
+        document.getElementById('beans-line')?.classList.remove('visible');
+      }, duration);
     }
-    return el.textContent;
+
+    return text;
   }
 
   function installFamilyProfile() {
@@ -204,6 +265,7 @@
   window.Beans = Beans;
   window.BeansProfile = BeansProfile;
   window.sayBeans = sayBeans;
+  window.showBeans = showBeans;
   window.showBeansLine = showBeansLine;
 
   if (document.readyState === 'loading') {
