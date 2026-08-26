@@ -135,23 +135,22 @@
     });
   }
 
-  function interceptQuietExit(selector, category) {
-    const link = document.querySelector(selector);
-    if (!link) return;
+  function interceptQuietExits(selector, category) {
+    document.querySelectorAll(selector).forEach(link => {
+      link.addEventListener('click', event => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (link.target === '_blank' || link.hasAttribute('download')) return;
 
-    link.addEventListener('click', event => {
-      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      if (link.target === '_blank' || link.hasAttribute('download')) return;
+        let destination;
+        try { destination = new URL(link.href, window.location.href); } catch { return; }
+        if (destination.origin !== window.location.origin) return;
 
-      let destination;
-      try { destination = new URL(link.href, window.location.href); } catch { return; }
-      if (destination.origin !== window.location.origin) return;
-
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      showBeansLine(category, { duration: 0 });
-      window.setTimeout(() => window.location.assign(destination.href), 900);
-    }, true);
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        showBeansLine(category, { duration: 0 });
+        window.setTimeout(() => window.location.assign(destination.href), 900);
+      }, true);
+    });
   }
 
   function interceptBookExit() {
@@ -174,14 +173,22 @@
     }, true);
   }
 
+  function showFounderOfficeEntry() {
+    showBeansLine('enterFoundersOffice');
+  }
+
   function installBeansPresence() {
     const path = window.location.pathname;
 
     if (/\/founder-office\.html$/.test(path)) {
       ensureBeansLine();
       installFamilyProfile();
-      interceptQuietExit('.home-button', 'leaveFoundersOffice');
-      window.setTimeout(() => showBeansLine('enterFoundersOffice'), 1100);
+      interceptQuietExits('a[href="index.html"], a[href="home.html"]', 'leaveFoundersOffice');
+      if (document.readyState === 'complete') {
+        showFounderOfficeEntry();
+      } else {
+        window.addEventListener('load', showFounderOfficeEntry, { once: true });
+      }
       window.setTimeout(() => showBeansLine('stayTooLong'), 90000);
       return;
     }
