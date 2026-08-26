@@ -6,6 +6,13 @@
   const LEGACY_CONTACT_EMAIL='foundernewbeansland@gmail.com';
   window.NBL_CONTACT_EMAIL=CONTACT_EMAIL;
 
+  if(!document.querySelector('script[data-nbl-beans-lines]')){
+    const beansScript=document.createElement('script');
+    beansScript.src='/beans-lines.js?v=20260826';
+    beansScript.dataset.nblBeansLines='true';
+    document.head.appendChild(beansScript);
+  }
+
   const ASSET={
     brand:'NBL-Brand.png?v=08394b14',
     seal:'NBL-New-Official-Seal.png?v=c52ddcff',
