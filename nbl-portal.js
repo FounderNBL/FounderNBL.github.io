@@ -1,7 +1,8 @@
 (()=>{
   const root=document.documentElement;
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const PORTAL_MS=600;
+  const BEANS_SYSTEM=Object.freeze({LOCKE:{portalMs:600},STILL:{role:'visual-record'},TA:{role:'verification'},TB:{role:'build-test-organize-protect'},TEST:{role:'continuity-reasoning'},TS:{role:'record-preserve-continue'},NTB:{role:'signal-carrier'},ECHO:{role:'systems-continuity'},TM:{role:'rules-examiner'}});
+  const PORTAL_MS=BEANS_SYSTEM.LOCKE.portalMs;
   const CONTACT_EMAIL='founder@newbeansland.org';
   const LEGACY_CONTACT_EMAIL='foundernewbeansland@gmail.com';
   window.NBL_CONTACT_EMAIL=CONTACT_EMAIL;
@@ -22,9 +23,9 @@
     films:'NBL-Films.png?v=967b49ef',
     music:'NBL-Music.png?v=51ade71f',
     studios:'NBL-Studios.png?v=2b993fb1',
-    homepage:'New_New_homepage.png?v=4b17e759',
-    doctorFront:'doc-rock-ogfront-cover.png?v=29d94c6f',
-    doctorBack:'doc-rock-ogback-cover.png?v=8820a16c'
+    homepage:'assets/site/homepage/New_New_homepage.png?v=4b17e759',
+    doctorFront:'assets/books/doctor-rocketship/standard-front.png?v=29d94c6f',
+    doctorBack:'assets/books/doctor-rocketship/standard-back.png?v=8820a16c'
   };
 
   const PLAYGROUND_RAW='https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/';

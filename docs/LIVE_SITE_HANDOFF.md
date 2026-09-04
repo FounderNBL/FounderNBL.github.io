@@ -32,13 +32,15 @@ When the exact approved files are available, copy them into the live repo (recom
 
 There are confirmed byte-identical root/asset duplicates, especially book covers, trailers, homepage artwork, and Founder’s Office assets. The canonical long-term location should be under `assets/`, but root copies must not be deleted until all live HTML/JS/CSS references have been repointed and verified.
 
-Confirmed duplicate families include:
+First-pass duplicate cleanup completed on the live-rewrite branch:
 
-- People Zoo front/back/trailer/live-cover at root and `assets/books/people-zoo/`
-- Doctor/Rocketship standard and Islamic covers/trailers at root and `assets/books/doctor-rocketship/`
-- `New_New_homepage.png` and `assets/site/homepage/New_New_homepage.png`
-- multiple Founder’s Office assets at root and `assets/founder-office/`
-- multiple brand assets at root and `assets/brand/`
+- removed root `New_New_homepage.png` after repointing live references to `assets/site/homepage/New_New_homepage.png`
+- removed root `people-zoo-front.png` and `people-zoo-live-cover.mp4` after repointing the homepage to `assets/books/people-zoo/`
+- removed root `doc-rock-ogfront-cover.png` and `doc-rock-ogback-cover.png` after repointing runtime references to `assets/books/doctor-rocketship/`
+- removed root `nbl-books-imprint.png` after replacing live use with the current `NBL-Books.png` mark
+- removed root `nbl-official-seal.png` after replacing live use with the current `NBL-New-Official-Seal.png`
+
+Duplicates still remain in other families, including Doctor/Rocketship media, Founder’s Office assets, homepage alternates, and brand assets. Continue comparing blob SHA/content before deleting anything else.
 
 Important: similarly named files are **not always identical**. Compare blob SHA/content before deleting.
 
@@ -95,3 +97,12 @@ Campaign mockups and product photos are not printer masters. Keep a separate set
 5. Reauthorize Stripe with Payment Link write permission and build/test the four ebook payment links.
 6. Improve Studio only after store reliability is locked.
 7. Leave Engine/3D for the later private-backend phase.
+
+
+## September 2026 live rewrite
+
+- Added `about.html` as the public New Beansland history/personnel page.
+- Corrected Beans to **Founder & Voice of New Beansland**.
+- Corrected T.M. to **Tobias “T.M.” Mansfield — Rules Examiner**; removed the obsolete “Trouble Maker / AI collaborator” onboarding language.
+- Added `docs/NBL_SYSTEM_CODES.md` so internal NBL codenames are documented without turning them into public website personnel.
+- Began using the BEANS system vocabulary inside `nbl-portal.js`; LOCKE currently owns portal timing while the remaining codenames establish the internal responsibility map for later refactors.

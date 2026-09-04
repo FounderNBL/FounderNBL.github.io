@@ -9,6 +9,8 @@ New Beansland is not a generic website, portfolio, or bookstore. It is an evolvi
 Read the official onboarding and continuity guide before changing the codebase:
 
 - [Welcome to New Beansland](docs/new-beansland-onboarding.md)
+- [NBL System Codes](docs/NBL_SYSTEM_CODES.md)
+- [Public About page](about.html)
 
 The central rule is simple:
 
