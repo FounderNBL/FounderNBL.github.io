@@ -4,8 +4,8 @@
 
   const BeansProfile = {
     name: 'Beans',
-    title: 'Old Town Companion',
-    description: 'Beans has been here longer than most of the rooms. He keeps the porch light on, notices what people forget, and usually says the thing no one asked for but everyone needed to hear.',
+    title: 'Founder & Voice of New Beansland',
+    description: 'Beans is one of the two Founders of New Beansland and the connective voice visitors encounter across the world. He keeps the porch light on, notices what people forget, and usually says the quiet thing out loud.',
     familyLine: 'Keeps the porch open. Notices what gets left behind. Usually says the quiet thing out loud.'
   };
 
