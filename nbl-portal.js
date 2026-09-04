@@ -1,7 +1,8 @@
 (()=>{
   const root=document.documentElement;
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const BEANS_SYSTEM=Object.freeze({LOCKE:{portalMs:600},STILL:{role:'visual-record'},TA:{role:'verification'},TB:{role:'build-test-organize-protect'},TEST:{role:'continuity-reasoning'},TS:{role:'record-preserve-continue'},NTB:{role:'signal-carrier'},ECHO:{role:'systems-continuity'},TM:{role:'rules-examiner'}});\n  const PORTAL_MS=BEANS_SYSTEM.LOCKE.portalMs;
+  const BEANS_SYSTEM=Object.freeze({LOCKE:{portalMs:600},STILL:{role:'visual-record'},TA:{role:'verification'},TB:{role:'build-test-organize-protect'},TEST:{role:'continuity-reasoning'},TS:{role:'record-preserve-continue'},NTB:{role:'signal-carrier'},ECHO:{role:'systems-continuity'},TM:{role:'rules-examiner'}});
+  const PORTAL_MS=BEANS_SYSTEM.LOCKE.portalMs;
   const CONTACT_EMAIL='founder@newbeansland.org';
   const LEGACY_CONTACT_EMAIL='foundernewbeansland@gmail.com';
   window.NBL_CONTACT_EMAIL=CONTACT_EMAIL;
