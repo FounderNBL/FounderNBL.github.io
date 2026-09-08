@@ -64,9 +64,15 @@ Current direct digital prices on the live page:
 - The People Zoo eBook: $5.00
 - Doctor/Rocketship + People Zoo digital bundle: $6.00
 
-The NBLBOOKS Stripe account is connected in live mode, but the current connector authorization does **not** have permission to create Payment Links. Do not replace the current direct-order flow until Stripe write permission is granted, the four live links are created, buyer email collection is verified, and a real low-risk test purchase succeeds.
+The NBLBOOKS Stripe account is connected in live mode and the four live Stripe Payment Links have now been created for the current digital catalog. The public digital Buy buttons route to Stripe hosted checkout while the existing Cash App/manual flow remains available as a backup until a real low-risk live test purchase is completed and fulfillment is verified.
 
-Target flow later:
+Current live Stripe catalog:
+- Doctor/Rocketship Test — Standard Illustrated eBook: $3.00
+- Doctor/Rocketship Test — Islamic Dilemma Illustrated eBook: $3.00
+- The People Zoo eBook: $5.00
+- Doctor/Rocketship + People Zoo digital bundle: $6.00
+
+Current flow:
 
 `NewBeansland.org Buy button → Stripe hosted checkout → buyer email/payment recorded → New Beansland™ manually sends the correct EPUB/PDF.`
 
@@ -94,7 +100,7 @@ Campaign mockups and product photos are not printer masters. Keep a separate set
 2. Move the remaining approved Clothing images into `assets/clothing/`.
 3. Repoint all duplicate root references to canonical `assets/` paths, verify the site, then delete exact duplicates.
 4. Compress/migrate oversized videos without breaking live pages.
-5. Reauthorize Stripe with Payment Link write permission and build/test the four ebook payment links.
+5. Complete one low-risk live Stripe test purchase, verify buyer email/payment capture, and confirm manual ebook fulfillment.
 6. Improve Studio only after store reliability is locked.
 7. Leave Engine/3D for the later private-backend phase.
 
