@@ -61,6 +61,7 @@
 .nbl-world-nav a:hover::after,.nbl-world-nav a[aria-current="page"]::after{right:0}
 body.nbl-world-ready{padding-top:76px!important}
 body.nbl-world-ready .nbl-world-legacy-header{display:none!important}
+body.nbl-world-ready .subnav{top:76px!important}
 body.nbl-world-ready .office-page{inset:76px 0 0!important}
 @media(max-width:1080px){
   .nbl-world-header{min-height:118px}
@@ -73,6 +74,7 @@ body.nbl-world-ready .office-page{inset:76px 0 0!important}
   .nbl-world-nav a{padding:10px 0 12px;font-size:.64rem}
   .nbl-world-nav a::after{bottom:6px}
   body.nbl-world-ready{padding-top:118px!important}
+  body.nbl-world-ready .subnav{top:118px!important}
   body.nbl-world-ready .office-page{inset:118px 0 0!important}
 }
 @media(max-width:540px){
