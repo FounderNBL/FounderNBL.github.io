@@ -1,19 +1,9 @@
 # New Beansland
 
-The public archive and official website of New Beansland.
+Official public production repository for **New Beansland**.
 
-New Beansland is not a generic website, portfolio, or bookstore. It is an evolving creative world created by Founder Jamel Hawkins and built to be explored.
+New Beansland is an evolving creative world created by Founder Jamel Hawkins and built to be explored through its public site, books, University, stories, music, clothing, and interactive rooms.
 
-## Before You Contribute
+This repository contains public-facing production pages, assets, and checks that protect the live experience. Private continuity, experimental development, internal system architecture, and future backend/AI work are kept outside the public production repository.
 
-Read the official onboarding and continuity guide before changing the codebase:
-
-- [Welcome to New Beansland](docs/new-beansland-onboarding.md)
-- [NBL System Codes](docs/NBL_SYSTEM_CODES.md)
-- [Public About page](about.html)
-
-The central rule is simple:
-
-> The artifact is not the button. The artifact is the experience.
-
-Preserve immersion, understand why something exists before changing it, and choose the place over the webpage whenever the two approaches conflict.
+**Public site:** https://newbeansland.org/
