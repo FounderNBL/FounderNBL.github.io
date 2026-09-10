@@ -3,7 +3,7 @@
   const path=(location.pathname||"/").replace(/\/+/g,"/");
   const room=(()=>{
     if(path==="/"||/\/index\.html$/.test(path)||/\/home\.html$/.test(path)) return {label:"Stories · Questions · Worlds",key:"home"};
-    if(/\/university(?:\.html)?$/.test(path)||/\/verify-credential\.html$/.test(path)) return {label:"New Beansland University",key:"university"};
+    if(/\/university(?:\.html)?$/.test(path)||/\/verify-credential\.html$/.test(path)||/\/university-thank-you\.html$/.test(path)) return {label:"New Beansland University",key:"university"};
     if(/\/books\.html$/.test(path)||/\/people-zoo/.test(path)||/\/doctor-rocketship/.test(path)) return {label:"NBL Books",key:"books"};
     if(/\/clothing\.html$/.test(path)) return {label:"NBL Clothing Co.",key:"clothing"};
     if(/\/stories\.html$/.test(path)) return {label:"TV & Film",key:"stories"};
