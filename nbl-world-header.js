@@ -45,7 +45,7 @@
   if(room.key==="university") legacy.push(document.querySelector("body > .site-header"));
   if(room.key==="books") legacy.push(document.querySelector("body > .site-header"));
   if(room.key==="clothing") legacy.push(document.querySelector("body > .header"));
-  if(room.key==="studio") legacy.push(document.querySelector(".studio-header"));
+  if(room.key==="studio") legacy.push(document.querySelector(".studio-header .back"));
   if(room.key==="about") legacy.push(document.querySelector("main.wrap > .top"));
   if(room.key==="office") legacy.push(document.querySelector(".home-button"));
   legacy.filter(Boolean).forEach(el=>el.classList.add("nbl-world-legacy-header"));
