@@ -130,3 +130,14 @@ Campaign mockups and product photos are not printer masters. Keep a separate set
 - Added `university-thank-you.html` as the Stripe redirect/fulfillment explanation page.
 - The homepage University door now opens the real University page instead of a Coming Soon door.
 - The homepage Founder’s Office card now uses the existing `founder-office-room.png` scene. Do not use the removed/unbuilt Founder’s Office concept image as public evidence.
+
+
+## September 2026 University credential registry
+
+- The University entrance now surfaces the Founder-provided `Welcome to the Frontier.pdf` as the entrance statement and links the uploaded `NBL_Foundation_Program_Why_Take_It.pdf` as the deeper student explanation.
+- Foundation completion certificates are **physical printed certificates mailed by New Beansland at no separate certificate or shipping charge** after successful completion.
+- Each issued certificate records the student's holder name, completion date, and a unique NBL Credential Serial Number.
+- Serial format for Foundation credentials: `NBL-FND-YYYY-######`.
+- NBL serial numbers are internal New Beansland registry identifiers. They are not barcodes, ISBNs, state license numbers, accreditation numbers, or third-party credential numbers.
+- Added `verify-credential.html` as the public serial-number verification door. It checks the limited public Supabase credential-verification RPC and returns only the official credential fields intended for public verification.
+- Supabase now tracks physical-certificate preparation/mailing status and stores the serial registry. Do not create fake issued credentials for demos; a serial should correspond to an actual completed credential record.
