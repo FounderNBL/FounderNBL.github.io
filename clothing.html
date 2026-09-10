@@ -26,6 +26,8 @@
     @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
   </style>
   <script defer src="nbl-portal.js"></script>
+  <link rel="stylesheet" href="/nbl-world-header.css?v=20260909">
+  <script defer src="/nbl-world-header.js?v=20260909"></script>
 </head>
 <body>
   <div id="nbl-gate-mask" class="nbl-portal-overlay portal-visible" aria-hidden="true"></div>
@@ -33,11 +35,11 @@
   <div class="subnav" aria-label="Catalog sections"><div class="subnav-inner"><a class="chip" href="#adult">Adults</a><a class="chip" href="#statements">Statement Tees</a><a class="chip" href="#footwear">Footwear</a><a class="chip" href="#kids">NBL Kids</a><a class="chip" href="#commercial">Commercial</a><a class="chip" href="#request">Submit a Request</a></div></div>
 
   <main>
-    <section class="hero"><div class="hero-inner"><img class="seal" src="NBL-Clothing-Patch.png" alt="NBL Clothing Co."><p class="kicker">NBL Clothing Co. · New Beansland™</p><h1>The Clothing Catalog</h1><p>New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces, NBL Kids / Not So Small™, and footwear — all gathered here while the first public drops are being prepared.</p><div class="rule"></div></div></section>
+    <section class="hero"><div class="hero-inner"><img class="seal" src="NBL-Clothing-Patch.png" alt="NBL Clothing Co."><p class="kicker">NBL Clothing Co. · New Beansland™</p><h1>The Clothing Catalog</h1><p>New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces, NBL Kids / Not So Small™, and footwear — all gathered here with the Identity T available now and the remaining public drops being prepared.</p><div class="rule"></div></div></section>
 
-    <section class="section"><div class="shell"><div class="section-head"><p class="kicker">One world · Your story</p><h2>Wear the story. Represent the movement.</h2><p>Every item below is a preview. Nothing is being presented as available for immediate purchase yet — each piece is marked Coming Soon and can be requested directly from New Beansland™.</p></div><div class="campaign"><img src="NBL-Clothing.png?v=d4378f3c" alt="New Beansland™ NBL Clothing Co. campaign"></div></div></section>
+    <section class="section"><div class="shell"><div class="section-head"><p class="kicker">One world · Your story</p><h2>Wear the story. Represent the movement.</h2><p>Most pieces below remain previews. The Identity T is the first live NBL Clothing Co.™ drop; the rest stay clearly marked Coming Soon until they are ready.</p></div><div class="campaign"><img src="NBL-Clothing.png?v=d4378f3c" alt="New Beansland™ NBL Clothing Co. campaign"></div></div></section>
 
-    <section class="section" id="commercial"><div class="shell"><div class="section-head"><p class="kicker">NBL Clothing Co. commercial</p><h2>See the collection move.</h2><p>The current New Beansland™ clothing campaign cut plays with the NBL clothing track.</p></div><div class="commercial"><video id="clothingVideo" playsinline preload="metadata" muted poster="NBL-Clothing.png?v=d4378f3c" aria-label="NBL Clothing Co. commercial"><source src="NBL-Commercial-Short-last.mp4?v=dacadaf1" type="video/mp4"></video><audio id="clothingTrack" preload="metadata" src="NBL%20clothes2.mp3?v=ffc7ddb4"></audio><div><span class="badge">Campaign Cut</span><h3>Built for the journey.</h3><p>Premium quality. Timeless design. Still walking, together.</p><button class="play-btn" id="playClothing" type="button">▶ Play Commercial + Song</button></div></div></div></section>
+    <section class="section" id="commercial"><div class="shell"><div class="section-head"><p class="kicker">NBL Clothing Co. commercial</p><h2>See the collection move.</h2><p>The current New Beansland™ clothing campaign cut plays with the NBL clothing track.</p></div><div class="commercial"><video id="clothingVideo" playsinline preload="metadata" poster="NBL-Clothing.png?v=d4378f3c" aria-label="NBL Clothing Co. commercial"><source src="Identity%20isn%27t%20something%20you%20wear.mp4" type="video/mp4"></video><div><span class="badge">Finished Commercial</span><h3>Built for the journey.</h3><p>Premium quality. Timeless design. Still walking, together.</p><button class="play-btn" id="playClothing" type="button">▶ Play Commercial</button></div></div></div></section>
 
     <section class="section" id="adult"><div class="shell"><div class="section-head"><p class="kicker">Adult collection</p><h2>NBL Clothing Co.</h2><p>Black, gold, identity, movement and New Beansland™ heritage — the adult catalog is organized here by collection.</p></div><div class="catalog-grid">
       <article class="product wide"><div class="product-media"><img src="NBL-pose-template.png?v=52e5072b" alt="NBL Clothing Co. adult collection front side and back lookbook"></div><div class="product-copy"><h3>NBL Heritage Collection</h3><p>The full black-and-gold New Beansland™ look: hoodie, joggers, hat, patches, labels and the large back graphic.</p><div class="actions"><span class="status">Coming Soon</span><a class="request-btn" href="mailto:founder@newbeansland.org?subject=NBL%20Request%20-%20Heritage%20Collection">Submit your request</a></div></div></article>
@@ -73,22 +75,16 @@
   <script>
     (()=>{
       const video=document.getElementById('clothingVideo');
-      const audio=document.getElementById('clothingTrack');
       const button=document.getElementById('playClothing');
-      if(!video||!audio||!button) return;
-      let syncing=false;
-      const sync=()=>{if(Math.abs((audio.currentTime||0)-(video.currentTime||0))>.35) audio.currentTime=video.currentTime||0};
-      const playTogether=async()=>{
-        try{sync();await Promise.all([video.play(),audio.play()]);button.textContent='❚❚ Pause Commercial + Song'}catch(e){button.textContent='▶ Tap Again to Play'}
-      };
-      const pauseTogether=()=>{video.pause();audio.pause();button.textContent='▶ Play Commercial + Song'};
-      button.addEventListener('click',()=>{if(video.paused) playTogether();else pauseTogether()});
-      video.addEventListener('click',()=>{if(video.paused) playTogether();else pauseTogether()});
-      video.addEventListener('timeupdate',()=>{if(!syncing) sync()});
-      video.addEventListener('seeking',()=>{syncing=true;audio.currentTime=video.currentTime||0});
-      video.addEventListener('seeked',()=>{audio.currentTime=video.currentTime||0;syncing=false;if(!video.paused) audio.play().catch(()=>{})});
-      video.addEventListener('ended',()=>{audio.pause();audio.currentTime=0;button.textContent='▶ Play Commercial + Song'});
-      document.addEventListener('visibilitychange',()=>{if(document.hidden&&!video.paused) pauseTogether()});
+      if(!video||!button) return;
+      const label=()=>{button.textContent=video.paused?'▶ Play Commercial':'❚❚ Pause Commercial'};
+      const toggle=()=>{if(video.paused) video.play().catch(()=>{}); else video.pause();};
+      button.addEventListener('click',toggle);
+      video.addEventListener('play',label);
+      video.addEventListener('pause',label);
+      video.addEventListener('ended',label);
+      document.addEventListener('visibilitychange',()=>{if(document.hidden&&!video.paused) video.pause();});
+      label();
     })();
   </script>
 </body>
