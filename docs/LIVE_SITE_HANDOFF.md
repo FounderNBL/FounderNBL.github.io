@@ -141,3 +141,20 @@ Campaign mockups and product photos are not printer masters. Keep a separate set
 - NBL serial numbers are internal New Beansland registry identifiers. They are not barcodes, ISBNs, state license numbers, accreditation numbers, or third-party credential numbers.
 - Added `verify-credential.html` as the public serial-number verification door. It checks the limited public Supabase credential-verification RPC and returns only the official credential fields intended for public verification.
 - Supabase now tracks physical-certificate preparation/mailing status and stores the serial registry. Do not create fake issued credentials for demos; a serial should correspond to an actual completed credential record.
+
+
+## September 2026 site finish pass
+
+- Main public rooms now share one New Beansland world header/navigation system through `nbl-world-header.css` + `nbl-world-header.js`.
+- Shared nav order/destinations: Home → University → Books → Clothing → TV & Film → Studio → Founder’s Office → About.
+- News was removed from the permanent world header until a real News room exists.
+- TV & Film routes consistently to `/stories.html`; Studio routes consistently to `/studio/`.
+- The shared header uses the real `NBL-New-Official-Seal.png`; do not reintroduce the missing `nbl-primary-logo.png` path.
+- University naming is now intentionally layered:
+  - School / institute: **New Beansland Institute of Applied Inquiry**
+  - Program: **Foundation Program in Applied Discernment**
+  This preserves the Founder’s entrance statement while making the program discipline explicit.
+- The public Clothing commercial master is `Identity isn't something you wear.mp4`. It is a single finished video source with sound built into the master; do not pair it with the deleted `NBL clothes2.mp3` or missing `NBL-Commercial.mp4`.
+- Homepage and Studio clothing-commercial references now use the same finished master.
+- Root brand/media asset references in `nbl-portal.js` use root-safe paths so nested rooms such as `/studio/` do not rewrite good assets into missing relative paths.
+- Homepage doors are ranked by current visitor priority: University, Books, Clothing, The City, Studio, Founder’s Office.

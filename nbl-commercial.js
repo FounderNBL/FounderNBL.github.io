@@ -15,8 +15,7 @@
     clothing:'NBL-Clothing.png?v=d4378f3c',
     films:'NBL-Films.png?v=967b49ef',
     music:'NBL-Music.png?v=51ade71f',
-    shortVideo:'NBL-Commercial-Short-last.mp4?v=dacadaf1',
-    clothesAudio:'NBL%20clothes%20.mp3?v=dfcc9f8b'
+    masterCommercial:'Identity%20isn%27t%20something%20you%20wear.mp4'
   };
 
   // Replace every visible homepage division mark with the current approved upload.
@@ -77,75 +76,44 @@
   }
 
   const video=document.getElementById('nblCommercialVideo');
-  const audio=document.getElementById('nblCommercialAudio');
   const button=document.getElementById('nblCommercialPlay');
-  if(!video||!audio||!button)return;
-
-  video.poster=asset.clothing;
-  const source=video.querySelector('source');
-  if(source&&source.getAttribute('src')!==asset.shortVideo){source.setAttribute('src',asset.shortVideo);video.load();}
-  else if(!source&&video.getAttribute('src')!==asset.shortVideo){video.setAttribute('src',asset.shortVideo);video.load();}
-
-  const audioSource=audio.querySelector('source');
-  if(audioSource&&audioSource.getAttribute('src')!==asset.clothesAudio){audioSource.setAttribute('src',asset.clothesAudio);audio.load();}
-
-  const chorusStart=42;
-  const adDuration=30;
-  const chorusEnd=chorusStart+adDuration;
-  video.dataset.chorusStart=String(chorusStart);
-  video.dataset.adDuration=String(adDuration);
-
-  const targetTime=()=>chorusStart+Math.min(adDuration,Math.max(0,video.currentTime||0));
-  const seekAudio=()=>{
-    const target=targetTime();
-    if(!Number.isFinite(target))return;
-    if(audio.readyState>0){
-      try{audio.currentTime=target;}catch(_err){}
-    }else{
-      audio.addEventListener('loadedmetadata',()=>{
-        try{audio.currentTime=targetTime();}catch(_err){}
-      },{once:true});
+  if(video&&button){
+    video.poster=asset.clothing;
+    const source=video.querySelector('source');
+    if(source&&source.getAttribute('src')!==asset.masterCommercial){
+      source.setAttribute('src',asset.masterCommercial);
+      video.load();
+    }else if(!source&&video.getAttribute('src')!==asset.masterCommercial){
+      video.setAttribute('src',asset.masterCommercial);
+      video.load();
     }
-    audio.playbackRate=video.playbackRate||1;
-  };
-
-  const setLabel=()=>{button.textContent=video.paused?'Play 30-Second Commercial':'Pause Commercial';};
-  const resetAd=()=>{
-    audio.pause();
-    try{video.currentTime=0;}catch(_err){}
-    if(audio.readyState>0){try{audio.currentTime=chorusStart;}catch(_err){}}
+    video.muted=false;
+    video.removeAttribute('muted');
+    const setLabel=()=>{button.textContent=video.paused?'Play Commercial':'Pause Commercial';};
+    button.addEventListener('click',()=>{if(video.paused) video.play().catch(()=>{}); else video.pause();});
+    video.addEventListener('play',setLabel);
+    video.addEventListener('pause',setLabel);
+    video.addEventListener('ended',setLabel);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden&&!video.paused)video.pause();});
+    const note=document.querySelector('.nbl-commercial-note');
+    if(note)note.textContent='Finished NBL Clothing commercial · First drop now open';
     setLabel();
-  };
-  const startAudio=()=>{seekAudio();audio.play().catch(()=>{});};
+  }
 
-  button.addEventListener('click',()=>{
-    if(video.paused){
-      if((video.currentTime||0)>=adDuration-.08){try{video.currentTime=0;}catch(_err){}}
-      video.muted=true;
-      seekAudio();
-      // Start both media elements from the same user gesture for mobile browsers.
-      audio.play().catch(()=>{});
-      video.play().catch(()=>{});
-    }else{
-      video.pause();
-      audio.pause();
-    }
-    setLabel();
-  });
-
-  video.addEventListener('play',()=>{startAudio();setLabel();});
-  video.addEventListener('pause',()=>{audio.pause();setLabel();});
-  video.addEventListener('seeking',seekAudio);
-  video.addEventListener('ratechange',()=>{audio.playbackRate=video.playbackRate||1;});
-  video.addEventListener('timeupdate',()=>{
-    if((video.currentTime||0)>=adDuration){video.pause();resetAd();}
-    else if(!audio.paused&&Math.abs((audio.currentTime||0)-targetTime())>.4)seekAudio();
-  });
-  video.addEventListener('ended',resetAd);
-  audio.addEventListener('timeupdate',()=>{if((audio.currentTime||0)>=chorusEnd)audio.pause();});
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){video.pause();audio.pause();}});
-
-  const note=document.querySelector('.nbl-commercial-note');
-  if(note)note.textContent='30-second NBL Clothing commercial · Catalog now open';
-  setLabel();
+  // Rank the homepage doors by what is actually open and useful now.
+  const doorGrid=document.querySelector('.world-grid');
+  if(doorGrid){
+    const cards=[...doorGrid.querySelectorAll('.world-card')];
+    const rank=card=>{
+      const t=(card.querySelector('h3')?.textContent||'').toLowerCase();
+      if(t.includes('university')) return 1;
+      if(t.includes('books')) return 2;
+      if(t.includes('clothing')) return 3;
+      if(t.includes('city')) return 4;
+      if(t.includes('studio')||t.includes('timmy')) return 5;
+      if(t.includes('founder')) return 6;
+      return 99;
+    };
+    cards.sort((a,b)=>rank(a)-rank(b)).forEach(card=>doorGrid.appendChild(card));
+  }
 })();

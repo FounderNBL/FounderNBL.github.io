@@ -15,17 +15,17 @@
   }
 
   const ASSET={
-    brand:'NBL-Brand.png?v=08394b14',
-    seal:'NBL-New-Official-Seal.png?v=c52ddcff',
-    founder:'Founders-seal.png?v=be363e50',
-    books:'NBL-Books.png?v=82ea58bb',
-    clothing:'NBL-Clothing.png?v=d4378f3c',
-    films:'NBL-Films.png?v=967b49ef',
-    music:'NBL-Music.png?v=51ade71f',
-    studios:'NBL-Studios.png?v=2b993fb1',
-    homepage:'assets/site/homepage/New_New_homepage.png?v=4b17e759',
-    doctorFront:'assets/books/doctor-rocketship/standard-front.png?v=29d94c6f',
-    doctorBack:'assets/books/doctor-rocketship/standard-back.png?v=8820a16c'
+    brand:'/NBL-Brand.png?v=08394b14',
+    seal:'/NBL-New-Official-Seal.png?v=c52ddcff',
+    founder:'/Founders-seal.png?v=be363e50',
+    books:'/NBL-Books.png?v=82ea58bb',
+    clothing:'/NBL-Clothing.png?v=d4378f3c',
+    films:'/NBL-Films.png?v=967b49ef',
+    music:'/NBL-Music.png?v=51ade71f',
+    studios:'/NBL-Studios.png?v=2b993fb1',
+    homepage:'/assets/site/homepage/New_New_homepage.png?v=4b17e759',
+    doctorFront:'/assets/books/doctor-rocketship/standard-front.png?v=29d94c6f',
+    doctorBack:'/assets/books/doctor-rocketship/standard-back.png?v=8820a16c'
   };
 
   const PLAYGROUND_RAW='https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/';
@@ -166,11 +166,14 @@
   function activateClothingLiveFixes(){
     if(!/\/clothing\.html$/.test(location.pathname)) return;
     root.classList.add('nbl-clothing-live');
-
-    const audio=document.getElementById('clothingTrack');
-    if(audio && cleanName(audio.getAttribute('src'))==='NBL clothes .mp3'){
-      audio.setAttribute('src','NBL%20clothes2.mp3?v=ffc7ddb4');
-      audio.load();
+    const video=document.getElementById('clothingVideo');
+    if(video){
+      const source=video.querySelector('source');
+      const master='Identity%20isn%27t%20something%20you%20wear.mp4';
+      if(source && source.getAttribute('src')!==master){
+        source.setAttribute('src',master);
+        video.load();
+      }
     }
   }
 
