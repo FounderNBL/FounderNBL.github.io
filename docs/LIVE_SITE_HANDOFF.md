@@ -112,3 +112,21 @@ Campaign mockups and product photos are not printer masters. Keep a separate set
 - Corrected T.M. to **Tobias “T.M.” Mansfield — Rules Examiner**; removed the obsolete “Trouble Maker / AI collaborator” onboarding language.
 - Added `docs/NBL_SYSTEM_CODES.md` so internal NBL codenames are documented without turning them into public website personnel.
 - Began using the BEANS system vocabulary inside `nbl-portal.js`; LOCKE currently owns portal timing while the remaining codenames establish the internal responsibility map for later refactors.
+
+
+## September 2026 University launch
+
+- Added `university.html` as the live Foundation Program enrollment page.
+- Launch enrollment is **$29.99 one time** through Stripe hosted Checkout.
+- Current launch checkout is limited to U.S. shipping while fulfillment costs are being proven.
+- Included materials shown on the live page are the real uploaded files:
+  - `Student_CourseBook.png`
+  - `Student_Workbook.png`
+- New Beansland manually sends the digital editions and manually places the Lulu print order for version 1.
+- The University backend is Supabase. Program, course, enrollment, progress, exam-attempt, order, offer, and credential records are separated from the public GitHub Pages site.
+- The official Foundation sequence is APSK 101 → ANSY 110 → EBPR 120, with a 90% passing standard.
+- The official final examination content is not public yet and must remain locked until it is actually built.
+- Successful completion will qualify a student for a future-course discount; the discount amount is intentionally unset.
+- Added `university-thank-you.html` as the Stripe redirect/fulfillment explanation page.
+- The homepage University door now opens the real University page instead of a Coming Soon door.
+- The homepage Founder’s Office card now uses the existing `founder-office-room.png` scene. Do not use the removed/unbuilt Founder’s Office concept image as public evidence.
