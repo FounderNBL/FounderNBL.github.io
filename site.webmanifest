@@ -1,0 +1,19 @@
+{
+  "name": "New Beansland",
+  "short_name": "NBL",
+  "description": "Stories. Questions. Worlds.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#02060b",
+  "theme_color": "#02060b",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/NBL-New-Official-Seal.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

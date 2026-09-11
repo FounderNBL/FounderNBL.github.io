@@ -1,0 +1,4 @@
+Contact: mailto:founder@newbeansland.org
+Preferred-Languages: en
+Canonical: https://newbeansland.org/.well-known/security.txt
+Expires: 2027-09-11T00:00:00.000Z
