@@ -29,7 +29,14 @@
     let img=media.querySelector("img");
     if(!img){img=document.createElement("img");media.appendChild(img);}
     const prior=img.getAttribute("src");
-    img.onerror=()=>{if(prior){img.onerror=null;img.src=prior;}};
+    img.onerror=()=>{
+      if(prior&&img.getAttribute("src")!==prior){
+        img.onerror=()=>{media?.remove();};
+        img.src=prior;
+      }else{
+        media?.remove();
+      }
+    };
     img.src=src;
     img.alt=alt;
     img.loading="eager";
