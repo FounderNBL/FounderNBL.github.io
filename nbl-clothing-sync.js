@@ -59,7 +59,7 @@
     const card=document.createElement("article");
     card.className="product nbl-current-card";
     card.id=id;
-    card.innerHTML=`<div class="product-media"><img src="${image}" alt="${title}" loading="eager" decoding="async"></div><div class="product-copy"><h3>${title}</h3><p>${copy}</p><div class="actions"><span class="nbl-price">${price}</span><span class="status">Made to Order</span><a class="request-btn" href="mailto:founder@newbeansland.org?subject=${encodeURIComponent(subject)}">Submit your request</a></div></div>`;
+    card.innerHTML=`<div class="product-media"><img src="${image}" alt="${title}" loading="eager" decoding="async"></div><div class="product-copy"><h3>${title}</h3><p>${copy}</p><div class="actions"><span class="nbl-price">${price}</span><a class="request-btn" href="mailto:founder@newbeansland.org?subject=${encodeURIComponent(subject)}">Submit your request</a></div></div>`;
     const img=card.querySelector("img");
     if(img) img.onerror=()=>{img.closest(".product-media")?.remove();};
     grid.appendChild(card);
@@ -72,8 +72,11 @@
   setProductImage("Black Is Not A Crime","/NBL-Being-Black.png?v=11fc099e","Black Is Not A Crime NBL statement T-shirt");
 
   document.querySelectorAll(".status").forEach(status=>{
-    if(status.closest("#footwear")) return;
-    if(/coming soon/i.test(status.textContent||"")) status.textContent="Made to Order";
+    if(status.closest("#footwear")){
+      status.textContent="Coming Soon";
+      return;
+    }
+    if(/made to order|coming soon/i.test(status.textContent||"")) status.remove();
   });
 
   const adultGrid=document.querySelector("#adult .catalog-grid")||document.querySelector("#statements .catalog-grid");
