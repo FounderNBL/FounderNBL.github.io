@@ -1,6 +1,6 @@
 (()=>{
   "use strict";
-  const path=(location.pathname||"/").replace(/\/+ /g,"/").replace(/\/{2,}/g,"/");
+  const path=(location.pathname||"/").replace(/\/+/g,"/");
   const room=(()=>{
     if(path==="/"||/\/index\.html$/.test(path)||/\/home\.html$/.test(path)) return {label:"Stories · Questions · Worlds",key:"home"};
     if(/\/university(?:\.html)?$/.test(path)||/\/verify-credential\.html$/.test(path)||/\/university-thank-you\.html$/.test(path)) return {label:"New Beansland University",key:"university"};
