@@ -137,6 +137,20 @@ body[data-nbl-room="office"] .room-stage{
 }
 
 body[data-nbl-room="books"] .book-card{display:flex;flex-direction:column}
+body[data-nbl-room="books"] .store-cover{
+  min-height:clamp(280px,32vw,420px);padding:22px;display:flex;align-items:flex-end;
+  border-bottom:1px solid rgba(214,161,75,.28);
+  background:
+    radial-gradient(circle at 72% 18%,rgba(240,197,111,.16),transparent 26%),
+    linear-gradient(145deg,#0b1d30,#040a11 72%);
+  overflow:hidden;
+}
+body[data-nbl-room="books"] .store-cover>div{
+  width:100%;padding:18px;border:1px solid rgba(240,197,111,.28);border-radius:12px;
+  background:rgba(2,6,11,.74);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+body[data-nbl-room="books"] .store-cover strong{display:block;color:#f1d28b;font:700 clamp(1.45rem,3vw,2.15rem)/1.05 Georgia,"Times New Roman",serif}
+body[data-nbl-room="books"] .store-cover span{display:block;margin-top:7px;color:#cfc3ad;font:800 .72rem/1.35 Arial,Helvetica,sans-serif;letter-spacing:.12em;text-transform:uppercase}
 body[data-nbl-room="books"] .book-art{aspect-ratio:2/3!important;object-fit:contain!important;object-position:center!important;padding:12px;background:#02060b}
 body[data-nbl-room="books"] .book-body{display:flex;flex:1;flex-direction:column}
 body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
@@ -166,6 +180,7 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
   body[data-nbl-room="stories"] .actions .button{flex:1 1 160px}
   body[data-nbl-room="clothing"] .subnav-inner{justify-content:flex-start;padding-left:10px;padding-right:10px}
   body[data-nbl-room="studio"] .studio-header{grid-template-columns:76px minmax(0,1fr)!important;gap:14px!important}
+  body[data-nbl-room="books"] .store-cover{min-height:260px;padding:14px}
   body[data-nbl-room="books"] .book-art{max-height:560px}
 }
 @media(max-width:540px){
