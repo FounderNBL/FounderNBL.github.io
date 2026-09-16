@@ -1,6 +1,6 @@
 (()=>{
   "use strict";
-  const path=(location.pathname||"/").replace(/\/+/g,"/");
+  const path=(location.pathname||"/").replace(/\/+ /g,"/").replace(/\/{2,}/g,"/");
   const room=(()=>{
     if(path==="/"||/\/index\.html$/.test(path)||/\/home\.html$/.test(path)) return {label:"Stories · Questions · Worlds",key:"home"};
     if(/\/university(?:\.html)?$/.test(path)||/\/verify-credential\.html$/.test(path)||/\/university-thank-you\.html$/.test(path)) return {label:"New Beansland University",key:"university"};
@@ -15,15 +15,21 @@
   })();
 
   const nav=[
-    ["home","Home","/"],
-    ["university","University","/university.html"],
-    ["books","Books","/books.html"],
-    ["clothing","Clothing","/clothing.html"],
-    ["stories","TV & Film","/stories.html"],
-    ["studio","Studio","/studio/"],
-    ["office","Founder’s Office","/founder-office.html"],
-    ["about","About","/about.html"]
+    ["home","Home","/",false],
+    ["university","University","/university.html",false],
+    ["books","Books","/books.html",false],
+    ["clothing","Clothing","/clothing.html",false],
+    ["stories","TV & Film","/stories.html",false],
+    ["studio","Studio","/studio/",false],
+    ["office","Founder’s Office","/founder-office.html",false],
+    ["about","About NBL","/about.html",false],
+    ["","YouTube","https://www.youtube.com/@FounderNBL",true],
+    ["","Instagram","https://www.instagram.com/newbeansland?igsi=MXFobHBhNG9tOXptZw==",true],
+    ["","X","https://x.com/FounderNBL",true],
+    ["","Contact","mailto:founder@newbeansland.org",false]
   ];
+
+  document.body.dataset.nblRoom=room.key||"other";
 
   if(!document.querySelector('link[rel="manifest"]')){
     const manifest=document.createElement("link");
@@ -80,7 +86,7 @@
       </a>
       <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland rooms">Rooms</button>
       <nav class="nbl-world-nav" id="nbl-world-nav" aria-label="New Beansland main navigation">
-        ${nav.map(([key,label,href])=>`<a href="${href}"${room.key===key?' aria-current="page"':''}>${label}</a>`).join("")}
+        ${nav.map(([key,label,href,external])=>`<a href="${href}"${room.key===key&&key?' aria-current="page"':''}${external?' target="_blank" rel="noopener noreferrer"':''}>${label}</a>`).join("")}
       </nav>
     </div>`;
 
@@ -108,8 +114,42 @@
   if(room.key==="office") legacy.push(document.querySelector(".home-button"));
   legacy.filter(Boolean).forEach(el=>el.classList.add("nbl-world-legacy-header"));
 
+  if(room.key==="home"){
+    const oldFooter=document.querySelector("body > footer:not(.nbl-world-footer), main > footer:not(.nbl-world-footer), body > .footer:not(.nbl-world-footer), main > .footer:not(.nbl-world-footer)");
+    if(oldFooter) oldFooter.classList.add("nbl-world-legacy-footer");
+  }
+
   document.body.prepend(header);
   document.body.classList.add("nbl-world-ready");
+
+  if(room.key==="home"&&!document.querySelector(".nbl-beta-signup")){
+    const beta=document.createElement("section");
+    beta.className="nbl-beta-signup";
+    beta.setAttribute("aria-labelledby","nbl-beta-title");
+    beta.innerHTML=`
+      <div class="nbl-beta-inner">
+        <p class="nbl-beta-kicker">Beans · Beta testing</p>
+        <h2 id="nbl-beta-title">Get on the list for what Beans is testing next.</h2>
+        <p>Join the NBL email list for an invitation to beta test NBL Chat when the next round is ready.</p>
+        <form class="nbl-beta-form">
+          <label for="nbl-beta-email">Email address</label>
+          <div class="nbl-beta-row">
+            <input id="nbl-beta-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+            <button type="submit">Join the beta list</button>
+          </div>
+          <small>Your address is not stored on this website. Submitting opens an email to New Beansland so you can request beta access.</small>
+        </form>
+      </div>`;
+    beta.querySelector("form").addEventListener("submit",event=>{
+      event.preventDefault();
+      const email=beta.querySelector("input").value.trim();
+      if(!email) return;
+      const subject=encodeURIComponent("NBL Chat Beta Testing List");
+      const body=encodeURIComponent(`Please add ${email} to the NBL Chat beta-testing email list.`);
+      location.href=`mailto:founder@newbeansland.org?subject=${subject}&body=${body}`;
+    });
+    document.body.append(beta);
+  }
 
   if(!document.querySelector(".nbl-world-footer")){
     const footer=document.createElement("footer");
@@ -120,7 +160,6 @@
         <nav class="nbl-world-footer-links" aria-label="Legal and support">
           <a href="/privacy.html">Privacy</a>
           <a href="/terms.html">Terms</a>
-          <a href="/account-deletion.html">Delete Account</a>
           <a href="/nbl-chat-support.html">Support</a>
           <a href="/nbl-chat-legal.html">Legal</a>
           <a href="mailto:founder@newbeansland.org">Contact</a>
