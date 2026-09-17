@@ -28,9 +28,6 @@
     doctorBack:'/assets/books/doctor-rocketship/standard-back.png?v=8820a16c'
   };
 
-  const PLAYGROUND_RAW='https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/';
-  const PLAYGROUND_CDN='https://cdn.jsdelivr.net/gh/FounderNBL/New-Beansland-Playground@main/';
-
   const cleanName=value=>{
     if(!value) return '';
     try{
@@ -39,13 +36,6 @@
     }catch{
       return String(value).split('?')[0].split('/').pop()||'';
     }
-  };
-
-  const playgroundCdn=value=>{
-    if(!value||!value.startsWith(PLAYGROUND_RAW)) return value;
-    let relative=value.slice(PLAYGROUND_RAW.length);
-    relative=relative.replace(/^NBL-model-front\.jpg(?=\?|$)/,'NBL%20model-front.jpg');
-    return PLAYGROUND_CDN+relative;
   };
 
   function refreshContactEmail(){
@@ -124,12 +114,6 @@
 
     document.querySelectorAll('img').forEach(img=>{
       let original=img.getAttribute('src')||'';
-      const cdnSource=playgroundCdn(original);
-      if(cdnSource!==original){
-        img.setAttribute('src',cdnSource);
-        original=cdnSource;
-      }
-
       const replacement=directMap[cleanName(original)];
       if(replacement && original!==replacement) img.setAttribute('src',replacement);
     });
