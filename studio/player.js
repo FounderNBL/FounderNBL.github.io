@@ -116,7 +116,7 @@
       row.type = "button";
       row.className = "track-row";
       row.innerHTML = `
-        <img src="${track.cover || "../assets/brand/NBL-Studios.png"}" alt="" />
+        <img src="${track.cover || "../NBL-Studios%20(1).png?v=ef98576f"}" alt="" />
         <span class="track-meta"><strong>${track.title}</strong><span>${track.artist}${track.credit ? ` • ${track.credit}` : ""}</span></span>
         <span class="track-badge">${track.badge || "NBL"}</span>`;
       row.addEventListener("click", () => load(i, true));
@@ -136,7 +136,7 @@
     audio.pause();
     video.pause();
     audio.src = track.audio || "";
-    cover.src = track.cover || "../assets/brand/NBL-Studios.png";
+    cover.src = track.cover || "../NBL-Studios%20(1).png?v=ef98576f";
     title.textContent = track.title || "Untitled";
     artist.textContent = track.artist || "New Beansland";
     nowLabel.textContent = track.badge ? `NOW PLAYING • ${track.badge}` : "NOW PLAYING";
