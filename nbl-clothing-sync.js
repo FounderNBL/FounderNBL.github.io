@@ -69,7 +69,6 @@
   setPrice(ice,"$29.99");
   const identity=setProductImage("Identity","/NBL_Identity_T.png?v=d9cc1bb7","NBL Identity T-shirt display");
   setPrice(identity,"$39.99");
-  setProductImage("Black Is Not A Crime","/NBL-Being-Black.png?v=11fc099e","Black Is Not A Crime NBL statement T-shirt");
 
   document.querySelectorAll(".status").forEach(status=>{
     if(status.closest("#footwear")){
