@@ -210,3 +210,54 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
 @media(prefers-reduced-motion:reduce){
   .nbl-world-nav a::after{transition:none}
 }
+
+
+/* Optional shared NBL account connection (same Clerk identity as NBL Chat) */
+.nbl-world-account{
+  flex:0 0 auto;padding:9px 12px;border:1px solid rgba(240,197,111,.52);border-radius:999px;
+  color:var(--nbl-world-gold2);background:rgba(7,20,33,.92);cursor:pointer;
+  font:900 .62rem/1 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;
+}
+.nbl-world-account:hover{border-color:var(--nbl-world-gold2);background:rgba(214,161,75,.12)}
+.nbl-world-account:disabled{opacity:.62;cursor:wait}
+.nbl-world-user{flex:0 0 auto;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center}
+.nbl-world-user[hidden]{display:none!important}
+
+.nbl-connected-account{
+  padding:18px 22px 30px;background:linear-gradient(180deg,rgba(2,6,11,.2),rgba(7,20,33,.58));
+  color:var(--nbl-world-cream);font-family:Arial,Helvetica,sans-serif;
+}
+.nbl-connected-account-inner{
+  width:min(1040px,100%);margin:0 auto;padding:24px clamp(18px,4vw,34px);
+  border:1px solid var(--nbl-world-line);border-radius:16px;
+  background:linear-gradient(145deg,rgba(7,20,33,.96),rgba(2,8,15,.98));
+  box-shadow:0 18px 44px rgba(0,0,0,.24);
+}
+.nbl-connected-account-kicker{
+  margin:0 0 7px;color:var(--nbl-world-gold2);font-size:.68rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
+}
+.nbl-connected-account h2{
+  margin:0;color:var(--nbl-world-cream);font:700 clamp(1.45rem,3.5vw,2.25rem)/1.08 Georgia,"Times New Roman",serif;
+}
+.nbl-connected-account p:not(.nbl-connected-account-kicker){
+  max-width:820px;margin:10px 0 0;color:var(--nbl-world-soft);line-height:1.58;
+}
+.nbl-connected-account-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.nbl-connected-account-actions button{
+  min-height:42px;padding:10px 14px;border:1px solid var(--nbl-world-gold2);border-radius:10px;
+  color:#111;background:linear-gradient(180deg,#f3d994,#cf9630);font-weight:900;cursor:pointer;
+}
+.nbl-connected-account-actions button[hidden]{display:none!important}
+.nbl-connected-account-actions button:disabled{opacity:.65;cursor:wait}
+.nbl-connected-account-status{font-weight:800}
+.nbl-connected-account small{display:block;margin-top:10px;color:#a99d8a;line-height:1.45}
+
+@media(max-width:1320px){
+  .nbl-world-nav .nbl-world-account{margin:7px 0 2px;align-self:flex-start;padding:11px 14px}
+  .nbl-world-nav .nbl-world-user{margin:8px 0 3px;align-self:flex-start}
+}
+@media(max-width:540px){
+  .nbl-connected-account{padding:14px 14px 24px}
+  .nbl-connected-account-inner{padding:20px 16px}
+  .nbl-connected-account-actions button{width:100%}
+}
