@@ -30,7 +30,7 @@ window.NBL_TRACKS = [
     title: "NBL clothes2",
     artist: "JMELO",
     credit: "NBL Records · New Beansland™",
-    cover: "../NBL-Clothing.png",
+    cover: "../NBL-Clothing%20(1).png?v=48ce5891",
     audio: "../NBL%20clothes2.mp3",
     video: "",
     previewSeconds: 0,
