@@ -1,7 +1,7 @@
 (()=>{
-  if(!document.querySelector('script[data-nbl-portal-loader]')&&!document.querySelector('script[src$="nbl-portal.js"]')){
+  if(!document.querySelector('script[data-nbl-portal-loader]')&&!document.querySelector('script[src*="nbl-portal.js"]')){
     const portal=document.createElement('script');
-    portal.src='nbl-portal.js';
+    portal.src='nbl-portal.js?v=20260917-images';
     portal.defer=true;
     portal.dataset.nblPortalLoader='true';
     document.head.appendChild(portal);
@@ -11,10 +11,10 @@
     brand:'NBL-Brand.png?v=08394b14',
     seal:'NBL-New-Official-Seal.png?v=c52ddcff',
     founder:'Founders-seal.png?v=be363e50',
-    books:'NBL-Books.png?v=82ea58bb',
-    clothing:'NBL-Clothing.png?v=d4378f3c',
-    films:'NBL-Films.png?v=967b49ef',
-    music:'NBL-Music.png?v=51ade71f',
+    books:'NBL-Books%20(1).png?v=d1371ad9',
+    clothing:'NBL-Clothing%20(1).png?v=48ce5891',
+    films:'NBL-Films%20(1).png?v=047cbdd6',
+    music:'NBL-Music%20(2).png?v=246fee0f',
     masterCommercial:'Identity%20isn%27t%20something%20you%20wear.mp4'
   };
 
