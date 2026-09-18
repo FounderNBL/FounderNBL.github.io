@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Skelly · Block 1 | New Beansland™</title>
+  <meta name="description" content="Play the first Skelly block. A simple sidewalk board. More blocks belong in the app later.">
+  <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#02060b">
+  <link rel="canonical" href="https://newbeansland.org/skelly.html">
+  <link rel="icon" type="image/png" href="/NBL-New-Official-Seal.png?v=c52ddcff">
+  <link rel="stylesheet" href="/nbl-world-header.css?v=20260911">
+  <script defer src="/nbl-world-header.js?v=20260911"></script>
+  <script defer src="/nbl-portal.js"></script>
+  <style>
+    :root{--chalk:#f4ead8;--gold:#d6a14b;--line:rgba(214,161,75,.35)}
+    body{margin:0;background:#02060b;color:var(--chalk);font-family:Arial,Helvetica,sans-serif}
+    main{width:min(420px,92%);margin:0 auto;padding:28px 0 64px}
+    h1{margin:0;color:#f0c56f;font:700 2rem/1 Georgia,serif}
+    .tag{margin:8px 0 16px;color:#cfc3ad;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem}
+    .status{min-height:48px;margin:0 0 14px;color:#e8dfd0}
+    .board{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;padding:16px;border:1px solid var(--line);background:#071421}
+    .cell{aspect-ratio:1;display:grid;place-items:center;border:1px solid rgba(244,234,216,.35);background:rgba(255,255,255,.02);color:var(--chalk);font-weight:800}
+    .cell.skull{color:#c44b3a;border-color:#c44b3a;font-size:.65rem}
+    .cell.done{border-color:#3d8f5b}
+    .cell.now{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+    .cell.off{visibility:hidden}
+    .cap{position:absolute;width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#d6a14b 42%,#7a4e12);transform:translate(-50%,-50%);pointer-events:none}
+    .actions{display:flex;gap:8px;margin-top:14px}
+    button{flex:1;min-height:46px;border:0;border-radius:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+    .shoot{background:linear-gradient(180deg,#f3d994,#cf9630);color:#111}
+    .reset{background:#0b1722;color:var(--chalk);border:1px solid var(--line)}
+    .note{margin-top:16px;color:#b9ae9c;font-size:.86rem;line-height:1.5}
+  </style>
+</head>
+<body>
+<main>
+  <p class="tag">Block 1 · Stoop · Free</p>
+  <h1>Skelly</h1>
+  <p class="status" id="status">Shoot 1 through 13. This is the sidewalk board. The rest of the blocks belong in the app.</p>
+  <div class="board" id="board">
+    <div class="cell off"></div><div class="cell off"></div><button class="cell" data-box="1">1</button><div class="cell off"></div><div class="cell off"></div>
+    <div class="cell off"></div><button class="cell" data-box="2">2</button><div class="cell off"></div><button class="cell" data-box="3">3</button><div class="cell off"></div>
+    <button class="cell" data-box="4">4</button><div class="cell off"></div><button class="cell skull" data-box="skull">SKULL</button><div class="cell off"></div><button class="cell" data-box="5">5</button>
+    <div class="cell off"></div><button class="cell" data-box="6">6</button><div class="cell off"></div><button class="cell" data-box="7">7</button><div class="cell off"></div>
+    <button class="cell" data-box="8">8</button><div class="cell off"></div><button class="cell" data-box="13">13</button><div class="cell off"></div><button class="cell" data-box="9">9</button>
+    <div class="cell off"></div><button class="cell" data-box="10">10</button><div class="cell off"></div><button class="cell" data-box="11">11</button><div class="cell off"></div>
+    <div class="cell off"></div><div class="cell off"></div><button class="cell" data-box="12">12</button><div class="cell off"></div><div class="cell off"></div>
+    <div class="cap" id="cap" hidden></div>
+  </div>
+  <div class="actions">
+    <button class="shoot" id="shoot" type="button">Shoot next box</button>
+    <button class="reset" id="reset" type="button">Reset</button>
+  </div>
+  <p class="note">One free block on the site. Later blocks, crews, bosses, and the heavy last-hit are for the app. New Beansland™ keeps its own marks.</p>
+</main>
+<script>
+(() => {
+  const order = [1,2,3,4,5,6,7,8,9,10,11,12,13];
+  const status = document.getElementById("status");
+  const shoot = document.getElementById("shoot");
+  const cap = document.getElementById("cap");
+  let next = 0;
+  const cell = v => document.querySelector('[data-box="'+v+'"]');
+  function place(box){
+    const el = cell(box), board = document.getElementById("board").getBoundingClientRect(), r = el.getBoundingClientRect();
+    cap.hidden = false;
+    cap.style.left = (r.left - board.left + r.width/2) + "px";
+    cap.style.top = (r.top - board.top + r.height/2) + "px";
+  }
+  function paint(){
+    document.querySelectorAll(".cell[data-box]").forEach(el => el.classList.remove("done","now"));
+    order.slice(0,next).forEach(n => cell(n).classList.add("done"));
+    if(next < order.length) cell(order[next]).classList.add("now");
+  }
+  function go(){
+    if(next >= order.length) return;
+    const target = order[next];
+    if(Math.random() > 0.82){ status.textContent = "Line. Shoot " + target + " again."; place(target); return; }
+    next += 1;
+    paint();
+    place(target);
+    if(next >= order.length){
+      shoot.disabled = true;
+      status.textContent = "You took the stoop. Block 1 is done. The other blocks are the app.";
+      return;
+    }
+    status.textContent = "Box " + target + ". Next is " + order[next] + ".";
+  }
+  function reset(){
+    next = 0; shoot.disabled = false; cap.hidden = true;
+    status.textContent = "Shoot 1 through 13. This is the sidewalk board. The rest of the blocks belong in the app.";
+    paint();
+  }
+  shoot.addEventListener("click", go);
+  document.getElementById("reset").addEventListener("click", reset);
+  document.querySelectorAll(".cell[data-box]").forEach(el => {
+    el.addEventListener("click", () => {
+      if(el.getAttribute("data-box") === "skull"){ status.textContent = "Skull tax. Stay on the numbers."; return; }
+      if(String(order[next]) === el.getAttribute("data-box")) go();
+    });
+  });
+  paint();
+})();
+</script>
+</body>
+</html>
