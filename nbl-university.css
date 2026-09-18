@@ -61,10 +61,8 @@ h1{margin:0;color:var(--gold2);font-size:clamp(2.7rem,7vw,5.7rem);line-height:.9
   overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#03070d;
   box-shadow:0 25px 65px rgba(0,0,0,.38)
 }
-.book-window{aspect-ratio:3/4;overflow:hidden;background:#010308}
-.book-window img{width:100%;height:100%;object-fit:cover}
-.book.course .book-window img{object-position:76% 50%}
-.book.workbook .book-window img{object-position:78% 50%}
+.book-window{aspect-ratio:2/3;overflow:hidden;background:#010308;display:flex;align-items:center;justify-content:center}
+.book-window img{width:100%;height:100%;object-fit:contain;display:block}
 .book figcaption{padding:12px 13px;color:var(--gold2);font:700 .82rem/1.35 Georgia,"Times New Roman",serif;text-align:center}
 .section{padding:36px 0 68px}
 .section-head{max-width:800px;margin-bottom:26px}
