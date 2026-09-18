@@ -468,6 +468,41 @@
       font-style: italic;
     }
 
+    /* Artifact presentation: the room stays immersive when a framed item is picked up. */
+    .modal-card.artifact-card {
+      width: min(94vw, 820px);
+      border-radius: 7px;
+      color: #241a0d;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255,255,255,.72), transparent 26%),
+        repeating-linear-gradient(0deg, rgba(91,62,26,.025) 0 1px, transparent 1px 4px),
+        linear-gradient(135deg, #fffaf0 0%, #f4e7c8 58%, #ead6aa 100%);
+      border: 10px solid #4d3216;
+      outline: 2px solid #d7b45a;
+      outline-offset: -7px;
+      box-shadow: 0 34px 100px rgba(0,0,0,.84), inset 0 0 0 2px rgba(255,236,181,.8), inset 0 0 70px rgba(116,76,23,.12);
+    }
+    .modal-card.artifact-card::before {
+      inset: 14px;
+      border: 1px solid rgba(111,75,29,.38);
+      border-radius: 1px;
+    }
+    .artifact-card .modal-close { color:#fff3cc; background:#24170c; border-color:#b88a3d; }
+    .artifact-card .modal-kicker { color:#74501f; text-align:center; letter-spacing:.22em; }
+    .artifact-card .modal-title { color:#24180b; text-align:center; font-size:clamp(1.65rem,5vw,2.8rem); }
+    .artifact-card .modal-subtitle { color:#76531f; text-align:center; }
+    .artifact-card .modal-body { color:#302417; font-family:Georgia,"Times New Roman",serif; }
+    .artifact-card .modal-body strong { color:#4e3514; }
+    .artifact-card .modal-body a { color:#5f421b; }
+    .artifact-card .closing-line { color:#5d4018; border-top-color:rgba(111,75,29,.3); text-align:center; }
+    .artifact-card .modal-body::after {
+      content:"NEW BEANSLAND";
+      display:block; width:max-content; margin:26px auto 4px; padding:10px 14px 8px;
+      border:2px double rgba(111,75,29,.55); border-radius:50%;
+      color:rgba(91,61,24,.72); font:700 .68rem/1 Arial,sans-serif; letter-spacing:.16em;
+      transform:rotate(-3deg);
+    }
+
     @media (max-width: 620px) {
       .home-button {
         min-height: 38px;
@@ -625,7 +660,7 @@
         document.body.classList.add("debug-hotspots");
       }
 
-      const roomPanels = {
+      const artifactPanels = new Set(["graduation", "doctorate", "masters"]);\n\n      const roomPanels = {
         founder: {
           kicker: "Founder",
           title: "Jamel Hawkins",
