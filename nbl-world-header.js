@@ -31,8 +31,14 @@
 
   const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
   const NBL_CLERK_CONFIG=`${NBL_ACCOUNT_API}/api/config/clerk`;
+  const NBL_ACCOUNT_PORTAL="https://accounts.newbeansland.org";
   let nblClerkPromise=null;
   let nblClerk=null;
+
+  const accountPortalUrl=(page="/sign-in")=>{
+    const redirectUrl=encodeURIComponent(location.href);
+    return `${NBL_ACCOUNT_PORTAL}${page}?redirect_url=${redirectUrl}`;
+  };
 
   const loadExternalScript=(src,attributes={})=>new Promise((resolve,reject)=>{
     const existing=[...document.scripts].find(script=>script.src===src);
@@ -78,16 +84,12 @@
       if(!clerkDomain) throw new Error("NBL account connection is unavailable.");
 
       await loadExternalScript(
-        `https://${clerkDomain}/npm/@clerk/ui@1/dist/ui.browser.js`,
-        {crossorigin:"anonymous"}
-      );
-      await loadExternalScript(
         `https://${clerkDomain}/npm/@clerk/clerk-js@6/dist/clerk.browser.js`,
         {crossorigin:"anonymous","data-clerk-publishable-key":publishableKey}
       );
 
       if(!window.Clerk) throw new Error("NBL account connection failed to initialize.");
-      await window.Clerk.load({ui:{ClerkUI:window.__internal_ClerkUICtor}});
+      await window.Clerk.load();
       nblClerk=window.Clerk;
       return nblClerk;
     })().catch(error=>{
@@ -157,30 +159,22 @@
     const panelSignIn=panel?.querySelector("[data-nbl-panel-signin]");
     const panelRequest=panel?.querySelector("[data-nbl-panel-request]");
     const panelStatus=panel?.querySelector("[data-nbl-panel-status]");
-    let userButtonMounted=false;
     let clerk=null;
 
     const render=()=>{
+      userHost.hidden=true;
+      userHost.replaceChildren();
+      accountButton.hidden=false;
+      accountButton.disabled=false;
       if(!clerk) return;
       if(clerk.isSignedIn){
-        accountButton.hidden=true;
-        userHost.hidden=false;
-        if(!userButtonMounted){
-          clerk.mountUserButton(userHost);
-          userButtonMounted=true;
-        }
+        accountButton.textContent="Account";
+        accountButton.title="Manage your NBL account";
         if(panelSignIn) panelSignIn.hidden=true;
         void readUniversityAccess(clerk);
       }else{
-        if(userButtonMounted){
-          try{clerk.unmountUserButton(userHost);}catch{}
-          userButtonMounted=false;
-        }
-        userHost.hidden=true;
-        userHost.replaceChildren();
-        accountButton.hidden=false;
-        accountButton.disabled=false;
         accountButton.textContent="Sign in / Create account";
+        accountButton.title="";
         if(panelSignIn){
           panelSignIn.hidden=false;
           panelSignIn.disabled=false;
@@ -191,30 +185,12 @@
       }
     };
 
-    const openSignIn=async sourceButton=>{
-      const original=sourceButton.textContent;
-      sourceButton.disabled=true;
-      sourceButton.textContent="Connecting…";
-      try{
-        clerk=clerk||await getNblClerk();
-        render();
-        if(!clerk.isSignedIn) clerk.openSignIn();
-      }catch(error){
-        sourceButton.textContent="Account unavailable";
-        sourceButton.title=error?.message||"Account connection is temporarily unavailable.";
-        if(panelStatus) panelStatus.textContent="Connected account service is temporarily unavailable. Public browsing and checkout still work.";
-        setTimeout(()=>{
-          sourceButton.disabled=false;
-          sourceButton.textContent=original;
-        },3500);
-        return;
-      }
-      sourceButton.disabled=false;
-      sourceButton.textContent=original;
+    const openAccount=()=>{
+      location.href=accountPortalUrl(clerk?.isSignedIn?"/user":"/sign-in");
     };
 
-    accountButton.addEventListener("click",()=>void openSignIn(accountButton));
-    panelSignIn?.addEventListener("click",()=>void openSignIn(panelSignIn));
+    accountButton.addEventListener("click",openAccount);
+    panelSignIn?.addEventListener("click",()=>{ location.href=accountPortalUrl("/sign-in"); });
 
     panelRequest?.addEventListener("click",async()=>{
       if(!clerk?.isSignedIn||!clerk.session) return;
