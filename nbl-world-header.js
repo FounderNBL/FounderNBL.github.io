@@ -330,6 +330,7 @@
     beta.setAttribute("aria-labelledby","nbl-beta-title");
     beta.innerHTML=`
       <div class="nbl-beta-inner">
+        <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans from NBL Chat">
         <p class="nbl-beta-kicker">Beans · Beta testing</p>
         <h2 id="nbl-beta-title">Get on the list for what Beans is testing next.</h2>
         <p>Join the NBL email list for an invitation to beta test NBL Chat when the next round is ready.</p>
