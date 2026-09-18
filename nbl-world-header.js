@@ -168,7 +168,9 @@
       accountButton.disabled=false;
       if(!clerk) return;
       if(clerk.isSignedIn){
-        accountButton.textContent="Account";
+        const user=clerk.user;
+        const displayName=(user?.fullName||user?.firstName||user?.primaryEmailAddress?.emailAddress||"Account").trim();
+        accountButton.textContent=displayName;
         accountButton.title="Manage your NBL account";
         if(panelSignIn) panelSignIn.hidden=true;
         void readUniversityAccess(clerk);
