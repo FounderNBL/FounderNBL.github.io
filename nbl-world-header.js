@@ -5,7 +5,7 @@
     if(path==="/"||/\/index\.html$/.test(path)||/\/home\.html$/.test(path)) return {label:"Stories · Questions · Worlds",key:"home"};
     if(/\/university(?:\.html)?$/.test(path)||/\/verify-credential\.html$/.test(path)||/\/university-thank-you\.html$/.test(path)) return {label:"New Beansland University",key:"university"};
     if(/\/books\.html$/.test(path)||/\/people-zoo/.test(path)||/\/doctor-rocketship/.test(path)) return {label:"NBL Books",key:"books"};
-    if(/\/clothing\.html$/.test(path)) return {label:"NBL Clothing Co.",key:"clothing"};
+    if(/\/clothing\.html$/.test(path)) return {label:"NBL Clothing Co.",key:"clothing"};\n    if(/\/nbl-kids\.html$/.test(path)) return {label:"NBL Kids",key:"kids"};\n    if(/\/shanique\.html$/.test(path)) return {label:"Shanique Washington",key:"her"};
     if(/\/stories\.html$/.test(path)) return {label:"TV & Film",key:"stories"};
     if(/\/studio\/?(?:index\.html)?$/.test(path)) return {label:"NBL Studio",key:"studio"};
     if(/\/founder-office\.html$/.test(path)) return {label:"Founder’s Office",key:"office"};
@@ -18,7 +18,7 @@
     ["home","Home","/",false],
     ["university","University","/university.html",false],
     ["books","Books","/books.html",false],
-    ["clothing","Clothing","/clothing.html",false],
+    ["clothing","Clothing","/clothing.html",false],\n    ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
     ["studio","Studio","/studio/",false],
     ["office","Founder’s Office","/founder-office.html",false],
