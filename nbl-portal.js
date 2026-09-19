@@ -216,14 +216,6 @@
     const bookGrid=document.querySelector('.book-grid');
     if(!bookGrid) return;
 
-    if(!document.querySelector('script[data-nbl-lulu-buy]')){
-      const loader=document.createElement('script');
-      loader.defer=true;
-      loader.src='https://js.lulu.com/lulu-buy.js';
-      loader.dataset.nblLuluBuy='true';
-      document.head.appendChild(loader);
-    }
-
     const direct=document.createElement('div');
     direct.dataset.nblLuluDirect='true';
     direct.style.margin='0 0 24px';
@@ -239,17 +231,18 @@
     const heading=document.createElement('h3');
     heading.style.margin='6px 0 10px';
     heading.style.color='var(--gold-light,#f0c873)';
-    heading.textContent='New Beansland™ Books · Lulu Direct';
+    heading.textContent='New Beansland™ Books';
 
     const note=document.createElement('p');
     note.style.margin='0 0 16px';
     note.style.color='var(--muted,#cfc3ad)';
     note.style.font='0.92rem/1.5 Arial,sans-serif';
-    note.textContent='Buy this print edition directly through New Beansland™. Lulu handles secure checkout, printing, and shipping.';
+    note.textContent='Shop New Beansland™ Books and choose the edition you want.';
 
-    const button=document.createElement('lulu-buy-button');
-    button.setAttribute('buy-button-id','b3397f16-c591-4571-88f5-d5bdf5082246');
-    button.setAttribute('variant','product-showcase');
+    const button=document.createElement('a');
+    button.className='request-btn';
+    button.href='https://books.newbeansland.org/';
+    button.textContent='Shop NBL Books';
 
     direct.append(kicker,heading,note,button);
     bookGrid.before(direct);
