@@ -125,7 +125,7 @@ body[data-nbl-room="clothing"] .subnav{overflow:visible}
 body[data-nbl-room="clothing"] .subnav-inner{width:min(1220px,100%);min-width:0;margin:0 auto;flex-wrap:wrap}
 body[data-nbl-room="clothing"] .commercial video{object-fit:contain;background:#000}
 body[data-nbl-room="clothing"] .campaign img{height:auto;object-fit:contain}
-body[data-nbl-room="clothing"] .product-media img{object-fit:contain}
+body[data-nbl-room="clothing"] .product-media img{object-fit:contain;object-position:center}
 
 body[data-nbl-room="studio"] .studio-header{grid-template-columns:120px minmax(0,1fr)!important}
 body[data-nbl-room="studio"] .studio-header .studio-mark{grid-column:1}
@@ -267,7 +267,7 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
 .nbl-beta-inner{position:relative}
 .nbl-beta-beans{
   position:absolute;left:18px;bottom:0;width:clamp(105px,16vw,180px);height:auto;
-  max-height:92%;object-fit:contain;object-position:left bottom;pointer-events:none;
+  max-height:88%;object-fit:contain;object-position:left bottom;pointer-events:none;
 }
 @media(min-width:761px){
   .nbl-beta-inner{padding-left:clamp(150px,19vw,220px)}
