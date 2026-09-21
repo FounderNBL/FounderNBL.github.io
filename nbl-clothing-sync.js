@@ -65,7 +65,7 @@
     grid.appendChild(card);
   };
 
-  const ice=setProductImage("Ice Out","/NBL_Ice_Out.png?v=b824fe1e","NBL Ice Out T-shirt display");
+  const ice=setProductImage("Ice Out","/NBL-Ice-Out-outfit.png?v=1d0ca520","NBL Ice Out T-shirt display");
   setPrice(ice,"$29.99");
   const identity=setProductImage("Identity","/NBL_Identity_T.png?v=d9cc1bb7","NBL Identity T-shirt display");
   setPrice(identity,"$39.99");
