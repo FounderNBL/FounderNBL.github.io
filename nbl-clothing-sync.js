@@ -72,11 +72,6 @@
   setProductImage("Black Is Not A Crime","/NBL-Being-Black.png?v=11fc099e","Black Is Not A Crime NBL statement T-shirt");
 
   document.querySelectorAll(".status").forEach(status=>{
-    const title=(status.closest(".product")?.querySelector("h3")?.textContent||"").trim().toLowerCase();
-    if(title==="nbl sneakers"){
-      status.textContent="Coming Soon";
-      return;
-    }
     if(/made to order|coming soon/i.test(status.textContent||"")) status.remove();
   });
 
@@ -134,11 +129,11 @@
   }
 
   const metaDescription=document.querySelector('meta[name="description"]');
-  if(metaDescription) metaDescription.content="Explore NBL Clothing Co. from New Beansland™ — adult streetwear, statement pieces, NBL Kids, hats and footwear. Not So Small™, NBL Pride, and NBL Sneakers are Coming Soon.";
+  if(metaDescription) metaDescription.content="Explore NBL Clothing Co. from New Beansland™ — adult streetwear, statement pieces, NBL Kids, hats and footwear. Not So Small™ and NBL Pride are Coming Soon.";
 
   const heroCopy=document.querySelector("main .hero .hero-inner > p:not(.kicker)");
-  if(heroCopy) heroCopy.textContent="New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces, NBL Kids, hats and footwear are available by request. Not So Small™, NBL Pride, and NBL Sneakers are the only Coming Soon releases.";
+  if(heroCopy) heroCopy.textContent="New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces, NBL Kids, hats and footwear are available by request. Not So Small™ and NBL Pride are the only Coming Soon collections.";
 
   const firstSectionCopy=document.querySelector("main > .section .section-head p:last-child");
-  if(firstSectionCopy) firstSectionCopy.textContent="Current NBL clothing is available by request. Not So Small™, NBL Pride, and NBL Sneakers remain Coming Soon.";
+  if(firstSectionCopy) firstSectionCopy.textContent="Current NBL clothing is available by request. Not So Small™ and NBL Pride remain Coming Soon.";
 })();
