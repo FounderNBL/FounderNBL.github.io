@@ -40,8 +40,14 @@
   let nblClerkPromise=null;
   let nblClerk=null;
 
+  const safeReturnUrl=()=>{
+    const url=new URL(location.href);
+    url.hash="";
+    return url.href;
+  };
+
   const accountPortalUrl=(page="/sign-in")=>{
-    const redirectUrl=encodeURIComponent(location.href);
+    const redirectUrl=encodeURIComponent(safeReturnUrl());
     return `${NBL_ACCOUNT_PORTAL}${page}?redirect_url=${redirectUrl}`;
   };
 
@@ -213,7 +219,7 @@
         accountButton.title="Sign in to your NBL account";
         addAuxButton("Create account",()=>{
           try{
-            clerk.openSignUp({fallbackRedirectUrl:location.href});
+            clerk.openSignUp({fallbackRedirectUrl:safeReturnUrl(),signInFallbackRedirectUrl:safeReturnUrl()});
           }catch{
             location.href=accountPortalUrl("/sign-up");
           }
@@ -231,7 +237,7 @@
     const openSignIn=()=>{
       if(clerk){
         try{
-          clerk.openSignIn({fallbackRedirectUrl:location.href});
+          clerk.openSignIn({fallbackRedirectUrl:safeReturnUrl(),signUpFallbackRedirectUrl:safeReturnUrl()});
           return;
         }catch{}
       }
