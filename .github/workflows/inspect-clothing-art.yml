@@ -1,0 +1,60 @@
+name: Inspect clothing art
+
+on:
+  push:
+    branches:
+      - fix/live-status-kids-studio-university
+    paths:
+      - ".github/workflows/inspect-clothing-art.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contact-sheet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build contact sheet
+        run: |
+          python -m pip install --quiet pillow
+          python - <<'PY'
+          from PIL import Image, ImageOps, ImageDraw, ImageFont
+          from pathlib import Path
+          names = [
+              "NBL_Identity_T.png","NBL_Identity_T_Alt.png","NBL_Ice_Out.png",
+              "NBL_Kids_I_Know.png","NBL_Kids_My_Dad.png",
+              "NBL-highs.png","NBL-Shoes-coming-soon.png",
+          ]
+          font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
+          thumb_w, thumb_h, label_h, cols = 300, 400, 58, 3
+          rows = (len(names) + cols - 1) // cols
+          sheet = Image.new("RGB", (cols*thumb_w, rows*(thumb_h+label_h)), "white")
+          draw = ImageDraw.Draw(sheet)
+          for i, name in enumerate(names):
+              im = Image.open(name).convert("RGB")
+              fitted = ImageOps.contain(im, (thumb_w-16, thumb_h-16))
+              x = (i % cols)*thumb_w + (thumb_w-fitted.width)//2
+              y = (i // cols)*(thumb_h+label_h) + 8
+              sheet.paste(fitted, (x,y))
+              label_y=(i//cols)*(thumb_h+label_h)+thumb_h
+              draw.text(((i%cols)*thumb_w+8,label_y+4), f"{name}\n{im.width}x{im.height}", fill="black", font=font)
+          Path("inspection").mkdir(exist_ok=True)
+          sheet.save("inspection/clothing-contact-sheet.jpg", quality=90)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clothing-contact-sheet
+          path: inspection/clothing-contact-sheet.jpg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clothing-target-originals
+          path: |
+            NBL_Identity_T.png
+            NBL_Identity_T_Alt.png
+            NBL_Ice_Out.png
+            NBL_Kids_I_Know.png
+            NBL_Kids_My_Dad.png
+            NBL-highs.png
+            NBL-Shoes-coming-soon.png
