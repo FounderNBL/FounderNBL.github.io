@@ -22,35 +22,18 @@ jobs:
           python - <<'PY'
           from PIL import Image, ImageOps, ImageDraw, ImageFont
           from pathlib import Path
-
           names = [
-              "NBL_Identity_T.png",
-              "NBL_Identity_T_Alt.png",
-              "NBL_Ice_Out.png",
-              "NBL-Ice-Out-outfit.png",
-              "NBL-Being-Black.png",
-              "NBL_Snapback.png",
-              "NBL_Kids_I_Know.png",
-              "NBL_Kids_My_Dad.png",
-              "NBL-pose-template.png",
-              "NBL-hoodie-leather.png",
-              "NBL-hat-sweats-outfit.png",
-              "NBL-Model-Front.png",
-              "NBL-highs.png",
-              "NBL-Shoes-coming-soon.png",
+              "NBL_Identity_T.png","NBL_Identity_T_Alt.png","NBL_Ice_Out.png",
+              "NBL_Kids_I_Know.png","NBL_Kids_My_Dad.png",
+              "NBL-highs.png","NBL-Shoes-coming-soon.png",
           ]
           font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
-          thumb_w, thumb_h = 300, 400
-          label_h = 58
-          cols = 3
+          thumb_w, thumb_h, label_h, cols = 300, 400, 58, 3
           rows = (len(names) + cols - 1) // cols
           sheet = Image.new("RGB", (cols*thumb_w, rows*(thumb_h+label_h)), "white")
           draw = ImageDraw.Draw(sheet)
           for i, name in enumerate(names):
-              p = Path(name)
-              if not p.exists():
-                  continue
-              im = Image.open(p).convert("RGB")
+              im = Image.open(name).convert("RGB")
               fitted = ImageOps.contain(im, (thumb_w-16, thumb_h-16))
               x = (i % cols)*thumb_w + (thumb_w-fitted.width)//2
               y = (i // cols)*(thumb_h+label_h) + 8
@@ -64,3 +47,14 @@ jobs:
         with:
           name: clothing-contact-sheet
           path: inspection/clothing-contact-sheet.jpg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clothing-target-originals
+          path: |
+            NBL_Identity_T.png
+            NBL_Identity_T_Alt.png
+            NBL_Ice_Out.png
+            NBL_Kids_I_Know.png
+            NBL_Kids_My_Dad.png
+            NBL-highs.png
+            NBL-Shoes-coming-soon.png
