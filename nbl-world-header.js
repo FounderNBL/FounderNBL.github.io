@@ -34,6 +34,7 @@
 
   const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
   const NBL_SEARCH_API=`${NBL_ACCOUNT_API}/api/search/nbl`;
+  const NBL_SEARCH_PUBLIC_INDEX="/nbl-founder-search-public.json";
   const NBL_CLERK_CONFIG=`${NBL_ACCOUNT_API}/api/config/clerk`;
   const NBL_ACCOUNT_PORTAL="https://accounts.newbeansland.org";
   let nblClerkPromise=null;
@@ -414,6 +415,127 @@
     searchGoogle.hidden=true;
   };
 
+  const NBL_SEARCH_STOP_WORDS=new Set(["a","an","and","are","as","at","be","but","by","for","from","how","i","in","is","it","me","of","on","or","that","the","this","to","was","what","when","where","which","who","why","with","you","your"]);
+  const NBL_SEARCH_PRIVATE_PATTERNS=[
+    /system\s*prompt/i,
+    /hidden\s+(instructions?|rules?|files?)/i,
+    /private\s+playhouse/i,
+    /founder'?s\s+code/i,
+    /brain\s+(files?|source|index|catalog)/i,
+    /source\s+(path|catalog|index)/i,
+    /api\s*key/i,
+    /secret(s)?\b/i,
+    /answer\s*key/i
+  ];
+  const NBL_SEARCH_EXTRACTIVE_PATTERNS=[
+    /\b(full|entire|whole)\s+(book|chapter|text)\b/i,
+    /\b(give|show|paste|print|reproduce|read)\b.{0,30}\b(chapter|pages?|book)\b/i,
+    /\bnext\s+\d+\s+pages?\b/i,
+    /\breconstruct\b.{0,40}\b(book|chapter)\b/i
+  ];
+  let nblPublicSearchIndexPromise=null;
+
+  const normalizeNblSearch=value=>String(value||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," ");
+  const nblSearchTokens=value=>normalizeNblSearch(value).split(" ").filter(t=>t.length>1&&!NBL_SEARCH_STOP_WORDS.has(t));
+  const scoreNblSearch=(query,text,title="")=>{
+    const q=normalizeNblSearch(query);
+    if(!q) return 0;
+    const qTokens=[...new Set(nblSearchTokens(query))];
+    if(!qTokens.length) return 0;
+    const textTokens=new Set(nblSearchTokens(text));
+    const titleTokens=new Set(nblSearchTokens(title));
+    let overlap=0,titleOverlap=0;
+    for(const token of qTokens){
+      if(textTokens.has(token)) overlap++;
+      if(titleTokens.has(token)) titleOverlap++;
+    }
+    const phrase=normalizeNblSearch(text).includes(q)?0.55:0;
+    return overlap/qTokens.length+(titleOverlap/qTokens.length)*0.35+phrase;
+  };
+
+  const loadNblPublicSearchIndex=()=>{
+    if(nblPublicSearchIndexPromise) return nblPublicSearchIndexPromise;
+    nblPublicSearchIndexPromise=fetch(NBL_SEARCH_PUBLIC_INDEX,{headers:{Accept:"application/json"},cache:"no-store"})
+      .then(response=>{
+        if(!response.ok) throw new Error("Public NBL search index is unavailable.");
+        return response.json();
+      })
+      .catch(error=>{
+        nblPublicSearchIndexPromise=null;
+        throw error;
+      });
+    return nblPublicSearchIndexPromise;
+  };
+
+  const localFounderSearch=async query=>{
+    if(NBL_SEARCH_PRIVATE_PATTERNS.some(pattern=>pattern.test(query))||NBL_SEARCH_EXTRACTIVE_PATTERNS.some(pattern=>pattern.test(query))){
+      return {
+        mode:"nbl-search",
+        source:"founders-code-public-export",
+        usedOpenAI:false,
+        usedWebSearch:false,
+        query,
+        status:"protected",
+        results:[],
+        message:"That material is not available through public NBL Search."
+      };
+    }
+
+    const index=await loadNblPublicSearchIndex();
+    const hits=[];
+    for(const source of Array.isArray(index?.sources)?index.sources:[]){
+      for(const chunk of Array.isArray(source?.chunks)?source.chunks:[]){
+        const raw=scoreNblSearch(query,chunk?.content||"",source?.title||"");
+        if(raw<=0) continue;
+        hits.push({
+          source,
+          content:String(chunk?.content||""),
+          score:raw+((Number(source?.authorityRank)||0)/10000)
+        });
+      }
+    }
+    hits.sort((a,b)=>b.score-a.score);
+
+    const results=[];
+    const seen=new Set();
+    for(const hit of hits.slice(0,30)){
+      if(hit.score<0.28) continue;
+      const sentences=hit.content
+        .replace(/\s+/g," ")
+        .split(/(?<=[.!?])\s+/)
+        .map(sentence=>sentence.trim())
+        .filter(sentence=>sentence.length>=18&&sentence.length<=360);
+      let best=null;
+      for(const sentence of sentences){
+        const sentenceScore=scoreNblSearch(query,sentence,hit.source?.title||"")+(hit.score*0.12);
+        if(!best||sentenceScore>best.score) best={text:sentence,score:sentenceScore};
+      }
+      let excerpt=best&&best.score>=0.36?best.text:null;
+      if(!excerpt&&hit.score>=0.42){
+        const compact=hit.content.replace(/\s+/g," ").trim();
+        excerpt=compact.length<=360?compact:compact.slice(0,357).trimEnd()+"…";
+      }
+      if(!excerpt) continue;
+      const key=`${hit.source?.key||hit.source?.title||"nbl"}\u0000${normalizeNblSearch(excerpt)}`;
+      if(seen.has(key)) continue;
+      seen.add(key);
+      results.push({title:hit.source?.title||"New Beansland",excerpt});
+      if(results.length>=5) break;
+    }
+
+    return {
+      mode:"nbl-search",
+      source:"founders-code-public-export",
+      usedOpenAI:false,
+      usedWebSearch:false,
+      query,
+      status:results.length?"results":"not_found",
+      results,
+      message:results.length?null:"That is not in the public New Beansland search yet. Try again later or check Google.",
+      founderCodeVersion:String(index?.founderCodeVersion||"0.1.0")
+    };
+  };
+
   const renderSearchResults=payload=>{
     clearSearchResults();
     const results=Array.isArray(payload?.results)?payload.results:[];
@@ -476,9 +598,17 @@
       renderSearchResults(payload);
     }catch(error){
       if(error?.name==="AbortError") return;
-      clearSearchResults();
-      searchStatus.textContent=error?.message||"NBL Search is not ready right now. Try again later.";
-      searchMeta.textContent="Founder’s Code connection unavailable · No OpenAI fallback used";
+      try{
+        searchStatus.textContent="Live NBL route is unavailable. Checking the public Founder’s Code mirror…";
+        const localPayload=await localFounderSearch(query);
+        if(controller.signal.aborted) return;
+        renderSearchResults(localPayload);
+        searchMeta.textContent=`Founder’s Code public mirror v${localPayload.founderCodeVersion||"0.1.0"} · NBL only · No OpenAI · No web search`;
+      }catch(localError){
+        clearSearchResults();
+        searchStatus.textContent=localError?.message||error?.message||"NBL Search is not ready right now. Try again later.";
+        searchMeta.textContent="Founder’s Code connection unavailable · No OpenAI fallback used";
+      }
     }finally{
       if(activeSearchController===controller) activeSearchController=null;
       searchSubmit.disabled=false;
