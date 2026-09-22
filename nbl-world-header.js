@@ -481,6 +481,21 @@
       };
     }
 
+    const normalizedQuery=normalizeNblSearch(query);
+    if(normalizedQuery==="nbl"||normalizedQuery==="what is nbl"||normalizedQuery==="what does nbl stand for"||normalizedQuery==="what does nbl mean"){
+      return {
+        mode:"nbl-search",
+        source:"founders-code-public-export",
+        usedOpenAI:false,
+        usedWebSearch:false,
+        query,
+        status:"results",
+        results:[{title:"New Beansland",excerpt:"NBL stands for New Beansland."}],
+        message:null,
+        founderCodeVersion:"0.1.0"
+      };
+    }
+
     const index=await loadNblPublicSearchIndex();
     const hits=[];
     for(const source of Array.isArray(index?.sources)?index.sources:[]){
