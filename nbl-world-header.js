@@ -192,7 +192,7 @@
 
       if(clerk.isSignedIn){
         const user=clerk.user;
-        const displayName=(user?.fullName||user?.firstName||user?.primaryEmailAddress?.emailAddress||"Account").trim();
+        const displayName=(user?.unsafeMetadata?.displayName||user?.publicMetadata?.displayName||user?.username||user?.fullName||user?.firstName||user?.primaryEmailAddress?.emailAddress||"Account").trim();
         accountButton.textContent=displayName;
         accountButton.title="Manage your NBL account";
         const signOutButton=addAuxButton("Sign out",async()=>{

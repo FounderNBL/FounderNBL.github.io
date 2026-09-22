@@ -387,3 +387,48 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
   .nbl-beta-inner{padding-left:102px}
   .nbl-beta-beans{left:4px;width:88px}
 }
+
+
+/* Phone account bar: keep optional Sign in/Create account or name/Sign out visible */
+@media(max-width:540px){
+  .nbl-world-header{min-height:116px}
+  .nbl-world-header-inner{
+    min-height:116px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto auto;
+    grid-template-areas:
+      "brand search menu"
+      "primary user user";
+    align-content:center;
+    column-gap:7px;
+    row-gap:6px;
+    padding:6px 0 8px;
+  }
+  .nbl-world-brand{grid-area:brand}
+  .nbl-world-search-toggle{grid-area:search}
+  .nbl-world-menu{grid-area:menu}
+  .nbl-world-account-primary{
+    grid-area:primary;
+    justify-self:start;
+    width:auto;
+    max-width:min(48vw,180px);
+  }
+  .nbl-world-user{
+    grid-area:user;
+    justify-self:start;
+    max-width:none;
+    min-width:0;
+  }
+  .nbl-world-user .nbl-world-account{
+    width:auto;
+    max-width:min(44vw,180px);
+  }
+  .nbl-world-nav{top:116px;max-height:calc(100dvh - 116px)}
+  body.nbl-world-ready{padding-top:116px!important}
+  body.nbl-world-ready .subnav{top:116px!important}
+  body.nbl-world-ready .office-page{inset:116px 0 0!important}
+  body[data-nbl-room="office"] .room-stage{
+    width:min(100vw,calc((100dvh - 116px) * var(--room-ratio)))!important;
+    height:min(calc(100dvh - 116px),calc(100vw / var(--room-ratio)))!important;
+  }
+}
