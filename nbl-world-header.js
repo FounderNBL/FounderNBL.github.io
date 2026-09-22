@@ -33,6 +33,7 @@
   ];
 
   const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
+  const NBL_SEARCH_API=`${NBL_ACCOUNT_API}/api/search/nbl`;
   const NBL_CLERK_CONFIG=`${NBL_ACCOUNT_API}/api/config/clerk`;
   const NBL_ACCOUNT_PORTAL="https://accounts.newbeansland.org";
   let nblClerkPromise=null;
@@ -343,6 +344,7 @@
           <small>${room.label}</small>
         </span>
       </a>
+      <button class="nbl-world-search-toggle" type="button" aria-expanded="false" aria-controls="nbl-search-panel">Search</button>
       <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland rooms">Rooms</button>
       <nav class="nbl-world-nav" id="nbl-world-nav" aria-label="New Beansland main navigation">
         ${nav.map(([key,label,href,external])=>`<a href="${href}"${room.key===key&&key?' aria-current="page"':''}${external?' target="_blank" rel="noopener noreferrer"':''}>${label}</a>`).join("")}
@@ -350,6 +352,148 @@
         <div class="nbl-world-user" hidden aria-label="NBL account"></div>
       </nav>
     </div>`;
+
+  const searchToggle=header.querySelector(".nbl-world-search-toggle");
+  const searchPanel=document.createElement("section");
+  searchPanel.className="nbl-search-panel";
+  searchPanel.id="nbl-search-panel";
+  searchPanel.hidden=true;
+  searchPanel.setAttribute("aria-label","Search New Beansland");
+  searchPanel.innerHTML=`
+    <div class="nbl-search-card" role="dialog" aria-modal="true" aria-labelledby="nbl-search-title">
+      <div class="nbl-search-head">
+        <div>
+          <p class="nbl-search-kicker">Founder’s Code · NBL only</p>
+          <h2 id="nbl-search-title">Search New Beansland</h2>
+          <p class="nbl-search-note">This searches New Beansland only. No OpenAI. No web search.</p>
+        </div>
+        <button class="nbl-search-close" type="button" data-nbl-search-close aria-label="Close NBL Search">✕</button>
+      </div>
+      <form class="nbl-search-form" data-nbl-search-form>
+        <label for="nbl-search-input">What are you looking for?</label>
+        <div class="nbl-search-row">
+          <input id="nbl-search-input" name="q" type="search" inputmode="search" autocomplete="off" maxlength="220" placeholder="Search New Beansland…" required>
+          <button type="submit">Search</button>
+        </div>
+      </form>
+      <p class="nbl-search-status" data-nbl-search-status role="status" aria-live="polite">Search the NBL system. Results replace each other — this is not a chat.</p>
+      <div class="nbl-search-results" data-nbl-search-results></div>
+      <a class="nbl-search-google" data-nbl-search-google href="https://www.google.com/" target="_blank" rel="noopener noreferrer" hidden>Not here? Check Google ↗</a>
+      <p class="nbl-search-meta" data-nbl-search-meta>Founder’s Code only · No model fallback</p>
+    </div>`;
+
+  const searchForm=searchPanel.querySelector("[data-nbl-search-form]");
+  const searchInput=searchPanel.querySelector("#nbl-search-input");
+  const searchSubmit=searchForm.querySelector('button[type="submit"]');
+  const searchStatus=searchPanel.querySelector("[data-nbl-search-status]");
+  const searchResults=searchPanel.querySelector("[data-nbl-search-results]");
+  const searchGoogle=searchPanel.querySelector("[data-nbl-search-google]");
+  const searchMeta=searchPanel.querySelector("[data-nbl-search-meta]");
+  const searchClose=searchPanel.querySelector("[data-nbl-search-close]");
+  let activeSearchController=null;
+
+  const closeSearch=()=>{
+    activeSearchController?.abort();
+    activeSearchController=null;
+    searchPanel.hidden=true;
+    document.body.classList.remove("nbl-search-open");
+    searchToggle.setAttribute("aria-expanded","false");
+    searchToggle.focus();
+  };
+
+  const openSearch=()=>{
+    setOpen(false);
+    searchPanel.hidden=false;
+    document.body.classList.add("nbl-search-open");
+    searchToggle.setAttribute("aria-expanded","true");
+    window.setTimeout(()=>searchInput.focus(),20);
+  };
+
+  const clearSearchResults=()=>{
+    searchResults.replaceChildren();
+    searchGoogle.hidden=true;
+  };
+
+  const renderSearchResults=payload=>{
+    clearSearchResults();
+    const results=Array.isArray(payload?.results)?payload.results:[];
+    if(payload?.status==="results"&&results.length){
+      searchStatus.textContent=`Found ${results.length} NBL result${results.length===1?"":"s"}.`;
+      for(const result of results){
+        const card=document.createElement("article");
+        card.className="nbl-search-result";
+        const title=document.createElement("h3");
+        title.textContent=typeof result?.title==="string"?result.title:"New Beansland";
+        const excerpt=document.createElement("p");
+        excerpt.textContent=typeof result?.excerpt==="string"?result.excerpt:"";
+        card.append(title,excerpt);
+        searchResults.append(card);
+      }
+    }else{
+      searchStatus.textContent=payload?.message||"That is not in the public New Beansland search yet. Try again later.";
+      if(payload?.status==="not_found"){
+        const query=typeof payload?.query==="string"?payload.query:searchInput.value.trim();
+        searchGoogle.href=`https://www.google.com/search?q=${encodeURIComponent(query)}`;
+        searchGoogle.hidden=false;
+      }
+    }
+
+    const version=typeof payload?.founderCodeVersion==="string"?payload.founderCodeVersion:"";
+    searchMeta.textContent=version
+      ? `Founder’s Code v${version} · NBL only · No OpenAI · No web search`
+      : "Founder’s Code only · NBL only · No OpenAI · No web search";
+  };
+
+  searchForm.addEventListener("submit",async event=>{
+    event.preventDefault();
+    const query=searchInput.value.trim().replace(/\s+/g," ");
+    if(!query){
+      searchStatus.textContent="Type something from New Beansland to search.";
+      return;
+    }
+
+    activeSearchController?.abort();
+    const controller=new AbortController();
+    activeSearchController=controller;
+    clearSearchResults();
+    searchSubmit.disabled=true;
+    searchInput.disabled=true;
+    searchStatus.textContent="Searching Founder’s Code…";
+    searchMeta.textContent="Founder’s Code only · No model fallback";
+
+    try{
+      const response=await fetch(`${NBL_SEARCH_API}?q=${encodeURIComponent(query)}`,{
+        method:"GET",
+        headers:{Accept:"application/json"},
+        cache:"no-store",
+        credentials:"omit",
+        signal:controller.signal
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok){
+        throw new Error(payload?.message||"NBL Search is not ready right now.");
+      }
+      renderSearchResults(payload);
+    }catch(error){
+      if(error?.name==="AbortError") return;
+      clearSearchResults();
+      searchStatus.textContent=error?.message||"NBL Search is not ready right now. Try again later.";
+      searchMeta.textContent="Founder’s Code connection unavailable · No OpenAI fallback used";
+    }finally{
+      if(activeSearchController===controller) activeSearchController=null;
+      searchSubmit.disabled=false;
+      searchInput.disabled=false;
+    }
+  });
+
+  searchToggle.addEventListener("click",()=>{
+    if(searchPanel.hidden) openSearch();
+    else closeSearch();
+  });
+  searchClose.addEventListener("click",closeSearch);
+  searchPanel.addEventListener("click",event=>{
+    if(event.target===searchPanel) closeSearch();
+  });
 
   const menu=header.querySelector(".nbl-world-menu");
   const setOpen=open=>{
@@ -362,7 +506,12 @@
   menu.addEventListener("click",()=>setOpen(!header.classList.contains("is-open")));
   header.querySelectorAll(".nbl-world-nav a").forEach(a=>a.addEventListener("click",()=>setOpen(false)));
   document.addEventListener("keydown",event=>{
-    if(event.key==="Escape") setOpen(false);
+    if(event.key!=="Escape") return;
+    if(!searchPanel.hidden){
+      closeSearch();
+      return;
+    }
+    setOpen(false);
   });
 
   const legacy=[];
@@ -381,6 +530,7 @@
   }
 
   document.body.prepend(header);
+  document.body.append(searchPanel);
   document.body.classList.add("nbl-world-ready");
   setupNblAccountUi(header);
 
