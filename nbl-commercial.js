@@ -28,7 +28,7 @@
     if(!img)return;
     if(title.includes('nbl books')) img.src=asset.books;
     else if(title.includes('the city')) img.src=asset.films;
-    else if(title.includes('timmy v')){
+    else if(title.includes('timmy v')||title.includes('nbl studio')){
       img.src=asset.music;
       card.href='studio/';
       const status=card.querySelector('.status');
@@ -36,15 +36,15 @@
       const copy=card.querySelector('.card-body p');
       const enter=card.querySelector('.enter');
       if(status)status.textContent='Open';
-      if(heading)heading.textContent='NBL Studio';
-      if(copy)copy.textContent='Music, trailers, commercials and New Beansland studio media — all behind one open door.';
-      if(enter)enter.textContent='Enter Studio →';
+      if(heading)heading.textContent='Timmy V Studios';
+      if(copy)copy.textContent='The New Beansland studio for NBL Studios and NBL Records — music, trailers, commercials and studio media.';
+      if(enter)enter.textContent='Enter Timmy V Studios →';
     }
   });
 
   document.querySelectorAll('a[href="coming-soon.html?room=timmy-v"]').forEach(link=>{
     link.href='studio/';
-    if(link.closest('.nav'))link.textContent='NBL Studio';
+    if(link.closest('.nav'))link.textContent='Timmy V Studios';
   });
 
   const sealRow=document.querySelectorAll('.seal-row img');
@@ -71,7 +71,7 @@
     card.className='world-card nbl-clothing-card';
     card.href='clothing.html';
     card.setAttribute('aria-label','Enter the NBL Clothing Co. catalog');
-    card.innerHTML=`<div class="media"><img src="${asset.clothing}" alt="NBL Clothing Co. collection" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Open</span><h3>NBL Clothing Co.</h3><p>Catalog, commercial, statement pieces, and coming-soon drops from New Beansland.</p><span class="enter">Enter the Catalog →</span></div>`;
+    card.innerHTML=`<div class="media"><img src="${asset.clothing}" alt="NBL Clothing Co. collection" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Open</span><h3>NBL Clothing Co.</h3><p>Catalog, commercial, statement pieces, kids clothing, footwear, and current New Beansland releases.</p><span class="enter">Enter the Catalog →</span></div>`;
     grid.appendChild(card);
   }
 
