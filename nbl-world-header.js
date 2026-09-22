@@ -34,6 +34,7 @@
 
   const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
   const NBL_SEARCH_API=`${NBL_ACCOUNT_API}/api/search/nbl`;
+  const NBL_BEANS_WEB_API=`${NBL_ACCOUNT_API}/api/beans/web-chat`;
   const NBL_SEARCH_PUBLIC_INDEX="/nbl-founder-search-public.json";
   const NBL_CLERK_CONFIG=`${NBL_ACCOUNT_API}/api/config/clerk`;
   const NBL_ACCOUNT_PORTAL="https://accounts.newbeansland.org";
@@ -352,6 +353,7 @@
         </span>
       </a>
       <button class="nbl-world-search-toggle" type="button" aria-expanded="false" aria-controls="nbl-search-panel">Search</button>
+      <button class="nbl-world-beans-toggle" type="button" aria-expanded="false" aria-controls="nbl-beans-panel">Beans</button>
       <button class="nbl-world-account nbl-world-account-primary" type="button">Sign in</button>
       <div class="nbl-world-user" hidden aria-label="NBL account"></div>
       <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland rooms">Rooms</button>
@@ -361,6 +363,7 @@
     </div>`;
 
   const searchToggle=header.querySelector(".nbl-world-search-toggle");
+  const beansToggle=header.querySelector(".nbl-world-beans-toggle");
   const searchPanel=document.createElement("section");
   searchPanel.className="nbl-search-panel";
   searchPanel.id="nbl-search-panel";
@@ -388,6 +391,176 @@
       <a class="nbl-search-google" data-nbl-search-google href="https://www.google.com/" target="_blank" rel="noopener noreferrer" hidden>Not here? Check Google ↗</a>
       <p class="nbl-search-meta" data-nbl-search-meta>Founder’s Code only · No model fallback</p>
     </div>`;
+
+  const beansPanel=document.createElement("section");
+  beansPanel.className="nbl-beans-panel";
+  beansPanel.id="nbl-beans-panel";
+  beansPanel.hidden=true;
+  beansPanel.setAttribute("aria-label","Talk to Beans");
+  beansPanel.innerHTML=`
+    <div class="nbl-beans-card" role="dialog" aria-modal="true" aria-labelledby="nbl-beans-title">
+      <div class="nbl-beans-head">
+        <div class="nbl-beans-title-wrap">
+          <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-beans-avatar">
+          <div>
+            <p class="nbl-beans-kicker">New Beansland</p>
+            <h2 id="nbl-beans-title">Talk to Beans</h2>
+            <p class="nbl-beans-note">Same Beans. Same NBL account. The reasoning stays behind the curtain.</p>
+          </div>
+        </div>
+        <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close Beans">✕</button>
+      </div>
+      <div class="nbl-beans-log" data-nbl-beans-log aria-live="polite">
+        <div class="nbl-beans-message is-beans"><strong>Beans</strong><p>I'm Beans. What's up?</p></div>
+      </div>
+      <form class="nbl-beans-form" data-nbl-beans-form>
+        <label for="nbl-beans-input">Message Beans</label>
+        <div class="nbl-beans-row">
+          <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
+          <button type="submit">Send</button>
+        </div>
+      </form>
+      <div class="nbl-beans-auth" data-nbl-beans-auth hidden>
+        <p>Sign in with your NBL account to talk to Beans.</p>
+        <button type="button" data-nbl-beans-signin>Sign in</button>
+      </div>
+      <p class="nbl-beans-status" data-nbl-beans-status role="status">Your NBL Chat allowance follows the same account here.</p>
+    </div>`;
+
+  const beansClose=beansPanel.querySelector("[data-nbl-beans-close]");
+  const beansForm=beansPanel.querySelector("[data-nbl-beans-form]");
+  const beansInput=beansPanel.querySelector("#nbl-beans-input");
+  const beansSubmit=beansForm.querySelector('button[type="submit"]');
+  const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
+  const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
+  const beansAuth=beansPanel.querySelector("[data-nbl-beans-auth]");
+  const beansSignIn=beansPanel.querySelector("[data-nbl-beans-signin]");
+  const beansHistory=[{role:"assistant",content:"I'm Beans. What's up?"}];
+
+  const appendBeansMessage=(role,content)=>{
+    const wrap=document.createElement("div");
+    wrap.className=`nbl-beans-message ${role==="assistant"?"is-beans":"is-user"}`;
+    const who=document.createElement("strong");
+    who.textContent=role==="assistant"?"Beans":"You";
+    const p=document.createElement("p");
+    p.textContent=content;
+    wrap.append(who,p);
+    beansLog.appendChild(wrap);
+    beansLog.scrollTop=beansLog.scrollHeight;
+  };
+
+  const renderBeansAuth=async()=>{
+    try{
+      const clerk=await getNblClerk();
+      const signedIn=Boolean(clerk?.isSignedIn&&clerk.session);
+      beansAuth.hidden=signedIn;
+      beansForm.hidden=!signedIn;
+      beansStatus.textContent=signedIn
+        ?"Your NBL Chat allowance follows the same account here."
+        :"Sign in to use Beans on the website.";
+      return clerk;
+    }catch{
+      beansAuth.hidden=false;
+      beansForm.hidden=true;
+      beansStatus.textContent="The NBL account connection is temporarily unavailable.";
+      return null;
+    }
+  };
+
+  const closeBeans=()=>{
+    beansPanel.hidden=true;
+    document.body.classList.remove("nbl-beans-open");
+    beansToggle.setAttribute("aria-expanded","false");
+    beansToggle.focus();
+  };
+
+  const openBeans=()=>{
+    setOpen(false);
+    if(!searchPanel.hidden) closeSearch();
+    beansPanel.hidden=false;
+    document.body.classList.add("nbl-beans-open");
+    beansToggle.setAttribute("aria-expanded","true");
+    void renderBeansAuth().then(clerk=>{
+      if(clerk?.isSignedIn) window.setTimeout(()=>beansInput.focus(),20);
+    });
+  };
+
+  beansSignIn.addEventListener("click",async()=>{
+    try{
+      const clerk=await getNblClerk();
+      if(clerk?.isSignedIn){
+        await renderBeansAuth();
+        beansInput.focus();
+        return;
+      }
+      try{
+        clerk.openSignIn({fallbackRedirectUrl:safeReturnUrl(),signUpFallbackRedirectUrl:safeReturnUrl()});
+      }catch{
+        location.href=accountPortalUrl("/sign-in");
+      }
+    }catch{
+      location.href=accountPortalUrl("/sign-in");
+    }
+  });
+
+  beansForm.addEventListener("submit",async event=>{
+    event.preventDefault();
+    const text=beansInput.value.trim();
+    if(!text) return;
+    const clerk=await renderBeansAuth();
+    if(!clerk?.isSignedIn||!clerk.session) return;
+
+    beansInput.value="";
+    appendBeansMessage("user",text);
+    beansHistory.push({role:"user",content:text});
+    beansSubmit.disabled=true;
+    beansInput.disabled=true;
+    beansStatus.textContent="Beans is thinking…";
+
+    try{
+      const token=await clerk.session.getToken();
+      const response=await fetch(NBL_BEANS_WEB_API,{
+        method:"POST",
+        headers:{
+          Accept:"application/json",
+          "Content-Type":"application/json",
+          Authorization:`Bearer ${token}`
+        },
+        body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),messages:beansHistory.slice(-12),mode:"live"})
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok){
+        const reason=payload.reason||payload.code||"";
+        if(response.status===401){
+          beansAuth.hidden=false;
+          beansForm.hidden=true;
+          throw new Error("Your NBL session expired. Sign in again.");
+        }
+        if(reason==="membership_required") throw new Error("Your free Beans replies are used. NBL Chat membership is required to keep talking.");
+        if(reason==="paid_limit_reached") throw new Error("You reached the current Beans reply limit for this billing period.");
+        throw new Error(payload.message||"Beans could not answer just now.");
+      }
+      const reply=String(payload.message||payload.reply||"").trim();
+      if(!reply) throw new Error("Beans returned no text.");
+      beansHistory.push({role:"assistant",content:reply});
+      appendBeansMessage("assistant",reply);
+      const remaining=payload.remaining??payload.usage?.remaining??payload.allowance?.remaining;
+      beansStatus.textContent=Number.isFinite(Number(remaining))
+        ?`Beans is live · ${Number(remaining)} replies remaining`
+        :"Beans is live.";
+    }catch(error){
+      const message=error?.message||"Beans could not answer just now.";
+      appendBeansMessage("assistant",message);
+      beansStatus.textContent=message;
+    }finally{
+      beansSubmit.disabled=false;
+      beansInput.disabled=false;
+      if(!beansForm.hidden) beansInput.focus();
+    }
+  });
+
+  beansToggle.addEventListener("click",openBeans);
+  beansClose.addEventListener("click",closeBeans);
 
   const searchForm=searchPanel.querySelector("[data-nbl-search-form]");
   const searchInput=searchPanel.querySelector("#nbl-search-input");
@@ -658,6 +831,10 @@
   header.querySelectorAll(".nbl-world-nav a").forEach(a=>a.addEventListener("click",()=>setOpen(false)));
   document.addEventListener("keydown",event=>{
     if(event.key!=="Escape") return;
+    if(!beansPanel.hidden){
+      closeBeans();
+      return;
+    }
     if(!searchPanel.hidden){
       closeSearch();
       return;
@@ -682,6 +859,7 @@
 
   document.body.prepend(header);
   document.body.append(searchPanel);
+  document.body.append(beansPanel);
   document.body.classList.add("nbl-world-ready");
   setupNblAccountUi(header);
 
