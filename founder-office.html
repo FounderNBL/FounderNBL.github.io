@@ -503,6 +503,112 @@
       transform:rotate(-3deg);
     }
 
+    /* 3D Beanie Bean desk toy: rotate the model, or drag the hand to pick it up.
+       Releasing it always returns it to its exact desk position. */
+    .desk-bean {
+      --bean-dx: 0px;
+      --bean-dy: 0px;
+      position: absolute;
+      z-index: 8;
+      left: 47.4%;
+      top: 53.8%;
+      width: 12.2%;
+      height: 21.5%;
+      min-width: 78px;
+      min-height: 96px;
+      transform: translate3d(var(--bean-dx), var(--bean-dy), 0);
+      transform-origin: 50% 85%;
+      transition:
+        transform 560ms cubic-bezier(.2,.82,.2,1),
+        filter 180ms ease;
+      filter: drop-shadow(0 10px 9px rgba(0, 0, 0, .48));
+      pointer-events: auto;
+    }
+
+    .desk-bean.is-held {
+      z-index: 26;
+      transition:
+        transform 30ms linear,
+        filter 120ms ease;
+      filter:
+        drop-shadow(0 18px 14px rgba(0, 0, 0, .68))
+        drop-shadow(0 0 10px rgba(255, 220, 133, .18));
+    }
+
+    .desk-bean model-viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: transparent;
+      --poster-color: transparent;
+      --progress-bar-color: var(--gold);
+      cursor: grab;
+    }
+
+    .desk-bean model-viewer:active {
+      cursor: grabbing;
+    }
+
+    .bean-grab {
+      position: absolute;
+      z-index: 4;
+      left: 50%;
+      bottom: -12px;
+      transform: translateX(-50%);
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid rgba(255, 227, 154, .72);
+      border-radius: 50%;
+      color: #fff0bf;
+      background: rgba(3, 9, 17, .90);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, .55);
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .bean-grab:active,
+    .desk-bean.is-held .bean-grab {
+      cursor: grabbing;
+      border-color: var(--gold-bright);
+      background: rgba(38, 27, 8, .94);
+    }
+
+    .bean-grab:focus-visible {
+      outline: 2px solid var(--gold-bright);
+      outline-offset: 3px;
+    }
+
+    .bean-tip {
+      position: absolute;
+      left: 50%;
+      bottom: -40px;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 180px;
+      padding: 5px 8px;
+      border: 1px solid rgba(215, 180, 90, .38);
+      border-radius: 999px;
+      color: #fff0c4;
+      background: rgba(3, 9, 17, .86);
+      font: 700 10px/1.1 Arial, sans-serif;
+      letter-spacing: .02em;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+    }
+
+    .desk-bean:hover .bean-tip,
+    .desk-bean:focus-within .bean-tip,
+    .desk-bean.is-held .bean-tip {
+      opacity: 1;
+    }
+
     @media (max-width: 620px) {
       .home-button {
         min-height: 38px;
@@ -529,6 +635,7 @@
   <script defer src="/nbl-portal.js"></script>
   <link rel="stylesheet" href="/nbl-world-header.css?v=20260909">
   <script defer src="/nbl-world-header.js?v=20260909"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
 </head>
 
 <body>
@@ -553,6 +660,29 @@
       <div class="warmth" aria-hidden="true"></div>
       <div class="gold-bloom" aria-hidden="true"></div>
       <div class="chair-aura" aria-hidden="true"></div>
+
+      <div id="deskBean" class="desk-bean" aria-label="Interactive Beanie Bean figure on the Founder desk">
+        <model-viewer
+          id="deskBeanModel"
+          src="/Beanie%20Bean_Meshy_AI_2026-09-20_19b948-optimized.glb"
+          alt="3D Beanie Bean figure"
+          camera-controls
+          interaction-prompt="none"
+          shadow-intensity="0.9"
+          exposure="1.05"
+          tone-mapping="neutral"
+          camera-orbit="25deg 72deg 105%"
+          touch-action="pan-y"
+        ></model-viewer>
+        <button
+          id="beanGrab"
+          class="bean-grab"
+          type="button"
+          aria-label="Pick up Beanie Bean. Drag this hand and release to return him to the desk."
+          title="Pick up Beanie Bean"
+        >✋</button>
+        <span class="bean-tip" aria-hidden="true">Drag model to spin · drag ✋ to move</span>
+      </div>
 
       <!-- WALL -->
       <button
@@ -805,6 +935,9 @@
       const toast = document.getElementById("toast");
       const lampHotspot = document.getElementById("lampHotspot");
       const chairHotspot = document.querySelector('[data-panel="chair"]');
+      const roomStage = document.querySelector(".room-stage");
+      const deskBean = document.getElementById("deskBean");
+      const beanGrab = document.getElementById("beanGrab");
       let lastFocused = null;
       let lampState = 0;
       let toastTimer = null;
@@ -868,6 +1001,100 @@
           chairHotspot.setAttribute("aria-disabled", "true");
           showToast("The room returns to rest.");
         }
+      }
+
+      /*
+        Beanie Bean has two independent phone interactions:
+        - Drag directly on the 3D model to rotate/spin it.
+        - Drag the hand control to pick up and move the whole figure.
+        Wherever it is released, CSS eases it back to its home position on the desk.
+      */
+      if (roomStage && deskBean && beanGrab) {
+        let beanPointerId = null;
+        let beanStartX = 0;
+        let beanStartY = 0;
+        let beanBaseRect = null;
+        let beanStageRect = null;
+        let beanMoved = false;
+
+        const setBeanOffset = (x, y) => {
+          deskBean.style.setProperty("--bean-dx", `${x}px`);
+          deskBean.style.setProperty("--bean-dy", `${y}px`);
+        };
+
+        const returnBeanHome = () => {
+          beanPointerId = null;
+          deskBean.classList.remove("is-held");
+          setBeanOffset(0, 0);
+        };
+
+        beanGrab.addEventListener("pointerdown", (event) => {
+          if (beanPointerId !== null) return;
+          beanPointerId = event.pointerId;
+          beanStartX = event.clientX;
+          beanStartY = event.clientY;
+          beanBaseRect = deskBean.getBoundingClientRect();
+          beanStageRect = roomStage.getBoundingClientRect();
+          beanMoved = false;
+          deskBean.classList.add("is-held");
+          beanGrab.setPointerCapture(event.pointerId);
+          event.preventDefault();
+          event.stopPropagation();
+        });
+
+        beanGrab.addEventListener("pointermove", (event) => {
+          if (event.pointerId !== beanPointerId || !beanBaseRect || !beanStageRect) return;
+
+          const rawX = event.clientX - beanStartX;
+          const rawY = event.clientY - beanStartY;
+          if (Math.abs(rawX) > 3 || Math.abs(rawY) > 3) beanMoved = true;
+
+          const margin = 6;
+          const minX = beanStageRect.left + margin - beanBaseRect.left;
+          const maxX = beanStageRect.right - margin - beanBaseRect.right;
+          const minY = beanStageRect.top + margin - beanBaseRect.top;
+          const maxY = beanStageRect.bottom - margin - beanBaseRect.bottom;
+
+          const nextX = Math.max(minX, Math.min(maxX, rawX));
+          const nextY = Math.max(minY, Math.min(maxY, rawY));
+          setBeanOffset(nextX, nextY);
+
+          event.preventDefault();
+          event.stopPropagation();
+        });
+
+        const finishBeanDrag = (event) => {
+          if (event.pointerId !== beanPointerId) return;
+          try {
+            if (beanGrab.hasPointerCapture(event.pointerId)) {
+              beanGrab.releasePointerCapture(event.pointerId);
+            }
+          } catch {
+            // The pointer may already have been released by the browser.
+          }
+          returnBeanHome();
+          event.preventDefault();
+          event.stopPropagation();
+        };
+
+        beanGrab.addEventListener("pointerup", finishBeanDrag);
+        beanGrab.addEventListener("pointercancel", finishBeanDrag);
+        beanGrab.addEventListener("lostpointercapture", () => {
+          if (beanPointerId !== null) returnBeanHome();
+        });
+
+        beanGrab.addEventListener("click", (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          if (beanMoved) return;
+
+          deskBean.classList.add("is-held");
+          setBeanOffset(0, -14);
+          window.setTimeout(() => {
+            deskBean.classList.remove("is-held");
+            setBeanOffset(0, 0);
+          }, 220);
+        });
       }
 
       document.querySelectorAll(".hotspot").forEach((hotspot) => {
