@@ -345,11 +345,11 @@
         </span>
       </a>
       <button class="nbl-world-search-toggle" type="button" aria-expanded="false" aria-controls="nbl-search-panel">Search</button>
+      <button class="nbl-world-account nbl-world-account-primary" type="button">Sign in</button>
+      <div class="nbl-world-user" hidden aria-label="NBL account"></div>
       <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland rooms">Rooms</button>
       <nav class="nbl-world-nav" id="nbl-world-nav" aria-label="New Beansland main navigation">
         ${nav.map(([key,label,href,external])=>`<a href="${href}"${room.key===key&&key?' aria-current="page"':''}${external?' target="_blank" rel="noopener noreferrer"':''}>${label}</a>`).join("")}
-        <button class="nbl-world-account" type="button">Sign in / Create account</button>
-        <div class="nbl-world-user" hidden aria-label="NBL account"></div>
       </nav>
     </div>`;
 
