@@ -23,11 +23,11 @@
     ["clothing","Clothing","/clothing.html",false],
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
-    ["studio","Studio","/studio/",false],
+    ["studio","Timmy V Studios","/studio/",false],
     ["office","Founder’s Office","/founder-office.html",false],
     ["about","About NBL","/about.html",false],
     ["","YouTube","https://www.youtube.com/@FounderNBL",true],
-    ["","Instagram","https://www.instagram.com/newbeansland?igsi=MXFobHBhNG9tOXptZw==",true],
+    ["","Instagram","https://www.instagram.com/newbeansland/",true],
     ["","X","https://x.com/FounderNBL",true],
     ["","Contact","mailto:founder@newbeansland.org",false]
   ];
