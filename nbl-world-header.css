@@ -310,6 +310,7 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
   color:var(--nbl-world-gold2);background:rgba(7,20,33,.92);cursor:pointer;
   font:900 .62rem/1 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;
 }
+.nbl-world-account-primary{min-height:40px;max-width:190px;overflow:hidden;text-overflow:ellipsis}
 .nbl-world-account:hover{border-color:var(--nbl-world-gold2);background:rgba(214,161,75,.12)}
 .nbl-world-account:disabled{opacity:.62;cursor:wait}
 .nbl-world-user{flex:0 0 auto;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;gap:8px}
@@ -346,8 +347,8 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
 .nbl-connected-account small{display:block;margin-top:10px;color:#a99d8a;line-height:1.45}
 
 @media(max-width:1320px){
-  .nbl-world-nav .nbl-world-account{margin:7px 0 2px;align-self:flex-start;padding:11px 14px}
-  .nbl-world-nav .nbl-world-user{margin:8px 0 3px;align-self:flex-start}
+  .nbl-world-account-primary{padding:9px 11px;max-width:150px}
+  .nbl-world-user{max-width:160px}
 }
 @media(max-width:540px){
   .nbl-connected-account{padding:14px 14px 24px}
@@ -371,13 +372,18 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
   .nbl-beta-beans{left:8px;width:100px}
 }
 @media(max-width:540px){
-  .nbl-world-header-inner{flex-wrap:wrap;padding:6px 0}
-  .nbl-world-menu{margin-left:0}
-  .nbl-world-account{
-    display:inline-flex;align-items:center;justify-content:center;order:3;
-    max-width:42vw;overflow:hidden;text-overflow:ellipsis;
+  .nbl-world-header-inner{flex-wrap:nowrap;padding:6px 0;gap:7px}
+  .nbl-world-brand{min-width:0;flex:1 1 auto}
+  .nbl-world-brand-copy small{display:none}
+  .nbl-world-search-toggle{padding:8px 8px;min-width:58px}
+  .nbl-world-account-primary{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-height:40px;max-width:76px;padding:8px 9px;overflow:hidden;text-overflow:ellipsis;
+    font-size:.56rem;letter-spacing:.045em;
   }
-  .nbl-world-nav .nbl-world-account{display:inline-flex;align-items:center;justify-content:center;max-width:100%;margin:7px 0 2px;align-self:flex-start}
+  .nbl-world-user{max-width:86px;min-width:0;gap:4px}
+  .nbl-world-user .nbl-world-account{max-width:86px;padding:8px 8px;font-size:.54rem;overflow:hidden;text-overflow:ellipsis}
+  .nbl-world-menu{margin-left:0;min-width:58px;padding:8px 9px;font-size:.58rem;letter-spacing:.06em}
   .nbl-beta-inner{padding-left:102px}
   .nbl-beta-beans{left:4px;width:88px}
 }
