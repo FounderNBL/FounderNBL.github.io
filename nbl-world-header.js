@@ -526,7 +526,7 @@
           "Content-Type":"application/json",
           Authorization:`Bearer ${token}`
         },
-        body:JSON.stringify({messages:beansHistory.slice(-12)})
+        body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),messages:beansHistory.slice(-12),mode:"live"})
       });
       const payload=await response.json().catch(()=>({}));
       if(!response.ok){
