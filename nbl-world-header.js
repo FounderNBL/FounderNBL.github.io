@@ -405,7 +405,7 @@
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">Talk to Beans</h2>
-            <p class="nbl-beans-note">Same Beans. Same NBL account. The reasoning stays behind the curtain.</p>
+            <p class="nbl-beans-note">Same Beans. No account required. The reasoning stays behind the curtain.</p>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close Beans">✕</button>
@@ -420,11 +420,7 @@
           <button type="submit">Send</button>
         </div>
       </form>
-      <div class="nbl-beans-auth" data-nbl-beans-auth hidden>
-        <p>Sign in with your NBL account to talk to Beans.</p>
-        <button type="button" data-nbl-beans-signin>Sign in</button>
-      </div>
-      <p class="nbl-beans-status" data-nbl-beans-status role="status">Your NBL Chat allowance follows the same account here.</p>
+      <p class="nbl-beans-status" data-nbl-beans-status role="status">Beans is free to use. No account required.</p>
     </div>`;
 
   const beansClose=beansPanel.querySelector("[data-nbl-beans-close]");
@@ -433,8 +429,6 @@
   const beansSubmit=beansForm.querySelector('button[type="submit"]');
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
   const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
-  const beansAuth=beansPanel.querySelector("[data-nbl-beans-auth]");
-  const beansSignIn=beansPanel.querySelector("[data-nbl-beans-signin]");
   const beansHistory=[{role:"assistant",content:"I'm Beans. What's up?"}];
 
   const appendBeansMessage=(role,content)=>{
@@ -447,24 +441,6 @@
     wrap.append(who,p);
     beansLog.appendChild(wrap);
     beansLog.scrollTop=beansLog.scrollHeight;
-  };
-
-  const renderBeansAuth=async()=>{
-    try{
-      const clerk=await getNblClerk();
-      const signedIn=Boolean(clerk?.isSignedIn&&clerk.session);
-      beansAuth.hidden=signedIn;
-      beansForm.hidden=!signedIn;
-      beansStatus.textContent=signedIn
-        ?"Your NBL Chat allowance follows the same account here."
-        :"Sign in to use Beans on the website.";
-      return clerk;
-    }catch{
-      beansAuth.hidden=false;
-      beansForm.hidden=true;
-      beansStatus.textContent="The NBL account connection is temporarily unavailable.";
-      return null;
-    }
   };
 
   const closeBeans=()=>{
@@ -480,36 +456,13 @@
     beansPanel.hidden=false;
     document.body.classList.add("nbl-beans-open");
     beansToggle.setAttribute("aria-expanded","true");
-    void renderBeansAuth().then(clerk=>{
-      if(clerk?.isSignedIn) window.setTimeout(()=>beansInput.focus(),20);
-    });
+    window.setTimeout(()=>beansInput.focus(),20);
   };
-
-  beansSignIn.addEventListener("click",async()=>{
-    try{
-      const clerk=await getNblClerk();
-      if(clerk?.isSignedIn){
-        await renderBeansAuth();
-        beansInput.focus();
-        return;
-      }
-      try{
-        clerk.openSignIn({fallbackRedirectUrl:safeReturnUrl(),signUpFallbackRedirectUrl:safeReturnUrl()});
-      }catch{
-        location.href=accountPortalUrl("/sign-in");
-      }
-    }catch{
-      location.href=accountPortalUrl("/sign-in");
-    }
-  });
 
   beansForm.addEventListener("submit",async event=>{
     event.preventDefault();
     const text=beansInput.value.trim();
     if(!text) return;
-    const clerk=await renderBeansAuth();
-    if(!clerk?.isSignedIn||!clerk.session) return;
-
     beansInput.value="";
     appendBeansMessage("user",text);
     beansHistory.push({role:"user",content:text});
@@ -518,36 +471,24 @@
     beansStatus.textContent="Beans is thinking…";
 
     try{
-      const token=await clerk.session.getToken();
       const response=await fetch(NBL_BEANS_WEB_API,{
         method:"POST",
         headers:{
           Accept:"application/json",
-          "Content-Type":"application/json",
-          Authorization:`Bearer ${token}`
+          "Content-Type":"application/json"
         },
         body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),messages:beansHistory.slice(-12),mode:"live"})
       });
       const payload=await response.json().catch(()=>({}));
       if(!response.ok){
         const reason=payload.reason||payload.code||"";
-        if(response.status===401){
-          beansAuth.hidden=false;
-          beansForm.hidden=true;
-          throw new Error("Your NBL session expired. Sign in again.");
-        }
-        if(reason==="membership_required") throw new Error("Your free Beans replies are used. NBL Chat membership is required to keep talking.");
-        if(reason==="paid_limit_reached") throw new Error("You reached the current Beans reply limit for this billing period.");
         throw new Error(payload.message||"Beans could not answer just now.");
       }
       const reply=String(payload.message||payload.reply||"").trim();
       if(!reply) throw new Error("Beans returned no text.");
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply);
-      const remaining=payload.remaining??payload.usage?.remaining??payload.allowance?.remaining;
-      beansStatus.textContent=Number.isFinite(Number(remaining))
-        ?`Beans is live · ${Number(remaining)} replies remaining`
-        :"Beans is live.";
+      beansStatus.textContent="Beans is live · free to use.";
     }catch(error){
       const message=error?.message||"Beans could not answer just now.";
       appendBeansMessage("assistant",message);
@@ -555,7 +496,7 @@
     }finally{
       beansSubmit.disabled=false;
       beansInput.disabled=false;
-      if(!beansForm.hidden) beansInput.focus();
+      beansInput.focus();
     }
   });
 
