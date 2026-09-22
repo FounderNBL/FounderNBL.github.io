@@ -209,7 +209,13 @@
       }else{
         accountButton.textContent="Sign in";
         accountButton.title="Sign in to your NBL account";
-        addAuxButton("Create account",()=>{ location.href=accountPortalUrl("/sign-up"); });
+        addAuxButton("Create account",()=>{
+          try{
+            clerk.openSignUp({fallbackRedirectUrl:location.href});
+          }catch{
+            location.href=accountPortalUrl("/sign-up");
+          }
+        });
         if(panelSignIn){
           panelSignIn.hidden=false;
           panelSignIn.disabled=false;
@@ -220,12 +226,28 @@
       }
     };
 
+    const openSignIn=()=>{
+      if(clerk){
+        try{
+          clerk.openSignIn({fallbackRedirectUrl:location.href});
+          return;
+        }catch{}
+      }
+      location.href=accountPortalUrl("/sign-in");
+    };
+
     const openAccount=()=>{
-      location.href=accountPortalUrl(clerk?.isSignedIn?"/user":"/sign-in");
+      if(clerk?.isSignedIn){
+        try{
+          clerk.openUserProfile();
+          return;
+        }catch{}
+      }
+      openSignIn();
     };
 
     accountButton.addEventListener("click",openAccount);
-    panelSignIn?.addEventListener("click",()=>{ location.href=accountPortalUrl("/sign-in"); });
+    panelSignIn?.addEventListener("click",openSignIn);
 
     panelRequest?.addEventListener("click",async()=>{
       if(!clerk?.isSignedIn||!clerk.session) return;
@@ -253,12 +275,16 @@
     });
 
     render();
+    accountButton.disabled=true;
+    accountButton.textContent="Connecting…";
     void getNblClerk().then(loaded=>{
       clerk=loaded;
       clerk.addListener?.(render);
       render();
     }).catch(()=>{
-      if(panelStatus) panelStatus.textContent="Account connection is optional. Sign in when you want to connect this site with NBL Chat.";
+      accountButton.disabled=false;
+      accountButton.textContent="Sign in";
+      if(panelStatus) panelStatus.textContent="Account connection is temporarily unavailable here. You can still use the NBL account portal.";
     });
   };
 
