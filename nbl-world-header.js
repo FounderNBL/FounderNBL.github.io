@@ -9,7 +9,7 @@
     if(/\/nbl-kids\.html$/.test(path)) return {label:"NBL Kids",key:"kids"};
     if(/\/shanique\.html$/.test(path)) return {label:"Shanique Washington",key:"her"};
     if(/\/stories\.html$/.test(path)) return {label:"TV & Film",key:"stories"};
-    if(/\/studio\/?(?:index\.html)?$/.test(path)) return {label:"NBL Studio",key:"studio"};
+    if(/\/studio\/?(?:index\.html)?$/.test(path)) return {label:"Timmy V Studios",key:"studio"};
     if(/\/founder-office\.html$/.test(path)) return {label:"Founder’s Office",key:"office"};
     if(/\/about\.html$/.test(path)||/\/jamel-hawkins\.html$/.test(path)) return {label:"About NBL",key:"about"};
     if(/\/privacy\.html$/.test(path)||/\/terms\.html$/.test(path)||/\/account-deletion\.html$/.test(path)||/\/nbl-chat-/.test(path)) return {label:"NBL Chat Legal",key:"legal"};
@@ -23,11 +23,11 @@
     ["clothing","Clothing","/clothing.html",false],
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
-    ["studio","Studio","/studio/",false],
+    ["studio","Timmy V Studios","/studio/",false],
     ["office","Founder’s Office","/founder-office.html",false],
     ["about","About NBL","/about.html",false],
     ["","YouTube","https://www.youtube.com/@FounderNBL",true],
-    ["","Instagram","https://www.instagram.com/newbeansland?igsi=MXFobHBhNG9tOXptZw==",true],
+    ["","Instagram","https://www.instagram.com/newbeansland/",true],
     ["","X","https://x.com/FounderNBL",true],
     ["","Contact","mailto:founder@newbeansland.org",false]
   ];

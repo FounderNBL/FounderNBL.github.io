@@ -72,7 +72,8 @@
   setProductImage("Black Is Not A Crime","/NBL-Being-Black.png?v=11fc099e","Black Is Not A Crime NBL statement T-shirt");
 
   document.querySelectorAll(".status").forEach(status=>{
-    if(status.closest("#footwear")){
+    const title=(status.closest(".product")?.querySelector("h3")?.textContent||"").trim().toLowerCase();
+    if(title==="nbl sneakers"){
       status.textContent="Coming Soon";
       return;
     }
@@ -119,7 +120,7 @@
     const pride=document.createElement("section");
     pride.className="section";
     pride.id="pride";
-    pride.innerHTML=`<div class="shell"><div class="section-head"><p class="kicker">NBL Pride Collection</p><h2>Wear your truth. Belong anyway.</h2><p>NBL Pride statement shirts are $39.99 each.</p></div><div class="nbl-pride-shell"><h3>NBL Pride Collection</h3><p>The Pride collection is now part of the NBL Clothing Co. catalog. Final product display art is used only from Founder-approved assets.</p></div></div>`;
+    pride.innerHTML=`<div class="shell"><div class="section-head"><p class="kicker">NBL Pride Collection</p><h2>Wear your truth. Belong anyway.</h2><p>The NBL Pride Collection is still being prepared.</p></div><div class="nbl-pride-shell"><span class="status">Coming Soon</span><h3>NBL Pride Collection</h3><p>The Pride collection is part of the NBL Clothing Co. world, but it is not open for sale yet. Final product display art is used only from Founder-approved assets.</p></div></div>`;
     const footwear=document.getElementById("footwear");
     (footwear||document.querySelector("#request")||document.querySelector("main")).before(pride);
     const subnav=document.querySelector(".subnav-inner");
@@ -133,11 +134,11 @@
   }
 
   const metaDescription=document.querySelector('meta[name="description"]');
-  if(metaDescription) metaDescription.content="Explore NBL Clothing Co. from New Beansland™ — adult streetwear, statement pieces, NBL Kids, NBL Pride, hats and upcoming footwear.";
+  if(metaDescription) metaDescription.content="Explore NBL Clothing Co. from New Beansland™ — adult streetwear, statement pieces, NBL Kids, hats and footwear. Not So Small™, NBL Pride, and NBL Sneakers are Coming Soon.";
 
   const heroCopy=document.querySelector("main .hero .hero-inner > p:not(.kicker)");
-  if(heroCopy) heroCopy.textContent="New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces, NBL Kids, NBL Pride, hats and footwear — with sneakers still the only Coming Soon category.";
+  if(heroCopy) heroCopy.textContent="New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces, NBL Kids, hats and footwear are available by request. Not So Small™, NBL Pride, and NBL Sneakers are the only Coming Soon releases.";
 
   const firstSectionCopy=document.querySelector("main > .section .section-head p:last-child");
-  if(firstSectionCopy) firstSectionCopy.textContent="Current NBL clothing is available by request. Sneakers remain Coming Soon.";
+  if(firstSectionCopy) firstSectionCopy.textContent="Current NBL clothing is available by request. Not So Small™, NBL Pride, and NBL Sneakers remain Coming Soon.";
 })();
