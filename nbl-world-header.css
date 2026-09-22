@@ -220,8 +220,9 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
 }
 .nbl-world-account:hover{border-color:var(--nbl-world-gold2);background:rgba(214,161,75,.12)}
 .nbl-world-account:disabled{opacity:.62;cursor:wait}
-.nbl-world-user{flex:0 0 auto;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center}
+.nbl-world-user{flex:0 0 auto;min-width:34px;min-height:34px;display:flex;align-items:center;justify-content:center;gap:8px}
 .nbl-world-user[hidden]{display:none!important}
+.nbl-world-account-secondary{background:rgba(2,6,11,.72);border-style:dashed}
 
 .nbl-connected-account{
   padding:18px 22px 30px;background:linear-gradient(180deg,rgba(2,6,11,.2),rgba(7,20,33,.58));
@@ -284,7 +285,7 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
     display:inline-flex;align-items:center;justify-content:center;order:3;
     max-width:42vw;overflow:hidden;text-overflow:ellipsis;
   }
-  .nbl-world-nav .nbl-world-account{display:none}
+  .nbl-world-nav .nbl-world-account{display:inline-flex;align-items:center;justify-content:center;max-width:100%;margin:7px 0 2px;align-self:flex-start}
   .nbl-beta-inner{padding-left:102px}
   .nbl-beta-beans{left:4px;width:88px}
 }

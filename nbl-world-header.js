@@ -164,26 +164,56 @@
     const panelStatus=panel?.querySelector("[data-nbl-panel-status]");
     let clerk=null;
 
+    const addAuxButton=(label,handler)=>{
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="nbl-world-account nbl-world-account-secondary";
+      button.textContent=label;
+      button.addEventListener("click",handler);
+      userHost.appendChild(button);
+      userHost.hidden=false;
+      return button;
+    };
+
     const render=()=>{
       userHost.hidden=true;
       userHost.replaceChildren();
       accountButton.hidden=false;
       accountButton.disabled=false;
-      if(!clerk) return;
+
+      if(!clerk){
+        accountButton.textContent="Sign in";
+        accountButton.title="Sign in to your NBL account";
+        addAuxButton("Create account",()=>{ location.href=accountPortalUrl("/sign-up"); });
+        return;
+      }
+
       if(clerk.isSignedIn){
         const user=clerk.user;
         const displayName=(user?.fullName||user?.firstName||user?.primaryEmailAddress?.emailAddress||"Account").trim();
         accountButton.textContent=displayName;
         accountButton.title="Manage your NBL account";
+        const signOutButton=addAuxButton("Sign out",async()=>{
+          signOutButton.disabled=true;
+          signOutButton.textContent="Signing out…";
+          try{
+            await clerk.signOut();
+            render();
+          }catch{
+            signOutButton.disabled=false;
+            signOutButton.textContent="Sign out";
+          }
+        });
         if(panelSignIn) panelSignIn.hidden=true;
         void readUniversityAccess(clerk);
       }else{
-        accountButton.textContent="Sign in / Create account";
-        accountButton.title="";
+        accountButton.textContent="Sign in";
+        accountButton.title="Sign in to your NBL account";
+        addAuxButton("Create account",()=>{ location.href=accountPortalUrl("/sign-up"); });
         if(panelSignIn){
           panelSignIn.hidden=false;
           panelSignIn.disabled=false;
-          panelSignIn.textContent="Sign in / Create account";
+          panelSignIn.textContent="Sign in";
         }
         if(panelRequest) panelRequest.hidden=true;
         if(panelStatus) panelStatus.textContent="Account connection is optional.";
@@ -222,6 +252,7 @@
       }
     });
 
+    render();
     void getNblClerk().then(loaded=>{
       clerk=loaded;
       clerk.addListener?.(render);
