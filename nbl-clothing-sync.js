@@ -55,6 +55,31 @@
     actions.prepend(el);
   };
 
+  const applyBuyArtOverlay=card=>{
+    if(!card||card.dataset.nblBuyArt==="true") return;
+    const media=card.querySelector(".product-media");
+    const image=media?.querySelector("img");
+    if(!media||!image) return;
+    card.dataset.nblBuyArt="true";
+    media.style.position="relative";
+    const buy=document.createElement("span");
+    buy.className="nbl-art-buy";
+    buy.textContent="Buy Now";
+    media.appendChild(buy);
+    const placeBuy=()=>{
+      const mediaBox=media.getBoundingClientRect();
+      const imageBox=image.getBoundingClientRect();
+      if(!imageBox.width||!imageBox.height) return;
+      buy.style.left=`${imageBox.left-mediaBox.left+(imageBox.width*.566)}px`;
+      buy.style.top=`${imageBox.top-mediaBox.top+(imageBox.height*.578)}px`;
+      buy.style.width=`${imageBox.width*.263}px`;
+      buy.style.height=`${imageBox.height*.073}px`;
+    };
+    image.addEventListener("load",placeBuy);
+    window.addEventListener("resize",placeBuy,{passive:true});
+    requestAnimationFrame(placeBuy);
+  };
+
   const addProduct=(grid,{id,title,copy,image,price,subject})=>{
     if(!grid||document.getElementById(id)) return;
     const card=document.createElement("article");
@@ -70,44 +95,13 @@
   setPrice(ice,"$29.99");
   const identity=setProductImage("Identity","/NBL_Identity_T.png?v=d9cc1bb7","NBL Identity T-shirt display");
   setPrice(identity,"$39.99");
-  const identityMedia=identity?.querySelector(".product-media");
-  const identityImage=identityMedia?.querySelector("img");
-  if(identityMedia&&identityImage){
-    identityMedia.style.position="relative";
-    const buy=document.createElement("span");
-    buy.className="nbl-art-buy";
-    buy.textContent="Buy Now";
-    identityMedia.appendChild(buy);
-    const placeBuy=()=>{
-      const mediaBox=identityMedia.getBoundingClientRect();
-      const imageBox=identityImage.getBoundingClientRect();
-      if(!imageBox.width||!imageBox.height) return;
-      buy.style.left=`${imageBox.left-mediaBox.left+(imageBox.width*.566)}px`;
-      buy.style.top=`${imageBox.top-mediaBox.top+(imageBox.height*.578)}px`;
-      buy.style.width=`${imageBox.width*.263}px`;
-      buy.style.height=`${imageBox.height*.073}px`;
-    };
-    identityImage.addEventListener("load",placeBuy);
-    window.addEventListener("resize",placeBuy,{passive:true});
-    requestAnimationFrame(placeBuy);
-  }
   setProductImage("Black Is Not A Crime","/NBL-Being-Black.png?v=11fc099e","Black Is Not A Crime NBL statement T-shirt");
 
   document.querySelectorAll(".status").forEach(status=>{
-    const title=(status.closest(".product")?.querySelector("h3")?.textContent||"").trim().toLowerCase();
-    if(title==="nbl sneakers"){
-      status.textContent="Coming Soon";
-      return;
-    }
     if(/made to order|coming soon/i.test(status.textContent||"")) status.remove();
   });
 
   document.querySelectorAll(".product .request-btn").forEach(button=>{
-    const title=(button.closest(".product")?.querySelector("h3")?.textContent||"").trim().toLowerCase();
-    if(title==="nbl sneakers"){
-      button.remove();
-      return;
-    }
     button.textContent="Buy Now";
   });
 
@@ -164,12 +158,14 @@
     }
   }
 
+  document.querySelectorAll(".product").forEach(applyBuyArtOverlay);
+
   const metaDescription=document.querySelector('meta[name="description"]');
-  if(metaDescription) metaDescription.content="Explore NBL Clothing Co. from New Beansland™ — adult streetwear, statement pieces and NBL Kids. Not So Small™, NBL Pride and NBL Sneakers are Coming Soon.";
+  if(metaDescription) metaDescription.content="Explore NBL Clothing Co. from New Beansland™ — adult streetwear, statement pieces, NBL Kids, hats and footwear. Not So Small™ and NBL Pride are Coming Soon.";
 
   const heroCopy=document.querySelector("main .hero .hero-inner > p:not(.kicker)");
-  if(heroCopy) heroCopy.textContent="New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces and current NBL Kids clothing are available now. Not So Small™, NBL Pride and NBL Sneakers are Coming Soon.";
+  if(heroCopy) heroCopy.textContent="New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces, current NBL Kids clothing, hats and footwear are available now. Not So Small™ and NBL Pride are Coming Soon.";
 
   const firstSectionCopy=document.querySelector("main > .section .section-head p:last-child");
-  if(firstSectionCopy) firstSectionCopy.textContent="Current NBL clothing is ready to buy. Not So Small™, NBL Pride and NBL Sneakers remain Coming Soon.";
+  if(firstSectionCopy) firstSectionCopy.textContent="Current NBL clothing and footwear are ready to buy. Not So Small™ and NBL Pride remain Coming Soon.";
 })();
