@@ -2,14 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-  <title>Founder’s Office | New Beansland</title>
-  <meta name="description" content="Walk through the playable Founder’s Office of New Beansland. Pick up artifacts, inspect the real 3D objects, and find the one-room light.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Enter New Beansland | The Founder’s Office</title>
+  <meta name="description" content="Enter a playable retro 3D New Beansland experience and explore the Founder’s Office through movement, discovery, and artifact inspection.">
   <meta name="theme-color" content="#02050a">
-  <meta name="robots" content="index,follow">
+  <meta name="robots" content="noindex,follow">
   <link rel="canonical" href="https://newbeansland.org/enter/">
   <link rel="icon" type="image/png" href="../nbl-writing-mark.png">
-  <link rel="stylesheet" href="game.css?v=20260923-real-game">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="preload" as="image" href="../founder-office-room.png" fetchpriority="high">
+  <link rel="preload" as="image" href="../if-it-is-is-it-banner.png">
+  <link rel="preload" as="image" href="../desk-clue-plaque.png">
+  <link rel="preload" as="image" href="../founders-office-yolanda.png">
+  <link rel="modulepreload" href="performance-budget.js">
+  <link rel="modulepreload" href="retro-room.js">
+  <link rel="modulepreload" href="room-content.js">
+  <link rel="modulepreload" href="yolanda-content.js">
+  <link rel="modulepreload" href="game.js">
+  <link rel="stylesheet" href="game.css">
   <script type="importmap">
     {
       "imports": {
@@ -20,67 +31,76 @@
   </script>
 </head>
 <body>
-  <main id="game" aria-label="Playable 3D Founder’s Office"></main>
+  <main id="game" aria-label="Playable retro 3D Founder’s Office"></main>
 
   <div class="hud">
     <div class="topbar">
-      <a class="hud-button" href="../home.html">← Leave office</a>
-      <div id="status" class="status" role="status" aria-live="polite">The room is loading.</div>
-      <button id="pauseButton" class="hud-button desktop-only" type="button">Pause</button>
+      <a class="hud-button" href="../home.html">← Leave the room</a>
+      <div id="status" class="status" role="status" aria-live="polite">Find the light. Look closely.</div>
+      <div class="topbar-links">
+        <a class="hud-button" href="https://x.com/FounderNBL" target="_blank" rel="noopener noreferrer" aria-label="Open New Beansland on X">X @FounderNBL</a>
+        <a class="hud-button" href="https://cash.app/$FounderNBL" target="_blank" rel="noopener noreferrer" aria-label="Open the New Beansland Cash App page">Cash App $FounderNBL</a>
+        <button id="pauseButton" class="hud-button" type="button">Pause</button>
+      </div>
     </div>
     <div class="reticle" aria-hidden="true"></div>
     <div id="prompt" class="prompt" role="status" aria-live="polite"></div>
-
-    <div id="touchControls" class="touch-controls" aria-label="Touch game controls">
-      <div id="leftStick" class="left-stick" aria-label="Move joystick">
-        <div class="stick-ring"></div>
-        <div id="leftStickKnob" class="stick-knob"></div>
+    <div class="mobile-controls" aria-label="Touch movement controls">
+      <div class="dpad">
+        <span></span><button class="touch-button" data-move="forward" type="button" aria-label="Move forward">▲</button><span></span>
+        <button class="touch-button" data-move="left" type="button" aria-label="Move left">◀</button>
+        <button class="touch-button" data-move="back" type="button" aria-label="Move backward">▼</button>
+        <button class="touch-button" data-move="right" type="button" aria-label="Move right">▶</button>
       </div>
-      <div id="rightLook" class="right-look" aria-label="Drag here to look around">
-        <span>DRAG TO LOOK</span>
-      </div>
-      <button id="interactButton" class="interact-button" type="button" hidden>PICK UP</button>
+      <div id="lookPad" class="look-pad" aria-label="Drag to look around">DRAG TO LOOK</div>
     </div>
   </div>
 
-  <div id="orientationHint" class="orientation-hint" hidden>Turn your phone sideways for the full office.</div>
-
   <section id="intro" class="intro" aria-labelledby="introTitle">
     <div class="intro-card">
-      <p class="eyebrow">Founder’s Office</p>
-      <h1 id="introTitle">Walk In.</h1>
-      <p class="intro-copy">This is the first playable room in New Beansland. Walk around, look directly at something that matters, and pick it up. Real 3D objects can be turned in your hand. Anything without a 3D model still opens as the original flat artifact.</p>
+      <p class="eyebrow">The first door</p>
+      <h1 id="introTitle">Enter New Beansland</h1>
+      <p class="intro-copy">You are not opening another page. You are entering a low-poly Founder’s Office built to feel like a lost late-1990s adventure game. Move slowly, look closely, and approach anything that seems meaningful.</p>
       <div class="controls-grid" aria-label="Game controls">
-        <div class="control-note"><strong>Phone</strong>Left thumb moves. Drag the right side to look. The hand button appears when something can be picked up.</div>
-        <div class="control-note"><strong>Computer</strong>WASD or arrows to move. Mouse to look. Press E to pick up.</div>
+        <div class="control-note"><strong>Move</strong>WASD, arrow keys, or touch controls</div>
+        <div class="control-note"><strong>Look</strong>Move the mouse or drag the right control</div>
+        <div class="control-note"><strong>Inspect</strong>Click, tap, or press E when prompted</div>
       </div>
-      <button id="enterButton" class="enter-button" type="button">Enter the Office</button>
+      <button id="enterButton" class="enter-button" type="button">Open the Door</button>
     </div>
   </section>
 
   <section id="inspector" class="inspector" role="dialog" aria-modal="true" aria-labelledby="artifactTitle" hidden>
     <article class="inspector-card">
-      <button id="closeInspector" class="close-inspector" type="button" aria-label="Put the object back">✕</button>
+      <button id="closeInspector" class="close-inspector" type="button" aria-label="Return artifact to the room">✕</button>
       <div class="inspector-layout">
         <div class="artifact-stage">
-          <div id="artifact3D" class="artifact-3d" hidden>
-            <canvas id="artifact3DCanvas" aria-label="3D artifact you can rotate and zoom"></canvas>
-          </div>
-          <div id="artifact2D" class="artifact-2d" hidden>
-            <img id="artifactImage" alt="">
-          </div>
-          <div id="artifactLoading" class="artifact-loading">Loading…</div>
+          <canvas id="artifactCanvas" width="1200" height="900" aria-label="Inspectable artifact"></canvas>
         </div>
         <div class="artifact-copy">
-          <p class="eyebrow">You picked it up</p>
+          <p class="eyebrow">Artifact inspection</p>
           <h2 id="artifactTitle"></h2>
-          <p id="artifactStory" class="story"></p>
-          <p class="inspect-help">3D: drag to rotate, pinch or scroll to zoom. Flat artifact: use the original image exactly as it exists.</p>
+          <p>Drag and zoom to read the real object. Its meaning is preserved on the back or beneath it.</p>
+          <div class="inspector-actions">
+            <button id="zoomIn" class="inspect-button secondary" type="button">Zoom in</button>
+            <button id="zoomOut" class="inspect-button secondary" type="button">Zoom out</button>
+            <button id="resetView" class="inspect-button secondary" type="button">Reset</button>
+            <button id="storyButton" class="inspect-button" type="button" hidden aria-hidden="true" tabindex="-1">Story</button>
+          </div>
+          <div class="artifact-back" aria-label="Meaning on the back of the artifact">
+            <p class="artifact-back-label">On the back</p>
+            <div id="artifactStory" class="story"></div>
+          </div>
         </div>
       </div>
     </article>
   </section>
 
-  <script type="module" src="game.js?v=20260923-real-game"></script>
+  <script type="module" src="performance-budget.js"></script>
+  <script type="module" src="retro-room.js"></script>
+  <script type="module" src="room-content.js"></script>
+  <script type="module" src="yolanda-content.js"></script>
+  <script type="module" src="game.js"></script>
+  <script src="game-enhancements.js" defer></script>
 </body>
 </html>
