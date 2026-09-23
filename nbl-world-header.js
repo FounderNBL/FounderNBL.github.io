@@ -24,7 +24,7 @@
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
     ["studio","Timmy V Studios","/studio/",false],
-    ["office","Founder’s Office","/enter/",false],
+    ["office","Founder’s Office","/founder-office.html",false],
     ["about","About NBL","/about.html",false],
     ["","YouTube","https://www.youtube.com/@FounderNBL",true],
     ["","Instagram","https://www.instagram.com/newbeansland/",true],
