@@ -2,11 +2,8 @@ import { access, readFile } from "node:fs/promises";
 
 const files = {
   index: await readFile("enter/index.html", "utf8"),
-  game: await readFile("enter/game.js", "utf8"),
-  retro: await readFile("enter/retro-room.js", "utf8"),
-  content: await readFile("enter/room-content.js", "utf8"),
-  yolanda: await readFile("enter/yolanda-content.js", "utf8"),
-  performance: await readFile("enter/performance-budget.js", "utf8")
+  game: await readFile("enter/office-v2.js", "utf8"),
+  css: await readFile("enter/office-v2.css", "utf8")
 };
 
 const errors = [];
@@ -14,50 +11,64 @@ const requireText = (fileName, text, reason) => {
   if (!files[fileName].includes(text)) errors.push(`${fileName}: ${reason}`);
 };
 
-const performanceIndex = files.index.indexOf('src="performance-budget.js"');
-const retroIndex = files.index.indexOf('src="retro-room.js"');
-const contentIndex = files.index.indexOf('src="room-content.js"');
-const yolandaIndex = files.index.indexOf('src="yolanda-content.js"');
-const gameIndex = files.index.indexOf('src="game.js"');
-
-if (!(performanceIndex >= 0 && retroIndex > performanceIndex && contentIndex > retroIndex && yolandaIndex > contentIndex && gameIndex > yolandaIndex)) {
-  errors.push("index: performance-budget.js, retro-room.js, room-content.js, yolanda-content.js, and game.js must load in that order.");
+requireText("index", 'href="office-v2.css', "V2 stylesheet is not active.");
+requireText("index", 'src="office-v2.js', "V2 game module is not active.");
+if (files.index.includes('src="game.js"') || files.index.includes('game-enhancements.js') || files.index.includes('retro-room.js')) {
+  errors.push("index: legacy Founder Office blueprint runtime is still active.");
 }
 
-for (const artifact of ["graduation", "banner", "doctorate", "masters", "family", "founder", "yolanda", "clue", "chair"]) {
-  requireText("game", `${artifact}: {`, `required artifact '${artifact}' is missing.`);
+for (const id of ["moveStick","lookStick","grabButton","useButton","inspector","viewerCanvas"]) {
+  requireText("index", `id="${id}"`, `required V2 control '${id}' is missing.`);
 }
 
-requireText("game", "function updateLamp()", "the three-touch lamp sequence is missing.");
-requireText("game", "chairUnlocked", "the chair unlock state is missing.");
-requireText("game", "beginArtifactTransition", "artifact approach animation is missing.");
-requireText("game", "revealInspector", "artifact inspection is missing.");
-requireText("game", "Touch the one-room light", "the lamp interaction prompt is missing.");
+requireText("css", ".left-stick", "left/body stick styling is missing.");
+requireText("css", ".right-stick", "right/head stick styling is missing.");
+requireText("css", "@media(orientation:portrait)", "portrait reduced-control layout is missing.");
+requireText("game", 'bindStick(moveStick,moveKnob,moveAxis)', "body movement stick is not wired.");
+requireText("game", 'bindStick(lookStick,lookKnob,lookAxis)', "head movement stick is not wired.");
+requireText("game", 'grabButton.addEventListener', "grab action is not wired.");
+requireText("game", 'useButton.addEventListener', "use action is not wired.");
+requireText("game", 'function show3D(item)', "3D inspection is missing.");
+requireText("game", 'function showImage(item)', "flat/original-image fallback inspection is missing.");
 
-requireText("retro", "function installRetroRoom", "the retro room installer is missing.");
-requireText("retro", "function buildRoomShell", "the low-poly room shell is missing.");
-requireText("retro", "function buildBookcase", "the low-poly bookcases are missing.");
-requireText("performance", "maximumPixelRatio", "the adaptive phone rendering budget is missing.");
+for (const ref of [
+  "../NBL_Office_Desk.glb",
+  "../NBL_Desk_Lamp.glb",
+  "../NBL_Model_Toy.glb",
+  "../NBL_Model_Toy_2-optimized.glb",
+  "../Founder_Plaque.glb",
+  "../Master_Of_Applied_Skepticism_Certificate-optimized.glb",
+  "../Institute_Of_Evidence-Based_Practice_Certificate.glb",
+  "../Use_A_Light_.glb",
+  "../New_Beansland_University_Crest-optimized.glb"
+]) {
+  requireText("game", ref, `current 3D asset reference '${ref}' is missing.`);
+}
 
-requireText("content", 'asset: "../if-it-is-is-it-banner.png"', "the exact If it is is it? poster is not assigned.");
-requireText("content", 'position: [0, 4.26, -4.34]', "the poster is not centered directly behind the chair.");
-requireText("content", 'asset: "../desk-clue-plaque.png"', "the exact clue plaque is not assigned.");
-requireText("content", 'position: [0, 0.84, 0.64]', "the clue is not attached to the front of the desk.");
-requireText("content", 'asset: "../founder-nameplate.png"', "the exact Founder nameplate is not assigned to the desk.");
-requireText("content", 'asset: "../new-beansland-family-photo.png"', "the exact Family photo is not assigned to the desk.");
-requireText("content", 'loadTexture("../official-nbl-emblem.png"', "the exact NBL chair emblem is missing.");
-requireText("content", '["The Desk Clue", "../desk-clue-plaque.png"]', "the clue inspector does not show the exact plaque.");
-requireText("content", '["The Empty Chair", "../official-nbl-emblem.png"]', "the chair inspector does not show the exact emblem.");
-requireText("content", "function buildExactLamp", "the NBL desk lamp model is missing.");
-requireText("content", "function relocateBookcases", "the bookcases are not moved away from the wall artifacts.");
-requireText("content", 'dataset.nblRoomContent = "exact-founder-layout"', "the exact room content marker is missing.");
-
-requireText("yolanda", 'const exactYolandaAsset = "../founders-office-yolanda.png"', "the exact uploaded Yolanda image is not assigned.");
-requireText("yolanda", 'object.userData?.artifactId === "yolanda"', "the exact Yolanda texture is not attached to the room artifact.");
-requireText("yolanda", 'title.textContent.trim() !== "For You, Mom — Yolanda"', "the Yolanda inspection override is missing.");
-requireText("yolanda", 'dataset.nblYolandaAsset = "exact-upload"', "the exact Yolanda room marker is missing.");
+for (const ref of [
+  "../if-it-is-is-it-banner.png",
+  "../founder-graduation-remarks.png",
+  "../founder-doctorate-degree.png",
+  "../founder-masters-degree.png",
+  "../new-beansland-family-photo.png",
+  "../founder-nameplate.png",
+  "../desk-clue-plaque.png",
+  "../founders-office-yolanda.png",
+  "../official-nbl-emblem.png"
+]) {
+  requireText("game", ref, `current flat/original asset reference '${ref}' is missing.`);
+}
 
 const requiredAssets = [
+  "NBL_Office_Desk.glb",
+  "NBL_Desk_Lamp.glb",
+  "NBL_Model_Toy.glb",
+  "NBL_Model_Toy_2-optimized.glb",
+  "Founder_Plaque.glb",
+  "Master_Of_Applied_Skepticism_Certificate-optimized.glb",
+  "Institute_Of_Evidence-Based_Practice_Certificate.glb",
+  "Use_A_Light_.glb",
+  "New_Beansland_University_Crest-optimized.glb",
   "if-it-is-is-it-banner.png",
   "founder-graduation-remarks.png",
   "founder-doctorate-degree.png",
@@ -65,24 +76,22 @@ const requiredAssets = [
   "new-beansland-family-photo.png",
   "founder-nameplate.png",
   "desk-clue-plaque.png",
-  "official-nbl-emblem.png",
-  "nbl-writing-mark.png",
-  "founder-office-room.png",
-  "founders-office-yolanda.png"
+  "founders-office-yolanda.png",
+  "official-nbl-emblem.png"
 ];
 
 await Promise.all(requiredAssets.map(async (path) => {
   try {
     await access(path);
   } catch {
-    errors.push(`asset: required exact room file '${path}' is missing.`);
+    errors.push(`asset: required current Founder Office file '${path}' is missing.`);
   }
 }));
 
 if (errors.length) {
-  console.error("Founder’s Office integrity check failed:\n");
+  console.error("Founder’s Office V2 integrity check failed:\n");
   errors.forEach((error) => console.error(`- ${error}`));
   process.exit(1);
 }
 
-console.log("Founder’s Office syntax, puzzle, exact assets, and room placement checks passed.");
+console.log("Founder’s Office V2 current-assets, controls, grab/use, and inspection checks passed.");
