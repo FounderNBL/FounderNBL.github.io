@@ -6,7 +6,13 @@
   <meta name="theme-color" content="#07101d">
   <title>Founder’s Office | New Beansland</title>
   <meta name="description" content="Enter the interactive Founder’s Office of New Beansland and discover the lamp puzzle, chair message, family history, certificates, clues, and the story of Founder Jamel Hawkins.">
-  <link rel="canonical" href="https://newbeansland.org/founder-office.html">
+  <link rel="canonical" href="https://newbeansland.org/enter/">
+  <script>
+    (() => {
+      const params = new URLSearchParams(location.search);
+      if (params.get("classic") !== "1") location.replace("/enter/");
+    })();
+  </script>
   <style>
     :root {
       --navy: #07101d;
