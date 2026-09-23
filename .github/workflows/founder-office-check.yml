@@ -3,16 +3,26 @@ name: Founder’s Office check
 on:
   pull_request:
     paths:
-      - "enter/**"
+      - "founder-office.html"
+      - "founder-office-3d.js"
+      - "founder-office-3d.css"
+      - "enter/index.html"
       - "scripts/check-founder-office.mjs"
       - ".github/workflows/founder-office-check.yml"
+      - "*.glb"
+      - "assets/3d/models/**"
   push:
     branches:
       - main
     paths:
-      - "enter/**"
+      - "founder-office.html"
+      - "founder-office-3d.js"
+      - "founder-office-3d.css"
+      - "enter/index.html"
       - "scripts/check-founder-office.mjs"
       - ".github/workflows/founder-office-check.yml"
+      - "*.glb"
+      - "assets/3d/models/**"
 
 permissions:
   contents: read
@@ -31,13 +41,8 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          node --check enter/performance-budget.js
-          node --check enter/retro-room.js
-          node --check enter/room-content.js
-          node --check enter/yolanda-content.js
-          node --check enter/game.js
-          node --check enter/game-enhancements.js
+          node --check founder-office-3d.js
           node --check scripts/check-founder-office.mjs
 
-      - name: Verify puzzles, exact assets, and room layout
+      - name: Verify room controls, puzzle, and real assets
         run: node scripts/check-founder-office.mjs
