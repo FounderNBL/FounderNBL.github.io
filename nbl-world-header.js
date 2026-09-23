@@ -602,7 +602,7 @@
         usedWebSearch:false,
         query,
         status:"results",
-        results:[{title:"New Beansland",excerpt:"NBL stands for New Beansland."}],
+        results:[{title:"New Beansland",excerpt:"NBL stands for New Beansland.",sourceUrl:"/about.html"}],
         message:null,
         founderCodeVersion:"0.1.0"
       };
@@ -646,7 +646,7 @@
       const key=`${hit.source?.key||hit.source?.title||"nbl"}\u0000${normalizeNblSearch(excerpt)}`;
       if(seen.has(key)) continue;
       seen.add(key);
-      results.push({title:hit.source?.title||"New Beansland",excerpt});
+      results.push({title:hit.source?.title||"New Beansland",excerpt,sourceUrl:typeof hit.source?.sourceUrl==="string"?hit.source.sourceUrl:""});
       if(results.length>=5) break;
     }
 
@@ -676,6 +676,14 @@
         const excerpt=document.createElement("p");
         excerpt.textContent=typeof result?.excerpt==="string"?result.excerpt:"";
         card.append(title,excerpt);
+        const sourceUrl=typeof result?.sourceUrl==="string"?result.sourceUrl.trim():"";
+        if(sourceUrl){
+          const sourceLink=document.createElement("a");
+          sourceLink.className="nbl-search-source";
+          sourceLink.href=sourceUrl;
+          sourceLink.textContent="View public source";
+          card.append(sourceLink);
+        }
         searchResults.append(card);
       }
     }else{

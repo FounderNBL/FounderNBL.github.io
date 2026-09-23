@@ -168,6 +168,11 @@ body.nbl-search-open{overflow:hidden!important}
   font:700 1.03rem/1.25 Georgia,"Times New Roman",serif;
 }
 .nbl-search-result p{margin:7px 0 0;color:#ded4c4;font-size:.92rem;line-height:1.55}
+.nbl-search-source{
+  display:inline-flex;margin-top:11px;color:var(--nbl-world-gold2);
+  font-size:.78rem;font-weight:900;text-decoration:none;border-bottom:1px solid rgba(214,161,75,.45);
+}
+.nbl-search-source:hover{border-bottom-color:var(--nbl-world-gold2)}
 .nbl-search-google{
   display:inline-flex;margin-top:16px;padding:10px 13px;border:1px solid var(--nbl-world-line);border-radius:999px;
   color:var(--nbl-world-gold2);text-decoration:none;font-size:.78rem;font-weight:900;letter-spacing:.03em;
