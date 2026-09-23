@@ -26,7 +26,7 @@ requireText(game, "lampState = (lampState + 1) % 3", "three-touch lamp sequence 
 requireText(game, "lampState < 2", "chair light gate is missing.");
 requireText(game, "bindStick(moveZone", "BODY joystick is not wired.");
 requireText(game, "bindStick(lookZone", "HEAD joystick is not wired.");
-requireText(game, "Sequential loading", "phone-safe sequential GLB loading is missing.");
+requireText(game, "for (const spec of specs) await loadWorldModel(spec);", "phone-safe sequential GLB loading is missing.");
 requireText(game, 'renderer.shadowMap.enabled = true', "room shadows are disabled.");
 requireText(game, 'THREE.ACESFilmicToneMapping', "filmic tone mapping is missing.");
 requireText(css, ".portrait-note", "portrait fallback controls/hint are missing.");
