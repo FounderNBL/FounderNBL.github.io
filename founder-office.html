@@ -503,6 +503,33 @@
       transform:rotate(-3deg);
     }
 
+    /* Real GLB office artifacts load only when their matching object is opened. */
+    .office-artifact-model {
+      width: min(100%, 620px);
+      margin: 0 auto 22px;
+      padding: 10px;
+      border: 1px solid rgba(215, 180, 90, .35);
+      border-radius: 14px;
+      background: radial-gradient(circle at 50% 35%, rgba(255, 226, 153, .10), transparent 48%), #07101d;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, .38);
+    }
+    .office-artifact-model model-viewer {
+      display: block;
+      width: 100%;
+      height: clamp(260px, 48vh, 520px);
+      background: transparent;
+      --poster-color: transparent;
+      --progress-bar-color: var(--gold);
+      touch-action: pan-y;
+    }
+    .office-artifact-model p {
+      margin: 8px 0 0;
+      color: #cdbf9f;
+      text-align: center;
+      font: 700 .74rem/1.4 Arial, sans-serif;
+      letter-spacing: .04em;
+    }
+
     /* 3D Beanie Bean desk toy: rotate the model, or drag the hand to pick it up.
        Releasing it always returns it to its exact desk position. */
     .desk-bean {
@@ -792,6 +819,8 @@
 
       const artifactPanels = new Set(["graduation", "doctorate", "masters"]);\n\n      const roomPanels = {
         founder: {
+          model: "/Founder_Plaque.glb",
+          modelLabel: "Founder plaque · drag to rotate",
           kicker: "Founder",
           title: "Jamel Hawkins",
           subtitle: "Still walking. Still building.",
@@ -844,6 +873,8 @@
         },
 
         masters: {
+          model: "/Master_Of_Applied_Skepticism_Certificate-optimized.glb",
+          modelLabel: "Master of Applied Skepticism certificate · drag to rotate",
           kicker: "Founder Academic Record",
           title: "Master of Applied Skepticism",
           subtitle: "Analogical Systems · Inquiry · Evidence",
@@ -875,6 +906,8 @@
         },
 
         yolanda: {
+          model: "/For%20You,%20Mom%20Keepsake%20Necklace_Meshy_AI_2026-08-04_bb6999.glb",
+          modelLabel: "For You, Mom keepsake · drag to rotate",
           kicker: "Family Keepsake",
           title: "For You, Mom",
           subtitle: "Yolanda · The one-room light",
@@ -911,6 +944,8 @@
         },
 
         clue: {
+          model: "/Use_A_Light_.glb",
+          modelLabel: "Use a Light clue · drag to rotate",
           kicker: "Clue",
           title: "If it’s too dark, use a light.",
           subtitle: "The room is telling you what to touch.",
@@ -960,6 +995,28 @@
         modalTitle.textContent = panel.title;
         modalSubtitle.textContent = panel.subtitle;
         modalBody.innerHTML = panel.body;
+
+        if (panel.model) {
+          const modelWrap = document.createElement("div");
+          modelWrap.className = "office-artifact-model";
+
+          const viewer = document.createElement("model-viewer");
+          viewer.setAttribute("src", panel.model);
+          viewer.setAttribute("alt", panel.modelLabel || panel.title);
+          viewer.setAttribute("camera-controls", "");
+          viewer.setAttribute("interaction-prompt", "none");
+          viewer.setAttribute("shadow-intensity", "1");
+          viewer.setAttribute("exposure", "1.05");
+          viewer.setAttribute("tone-mapping", "neutral");
+          viewer.setAttribute("loading", "lazy");
+
+          const modelHelp = document.createElement("p");
+          modelHelp.textContent = panel.modelLabel || "Drag to rotate · pinch or scroll to zoom";
+
+          modelWrap.append(viewer, modelHelp);
+          modalBody.prepend(modelWrap);
+        }
+
         modal.hidden = false;
         document.body.style.overflow = "hidden";
         modalClose.focus();
