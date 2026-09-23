@@ -456,6 +456,7 @@ document.addEventListener("keydown", (event) => {
 });
 document.addEventListener("keyup", (event) => setMove(event.code, false));
 renderer.domElement.addEventListener("click", () => {
+  if (matchMedia("(pointer:coarse)").matches) return;
   if (!gameStarted || !inspector.hidden || transition) return;
   if (currentHit) interact();
   else if (matchMedia("(pointer:fine)").matches && !controls.isLocked) controls.lock();
