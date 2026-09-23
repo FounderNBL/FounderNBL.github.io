@@ -36,7 +36,7 @@
   const NBL_SEARCH_API=`${NBL_ACCOUNT_API}/api/search/nbl`;
   const NBL_BEANS_WEB_API=`${NBL_ACCOUNT_API}/api/beans/web-chat`;
   const NBL_SEARCH_PUBLIC_INDEX="/nbl-founder-search-public.json";
-  const NBL_CLERK_CONFIG=`${NBL_ACCOUNT_API}/api/config/clerk`;
+  const NBL_CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
   const NBL_ACCOUNT_PORTAL="https://accounts.newbeansland.org";
   let nblClerkPromise=null;
   let nblClerk=null;
@@ -82,15 +82,7 @@
     if(nblClerk) return Promise.resolve(nblClerk);
     if(nblClerkPromise) return nblClerkPromise;
     nblClerkPromise=(async()=>{
-      const response=await fetch(NBL_CLERK_CONFIG,{
-        method:"GET",
-        headers:{Accept:"application/json"},
-        cache:"no-store",
-        credentials:"omit"
-      });
-      if(!response.ok) throw new Error("NBL account connection is temporarily unavailable.");
-      const payload=await response.json();
-      const publishableKey=typeof payload.publishableKey==="string"?payload.publishableKey.trim():"";
+      const publishableKey=NBL_CLERK_PUBLISHABLE_KEY;
       if(!publishableKey.startsWith("pk_live_")) throw new Error("NBL account connection is not configured for production.");
       const clerkDomain=decodeClerkDomain(publishableKey);
       if(!clerkDomain) throw new Error("NBL account connection is unavailable.");
