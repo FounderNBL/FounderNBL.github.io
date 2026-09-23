@@ -151,6 +151,19 @@
       mix-blend-mode: screen;
     }
 
+    .chair-crest {
+      position: absolute;
+      z-index: 4;
+      left: 47.25%;
+      top: 47.25%;
+      width: 5.5%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      pointer-events: none;
+      filter: sepia(.18) saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,.7));
+      opacity: .92;
+    }
+
     body.light-stage-1 .room-image {
       filter: brightness(1.035) saturate(1.05);
     }
@@ -688,6 +701,15 @@
       <div class="gold-bloom" aria-hidden="true"></div>
       <div class="chair-aura" aria-hidden="true"></div>
 
+      <img
+        class="chair-crest"
+        src="/official-nbl-emblem.png"
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+      >
+
       <div id="deskBean" class="desk-bean" aria-label="Interactive Beanie Bean figure on the Founder desk">
         <model-viewer
           id="deskBeanModel"
@@ -933,6 +955,8 @@
         },
 
         chair: {
+          model: "/New_Beansland_University_Crest-optimized.glb",
+          modelLabel: "New Beansland crest · drag to rotate",
           kicker: "Still Walking",
           title: "The Chair Is Empty",
           subtitle: "The Founder is not absent.",
