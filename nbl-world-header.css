@@ -101,7 +101,7 @@ body.nbl-world-ready .office-page{inset:76px 0 0!important}
 }
 .nbl-world-footer-links a:hover{color:var(--nbl-world-gold2)}
 
-/* NBL Search — Founder’s Code only, no model or web fallback */
+/* NBL Search — public New Beansland lookup */
 .nbl-search-panel{
   position:fixed;inset:0;z-index:10040;
   display:grid;place-items:start center;
