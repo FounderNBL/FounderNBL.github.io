@@ -5,96 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#050a12">
   <title>Founder’s Office | New Beansland</title>
-  <meta name="description" content="Walk through the interactive 3D Founder’s Office of New Beansland, inspect real office artifacts, use the one-room light, and discover the story behind the room.">
+  <meta name="description" content="A quiet look inside the Founder’s Office of New Beansland.">
   <link rel="canonical" href="https://newbeansland.org/founder-office.html">
   <link rel="icon" type="image/png" href="/nbl-writing-mark.png">
-  <link rel="preload" as="image" href="/founder-office-room.png">
-  <link rel="stylesheet" href="/founder-office-3d.css?v=20260923-1">
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
-      }
-    }
-  </script>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
+  <link rel="preload" as="image" href="/founder-office-room.png" fetchpriority="high">
+  <style>
+    :root{--bg:#02060b;--panel:#071421;--gold:#d6a14b;--gold2:#f0c56f;--cream:#f4ead8;--soft:#cfc3ad}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
+    body{min-height:100svh;background:radial-gradient(circle at 50% 0%,rgba(214,161,75,.1),transparent 32%),linear-gradient(180deg,#02060b,#07111d 68%,#02060b)}
+    a{color:inherit;text-decoration:none}
+    .page{min-height:100svh;display:flex;flex-direction:column}
+    .topbar{width:min(1400px,calc(100% - 28px));margin:0 auto;padding:18px 0;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px;color:var(--gold2);font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:.76rem}
+    .brand img{width:42px;height:42px;object-fit:contain}
+    .home{padding:10px 14px;border:1px solid rgba(214,161,75,.45);border-radius:999px;color:var(--gold2);font-size:.72rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:rgba(7,20,33,.72)}
+    .main{flex:1;width:min(1500px,calc(100% - 28px));margin:0 auto;padding:4px 0 34px;display:grid;align-content:center;gap:18px}
+    .heading{text-align:center}
+    .eyebrow{margin:0;color:var(--gold2);font-size:.7rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase}
+    h1{margin:7px 0 0;color:var(--cream);font:700 clamp(2.1rem,6vw,5.2rem)/.96 Georgia,"Times New Roman",serif;letter-spacing:.035em}
+    .sub{max-width:680px;margin:11px auto 0;color:var(--soft);font:clamp(.92rem,2vw,1.08rem)/1.55 Arial,sans-serif}
+    .room-frame{position:relative;overflow:hidden;border:1px solid rgba(214,161,75,.42);border-radius:18px;background:#050a12;box-shadow:0 28px 70px rgba(0,0,0,.48),0 0 0 1px rgba(240,197,111,.06)}
+    .room-frame::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 80px rgba(0,0,0,.35)}
+    .room{display:block;width:100%;height:auto;max-height:72svh;object-fit:contain;background:#050a12}
+    .caption{margin:0;text-align:center;color:#a99c88;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+    @media(max-width:700px){.topbar{padding-top:12px}.brand span{display:none}.main{width:min(100% - 18px,1500px);padding-bottom:20px}.room-frame{border-radius:12px}.room{max-height:none}h1{font-size:clamp(2rem,11vw,3.5rem)}}
+  </style>
 </head>
 <body>
-  <main id="officeShell" class="office-shell" aria-label="3D New Beansland Founder’s Office">
-    <canvas id="officeCanvas" aria-label="Walkable 3D Founder’s Office"></canvas>
+  <div class="page">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="New Beansland home">
+        <img src="/nbl-primary-logo.png" alt="">
+        <span>New Beansland</span>
+      </a>
+      <a class="home" href="/">← Home</a>
+    </header>
 
-    <div class="office-vignette" aria-hidden="true"></div>
-    <div class="office-grain" aria-hidden="true"></div>
+    <main class="main">
+      <section class="heading">
+        <p class="eyebrow">New Beansland</p>
+        <h1>Founder’s Office</h1>
+        <p class="sub">A quiet look inside the room where New Beansland keeps moving.</p>
+      </section>
 
-    <a class="home-button" href="/home.html" aria-label="Return to New Beansland home">← Home</a>
+      <figure class="room-frame">
+        <img class="room" src="/founder-office-room.png" alt="The New Beansland Founder’s Office" fetchpriority="high" decoding="async">
+      </figure>
 
-    <div class="office-title" aria-hidden="true">
-      <span>NEW BEANSLAND</span>
-      <strong>FOUNDER’S OFFICE</strong>
-    </div>
-
-    <div id="loadStatus" class="load-status" role="status" aria-live="polite">Preparing the office…</div>
-
-    <div id="reticle" class="reticle" aria-hidden="true"></div>
-    <div id="interactionPrompt" class="interaction-prompt" role="status" aria-live="polite"></div>
-
-    <div class="desktop-hint" aria-hidden="true">WASD / arrows to walk · drag to look · E to inspect</div>
-
-    <section id="mobileControls" class="mobile-controls" aria-label="Game controls">
-      <div id="moveZone" class="stick-zone move-zone" aria-label="Body movement control">
-        <div class="stick-ring"></div>
-        <div id="moveKnob" class="stick-knob"></div>
-        <span>BODY</span>
-      </div>
-      <div id="lookZone" class="stick-zone look-zone" aria-label="Head movement control">
-        <div class="stick-ring"></div>
-        <div id="lookKnob" class="stick-knob"></div>
-        <span>HEAD</span>
-      </div>
-      <button id="grabButton" class="action-button grab-button" type="button">GRAB</button>
-      <button id="useButton" class="action-button use-button" type="button">USE</button>
-    </section>
-
-    <div class="portrait-note" role="status">Turn sideways for the full room. Portrait controls stay available.</div>
-
-    <section id="entryOverlay" class="entry-overlay" aria-labelledby="entryTitle">
-      <div class="entry-backdrop" aria-hidden="true"></div>
-      <article class="entry-card">
-        <p class="eyebrow">NBL Games · First Room</p>
-        <h1 id="entryTitle">Founder’s Office</h1>
-        <p>Walk the room. Touch the one-room light. Pick up what matters. The office tells its story through the objects inside it.</p>
-        <div class="entry-controls">
-          <span><strong>BODY</strong> left control / WASD</span>
-          <span><strong>HEAD</strong> right control / drag</span>
-          <span><strong>GRAB</strong> inspect an object</span>
-          <span><strong>USE</strong> operate the lamp</span>
-        </div>
-        <button id="enterOffice" class="enter-button" type="button">Enter the Office</button>
-      </article>
-    </section>
-
-    <section id="inspector" class="inspector" role="dialog" aria-modal="true" aria-labelledby="artifactTitle" hidden>
-      <article class="inspector-card">
-        <button id="closeInspector" class="close-inspector" type="button" aria-label="Return to the office">✕</button>
-        <div class="artifact-stage">
-          <model-viewer id="artifactModel" camera-controls interaction-prompt="none" shadow-intensity="1" exposure="1.05" tone-mapping="neutral" loading="lazy" hidden></model-viewer>
-          <img id="artifactImage" alt="" hidden>
-          <div id="artifactFallback" class="artifact-fallback" hidden>Artifact unavailable in 3D. The office kept the original record.</div>
-        </div>
-        <div class="artifact-copy">
-          <p id="artifactKicker" class="eyebrow"></p>
-          <h2 id="artifactTitle"></h2>
-          <p id="artifactSubtitle" class="artifact-subtitle"></p>
-          <div id="artifactBody" class="artifact-body"></div>
-          <p class="inspect-help">Drag a 3D object to rotate it. Pinch or scroll to zoom.</p>
-        </div>
-      </article>
-    </section>
-
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  </main>
-
-  <script type="module" src="/founder-office-3d.js?v=20260923-1"></script>
+      <p class="caption">Jamel Hawkins · Founder · New Beansland</p>
+    </main>
+  </div>
 </body>
 </html>
