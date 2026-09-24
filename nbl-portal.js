@@ -1,8 +1,7 @@
 (()=>{
   const root=document.documentElement;
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const BEANS_SYSTEM=Object.freeze({LOCKE:{portalMs:600},STILL:{role:'visual-record'},TA:{role:'verification'},TB:{role:'build-test-organize-protect'},TEST:{role:'continuity-reasoning'},TS:{role:'record-preserve-continue'},NTB:{role:'signal-carrier'},ECHO:{role:'systems-continuity'},TM:{role:'rules-examiner'}});
-  const PORTAL_MS=BEANS_SYSTEM.LOCKE.portalMs;
+  const PORTAL_MS=600;
   const CONTACT_EMAIL='founder@newbeansland.org';
   const LEGACY_CONTACT_EMAIL='foundernewbeansland@gmail.com';
   window.NBL_CONTACT_EMAIL=CONTACT_EMAIL;
@@ -28,9 +27,6 @@
     doctorBack:'/assets/books/doctor-rocketship/standard-back.png?v=8820a16c'
   };
 
-  const PLAYGROUND_RAW='https://raw.githubusercontent.com/FounderNBL/New-Beansland-Playground/main/';
-  const PLAYGROUND_CDN='https://cdn.jsdelivr.net/gh/FounderNBL/New-Beansland-Playground@main/';
-
   const cleanName=value=>{
     if(!value) return '';
     try{
@@ -39,13 +35,6 @@
     }catch{
       return String(value).split('?')[0].split('/').pop()||'';
     }
-  };
-
-  const playgroundCdn=value=>{
-    if(!value||!value.startsWith(PLAYGROUND_RAW)) return value;
-    let relative=value.slice(PLAYGROUND_RAW.length);
-    relative=relative.replace(/^NBL-model-front\.jpg(?=\?|$)/,'NBL%20model-front.jpg');
-    return PLAYGROUND_CDN+relative;
   };
 
   function refreshContactEmail(){
@@ -123,13 +112,7 @@
     };
 
     document.querySelectorAll('img').forEach(img=>{
-      let original=img.getAttribute('src')||'';
-      const cdnSource=playgroundCdn(original);
-      if(cdnSource!==original){
-        img.setAttribute('src',cdnSource);
-        original=cdnSource;
-      }
-
+      const original=img.getAttribute('src')||'';
       const replacement=directMap[cleanName(original)];
       if(replacement && original!==replacement) img.setAttribute('src',replacement);
     });
