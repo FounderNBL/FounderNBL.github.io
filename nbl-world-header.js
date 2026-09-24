@@ -365,7 +365,7 @@
     <div class="nbl-search-card" role="dialog" aria-modal="true" aria-labelledby="nbl-search-title">
       <div class="nbl-search-head">
         <div>
-          <p class="nbl-search-kicker">Founder’s Code · NBL only</p>
+          <p class="nbl-search-kicker">New Beansland · Public search</p>
           <h2 id="nbl-search-title">Search New Beansland</h2>
           <p class="nbl-search-note">This searches New Beansland only. No OpenAI. No web search.</p>
         </div>
