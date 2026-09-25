@@ -202,7 +202,7 @@
       }catch(error){profileStatus.textContent=error.message}
     });
 
-    securityButton.onclick=()=>{try{clerk.openUserProfile()}catch{location.href="https://accounts.newbeansland.org"}};
+    securityButton.onclick=()=>{location.href="https://accounts.newbeansland.org/user?redirect_url="+encodeURIComponent(location.href)};
     signOutButton.onclick=async()=>{await clerk.signOut();location.href="/"};
 
     deleteDataButton.onclick=async()=>{
@@ -221,8 +221,8 @@
       deleteAccountButton.disabled=true;deleteStatus.textContent="Removing saved NBL data first…";
       try{
         await accountFetch("?action=data",{method:"DELETE"});
-        deleteStatus.textContent="NBL data deleted. In the account panel, use Delete account to remove the Clerk login account.";
-        clerk.openUserProfile();
+        deleteStatus.textContent="NBL data deleted. Opening secure sign-in account controls…";
+        location.href="https://accounts.newbeansland.org/user?redirect_url="+encodeURIComponent(location.href);
       }catch(error){deleteStatus.textContent=error.message}
       finally{deleteAccountButton.disabled=false}
     };
