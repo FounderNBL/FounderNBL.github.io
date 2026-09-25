@@ -35,8 +35,17 @@ forbidText(html, 'id="moveZone"', "Retired BODY joystick returned to the approve
 forbidText(html, 'id="lookZone"', "Retired HEAD joystick returned to the approved static office.");
 
 // Catch accidental literal escape corruption and other inline JavaScript parse failures.
-const inlineScripts = [...html.matchAll(/<script(?![^>]*\\bsrc=)[^>]*>([\\s\\S]*?)<\\/script>/gi)]
-  .map((match) => match[1])
+const inlineScripts = html
+  .split("<script")
+  .slice(1)
+  .map((block) => {
+    const open = block.indexOf(">");
+    const close = block.indexOf("</script>");
+    if (open < 0 || close < 0) return "";
+    const attrs = block.slice(0, open);
+    if (/\\bsrc\\s*=/.test(attrs)) return "";
+    return block.slice(open + 1, close);
+  })
   .filter((source) => source.trim());
 
 for (const source of inlineScripts) {
