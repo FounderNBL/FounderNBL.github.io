@@ -468,6 +468,37 @@
     beansLog.scrollTop=beansLog.scrollHeight;
   };
 
+  const appendBeansSources=sources=>{
+    const list=Array.isArray(sources)?sources.filter(item=>item&&typeof item.url==="string"&&/^https?:\/\//i.test(item.url)).slice(0,8):[];
+    if(!list.length) return;
+    const box=document.createElement("div");
+    box.setAttribute("aria-label","Beans web sources");
+    box.style.margin="8px 0 14px";
+    box.style.padding="10px 12px";
+    box.style.border="1px solid rgba(255,255,255,.12)";
+    box.style.borderRadius="12px";
+    box.style.background="rgba(255,255,255,.035)";
+    const label=document.createElement("strong");
+    label.textContent="Sources";
+    label.style.display="block";
+    label.style.marginBottom="6px";
+    box.appendChild(label);
+    for(const item of list){
+      const a=document.createElement("a");
+      a.href=item.url;
+      a.target="_blank";
+      a.rel="noopener noreferrer";
+      a.textContent=String(item.title||item.url).slice(0,160);
+      a.style.display="block";
+      a.style.margin="4px 0";
+      a.style.color="inherit";
+      a.style.textDecoration="underline";
+      box.appendChild(a);
+    }
+    beansLog.appendChild(box);
+    beansLog.scrollTop=beansLog.scrollHeight;
+  };
+
   const loadSignedInBeansHistory=async()=>{
     if(beansHistoryLoaded) return;
     beansHistoryLoaded=true;
@@ -539,7 +570,7 @@
       const response=await fetch(NBL_BEANS_WEB_API,{
         method:"POST",
         headers,
-        body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),conversationId:beansConversationId,messages:beansHistory.slice(-12),mode:"live"})
+        body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),mode:"live"})
       });
       const payload=await response.json().catch(()=>({}));
       if(!response.ok){
@@ -551,9 +582,12 @@
       if(payload?.conversationId) beansConversationId=String(payload.conversationId);
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply);
-      beansStatus.textContent=payload?.authenticated
-        ?(payload?.username?`Saved to ${payload.username}\'s NBL account.`:"Saved to your NBL account.")
-        :"Beans is live · free to use.";
+      appendBeansSources(payload?.sources);
+      beansStatus.textContent=payload?.webSearchUsed
+        ?"Beans checked the live web."
+        :payload?.authenticated
+          ?(payload?.username?`Saved to ${payload.username}\'s NBL account.`:"Saved to your NBL account.")
+          :"Beans is live · free to use.";
     }catch(error){
       const message=error?.message||"Beans could not answer just now.";
       appendBeansMessage("assistant",message);
