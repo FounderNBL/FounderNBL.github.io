@@ -34,6 +34,7 @@
 
   const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
   const NBL_PUBLIC_BEANS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/beans-public";
+  const NBL_ACCOUNT_STORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
   const NBL_SEARCH_API=NBL_PUBLIC_BEANS_API;
   const NBL_BEANS_WEB_API=NBL_PUBLIC_BEANS_API;
   const NBL_CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
@@ -113,6 +114,12 @@
     }catch{
       return null;
     }
+  };
+
+  window.NBLAccountBridge={
+    getClerk:getNblClerk,
+    getToken:getNblBeansAuthToken,
+    api:NBL_ACCOUNT_STORE_API
   };
 
   const getUniversityPanel=()=>{
@@ -251,10 +258,8 @@
 
     const openAccount=()=>{
       if(clerk?.isSignedIn){
-        try{
-          clerk.openUserProfile();
-          return;
-        }catch{}
+        location.href="/account.html";
+        return;
       }
       openSignIn();
     };
@@ -434,6 +439,8 @@
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
   const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
   const beansHistory=[{role:"assistant",content:"I'm Beans. What's up?"}];
+  let beansConversationId=null;
+  let beansHistoryLoaded=false;
 
   const appendBeansMessage=(role,content)=>{
     const wrap=document.createElement("div");
@@ -445,6 +452,39 @@
     wrap.append(who,p);
     beansLog.appendChild(wrap);
     beansLog.scrollTop=beansLog.scrollHeight;
+  };
+
+  const loadSignedInBeansHistory=async()=>{
+    if(beansHistoryLoaded) return;
+    beansHistoryLoaded=true;
+    const token=await getNblBeansAuthToken();
+    if(!token) return;
+    try{
+      const response=await fetch(`${NBL_ACCOUNT_STORE_API}?action=latest`,{
+        headers:{Accept:"application/json",Authorization:`Bearer ${token}`},
+        cache:"no-store"
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok) throw new Error(payload.message||"Saved conversation could not be loaded.");
+      const saved=Array.isArray(payload?.messages)?payload.messages:[];
+      if(payload?.conversation?.id) beansConversationId=String(payload.conversation.id);
+      if(saved.length){
+        beansLog.replaceChildren();
+        beansHistory.length=0;
+        for(const item of saved.slice(-40)){
+          const role=item?.role==="assistant"?"assistant":"user";
+          const content=String(item?.content||"").trim();
+          if(!content) continue;
+          beansHistory.push({role,content});
+          appendBeansMessage(role,content);
+        }
+        beansStatus.textContent="Saved conversation restored from your NBL account.";
+      }else{
+        beansStatus.textContent="Beans recognizes your NBL account. New conversations will save here.";
+      }
+    }catch(error){
+      beansStatus.textContent=error?.message||"Beans is live. Saved history is temporarily unavailable.";
+    }
   };
 
   const closeBeans=()=>{
@@ -460,6 +500,7 @@
     beansPanel.hidden=false;
     document.body.classList.add("nbl-beans-open");
     beansToggle.setAttribute("aria-expanded","true");
+    void loadSignedInBeansHistory();
     window.setTimeout(()=>beansInput.focus(),20);
   };
 
@@ -484,7 +525,7 @@
       const response=await fetch(NBL_BEANS_WEB_API,{
         method:"POST",
         headers,
-        body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),messages:beansHistory.slice(-12),mode:"live"})
+        body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),conversationId:beansConversationId,messages:beansHistory.slice(-12),mode:"live"})
       });
       const payload=await response.json().catch(()=>({}));
       if(!response.ok){
@@ -493,13 +534,12 @@
       }
       const reply=String(payload.message||payload.reply||"").trim();
       if(!reply) throw new Error("Beans returned no text.");
+      if(payload?.conversationId) beansConversationId=String(payload.conversationId);
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply);
-      beansStatus.textContent=payload?.accountRole==="founder"
-        ?"Beans recognizes the Founder account."
-        :payload?.authenticated
-          ?"Beans recognizes your NBL account."
-          :"Beans is live · free to use.";
+      beansStatus.textContent=payload?.authenticated
+        ?(payload?.username?`Saved to ${payload.username}\'s NBL account.`:"Saved to your NBL account.")
+        :"Beans is live · free to use.";
     }catch(error){
       const message=error?.message||"Beans could not answer just now.";
       appendBeansMessage("assistant",message);
