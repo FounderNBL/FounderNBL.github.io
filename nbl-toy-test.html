@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>NBL Toy Lab · Babylon Test</title>
+  <meta name="theme-color" content="#05080d">
+  <style>
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#05080d;color:#f4ead8;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    #renderCanvas{width:100%;height:100%;display:block;touch-action:none;outline:none}
+    .hud{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));z-index:10}
+    .top,.bottom{pointer-events:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .badge{background:rgba(5,8,13,.74);backdrop-filter:blur(10px);border:1px solid rgba(240,197,111,.34);border-radius:16px;padding:10px 12px;box-shadow:0 10px 35px rgba(0,0,0,.25)}
+    .badge strong{display:block;color:#f0c56f;font-size:.82rem;letter-spacing:.09em;text-transform:uppercase}
+    .badge span{display:block;margin-top:3px;color:#d8d1c4;font-size:.8rem}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    button,a.button{appearance:none;border:1px solid rgba(240,197,111,.48);background:rgba(7,17,27,.9);color:#f7efe1;border-radius:999px;padding:10px 14px;font:700 .84rem/1 inherit;text-decoration:none;cursor:pointer}
+    button:active,a.button:active{transform:scale(.98)}
+    #status{max-width:min(560px,calc(100vw - 28px))}
+    .help{font-size:.76rem;color:#b9b1a5;line-height:1.4}
+    @media(max-width:620px){.top{align-items:flex-start}.controls{width:100%}.controls button,.controls a{flex:1}.badge{max-width:100%}}
+  </style>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+</head>
+<body>
+  <canvas id="renderCanvas" aria-label="Interactive 3D view of the New Beansland model toy"></canvas>
+
+  <div class="hud">
+    <div class="top">
+      <div class="badge">
+        <strong>NBL Toy Lab</strong>
+        <span>Toy #1 · NBL_Model_Toy.glb</span>
+      </div>
+      <div class="controls">
+        <button id="spinButton" type="button" aria-pressed="false">Spin: Off</button>
+        <button id="resetButton" type="button">Reset View</button>
+        <a class="button" href="/">Exit</a>
+      </div>
+    </div>
+
+    <div class="bottom">
+      <div id="status" class="badge">
+        <strong>Status</strong>
+        <span id="statusText">Loading NBL toy…</span>
+      </div>
+      <div class="badge help">
+        Drag to orbit · Pinch / wheel to zoom · Two-finger drag to pan
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const canvas = document.getElementById("renderCanvas");
+      const statusText = document.getElementById("statusText");
+      const spinButton = document.getElementById("spinButton");
+      const resetButton = document.getElementById("resetButton");
+
+      const engine = new BABYLON.Engine(canvas, true, {
+        preserveDrawingBuffer: false,
+        stencil: true,
+        adaptToDeviceRatio: true
+      });
+
+      let camera;
+      let holder;
+      let spin = false;
+      let home = null;
+
+      const scene = new BABYLON.Scene(engine);
+      scene.clearColor = new BABYLON.Color4(0.025, 0.04, 0.06, 1);
+      scene.environmentIntensity = 0.9;
+
+      camera = new BABYLON.ArcRotateCamera(
+        "camera",
+        BABYLON.Tools.ToRadians(45),
+        BABYLON.Tools.ToRadians(72),
+        8,
+        new BABYLON.Vector3(0, 1, 0),
+        scene
+      );
+      camera.attachControl(canvas, true);
+      camera.inertia = 0.72;
+      camera.angularSensibilityX = 900;
+      camera.angularSensibilityY = 900;
+      camera.pinchPrecision = 70;
+      camera.wheelDeltaPercentage = 0.01;
+      camera.panningSensibility = 800;
+
+      const hemi = new BABYLON.HemisphericLight("hemi", new BABYLON.Vector3(0, 1, 0), scene);
+      hemi.intensity = 1.0;
+      hemi.groundColor = new BABYLON.Color3(0.08, 0.09, 0.12);
+
+      const key = new BABYLON.DirectionalLight("key", new BABYLON.Vector3(-0.55, -1, -0.35), scene);
+      key.position = new BABYLON.Vector3(5, 10, 5);
+      key.intensity = 1.2;
+
+      const fill = new BABYLON.DirectionalLight("fill", new BABYLON.Vector3(0.65, -0.5, 0.45), scene);
+      fill.position = new BABYLON.Vector3(-4, 6, -4);
+      fill.intensity = 0.55;
+
+      const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 20, height: 20 }, scene);
+      const groundMat = new BABYLON.PBRMaterial("groundMat", scene);
+      groundMat.albedoColor = new BABYLON.Color3(0.055, 0.065, 0.08);
+      groundMat.metallic = 0.05;
+      groundMat.roughness = 0.92;
+      ground.material = groundMat;
+      ground.receiveShadows = true;
+
+      const shadow = new BABYLON.ShadowGenerator(1024, key);
+      shadow.useBlurExponentialShadowMap = true;
+      shadow.blurKernel = 24;
+
+      const computeBounds = meshes => {
+        let min = new BABYLON.Vector3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
+        let max = new BABYLON.Vector3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY);
+
+        for (const mesh of meshes) {
+          if (!mesh || !mesh.getBoundingInfo || mesh === ground) continue;
+          mesh.computeWorldMatrix(true);
+          const box = mesh.getBoundingInfo().boundingBox;
+          min = BABYLON.Vector3.Minimize(min, box.minimumWorld);
+          max = BABYLON.Vector3.Maximize(max, box.maximumWorld);
+        }
+
+        if (!Number.isFinite(min.x) || !Number.isFinite(max.x)) {
+          return { center: BABYLON.Vector3.Zero(), size: new BABYLON.Vector3(2, 2, 2) };
+        }
+
+        return {
+          center: min.add(max).scale(0.5),
+          size: max.subtract(min),
+          min,
+          max
+        };
+      };
+
+      const frameToy = meshes => {
+        const bounds = computeBounds(meshes);
+        const largest = Math.max(bounds.size.x, bounds.size.y, bounds.size.z, 0.5);
+        const radius = largest * 1.85;
+
+        camera.setTarget(bounds.center);
+        camera.radius = radius;
+        camera.lowerRadiusLimit = largest * 0.55;
+        camera.upperRadiusLimit = largest * 6;
+        camera.alpha = BABYLON.Tools.ToRadians(45);
+        camera.beta = BABYLON.Tools.ToRadians(72);
+
+        if (bounds.min) ground.position.y = bounds.min.y - largest * 0.035;
+
+        home = {
+          alpha: camera.alpha,
+          beta: camera.beta,
+          radius: camera.radius,
+          target: bounds.center.clone()
+        };
+      };
+
+      const loadToy = async () => {
+        try {
+          const result = await BABYLON.SceneLoader.ImportMeshAsync("", "/", "NBL_Model_Toy.glb", scene);
+          const meshes = result.meshes.filter(mesh => mesh && mesh !== ground);
+
+          holder = new BABYLON.TransformNode("toyHolder", scene);
+          for (const mesh of meshes) {
+            if (!mesh.parent) mesh.parent = holder;
+            if (mesh.getTotalVertices && mesh.getTotalVertices() > 0) {
+              shadow.addShadowCaster(mesh, true);
+              mesh.isPickable = true;
+            }
+          }
+
+          frameToy(meshes);
+
+          statusText.textContent = "Toy loaded. Drag it around and inspect the clothes.";
+          console.log("NBL Toy #1 loaded", result);
+        } catch (error) {
+          console.error("NBL Toy load failed", error);
+          statusText.textContent = "Toy failed to load. Check the console / GLB path.";
+        }
+      };
+
+      spinButton.addEventListener("click", () => {
+        spin = !spin;
+        spinButton.textContent = spin ? "Spin: On" : "Spin: Off";
+        spinButton.setAttribute("aria-pressed", spin ? "true" : "false");
+      });
+
+      resetButton.addEventListener("click", () => {
+        if (!home) return;
+        camera.alpha = home.alpha;
+        camera.beta = home.beta;
+        camera.radius = home.radius;
+        camera.setTarget(home.target);
+        if (holder) holder.rotationQuaternion = null;
+        if (holder) holder.rotation.y = 0;
+      });
+
+      engine.runRenderLoop(() => {
+        if (spin && holder) {
+          holder.rotation.y += engine.getDeltaTime() * 0.00045;
+        }
+        scene.render();
+      });
+
+      window.addEventListener("resize", () => engine.resize());
+      loadToy();
+    })();
+  </script>
+</body>
+</html>

@@ -443,6 +443,9 @@
           <button type="submit">Send</button>
         </div>
       </form>
+      <p class="nbl-beans-note" style="margin-top:10px">
+        Signed-in chats may be stored with your NBL account and processed by service providers to provide NBL Chat. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
+      </p>
       <p class="nbl-beans-status" data-nbl-beans-status role="status">Beans is free to use. No account required.</p>
     </div>`;
 
