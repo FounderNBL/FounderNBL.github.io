@@ -103,6 +103,18 @@
     return nblClerkPromise;
   };
 
+
+  const getNblBeansAuthToken=async()=>{
+    try{
+      const clerk=await getNblClerk();
+      if(!clerk?.isSignedIn||!clerk.session) return null;
+      const token=await clerk.session.getToken();
+      return typeof token==="string"&&token.trim()?token.trim():null;
+    }catch{
+      return null;
+    }
+  };
+
   const getUniversityPanel=()=>{
     if(room.key!=="university") return null;
     let panel=document.querySelector(".nbl-connected-account");
@@ -463,12 +475,15 @@
     beansStatus.textContent="Beans is thinking…";
 
     try{
+      const headers={
+        Accept:"application/json",
+        "Content-Type":"application/json"
+      };
+      const accountToken=await getNblBeansAuthToken();
+      if(accountToken) headers.Authorization=`Bearer ${accountToken}`;
       const response=await fetch(NBL_BEANS_WEB_API,{
         method:"POST",
-        headers:{
-          Accept:"application/json",
-          "Content-Type":"application/json"
-        },
+        headers,
         body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),messages:beansHistory.slice(-12),mode:"live"})
       });
       const payload=await response.json().catch(()=>({}));
@@ -480,7 +495,11 @@
       if(!reply) throw new Error("Beans returned no text.");
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply);
-      beansStatus.textContent="Beans is live · free to use.";
+      beansStatus.textContent=payload?.accountRole==="founder"
+        ?"Beans recognizes the Founder account."
+        :payload?.authenticated
+          ?"Beans recognizes your NBL account."
+          :"Beans is live · free to use.";
     }catch(error){
       const message=error?.message||"Beans could not answer just now.";
       appendBeansMessage("assistant",message);
