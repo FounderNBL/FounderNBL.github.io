@@ -12,6 +12,7 @@
     if(/\/studio\/?(?:index\.html)?$/.test(path)) return {label:"Timmy V Studios",key:"studio"};
     if(/\/founder-office\.html$/.test(path)) return {label:"Founder’s Office",key:"office"};
     if(/\/about\.html$/.test(path)||/\/jamel-hawkins\.html$/.test(path)) return {label:"About NBL",key:"about"};
+    if(/\/account\.html$/.test(path)) return {label:"My NBL Account",key:"account"};
     if(/\/privacy\.html$/.test(path)||/\/terms\.html$/.test(path)||/\/account-deletion\.html$/.test(path)||/\/nbl-chat-/.test(path)) return {label:"NBL Chat Legal",key:"legal"};
     return {label:"Stories · Questions · Worlds",key:""};
   })();
@@ -213,6 +214,19 @@
         const displayName=(user?.unsafeMetadata?.displayName||user?.publicMetadata?.displayName||user?.username||user?.fullName||user?.firstName||user?.primaryEmailAddress?.emailAddress||"Account").trim();
         accountButton.textContent=displayName;
         accountButton.title="Manage your NBL account";
+        void (async()=>{
+          try{
+            const token=await getNblBeansAuthToken();
+            if(!token) return;
+            const response=await fetch(`${NBL_ACCOUNT_STORE_API}?action=summary`,{
+              headers:{Accept:"application/json",Authorization:`Bearer ${token}`},
+              cache:"no-store"
+            });
+            const payload=await response.json().catch(()=>({}));
+            const username=String(payload?.profile?.username||"").trim();
+            if(response.ok&&username) accountButton.textContent=username;
+          }catch{}
+        })();
         const signOutButton=addAuxButton("Sign out",async()=>{
           signOutButton.disabled=true;
           signOutButton.textContent="Signing out…";
