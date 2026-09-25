@@ -198,38 +198,48 @@
     }
 
     async function tryLoadMeshyRoom(){
-      try{
-        const result = await BABYLON.SceneLoader.ImportMeshAsync("","/nbl-world/assets/","3D-founders-office-master.glb",scene);
-        const top = result.meshes.filter(m=>m && !m.parent);
-        const roomRoot = new BABYLON.TransformNode("meshyRoomRoot",scene);
-        top.forEach(m=>{ if(m!==roomRoot) m.parent=roomRoot; });
+      const candidates = [
+        ["/nbl-world/assets/","3D-founders-office-master.glb"],
+        ["/","3D-founders-office-master.glb"],
+        ["/","3D-founders-office-master-optimized.glb"]
+      ];
 
-        const sourceMeshes = result.meshes.filter(m=>m && m.getTotalVertices && m.getTotalVertices()>0);
-        let b = getBounds(sourceMeshes);
-        if(!b) throw new Error("Room has no renderable bounds");
+      for (const [rootUrl,fileName] of candidates) {
+        try{
+          const result = await BABYLON.SceneLoader.ImportMeshAsync("",rootUrl,fileName,scene);
+          const top = result.meshes.filter(m=>m && !m.parent);
+          const roomRoot = new BABYLON.TransformNode("meshyRoomRoot",scene);
+          top.forEach(m=>{ if(m!==roomRoot) m.parent=roomRoot; });
 
-        const scale = 3.45 / Math.max(b.size.y,.01);
-        roomRoot.scaling.setAll(scale);
-        roomRoot.computeWorldMatrix(true);
-        sourceMeshes.forEach(m=>m.computeWorldMatrix(true));
-        b = getBounds(sourceMeshes);
+          const sourceMeshes = result.meshes.filter(m=>m && m.getTotalVertices && m.getTotalVertices()>0);
+          let b = getBounds(sourceMeshes);
+          if(!b) throw new Error("Room has no renderable bounds");
 
-        roomRoot.position.x -= b.center.x;
-        roomRoot.position.y -= b.min.y;
-        roomRoot.position.z -= b.center.z;
-        roomRoot.computeWorldMatrix(true);
+          const scale = 3.45 / Math.max(b.size.y,.01);
+          roomRoot.scaling.setAll(scale);
+          roomRoot.computeWorldMatrix(true);
+          sourceMeshes.forEach(m=>m.computeWorldMatrix(true));
+          b = getBounds(sourceMeshes);
 
-        sourceMeshes.forEach(m=>{
-          m.isPickable=false;
-          m.receiveShadows=true;
-        });
-        roomMeshes = sourceMeshes;
-        statusEl.textContent = "Meshy Founder’s Office loaded.";
-        return true;
-      }catch(err){
-        console.warn("Meshy room not available on this branch yet; using safe fallback shell.",err);
-        return buildFallbackRoom();
+          roomRoot.position.x -= b.center.x;
+          roomRoot.position.y -= b.min.y;
+          roomRoot.position.z -= b.center.z;
+          roomRoot.computeWorldMatrix(true);
+
+          sourceMeshes.forEach(m=>{
+            m.isPickable=false;
+            m.receiveShadows=true;
+          });
+          roomMeshes = sourceMeshes;
+          statusEl.textContent = "Meshy Founder’s Office loaded.";
+          return true;
+        }catch(err){
+          console.info("Room candidate unavailable:",rootUrl+fileName);
+        }
       }
+
+      console.warn("Meshy room GLB is not in the repository yet; using safe fallback shell.");
+      return buildFallbackRoom();
     }
 
     function makeToyPickable(meshes){
