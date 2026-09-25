@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#070504">
+  <title>NBL World · Founder’s Office Toy Prototype</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#050403;color:#f5ead4;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    #renderCanvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+    .shade{position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 45%,transparent 38%,rgba(0,0,0,.3) 100%);z-index:2}
+    .hud{position:fixed;inset:0;z-index:5;pointer-events:none;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:space-between}
+    .top,.bottom{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+    .card,.btn{pointer-events:auto;border:1px solid rgba(216,174,91,.42);background:rgba(8,6,5,.78);backdrop-filter:blur(10px);box-shadow:0 10px 30px rgba(0,0,0,.34)}
+    .card{border-radius:14px;padding:10px 12px;max-width:min(78vw,540px)}
+    .card strong{display:block;color:#edc978;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase}
+    .card span{display:block;margin-top:3px;color:#ded3c1;font-size:.8rem;line-height:1.35}
+    .btn{border-radius:999px;color:#fff1cf;padding:10px 14px;font-weight:800;cursor:pointer}
+    .btn:active{transform:scale(.98)}
+    #closeInspect{display:none}
+    body.inspecting #closeInspect{display:block}
+    #prompt{position:fixed;left:50%;bottom:max(24px,calc(env(safe-area-inset-bottom) + 18px));transform:translateX(-50%);z-index:7;pointer-events:none;max-width:min(88vw,620px);padding:9px 14px;border:1px solid rgba(216,174,91,.5);border-radius:999px;background:rgba(8,6,5,.82);backdrop-filter:blur(8px);color:#f7e9c7;font-weight:800;font-size:.8rem;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    body.inspecting #prompt{bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px))}
+    #loading{transition:opacity .35s ease}
+    @media(max-width:620px){.card{max-width:100%}.top{align-items:flex-start}.bottom{padding-bottom:48px}}
+  </style>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+</head>
+<body>
+  <canvas id="renderCanvas" aria-label="Founder’s Office interactive toy test"></canvas>
+  <div class="shade"></div>
+
+  <div class="hud">
+    <div class="top">
+      <div id="loading" class="card">
+        <strong>NBL World Prototype</strong>
+        <span id="status">Loading Founder’s Office…</span>
+      </div>
+      <button id="closeInspect" class="btn" type="button">Put It Back</button>
+    </div>
+    <div class="bottom">
+      <div class="card">
+        <strong>Test #1 · Model Toy</strong>
+        <span>No walking. The room stays put. Touch the toy to pick it up.</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="prompt">Loading Toy #1…</div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const canvas = document.getElementById("renderCanvas");
+    const statusEl = document.getElementById("status");
+    const promptEl = document.getElementById("prompt");
+    const closeButton = document.getElementById("closeInspect");
+
+    const engine = new BABYLON.Engine(canvas, true, {
+      preserveDrawingBuffer:false,
+      stencil:true,
+      adaptToDeviceRatio:true
+    });
+
+    const scene = new BABYLON.Scene(engine);
+    scene.clearColor = new BABYLON.Color4(0.025,0.018,0.014,1);
+    scene.environmentIntensity = 0.82;
+
+    const camera = new BABYLON.UniversalCamera("officeCamera", new BABYLON.Vector3(0,1.58,6.4), scene);
+    camera.fov = BABYLON.Tools.ToRadians(49);
+    camera.minZ = 0.03;
+    camera.maxZ = 100;
+    camera.setTarget(new BABYLON.Vector3(0,1.45,-1.15));
+
+    const hemi = new BABYLON.HemisphericLight("roomHemi", new BABYLON.Vector3(0,1,0), scene);
+    hemi.intensity = 0.62;
+    hemi.diffuse = new BABYLON.Color3(0.88,0.75,0.58);
+    hemi.groundColor = new BABYLON.Color3(0.06,0.035,0.02);
+
+    const key = new BABYLON.DirectionalLight("roomKey", new BABYLON.Vector3(-0.3,-1,-0.45), scene);
+    key.position = new BABYLON.Vector3(3.5,6.2,5.3);
+    key.diffuse = new BABYLON.Color3(1,0.72,0.42);
+    key.intensity = 1.4;
+
+    const warm = new BABYLON.PointLight("warmFill", new BABYLON.Vector3(-2.5,2.5,0.4), scene);
+    warm.diffuse = new BABYLON.Color3(1,0.58,0.26);
+    warm.intensity = 0.8;
+    warm.range = 8;
+
+    const shadow = new BABYLON.ShadowGenerator(1024,key);
+    shadow.useBlurExponentialShadowMap = true;
+    shadow.blurKernel = 18;
+
+    let toyRig = null;
+    let toyModelRoot = null;
+    let roomMeshes = [];
+    let inspecting = false;
+    let transitioning = false;
+    let transition = null;
+    let inspectScale = 1.08;
+    let dragPointer = null;
+    let lastPoint = null;
+    const activePointers = new Map();
+    let pinchStart = null;
+
+    const HOME_POS = new BABYLON.Vector3(-1.45,0,0.45);
+    const INSPECT_POS = new BABYLON.Vector3(0,0.72,2.25);
+    const HOME_ROT = new BABYLON.Vector3(0,BABYLON.Tools.ToRadians(142),0);
+
+    const darkWood = new BABYLON.PBRMaterial("darkWood",scene);
+    darkWood.albedoColor = new BABYLON.Color3(0.075,0.035,0.018);
+    darkWood.metallic = 0.05;
+    darkWood.roughness = 0.72;
+
+    const wood = new BABYLON.PBRMaterial("wood",scene);
+    wood.albedoColor = new BABYLON.Color3(0.16,0.07,0.028);
+    wood.metallic = 0.04;
+    wood.roughness = 0.58;
+
+    const navy = new BABYLON.PBRMaterial("navy",scene);
+    navy.albedoColor = new BABYLON.Color3(0.018,0.027,0.04);
+    navy.metallic = 0.02;
+    navy.roughness = 0.86;
+
+    const gold = new BABYLON.PBRMaterial("gold",scene);
+    gold.albedoColor = new BABYLON.Color3(0.48,0.28,0.08);
+    gold.metallic = 0.72;
+    gold.roughness = 0.28;
+
+    const leather = new BABYLON.PBRMaterial("leather",scene);
+    leather.albedoColor = new BABYLON.Color3(0.045,0.03,0.022);
+    leather.metallic = 0.02;
+    leather.roughness = 0.55;
+
+    function box(name,w,h,d,x,y,z,mat){
+      const m = BABYLON.MeshBuilder.CreateBox(name,{width:w,height:h,depth:d},scene);
+      m.position.set(x,y,z);
+      m.material = mat;
+      m.isPickable = false;
+      m.receiveShadows = true;
+      return m;
+    }
+
+    function artPlane(name,url,w,h,x,y,z){
+      const frame = box(name+"Frame",w+.11,h+.11,.07,x,y,z,darkWood);
+      const mat = new BABYLON.StandardMaterial(name+"Mat",scene);
+      mat.diffuseTexture = new BABYLON.Texture(url,scene,true,false);
+      mat.emissiveColor = new BABYLON.Color3(.18,.15,.1);
+      mat.specularColor = BABYLON.Color3.Black();
+      const p = BABYLON.MeshBuilder.CreatePlane(name,{width:w,height:h},scene);
+      p.position.set(x,y,z+.041);
+      p.material = mat;
+      p.isPickable = false;
+      return {frame,p};
+    }
+
+    function buildFallbackRoom(){
+      roomMeshes = [];
+      roomMeshes.push(box("floor",10,.12,9,0,-.06,-.5,wood));
+      roomMeshes.push(box("backWall",10,4.8,.14,0,2.4,-3.35,navy));
+      roomMeshes.push(box("leftWall",.14,4.8,9,-5,2.4,-.5,navy));
+      roomMeshes.push(box("rightWall",.14,4.8,9,5,2.4,-.5,navy));
+      roomMeshes.push(box("ceiling",10,.12,9,0,4.8,-.5,darkWood));
+
+      for(const x of [-3.75,-1.25,1.25,3.75]){
+        roomMeshes.push(box("panel",2.18,3.82,.04,x,2.55,-3.255,darkWood));
+      }
+      roomMeshes.push(box("desk",4.75,1.02,1.34,0,.51,-1.0,wood));
+      roomMeshes.push(box("deskTop",5.05,.12,1.54,0,1.08,-1.0,darkWood));
+      roomMeshes.push(box("chairSeat",1.2,.18,1.0,0,.72,-2.02,leather));
+      roomMeshes.push(box("chairBack",1.25,1.72,.18,0,1.62,-2.42,leather));
+      roomMeshes.push(box("rug",6.3,.025,4.7,0,.02,-.95,navy));
+
+      artPlane("banner","/if-it-is-is-it-banner.png",3.45,1.28,0,3.18,-3.17);
+      artPlane("graduation","/founder-graduation-remarks.png",1.25,1.62,-3.72,2.75,-3.17);
+      artPlane("doctorate","/founder-doctorate-degree.png",1.12,1.52,2.85,2.88,-3.17);
+      artPlane("masters","/founder-masters-degree.png",1.12,1.52,4.08,2.88,-3.17);
+
+      statusEl.textContent = "Prototype room loaded. Meshy room will replace this shell when its GLB is in the NBL World asset folder.";
+      return Promise.resolve(false);
+    }
+
+    function getBounds(meshes){
+      let min = new BABYLON.Vector3(Infinity,Infinity,Infinity);
+      let max = new BABYLON.Vector3(-Infinity,-Infinity,-Infinity);
+      meshes.forEach(m=>{
+        if(!m || !m.getBoundingInfo || !m.getTotalVertices || m.getTotalVertices()===0) return;
+        m.computeWorldMatrix(true);
+        const b = m.getBoundingInfo().boundingBox;
+        min = BABYLON.Vector3.Minimize(min,b.minimumWorld);
+        max = BABYLON.Vector3.Maximize(max,b.maximumWorld);
+      });
+      if(!Number.isFinite(min.x)) return null;
+      return {min,max,size:max.subtract(min),center:min.add(max).scale(.5)};
+    }
+
+    async function tryLoadMeshyRoom(){
+      try{
+        const result = await BABYLON.SceneLoader.ImportMeshAsync("","/nbl-world/assets/","3D-founders-office-master.glb",scene);
+        const top = result.meshes.filter(m=>m && !m.parent);
+        const roomRoot = new BABYLON.TransformNode("meshyRoomRoot",scene);
+        top.forEach(m=>{ if(m!==roomRoot) m.parent=roomRoot; });
+
+        const sourceMeshes = result.meshes.filter(m=>m && m.getTotalVertices && m.getTotalVertices()>0);
+        let b = getBounds(sourceMeshes);
+        if(!b) throw new Error("Room has no renderable bounds");
+
+        const scale = 3.45 / Math.max(b.size.y,.01);
+        roomRoot.scaling.setAll(scale);
+        roomRoot.computeWorldMatrix(true);
+        sourceMeshes.forEach(m=>m.computeWorldMatrix(true));
+        b = getBounds(sourceMeshes);
+
+        roomRoot.position.x -= b.center.x;
+        roomRoot.position.y -= b.min.y;
+        roomRoot.position.z -= b.center.z;
+        roomRoot.computeWorldMatrix(true);
+
+        sourceMeshes.forEach(m=>{
+          m.isPickable=false;
+          m.receiveShadows=true;
+        });
+        roomMeshes = sourceMeshes;
+        statusEl.textContent = "Meshy Founder’s Office loaded.";
+        return true;
+      }catch(err){
+        console.warn("Meshy room not available on this branch yet; using safe fallback shell.",err);
+        return buildFallbackRoom();
+      }
+    }
+
+    function makeToyPickable(meshes){
+      meshes.forEach(m=>{
+        if(!m || !m.getTotalVertices || m.getTotalVertices()===0) return;
+        m.isPickable = true;
+        m.metadata = {...(m.metadata||{}),nblObject:"toy1"};
+        shadow.addShadowCaster(m,true);
+      });
+    }
+
+    async function loadToy(){
+      const result = await BABYLON.SceneLoader.ImportMeshAsync("","/","NBL_Model_Toy.glb",scene);
+      const top = result.meshes.filter(m=>m && !m.parent);
+      toyModelRoot = new BABYLON.TransformNode("toyModelRoot",scene);
+      top.forEach(m=>{ if(m!==toyModelRoot) m.parent=toyModelRoot; });
+
+      const meshes = result.meshes.filter(m=>m && m.getTotalVertices && m.getTotalVertices()>0);
+      let b = getBounds(meshes);
+      if(!b) throw new Error("Toy has no renderable bounds");
+
+      const personHeight = 1.72;
+      toyModelRoot.scaling.setAll(personHeight / Math.max(b.size.y,.01));
+      toyModelRoot.computeWorldMatrix(true);
+      meshes.forEach(m=>m.computeWorldMatrix(true));
+      b = getBounds(meshes);
+
+      const normalizer = new BABYLON.TransformNode("toyNormalizer",scene);
+      toyModelRoot.parent = normalizer;
+      toyModelRoot.position.set(-b.center.x,-b.min.y,-b.center.z);
+
+      toyRig = new BABYLON.TransformNode("toyRig",scene);
+      normalizer.parent = toyRig;
+      toyRig.position.copyFrom(HOME_POS);
+      toyRig.rotation.copyFrom(HOME_ROT);
+      toyRig.scaling.setAll(1);
+
+      makeToyPickable(meshes);
+      promptEl.textContent = "Touch the NBL toy beside the desk.";
+      statusEl.textContent = statusEl.textContent.includes("Meshy")
+        ? "Room ready. Toy #1 is person-height and interactive."
+        : "Safe room shell ready. Toy #1 is person-height and interactive.";
+    }
+
+    function ease(t){ return 1-Math.pow(1-t,3); }
+
+    function startTransition(toInspect){
+      if(!toyRig || transitioning) return;
+      transitioning=true;
+      const start={
+        pos:toyRig.position.clone(),
+        rot:toyRig.rotation.clone(),
+        scale:toyRig.scaling.clone()
+      };
+      const end=toInspect ? {
+        pos:INSPECT_POS.clone(),
+        rot:new BABYLON.Vector3(0,0,0),
+        scale:new BABYLON.Vector3(inspectScale,inspectScale,inspectScale)
+      } : {
+        pos:HOME_POS.clone(),
+        rot:HOME_ROT.clone(),
+        scale:BABYLON.Vector3.One()
+      };
+      transition={start,end,t:0,duration:.58,toInspect};
+      if(toInspect){
+        inspecting=true;
+        document.body.classList.add("inspecting");
+        promptEl.textContent="Drag to turn · Pinch or wheel to zoom · Put It Back returns it exactly.";
+      }
+    }
+
+    function finishTransition(){
+      if(!transition) return;
+      const endingInspect=transition.toInspect;
+      transitioning=false;
+      transition=null;
+      if(!endingInspect){
+        inspecting=false;
+        inspectScale=1.08;
+        document.body.classList.remove("inspecting");
+        promptEl.textContent="Touch the NBL toy beside the desk.";
+      }
+    }
+
+    function updateTransition(dt){
+      if(!transition || !toyRig) return;
+      transition.t += dt;
+      const p = Math.min(1,transition.t/transition.duration);
+      const e = ease(p);
+      toyRig.position = BABYLON.Vector3.Lerp(transition.start.pos,transition.end.pos,e);
+      toyRig.rotation = BABYLON.Vector3.Lerp(transition.start.rot,transition.end.rot,e);
+      toyRig.scaling = BABYLON.Vector3.Lerp(transition.start.scale,transition.end.scale,e);
+      if(p>=1) finishTransition();
+    }
+
+    function pickedToy(x,y){
+      const hit = scene.pick(x,y,m=>!!(m && m.metadata && m.metadata.nblObject==="toy1"));
+      return !!(hit && hit.hit && hit.pickedMesh);
+    }
+
+    canvas.addEventListener("pointerdown",e=>{
+      activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(activePointers.size===2){
+        const a=[...activePointers.values()];
+        pinchStart=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+      }
+
+      if(!inspecting && !transitioning){
+        if(pickedToy(e.offsetX,e.offsetY)){
+          e.preventDefault();
+          startTransition(true);
+        }
+        return;
+      }
+
+      if(inspecting && !transitioning && activePointers.size===1){
+        dragPointer=e.pointerId;
+        lastPoint={x:e.clientX,y:e.clientY};
+        canvas.setPointerCapture?.(e.pointerId);
+      }
+    },{passive:false});
+
+    canvas.addEventListener("pointermove",e=>{
+      if(!activePointers.has(e.pointerId)) return;
+      activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+
+      if(inspecting && activePointers.size===2 && toyRig){
+        const a=[...activePointers.values()];
+        const dist=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+        if(pinchStart){
+          inspectScale = BABYLON.Scalar.Clamp(inspectScale*(dist/pinchStart),.72,2.15);
+          toyRig.scaling.setAll(inspectScale);
+        }
+        pinchStart=dist;
+        e.preventDefault();
+        return;
+      }
+
+      if(!inspecting || transitioning || e.pointerId!==dragPointer || !lastPoint || !toyRig) return;
+      const dx=e.clientX-lastPoint.x;
+      const dy=e.clientY-lastPoint.y;
+      lastPoint={x:e.clientX,y:e.clientY};
+      toyRig.rotation.y += dx*.0105;
+      toyRig.rotation.x = BABYLON.Scalar.Clamp(toyRig.rotation.x+dy*.0075,-1.05,1.05);
+      e.preventDefault();
+    },{passive:false});
+
+    function endPointer(e){
+      activePointers.delete(e.pointerId);
+      if(e.pointerId===dragPointer){
+        dragPointer=null;
+        lastPoint=null;
+      }
+      if(activePointers.size<2) pinchStart=null;
+      try{canvas.releasePointerCapture?.(e.pointerId);}catch{}
+    }
+    canvas.addEventListener("pointerup",endPointer);
+    canvas.addEventListener("pointercancel",endPointer);
+
+    canvas.addEventListener("wheel",e=>{
+      if(!inspecting || transitioning || !toyRig) return;
+      inspectScale = BABYLON.Scalar.Clamp(inspectScale*(e.deltaY>0?.92:1.08),.72,2.15);
+      toyRig.scaling.setAll(inspectScale);
+      e.preventDefault();
+    },{passive:false});
+
+    closeButton.addEventListener("click",()=>startTransition(false));
+
+    window.addEventListener("keydown",e=>{
+      if(e.key==="Escape" && inspecting) startTransition(false);
+    });
+
+    window.addEventListener("resize",()=>engine.resize());
+
+    engine.runRenderLoop(()=>{
+      updateTransition(Math.min(engine.getDeltaTime()/1000,.05));
+      scene.render();
+    });
+
+    (async()=>{
+      try{
+        await tryLoadMeshyRoom();
+        await loadToy();
+      }catch(err){
+        console.error(err);
+        statusEl.textContent="Prototype load failed.";
+        promptEl.textContent="Something failed to load. Check the console.";
+      }
+    })();
+  })();
+  </script>
+</body>
+</html>
