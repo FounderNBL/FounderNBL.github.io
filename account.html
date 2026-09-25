@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Account · New Beansland</title>
+  <meta name="description" content="Manage your New Beansland account, Beans history, usage and account data.">
+  <link rel="stylesheet" href="/nbl-world-header.css?v=20260922-account-mobile">
+  <style>
+    :root{--ink:#eef4f8;--muted:#aebdca;--gold:#efc66f;--panel:rgba(9,24,38,.94);--line:rgba(239,198,111,.25);--danger:#f4a1a1}
+    body{margin:0;background:radial-gradient(circle at top,#153047 0,#07131f 42%,#040b12 100%);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+    main{max-width:980px;margin:0 auto;padding:110px 18px 64px}
+    .hero{padding:28px 0 18px}.eyebrow{color:var(--gold);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.78rem}
+    h1{font-size:clamp(2rem,6vw,4rem);margin:.25rem 0}.lead{max-width:720px;color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.18)}
+    .metric strong{display:block;font-size:2rem;color:var(--gold)}.metric span{color:var(--muted)}
+    h2{margin-top:0}label{display:block;font-weight:800;margin-bottom:8px}
+    input{width:100%;box-sizing:border-box;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.2);background:#06111b;color:white;font:inherit}
+    button,.button{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(239,198,111,.45);border-radius:999px;padding:11px 16px;background:#10283b;color:white;font-weight:800;cursor:pointer;text-decoration:none}
+    button:hover,.button:hover{border-color:var(--gold)}button:disabled{opacity:.55;cursor:not-allowed}
+    .danger{border-color:rgba(244,161,161,.5);color:#ffd5d5}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.status{min-height:1.4em;color:var(--muted);margin:.75rem 0 0}
+    .history{display:grid;gap:10px}.conversation{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;background:rgba(255,255,255,.025)}
+    .conversation h3{font-size:1rem;margin:0 0 5px}.conversation small{color:var(--muted)}.conversation .row{margin-top:10px}
+    .messages{margin-top:14px;display:grid;gap:10px}.message{padding:12px;border-radius:12px;background:#081a28;border:1px solid rgba(255,255,255,.08);white-space:pre-wrap}
+    .message.user{margin-left:8%;background:#11283a}.message strong{display:block;color:var(--gold);font-size:.78rem;margin-bottom:4px}
+    .signed-out{display:none}.signed-out.show{display:block}.hidden{display:none!important}
+    .danger-zone{border-color:rgba(244,161,161,.3)}.danger-zone p{color:var(--muted)}
+    @media(max-width:720px){main{padding-top:96px}.grid{grid-template-columns:1fr}.card{padding:17px}}
+  </style>
+  <script defer src="/nbl-world-header.js?v=20260925-account-history"></script>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">New Beansland · My Account</p>
+      <h1>Your NBL account</h1>
+      <p class="lead">Your username, Beans conversations and usage belong to your signed-in account. You can review or delete your own history here.</p>
+    </section>
+
+    <section id="signedOut" class="card signed-out">
+      <h2>Sign in first</h2>
+      <p>This page only shows data for the account that is currently signed in.</p>
+      <button id="signInButton" type="button">Sign in</button>
+    </section>
+
+    <div id="accountBody" class="hidden">
+      <section class="card">
+        <h2>Profile</h2>
+        <p id="identityLine" class="status">Loading your account…</p>
+        <form id="usernameForm">
+          <label for="username">NBL username</label>
+          <div class="row">
+            <input id="username" name="username" autocomplete="username" minlength="3" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}" placeholder="Choose a username">
+            <button type="submit">Save username</button>
+          </div>
+          <p class="status">3–30 characters. Letters, numbers, underscores and hyphens.</p>
+        </form>
+        <p id="profileStatus" class="status"></p>
+        <div class="row">
+          <button id="securityButton" type="button">Manage sign-in & security</button>
+          <button id="signOutButton" type="button">Sign out</button>
+        </div>
+      </section>
+
+      <section class="grid" aria-label="Account usage">
+        <div class="card metric"><strong id="conversationCount">0</strong><span>saved conversations</span></div>
+        <div class="card metric"><strong id="messageCount">0</strong><span>saved messages</span></div>
+        <div class="card metric"><strong id="modelCount">0</strong><span>OpenAI responses used</span></div>
+      </section>
+
+      <section class="card">
+        <h2>Beans history</h2>
+        <p class="status">Only conversations created while signed in are stored here.</p>
+        <div id="history" class="history"><p class="status">Loading conversations…</p></div>
+        <div id="conversationViewer" class="messages"></div>
+      </section>
+
+      <section class="card danger-zone">
+        <h2>Data & account controls</h2>
+        <p>You can erase your saved NBL username and Beans history at any time. Your Clerk sign-in account is managed separately through the security panel.</p>
+        <div class="row">
+          <button id="deleteDataButton" class="danger" type="button">Delete my NBL data</button>
+          <button id="deleteAccountButton" class="danger" type="button">Delete account</button>
+        </div>
+        <p id="deleteStatus" class="status"></p>
+      </section>
+    </div>
+  </main>
+
+  <script>
+  window.addEventListener("DOMContentLoaded",async()=>{
+    const signedOut=document.getElementById("signedOut");
+    const accountBody=document.getElementById("accountBody");
+    const signInButton=document.getElementById("signInButton");
+    const identityLine=document.getElementById("identityLine");
+    const usernameForm=document.getElementById("usernameForm");
+    const usernameInput=document.getElementById("username");
+    const profileStatus=document.getElementById("profileStatus");
+    const securityButton=document.getElementById("securityButton");
+    const signOutButton=document.getElementById("signOutButton");
+    const history=document.getElementById("history");
+    const viewer=document.getElementById("conversationViewer");
+    const deleteDataButton=document.getElementById("deleteDataButton");
+    const deleteAccountButton=document.getElementById("deleteAccountButton");
+    const deleteStatus=document.getElementById("deleteStatus");
+
+    const waitForBridge=async()=>{
+      for(let i=0;i<60;i++){
+        if(window.NBLAccountBridge) return window.NBLAccountBridge;
+        await new Promise(r=>setTimeout(r,100));
+      }
+      throw new Error("Account connection did not load.");
+    };
+
+    const bridge=await waitForBridge().catch(error=>{
+      signedOut.classList.add("show");
+      signedOut.querySelector("p").textContent=error.message;
+      return null;
+    });
+    if(!bridge) return;
+
+    const clerk=await bridge.getClerk().catch(()=>null);
+    if(!clerk?.isSignedIn||!clerk.session){
+      signedOut.classList.add("show");
+      accountBody.classList.add("hidden");
+      signInButton.onclick=()=>{try{clerk?.openSignIn({fallbackRedirectUrl:location.href})}catch{location.href="/"}};
+      return;
+    }
+
+    signedOut.classList.remove("show");
+    accountBody.classList.remove("hidden");
+
+    const user=clerk.user;
+    const primaryEmail=user?.primaryEmailAddress?.emailAddress||"signed-in account";
+    identityLine.textContent="Signed in as "+primaryEmail;
+
+    const token=async()=>await bridge.getToken();
+    const accountFetch=async(path="",options={})=>{
+      const t=await token();
+      if(!t) throw new Error("Your sign-in session is not available.");
+      const response=await fetch(bridge.api+path,{
+        ...options,
+        headers:{Accept:"application/json",...(options.body?{"Content-Type":"application/json"}:{}),...(options.headers||{}),Authorization:"Bearer "+t},
+        cache:"no-store"
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok) throw new Error(payload.message||"Account request failed.");
+      return payload;
+    };
+
+    const renderSummary=async()=>{
+      const payload=await accountFetch("?action=summary");
+      usernameInput.value=payload?.profile?.username||"";
+      document.getElementById("conversationCount").textContent=String(payload?.usage?.conversations||0);
+      document.getElementById("messageCount").textContent=String(payload?.usage?.messages||0);
+      document.getElementById("modelCount").textContent=String(payload?.usage?.modelResponses||0);
+    };
+
+    const renderHistory=async()=>{
+      viewer.replaceChildren();
+      const payload=await accountFetch("?action=conversations");
+      const conversations=Array.isArray(payload?.conversations)?payload.conversations:[];
+      history.replaceChildren();
+      if(!conversations.length){
+        const p=document.createElement("p");p.className="status";p.textContent="No saved Beans conversations yet.";history.append(p);return;
+      }
+      for(const item of conversations){
+        const card=document.createElement("article");card.className="conversation";
+        const title=document.createElement("h3");title.textContent=item.title||"Beans conversation";
+        const when=document.createElement("small");when.textContent=new Date(item.updated_at).toLocaleString();
+        const row=document.createElement("div");row.className="row";
+        const view=document.createElement("button");view.type="button";view.textContent="View";
+        view.onclick=async()=>{
+          viewer.replaceChildren();
+          const data=await accountFetch("?action=conversation&id="+encodeURIComponent(item.id));
+          for(const msg of data.messages||[]){
+            const div=document.createElement("div");div.className="message "+(msg.role==="user"?"user":"assistant");
+            const who=document.createElement("strong");who.textContent=msg.role==="user"?"You":"Beans";
+            const text=document.createElement("div");text.textContent=msg.content;
+            div.append(who,text);viewer.append(div);
+          }
+          viewer.scrollIntoView({behavior:"smooth",block:"start"});
+        };
+        const del=document.createElement("button");del.type="button";del.className="danger";del.textContent="Delete";
+        del.onclick=async()=>{
+          if(!confirm("Delete this saved conversation?")) return;
+          del.disabled=true;
+          try{await accountFetch("?action=conversation&id="+encodeURIComponent(item.id),{method:"DELETE"});await Promise.all([renderSummary(),renderHistory()])}
+          catch(error){alert(error.message)}finally{del.disabled=false}
+        };
+        row.append(view,del);card.append(title,when,row);history.append(card);
+      }
+    };
+
+    usernameForm.addEventListener("submit",async event=>{
+      event.preventDefault();profileStatus.textContent="Saving…";
+      try{
+        const payload=await accountFetch("?action=profile",{method:"POST",body:JSON.stringify({username:usernameInput.value.trim()})});
+        usernameInput.value=payload.profile.username;
+        profileStatus.textContent="Username saved. Beans can use this name when you are signed in.";
+      }catch(error){profileStatus.textContent=error.message}
+    });
+
+    securityButton.onclick=()=>{try{clerk.openUserProfile()}catch{location.href="https://accounts.newbeansland.org"}};
+    signOutButton.onclick=async()=>{await clerk.signOut();location.href="/"};
+
+    deleteDataButton.onclick=async()=>{
+      if(!confirm("Delete your saved NBL username and all saved Beans conversations? This cannot be undone.")) return;
+      deleteDataButton.disabled=true;deleteStatus.textContent="Deleting your NBL data…";
+      try{
+        await accountFetch("?action=data",{method:"DELETE"});
+        deleteStatus.textContent="Your saved NBL data was deleted.";
+        await Promise.all([renderSummary(),renderHistory()]);
+      }catch(error){deleteStatus.textContent=error.message}
+      finally{deleteDataButton.disabled=false}
+    };
+
+    deleteAccountButton.onclick=async()=>{
+      if(!confirm("This starts account deletion. First your saved NBL data will be erased, then your sign-in/security panel will open so you can delete the login account too.")) return;
+      deleteAccountButton.disabled=true;deleteStatus.textContent="Removing saved NBL data first…";
+      try{
+        await accountFetch("?action=data",{method:"DELETE"});
+        deleteStatus.textContent="NBL data deleted. In the account panel, use Delete account to remove the Clerk login account.";
+        clerk.openUserProfile();
+      }catch(error){deleteStatus.textContent=error.message}
+      finally{deleteAccountButton.disabled=false}
+    };
+
+    try{await Promise.all([renderSummary(),renderHistory()])}
+    catch(error){profileStatus.textContent=error.message;history.innerHTML='<p class="status">'+error.message.replace(/[<>&]/g,"")+'</p>'}
+  });
+  </script>
+</body>
+</html>
