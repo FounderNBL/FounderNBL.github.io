@@ -13,6 +13,7 @@
     if(/\/founder-office\.html$/.test(path)) return {label:"Founder’s Office",key:"office"};
     if(/\/about\.html$/.test(path)||/\/jamel-hawkins\.html$/.test(path)) return {label:"About NBL",key:"about"};
     if(/\/account\.html$/.test(path)) return {label:"My NBL Account",key:"account"};
+    if(/\/search\.html$/.test(path)) return {label:"Search New Beansland",key:"search"};
     if(/\/privacy\.html$/.test(path)||/\/terms\.html$/.test(path)||/\/account-deletion\.html$/.test(path)||/\/nbl-chat-/.test(path)) return {label:"NBL Chat Legal",key:"legal"};
     return {label:"Stories · Questions · Worlds",key:""};
   })();
@@ -25,7 +26,8 @@
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
     ["studio","Timmy V Studios","/studio/",false],
-    ["office","Founder’s Office","/founder-office.html",false]
+    ["office","Founder’s Office","/founder-office.html",false],
+    ["search","Search","/search.html",false]
   ];
 
   const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
@@ -849,7 +851,7 @@
         <p class="nbl-world-footer-mark"><strong>New Beansland™</strong> Stories. Questions. Worlds.</p>
         <nav class="nbl-world-footer-links" aria-label="New Beansland footer navigation">
           <a href="/about.html">About NBL</a>
-          <button type="button" class="nbl-world-footer-search" data-nbl-footer-search aria-expanded="false" aria-controls="nbl-search-panel">Search NBL</button>
+          <a href="/search.html">Search NBL</a>
           <a href="https://www.youtube.com/@FounderNBL" target="_blank" rel="noopener noreferrer">YouTube</a>
           <a href="https://www.instagram.com/newbeansland/" target="_blank" rel="noopener noreferrer">Instagram</a>
           <a href="https://x.com/FounderNBL" target="_blank" rel="noopener noreferrer">X</a>
