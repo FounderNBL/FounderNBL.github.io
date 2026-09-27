@@ -590,3 +590,126 @@ body.nbl-world-menu-open{overflow:hidden!important}
     height:min(calc(100dvh - 68px),calc(100vw / var(--room-ratio)))!important;
   }
 }
+
+
+/* Homepage public shell: simple NBL Chat + NBL World actions */
+.nbl-world-header-home{
+  display:flex!important;
+  align-items:center!important;
+  gap:14px!important;
+}
+.nbl-world-header-home .nbl-world-brand{min-width:0}
+.nbl-world-home-actions{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:0 0 auto;
+}
+.nbl-world-chat-launch{
+  min-height:44px;
+  padding:4px 13px 4px 5px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.nbl-world-chat-launch img{
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  object-fit:cover;
+  border-radius:10px;
+  box-shadow:0 0 0 1px rgba(240,197,111,.34),0 4px 12px rgba(0,0,0,.28);
+}
+.nbl-world-nblworld-link{
+  min-height:44px;
+  padding:10px 15px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(240,197,111,.52);
+  border-radius:999px;
+  color:var(--nbl-world-gold2);
+  background:rgba(7,20,33,.92);
+  font:900 .64rem/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  text-decoration:none;
+}
+.nbl-world-nblworld-link:hover{
+  border-color:var(--nbl-world-gold2);
+  background:rgba(214,161,75,.12);
+}
+.nbl-world-nblworld-link:focus-visible{
+  outline:2px solid var(--nbl-world-gold2);
+  outline-offset:3px;
+}
+
+/* Homepage social badges */
+.nbl-social-links{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+}
+.nbl-world-footer-links .nbl-social-link{
+  width:34px;
+  height:34px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(240,197,111,.38);
+  border-radius:50%;
+  color:var(--nbl-world-gold2);
+  background:rgba(7,20,33,.72);
+  line-height:1;
+}
+.nbl-world-footer-links .nbl-social-link:hover{
+  color:#fff1c8;
+  border-color:var(--nbl-world-gold2);
+  background:rgba(214,161,75,.13);
+  transform:translateY(-1px);
+}
+.nbl-social-link svg{
+  width:18px;
+  height:18px;
+  display:block;
+  fill:currentColor;
+}
+@media(max-width:540px){
+  .nbl-world-header-home{
+    min-height:68px!important;
+    padding:5px 0!important;
+    flex-wrap:nowrap!important;
+  }
+  .nbl-world-header-home .nbl-world-brand{
+    flex:1 1 auto;
+    min-width:0;
+  }
+  .nbl-world-home-actions{
+    gap:6px;
+  }
+  .nbl-world-chat-launch{
+    min-width:auto;
+    min-height:40px;
+    padding:3px 9px 3px 4px;
+    font-size:.55rem;
+    letter-spacing:.035em;
+  }
+  .nbl-world-chat-launch img{
+    width:32px;
+    height:32px;
+    flex-basis:32px;
+    border-radius:9px;
+  }
+  .nbl-world-nblworld-link{
+    min-height:40px;
+    padding:8px 10px;
+    font-size:.54rem;
+    letter-spacing:.035em;
+  }
+  .nbl-world-footer-links{
+    align-items:center;
+  }
+}
