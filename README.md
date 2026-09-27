@@ -7,3 +7,5 @@ New Beansland is an evolving creative world created by Founder Jamel Hawkins and
 This repository contains public-facing production pages, assets, and checks that protect the live experience. Private continuity, experimental development, internal system architecture, and future backend/AI work are kept outside the public production repository.
 
 **Public site:** https://newbeansland.org/
+
+**Production hosting:** GitHub Pages. Replit is a mirror/test bench; Cloudflare Wrangler is not the production deployment path.

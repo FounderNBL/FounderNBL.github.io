@@ -434,6 +434,20 @@
   let beansConversationId=null;
   let beansHistoryLoaded=false;
 
+  const modalInertState=new Map();
+  const setModalIsolation=(panel,open)=>{
+    for(const child of [...document.body.children]){
+      if(child===panel||child.tagName==="SCRIPT") continue;
+      if(open){
+        if(!modalInertState.has(child)) modalInertState.set(child,Boolean(child.inert));
+        child.inert=true;
+      }else if(modalInertState.has(child)){
+        child.inert=modalInertState.get(child);
+        modalInertState.delete(child);
+      }
+    }
+  };
+
   const appendBeansMessage=(role,content)=>{
     const wrap=document.createElement("div");
     wrap.className=`nbl-beans-message ${role==="assistant"?"is-beans":"is-user"}`;
@@ -479,9 +493,9 @@
 
   const loadSignedInBeansHistory=async()=>{
     if(beansHistoryLoaded) return;
-    beansHistoryLoaded=true;
     const token=await getNblBeansAuthToken();
     if(!token) return;
+    beansHistoryLoaded=true;
     try{
       const response=await fetch(`${NBL_ACCOUNT_STORE_API}?action=latest`,{
         headers:{Accept:"application/json",Authorization:`Bearer ${token}`},
@@ -511,6 +525,7 @@
   };
 
   const closeBeans=()=>{
+    setModalIsolation(beansPanel,false);
     beansPanel.hidden=true;
     document.body.classList.remove("nbl-beans-open");
     beansToggle.setAttribute("aria-expanded","false");
@@ -521,6 +536,7 @@
     setOpen(false);
     if(!searchPanel.hidden) closeSearch();
     beansPanel.hidden=false;
+    setModalIsolation(beansPanel,true);
     document.body.classList.add("nbl-beans-open");
     beansToggle.setAttribute("aria-expanded","true");
     void loadSignedInBeansHistory();
@@ -593,6 +609,7 @@
   const closeSearch=()=>{
     activeSearchController?.abort();
     activeSearchController=null;
+    setModalIsolation(searchPanel,false);
     searchPanel.hidden=true;
     document.body.classList.remove("nbl-search-open");
     if(searchTrigger){
@@ -603,7 +620,9 @@
 
   const openSearch=()=>{
     setOpen(false);
+    if(!beansPanel.hidden) closeBeans();
     searchPanel.hidden=false;
+    setModalIsolation(searchPanel,true);
     document.body.classList.add("nbl-search-open");
     if(searchTrigger) searchTrigger.setAttribute("aria-expanded","true");
     window.setTimeout(()=>searchInput.focus(),20);
@@ -627,7 +646,14 @@
         const excerpt=document.createElement("p");
         excerpt.textContent=typeof result?.excerpt==="string"?result.excerpt:"";
         card.append(title,excerpt);
-        const sourceUrl=typeof result?.sourceUrl==="string"?result.sourceUrl.trim():"";
+        const rawSourceUrl=typeof result?.sourceUrl==="string"?result.sourceUrl.trim():"";
+        let sourceUrl="";
+        if(rawSourceUrl){
+          try{
+            const parsedSourceUrl=new URL(rawSourceUrl,location.origin);
+            if(parsedSourceUrl.protocol==="https:") sourceUrl=parsedSourceUrl.href;
+          }catch{}
+        }
         if(sourceUrl){
           const sourceLink=document.createElement("a");
           sourceLink.className="nbl-search-source";
