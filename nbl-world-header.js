@@ -25,12 +25,7 @@
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
     ["studio","Timmy V Studios","/studio/",false],
-    ["office","Founder’s Office","/founder-office.html",false],
-    ["about","About NBL","/about.html",false],
-    ["","YouTube","https://www.youtube.com/@FounderNBL",true],
-    ["","Instagram","https://www.instagram.com/newbeansland/",true],
-    ["","X","https://x.com/FounderNBL",true],
-    ["","Contact","mailto:founder@newbeansland.org",false]
+    ["office","Founder’s Office","/founder-office.html",false]
   ];
 
   const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
@@ -205,7 +200,6 @@
       if(!clerk){
         accountButton.textContent="Sign in";
         accountButton.title="Sign in to your NBL account";
-        addAuxButton("Create account",()=>{ location.href=accountPortalUrl("/sign-up"); });
         return;
       }
 
@@ -227,29 +221,11 @@
             if(response.ok&&username) accountButton.textContent=username;
           }catch{}
         })();
-        const signOutButton=addAuxButton("Sign out",async()=>{
-          signOutButton.disabled=true;
-          signOutButton.textContent="Signing out…";
-          try{
-            await clerk.signOut();
-            render();
-          }catch{
-            signOutButton.disabled=false;
-            signOutButton.textContent="Sign out";
-          }
-        });
         if(panelSignIn) panelSignIn.hidden=true;
         void readUniversityAccess(clerk);
       }else{
         accountButton.textContent="Sign in";
         accountButton.title="Sign in to your NBL account";
-        addAuxButton("Create account",()=>{
-          try{
-            clerk.openSignUp({fallbackRedirectUrl:safeReturnUrl(),signInFallbackRedirectUrl:safeReturnUrl()});
-          }catch{
-            location.href=accountPortalUrl("/sign-up");
-          }
-        });
         if(panelSignIn){
           panelSignIn.hidden=false;
           panelSignIn.disabled=false;
@@ -375,17 +351,16 @@
           <small>${room.label}</small>
         </span>
       </a>
-      <button class="nbl-world-search-toggle" type="button" aria-expanded="false" aria-controls="nbl-search-panel">Search</button>
       <button class="nbl-world-beans-toggle" type="button" aria-expanded="false" aria-controls="nbl-beans-panel">Beans</button>
       <button class="nbl-world-account nbl-world-account-primary" type="button">Sign in</button>
       <div class="nbl-world-user" hidden aria-label="NBL account"></div>
-      <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland rooms">Rooms</button>
+      <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland worlds">Worlds</button>
       <nav class="nbl-world-nav" id="nbl-world-nav" aria-label="New Beansland main navigation">
         ${nav.map(([key,label,href,external])=>`<a href="${href}"${room.key===key&&key?' aria-current="page"':''}${external?' target="_blank" rel="noopener noreferrer"':''}>${label}</a>`).join("")}
       </nav>
     </div>`;
 
-  const searchToggle=header.querySelector(".nbl-world-search-toggle");
+  let searchTrigger=null;
   const beansToggle=header.querySelector(".nbl-world-beans-toggle");
   const searchPanel=document.createElement("section");
   searchPanel.className="nbl-search-panel";
@@ -620,15 +595,17 @@
     activeSearchController=null;
     searchPanel.hidden=true;
     document.body.classList.remove("nbl-search-open");
-    searchToggle.setAttribute("aria-expanded","false");
-    searchToggle.focus();
+    if(searchTrigger){
+      searchTrigger.setAttribute("aria-expanded","false");
+      searchTrigger.focus();
+    }
   };
 
   const openSearch=()=>{
     setOpen(false);
     searchPanel.hidden=false;
     document.body.classList.add("nbl-search-open");
-    searchToggle.setAttribute("aria-expanded","true");
+    if(searchTrigger) searchTrigger.setAttribute("aria-expanded","true");
     window.setTimeout(()=>searchInput.focus(),20);
   };
 
@@ -714,10 +691,6 @@
     }
   });
 
-  searchToggle.addEventListener("click",()=>{
-    if(searchPanel.hidden) openSearch();
-    else closeSearch();
-  });
   searchClose.addEventListener("click",closeSearch);
   searchPanel.addEventListener("click",event=>{
     if(event.target===searchPanel) closeSearch();
@@ -728,8 +701,8 @@
     header.classList.toggle("is-open",open);
     document.body.classList.toggle("nbl-world-menu-open",open);
     menu.setAttribute("aria-expanded",open?"true":"false");
-    menu.setAttribute("aria-label",open?"Close New Beansland rooms":"Open New Beansland rooms");
-    menu.textContent=open?"Close":"Rooms";
+    menu.setAttribute("aria-label",open?"Close New Beansland worlds":"Open New Beansland worlds");
+    menu.textContent=open?"Close":"Worlds";
   };
   menu.addEventListener("click",()=>setOpen(!header.classList.contains("is-open")));
   header.querySelectorAll(".nbl-world-nav a").forEach(a=>a.addEventListener("click",()=>setOpen(false)));
@@ -803,7 +776,12 @@
     footer.innerHTML=`
       <div class="nbl-world-footer-inner">
         <p class="nbl-world-footer-mark"><strong>New Beansland™</strong> Stories. Questions. Worlds.</p>
-        <nav class="nbl-world-footer-links" aria-label="Legal and support">
+        <nav class="nbl-world-footer-links" aria-label="New Beansland footer navigation">
+          <a href="/about.html">About NBL</a>
+          <button type="button" class="nbl-world-footer-search" data-nbl-footer-search aria-expanded="false" aria-controls="nbl-search-panel">Search NBL</button>
+          <a href="https://www.youtube.com/@FounderNBL" target="_blank" rel="noopener noreferrer">YouTube</a>
+          <a href="https://www.instagram.com/newbeansland/" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://x.com/FounderNBL" target="_blank" rel="noopener noreferrer">X</a>
           <a href="/privacy.html">Privacy</a>
           <a href="/terms.html">Terms</a>
           <a href="/nbl-chat-support.html">Support</a>
@@ -812,5 +790,14 @@
         </nav>
       </div>`;
     document.body.append(footer);
+  }
+
+  const footerSearch=document.querySelector("[data-nbl-footer-search]");
+  if(footerSearch){
+    footerSearch.addEventListener("click",()=>{
+      searchTrigger=footerSearch;
+      if(searchPanel.hidden) openSearch();
+      else closeSearch();
+    });
   }
 })();
