@@ -1,0 +1,25 @@
+# Keep repository and development files out of the public Cloudflare asset upload.
+.git
+.github
+engine
+node_modules
+.wrangler
+
+# Source and customer-delivery files are not public website assets.
+*.docx
+*.epub
+*.zip
+*.7z
+*.rar
+*.pptx
+*.xlsx
+*.psd
+*.ai
+
+# Large source media should be hosted separately or optimized before publishing.
+*.mov
+*.mp4
+*.mkv
+*.avi
+*.wav
+*.flac
