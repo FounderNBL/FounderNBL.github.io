@@ -24,17 +24,5 @@ window.NBL_TRACKS = [
     previewSeconds: 0,
     purchaseUrl: "",
     badge: "JMELO"
-  },
-  {
-    id: "nbl-clothes2",
-    title: "NBL clothes2",
-    artist: "JMELO",
-    credit: "NBL Records · New Beansland™",
-    cover: "../NBL-Clothing.png",
-    audio: "../NBL%20clothes2.mp3",
-    video: "",
-    previewSeconds: 0,
-    purchaseUrl: "",
-    badge: "JMELO"
   }
 ];
