@@ -635,15 +635,27 @@
     const box=document.createElement("div");
     box.className="nbl-plus-sources";
     const label=document.createElement("strong");
-    label.textContent="Course sources";
+    label.textContent="Sources";
     box.appendChild(label);
     for(const item of list){
-      const line=document.createElement("span");
       const title=String(item?.title||"NBL University").slice(0,160);
       const course=String(item?.courseCode||"").slice(0,30);
       const page=Number.isFinite(Number(item?.page))?` · p. ${Number(item.page)}`:"";
-      line.textContent=`${title}${course?` · ${course}`:""}${page}`;
-      box.appendChild(line);
+      const sourceName=String(item?.sourceName||"").slice(0,80);
+      const suffix=`${course?` · ${course}`:""}${sourceName&&!course?` · ${sourceName}`:""}${page}`;
+      const url=typeof item?.url==="string"&&/^https?:\/\//i.test(item.url)?item.url:"";
+      if(url){
+        const link=document.createElement("a");
+        link.href=url;
+        link.target="_blank";
+        link.rel="noopener noreferrer";
+        link.textContent=`${title}${suffix}`;
+        box.appendChild(link);
+      }else{
+        const line=document.createElement("span");
+        line.textContent=`${title}${suffix}`;
+        box.appendChild(line);
+      }
     }
     plusLog.appendChild(box);
     plusLog.scrollTop=plusLog.scrollHeight;
@@ -844,6 +856,10 @@
   });
 
   plusCourse.addEventListener("change",()=>{
+    plusHistory.length=0;
+    plusHistory.push({role:"assistant",content:"Choose your course and ask me about the lesson."});
+    plusLog.replaceChildren();
+    appendPlusMessage("assistant","Choose your course and ask me about the lesson.");
     plusStatus.textContent=`Professor Grey is ready · ${plusCourse.value}`;
   });
 

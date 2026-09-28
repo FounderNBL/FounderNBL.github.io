@@ -1,0 +1,37 @@
+name: NBL website chat parity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nbl-world-header.js"
+      - "nbl-world-header.css"
+      - "account.html"
+      - "account-deletion.html"
+      - "scripts/check-website-chat-plus.mjs"
+      - "scripts/check-website-chat-parity.mjs"
+      - ".github/workflows/nbl-website-chat-parity.yml"
+  pull_request:
+    paths:
+      - "nbl-world-header.js"
+      - "nbl-world-header.css"
+      - "account.html"
+      - "account-deletion.html"
+      - "scripts/check-website-chat-plus.mjs"
+      - "scripts/check-website-chat-parity.mjs"
+      - ".github/workflows/nbl-website-chat-parity.yml"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check website JavaScript syntax
+        run: node --check nbl-world-header.js
+      - name: Check NBL Chat Plus wiring
+        run: node scripts/check-website-chat-plus.mjs
+      - name: Check Android-to-web parity regressions
+        run: node scripts/check-website-chat-parity.mjs
