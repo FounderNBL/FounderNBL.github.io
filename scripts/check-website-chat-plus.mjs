@@ -20,8 +20,8 @@ requireText(js,'NBL_BEANS_WEB_API=NBL_PUBLIC_BEANS_API',"Regular guest Beans no 
 requireText(js,'data-nbl-chat-mode="beans"',"Beans mode is missing.");
 requireText(js,'data-nbl-chat-mode="plus"',"NBL Chat Plus mode is missing.");
 requireText(js,'NBL_CHAT_PLUS_API',"NBL Chat Plus gateway is missing.");
-requireText(js,'/plus/status',"Plus access is not checked server-side.");
-requireText(js,'/plus/chat',"Professor Grey runtime route is missing.");
+requireText(js,'action:"status"',"Plus access is not checked server-side.");
+requireText(js,'action:"grey"',"Professor Grey runtime route is missing.");
 requireText(js,'APSK 101',"APSK 101 is missing.");
 requireText(js,'ANSY 110',"ANSY 110 is missing.");
 requireText(js,'EBPR 120',"EBPR 120 is missing.");
