@@ -32,10 +32,10 @@
 
   const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
   const NBL_PUBLIC_BEANS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/beans-public";
-  const NBL_CHAT_PLUS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-chat-gateway";
+  const NBL_CHAT_PLUS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
   const NBL_ACCOUNT_STORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
   const NBL_SEARCH_API=NBL_PUBLIC_BEANS_API;
-  const NBL_BEANS_WEB_API=NBL_PUBLIC_BEANS_API;
+  const NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API;
   const NBL_CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
   const NBL_ACCOUNT_PORTAL="https://accounts.newbeansland.org";
   let nblClerkPromise=null;
@@ -416,16 +416,16 @@
           <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-beans-avatar">
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
-            <h2 id="nbl-beans-title">NBL Chat</h2>
-            <p class="nbl-beans-note">Beans is free to use. Plus adds protected guided learning for authorized NBL accounts.</p>
+            <h2 id="nbl-beans-title">NBL Chat Plus</h2>
+            <p class="nbl-beans-note">Beans is the front door. Professor Grey opens through LOCKE for authorized NBL accounts.</p>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close NBL Chat">✕</button>
       </div>
 
-      <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat mode">
+      <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat Plus mode">
         <button type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-selected="true">Beans</button>
-        <button type="button" data-nbl-chat-mode="plus" role="tab" aria-selected="false">NBL Chat Plus</button>
+        <button type="button" data-nbl-chat-mode="plus" role="tab" aria-selected="false">Professor Grey</button>
       </div>
 
       <section data-nbl-beans-regular>
@@ -683,10 +683,10 @@
     plusLive.hidden=true;
     plusAccessCopy.textContent="Checking NBL Chat Plus access…";
     try{
-      const response=await fetch(`${NBL_CHAT_PLUS_API}/plus/status`,{
+      const response=await fetch(NBL_CHAT_PLUS_API,{
         method:"POST",
         headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${identity.token}`},
-        body:JSON.stringify({}),
+        body:JSON.stringify({action:"status"}),
         cache:"no-store"
       });
       const payload=await response.json().catch(()=>({}));
@@ -813,10 +813,10 @@
     plusCourse.disabled=true;
     plusStatus.textContent="Professor Grey is thinking…";
     try{
-      const response=await fetch(`${NBL_CHAT_PLUS_API}/plus/chat`,{
+      const response=await fetch(NBL_CHAT_PLUS_API,{
         method:"POST",
         headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${identity.token}`},
-        body:JSON.stringify({courseCode:plusCourse.value,messages:plusHistory.slice(-10)})
+        body:JSON.stringify({action:"grey",courseCode:plusCourse.value,messages:plusHistory.slice(-10)})
       });
       const payload=await response.json().catch(()=>({}));
       if(response.status===401||response.status===403){
