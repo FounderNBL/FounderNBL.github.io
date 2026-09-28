@@ -869,7 +869,7 @@
     });
   }).catch(()=>{});
 
-  beansToggle.addEventListener("click",openBeans);  beansToggle.addEventListener("click",openBeans);
+  beansToggle.addEventListener("click",openBeans);
   beansClose.addEventListener("click",closeBeans);
 
   const searchForm=searchPanel.querySelector("[data-nbl-search-form]");
