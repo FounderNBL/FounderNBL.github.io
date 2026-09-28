@@ -240,12 +240,6 @@
     };
 
     const openSignIn=()=>{
-      if(clerk){
-        try{
-          clerk.openSignIn({fallbackRedirectUrl:safeReturnUrl(),signUpFallbackRedirectUrl:safeReturnUrl()});
-          return;
-        }catch{}
-      }
       location.href=accountPortalUrl("/sign-in");
     };
 
