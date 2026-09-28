@@ -478,7 +478,6 @@
       </section>
     </div>`;
 
-  const beansClose=
   const beansClose=beansPanel.querySelector("[data-nbl-beans-close]");
   const beansForm=beansPanel.querySelector("[data-nbl-beans-form]");
   const beansInput=beansPanel.querySelector("#nbl-beans-input");
@@ -507,8 +506,6 @@
   let plusAccessCheckedFor=null;
   let plusAccessLoadingFor=null;
   let plusAllowed=false;
-
-  const modalInertState=new Map();
 
   const modalInertState=new Map();
   const setModalIsolation=(panel,open)=>{
