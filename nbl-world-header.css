@@ -264,6 +264,41 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
   .nbl-world-nav a::after{bottom:7px}
   body.nbl-world-menu-open{overflow:hidden}
 }
+.nbl-chat-modes{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0 2px;padding:5px;
+  border:1px solid rgba(214,161,75,.24);border-radius:14px;background:#020a12;
+}
+.nbl-chat-modes button{
+  min-height:42px;padding:10px 12px;border:1px solid transparent;border-radius:10px;
+  color:var(--nbl-world-soft);background:transparent;font-weight:900;letter-spacing:.04em;cursor:pointer;
+}
+.nbl-chat-modes button.is-active{
+  color:#111;border-color:var(--nbl-world-gold2);background:linear-gradient(180deg,#f3d994,#cf9630);
+}
+[data-nbl-beans-regular][hidden],.nbl-plus-shell[hidden],[data-nbl-plus-live][hidden],.nbl-plus-access[hidden]{display:none!important}
+.nbl-plus-shell{margin-top:14px}
+.nbl-plus-access{
+  padding:20px;border:1px solid rgba(240,197,111,.30);border-radius:15px;background:rgba(2,10,18,.90);
+}
+.nbl-plus-access h3{margin:5px 0 8px;color:var(--nbl-world-cream);font:700 1.35rem/1.2 Georgia,"Times New Roman",serif}
+.nbl-plus-access p:not(.nbl-beans-kicker){margin:0;color:#e8dfd0;line-height:1.55}
+.nbl-plus-access button{
+  margin-top:14px;min-height:44px;padding:10px 15px;border:1px solid var(--nbl-world-gold2);border-radius:11px;
+  color:#111;background:linear-gradient(180deg,#f3d994,#cf9630);font-weight:900;cursor:pointer;
+}
+.nbl-plus-course{display:grid;gap:7px;margin:0 0 12px}
+.nbl-plus-course label{color:#eee5d8;font-size:.76rem;font-weight:900}
+.nbl-plus-course select{
+  width:100%;min-height:46px;padding:10px 12px;border:1px solid rgba(240,197,111,.36);border-radius:11px;
+  color:var(--nbl-world-cream);background:#020a12;font:700 .92rem/1.2 Arial,Helvetica,sans-serif;
+}
+.nbl-plus-sources{
+  margin:8px 0 14px;padding:10px 12px;border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;background:rgba(255,255,255,.035);
+}
+.nbl-plus-sources strong{display:block;margin-bottom:6px;color:var(--nbl-world-gold2);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.nbl-plus-sources span{display:block;margin:4px 0;color:#d7cdbc;font-size:.82rem;line-height:1.4}
+
 @media(max-width:760px){
   body[data-nbl-room="stories"] .card{padding:16px}
   body[data-nbl-room="stories"] .actions .button{flex:1 1 160px}
@@ -515,6 +550,8 @@ body.nbl-beans-open{overflow:hidden!important}
   .nbl-beans-row{grid-template-columns:1fr}
   .nbl-beans-row button{width:100%}
   .nbl-beans-message{max-width:94%}
+  .nbl-chat-modes{grid-template-columns:1fr}
+  .nbl-chat-modes button{width:100%}
 }
 
 
