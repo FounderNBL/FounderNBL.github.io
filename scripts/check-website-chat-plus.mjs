@@ -16,10 +16,11 @@ function forbidText(source,text,message){
   }
 }
 
-requireText(js,'NBL_BEANS_WEB_API=NBL_PUBLIC_BEANS_API',"Regular guest Beans no longer uses the existing beans-public runtime.");
+requireText(js,'NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API',"Regular Beans is not using the NBL Foundation runtime.");
 requireText(js,'data-nbl-chat-mode="beans"',"Beans mode is missing.");
 requireText(js,'data-nbl-chat-mode="plus"',"NBL Chat Plus mode is missing.");
-requireText(js,'NBL_CHAT_PLUS_API',"NBL Chat Plus gateway is missing.");
+requireText(js,'NBL_CHAT_PLUS_API',"NBL Chat Plus runtime endpoint is missing.");
+requireText(js,'functions/v1/nbl-foundation-runtime',"Canonical NBL Foundation runtime endpoint is missing.");
 requireText(js,'action:"status"',"Plus access is not checked server-side.");
 requireText(js,'action:"grey"',"Professor Grey runtime route is missing.");
 requireText(js,'APSK 101',"APSK 101 is missing.");
@@ -42,4 +43,4 @@ if(beansListener!==1){
   process.exitCode=1;
 }
 
-if(!process.exitCode) console.log("[website-chat-plus] PASS: regular Beans, account continuity, protected Plus routes, course choices, and public-secret guards are present.");
+if(!process.exitCode) console.log("[website-chat-plus] PASS: NBL Foundation Beans, account continuity, LOCKE-protected Grey, course choices, and public-secret guards are present.");
