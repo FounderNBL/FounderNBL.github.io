@@ -27,7 +27,7 @@
     ["stories","TV & Film","/stories.html",false],
     ["studio","Timmy V Studios","/studio/",false],
     ["office","Founder’s Office","/founder-office.html",false],
-    ["search","Search","/search.html",false]
+    ["search","Search","#nbl-search",false]
   ];
 
   const NBL_PUBLIC_BEANS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/beans-public";
@@ -35,6 +35,7 @@
   const NBL_ACCOUNT_STORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
   const NBL_SEARCH_API=NBL_PUBLIC_BEANS_API;
   const NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API;
+  const NBL_PRODUCT_PLANS=window.NBL_PRODUCT_PLANS;
   const NBL_CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
   const NBL_ACCOUNT_PORTAL="https://accounts.newbeansland.org";
   let nblClerkPromise=null;
@@ -337,12 +338,12 @@
           <small>${room.label}</small>
         </span>
       </a>
-      <button class="nbl-world-beans-toggle" type="button" aria-expanded="false" aria-controls="nbl-beans-panel">Beans</button>
+      <button class="nbl-world-beans-toggle" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open NBL Chat">NBL Chat</button>
       <button class="nbl-world-account nbl-world-account-primary" type="button">Sign in</button>
       <div class="nbl-world-user" hidden aria-label="NBL account"></div>
       <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland worlds">Worlds</button>
       <nav class="nbl-world-nav" id="nbl-world-nav" aria-label="New Beansland main navigation">
-        ${nav.map(([key,label,href,external])=>`<a href="${href}"${room.key===key&&key?' aria-current="page"':''}${external?' target="_blank" rel="noopener noreferrer"':''}>${label}</a>`).join("")}
+        ${nav.map(([key,label,href,external])=>`<a href="${href}"${key==="search"?' data-nbl-open-search':''}${room.key===key&&key?' aria-current="page"':''}${external?' target="_blank" rel="noopener noreferrer"':''}>${label}</a>`).join("")}
       </nav>
     </div>`;
 
@@ -380,7 +381,7 @@
   beansPanel.className="nbl-beans-panel";
   beansPanel.id="nbl-beans-panel";
   beansPanel.hidden=true;
-  beansPanel.setAttribute("aria-label","Talk to Beans");
+  beansPanel.setAttribute("aria-label","NBL Chat");
   beansPanel.innerHTML=`
     <div class="nbl-beans-card" role="dialog" aria-modal="true" aria-labelledby="nbl-beans-title">
       <div class="nbl-beans-head">
@@ -399,7 +400,7 @@
       </div>
 
       <div class="nbl-chat-drawer-shade" data-nbl-chat-drawer-shade hidden></div>
-      <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="NBL Chat menu" hidden>
+      <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="NBL Chat menu" tabindex="-1" hidden>
         <div class="nbl-chat-drawer-head">
           <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-chat-drawer-logo">
           <div>
@@ -431,12 +432,12 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
             <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
-            <span><strong>Membership &amp; plans</strong><small>$4.99 Beans · $19.99 Plus · Get More</small></span>
+            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
-            <article><strong>Beans · $4.99/month</strong><span>300 successful replies per billing period.</span></article>
-            <article><strong>NBL Chat Plus · $19.99/month</strong><span>1,050 successful replies total + Professor Grey / Virgo + plan-approved premium tools.</span></article>
-            <article><strong>Get More · $9.99</strong><span>+500 successful replies. No renewal-date change and no plan upgrade.</span></article>
+            <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span></article>
+            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + Professor Grey / Virgo + plan-approved premium tools.</span></article>
+            <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span></article>
           </div>
 
           <a class="nbl-chat-drawer-item" href="/university.html">
@@ -465,11 +466,11 @@
       </aside>
 
       <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat mode">
-        <button type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-selected="true">Beans</button>
-        <button type="button" data-nbl-chat-mode="plus" role="tab" aria-selected="false">Professor Grey</button>
+        <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
+        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="Professor Grey, NBL Chat Plus Guided Learning" tabindex="-1">Professor Grey</button>
       </div>
 
-      <section data-nbl-beans-regular>
+      <section id="nbl-chat-panel-beans" role="tabpanel" aria-labelledby="nbl-chat-tab-beans" tabindex="0" data-nbl-beans-regular>
         <div class="nbl-beans-log" data-nbl-beans-log aria-live="polite">
           <div class="nbl-beans-message is-beans"><strong>Beans</strong><p>I'm Beans. What's up?</p></div>
         </div>
@@ -483,10 +484,10 @@
         <p class="nbl-beans-note" style="margin-top:10px">
           Signed-in chats may be stored with your NBL account and processed by service providers to provide NBL Chat. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
         </p>
-        <p class="nbl-beans-status" data-nbl-beans-status role="status">Beans is free to use. No account required.</p>
+        <p class="nbl-beans-status" data-nbl-beans-status role="status">Beans includes limited free replies. Sign in to keep your history and use your NBL membership.</p>
       </section>
 
-      <section class="nbl-plus-shell" data-nbl-plus hidden>
+      <section id="nbl-chat-panel-plus" class="nbl-plus-shell" role="tabpanel" aria-labelledby="nbl-chat-tab-plus" tabindex="0" data-nbl-plus hidden>
         <div class="nbl-plus-access" data-nbl-plus-access>
           <p class="nbl-beans-kicker">NBL Chat Plus</p>
           <h3>Professor Grey · Guided Learning</h3>
@@ -554,11 +555,19 @@
   let beansConversationId=null;
   let beansHistoryLoadedFor=null;
   let beansHistoryLoadingFor=null;
+  let beansHistoryRequestGeneration=0;
+  let beansConversationGeneration=0;
+  let beansAccountGeneration=0;
+  let beansIdentityUserId=null;
   let activeChatMode="beans";
   let plusAccessCheckedFor=null;
   let plusAccessLoadingFor=null;
+  let plusAccessRequestGeneration=0;
   let plusAllowed=false;
   let chatDrawerCloseTimer=null;
+  let chatDrawerOpener=null;
+  let chatHistoryEntry=null;
+  let drawerHistoryRequestGeneration=0;
 
   const modalInertState=new Map();
   const setModalIsolation=(panel,open)=>{
@@ -630,14 +639,48 @@
     }
   };
 
+  const currentClerkUserId=()=>{
+    if(!nblClerk?.isSignedIn) return null;
+    return String(nblClerk.user?.id||nblClerk.session?.user?.id||"signed-in");
+  };
+
+  const invalidateBeansHistoryLoad=()=>{
+    beansHistoryRequestGeneration++;
+    beansHistoryLoadingFor=null;
+  };
+
+  const clearBeansTranscript=status=>{
+    beansLog.replaceChildren();
+    beansHistory.length=0;
+    beansHistory.push({role:"assistant",content:"I'm Beans. What's up?"});
+    appendBeansMessage("assistant",beansHistory[0].content);
+    beansConversationId=null;
+    beansHistoryLoadedFor=null;
+    beansStatus.textContent=status;
+  };
+
+  const clearPlusTranscript=()=>{
+    plusHistory.length=0;
+    plusHistory.push({role:"assistant",content:"Choose your course and ask me about the lesson."});
+    plusLog.replaceChildren();
+    appendPlusMessage("assistant",plusHistory[0].content);
+  };
+
   const loadSignedInBeansHistory=async()=>{
+    const knownUserId=currentClerkUserId();
+    if(knownUserId&&(beansHistoryLoadedFor===knownUserId||beansHistoryLoadingFor===knownUserId)) return;
+    const requestGeneration=++beansHistoryRequestGeneration;
+    const accountGeneration=beansAccountGeneration;
+    const conversationGeneration=beansConversationGeneration;
     const identity=await getSignedInNblIdentity();
+    if(requestGeneration!==beansHistoryRequestGeneration||accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration) return;
     if(!identity){
       beansHistoryLoadedFor=null;
       beansHistoryLoadingFor=null;
       return;
     }
     if(beansHistoryLoadedFor===identity.userId||beansHistoryLoadingFor===identity.userId) return;
+    if(currentClerkUserId()!==identity.userId) return;
     beansHistoryLoadingFor=identity.userId;
     try{
       const response=await fetch(`${NBL_ACCOUNT_STORE_API}?action=latest`,{
@@ -646,6 +689,8 @@
       });
       const payload=await response.json().catch(()=>({}));
       if(!response.ok) throw new Error(payload.message||"Saved conversation could not be loaded.");
+      const currentUserId=currentClerkUserId();
+      if(requestGeneration!==beansHistoryRequestGeneration||accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentUserId!==identity.userId) return;
       const saved=Array.isArray(payload?.messages)?payload.messages:[];
       beansConversationId=payload?.conversation?.id?String(payload.conversation.id):null;
       if(saved.length){
@@ -664,9 +709,10 @@
       }
       beansHistoryLoadedFor=identity.userId;
     }catch(error){
+      if(requestGeneration!==beansHistoryRequestGeneration||accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||error?.name==="AbortError") return;
       beansStatus.textContent=error?.message||"Beans is live. Saved history is temporarily unavailable.";
     }finally{
-      if(beansHistoryLoadingFor===identity.userId) beansHistoryLoadingFor=null;
+      if(requestGeneration===beansHistoryRequestGeneration&&beansHistoryLoadingFor===identity.userId) beansHistoryLoadingFor=null;
     }
   };
 
@@ -691,22 +737,29 @@
     beansStatus.textContent=status;
   };
 
-  const startNewBeansConversation=async()=>{
-    const identity=await getSignedInNblIdentity();
+  const startNewBeansConversation=()=>{
+    invalidateBeansHistoryLoad();
+    beansConversationGeneration++;
+    const userId=currentClerkUserId();
     replaceBeansConversation(
       [{role:"assistant",content:"I'm Beans. What's up?"}],
       null,
       {
-        status:identity?"New Beans conversation started. It will save to your NBL account.":"New Beans conversation started.",
-        loadedFor:identity?.userId||null
+        status:userId?"New Beans conversation started. It will save to your NBL account.":"New Beans conversation started.",
+        loadedFor:userId
       }
     );
     setChatMode("beans");
   };
 
   const loadDrawerConversation=async(id)=>{
+    invalidateBeansHistoryLoad();
+    const requestGeneration=beansHistoryRequestGeneration;
+    const accountGeneration=beansAccountGeneration;
+    const conversationGeneration=++beansConversationGeneration;
+    const userIdAtRequest=currentClerkUserId();
     const identity=await getSignedInNblIdentity();
-    if(!identity) return;
+    if(!identity||requestGeneration!==beansHistoryRequestGeneration||accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||identity.userId!==userIdAtRequest) return;
     chatDrawerHistoryStatus.textContent="Opening conversation…";
     try{
       const response=await fetch(`${NBL_ACCOUNT_STORE_API}?action=conversation&id=${encodeURIComponent(id)}`,{
@@ -715,17 +768,22 @@
       });
       const payload=await response.json().catch(()=>({}));
       if(!response.ok) throw new Error(payload?.message||"That conversation could not be opened.");
+      if(requestGeneration!==beansHistoryRequestGeneration||accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==identity.userId) return;
       replaceBeansConversation(payload?.messages,id,{loadedFor:identity.userId});
       setChatMode("beans");
       setChatDrawerOpen(false);
     }catch(error){
+      if(requestGeneration!==beansHistoryRequestGeneration||accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||error?.name==="AbortError") return;
       chatDrawerHistoryStatus.textContent=error?.message||"That conversation could not be opened.";
     }
   };
 
   const renderChatDrawerHistory=async()=>{
+    const requestGeneration=++drawerHistoryRequestGeneration;
+    const accountGeneration=beansAccountGeneration;
     chatDrawerHistoryList.replaceChildren();
     const identity=await getSignedInNblIdentity();
+    if(requestGeneration!==drawerHistoryRequestGeneration||accountGeneration!==beansAccountGeneration) return;
     if(!identity){
       chatDrawerHistoryStatus.textContent="Sign in to see saved conversations.";
       return;
@@ -738,6 +796,7 @@
       });
       const payload=await response.json().catch(()=>({}));
       if(!response.ok) throw new Error(payload?.message||"Saved conversations could not be loaded.");
+      if(requestGeneration!==drawerHistoryRequestGeneration||accountGeneration!==beansAccountGeneration||currentClerkUserId()!==identity.userId) return;
       const conversations=Array.isArray(payload?.conversations)?payload.conversations.slice(0,8):[];
       if(!conversations.length){
         chatDrawerHistoryStatus.textContent="No saved Beans conversations yet.";
@@ -758,6 +817,7 @@
         chatDrawerHistoryList.appendChild(button);
       }
     }catch(error){
+      if(requestGeneration!==drawerHistoryRequestGeneration||accountGeneration!==beansAccountGeneration) return;
       chatDrawerHistoryStatus.textContent=error?.message||"Saved conversations could not be loaded.";
     }
   };
@@ -777,21 +837,46 @@
       chatDrawerCloseTimer=null;
     }
     if(open){
+      chatDrawerOpener=chatDrawerToggle;
       chatDrawer.hidden=false;
       chatDrawerShade.hidden=false;
+      chatDrawer.inert=false;
       chatDrawerToggle.setAttribute("aria-expanded","true");
       requestAnimationFrame(()=>chatDrawer.classList.add("is-open"));
       void Promise.all([renderChatDrawerHistory(),updateChatDrawerAccountAction()]);
+      window.setTimeout(()=>chatDrawer.querySelector("[data-nbl-chat-drawer-close]")?.focus(),20);
       return;
     }
+    if(chatDrawer.hidden&&chatDrawerCloseTimer===null) return;
     chatDrawer.classList.remove("is-open");
     chatDrawerToggle.setAttribute("aria-expanded","false");
+    chatDrawer.inert=true;
+    (chatDrawerOpener?.isConnected?chatDrawerOpener:chatDrawerToggle).focus();
     chatDrawerCloseTimer=setTimeout(()=>{
       chatDrawer.hidden=true;
       chatDrawerShade.hidden=true;
       chatDrawerCloseTimer=null;
     },180);
   };
+
+  chatDrawer.addEventListener("keydown",event=>{
+    if(event.key!=="Tab") return;
+    const focusable=[...chatDrawer.querySelectorAll('button:not([disabled]),a[href]')].filter(element=>!element.closest("[hidden]"));
+    if(!focusable.length){
+      event.preventDefault();
+      chatDrawer.focus();
+      return;
+    }
+    const first=focusable[0];
+    const last=focusable[focusable.length-1];
+    if(event.shiftKey&&(document.activeElement===first||!chatDrawer.contains(document.activeElement))){
+      event.preventDefault();
+      last.focus();
+    }else if(!event.shiftKey&&(document.activeElement===last||!chatDrawer.contains(document.activeElement))){
+      event.preventDefault();
+      first.focus();
+    }
+  });
 
   const appendPlusMessage=(role,content)=>{
     const wrap=document.createElement("div");
@@ -843,6 +928,7 @@
     plusAccess.hidden=false;
     plusAccessCopy.textContent=message;
     plusSignIn.hidden=!signedOut;
+    clearPlusTranscript();
   };
 
   const showPlusReady=()=>{
@@ -853,13 +939,18 @@
   };
 
   const refreshPlusAccess=async({force=false}={})=>{
+    if(!force&&plusAccessLoadingFor===currentClerkUserId()) return;
+    const accessRequestGeneration=++plusAccessRequestGeneration;
+    const accountGeneration=beansAccountGeneration;
     const identity=await getSignedInNblIdentity();
+    if(accessRequestGeneration!==plusAccessRequestGeneration||accountGeneration!==beansAccountGeneration) return;
     if(!identity){
       plusAccessCheckedFor=null;
       plusAccessLoadingFor=null;
       showPlusLocked("Sign in with your NBL account to check NBL Chat Plus access.",{signedOut:true});
       return;
     }
+    if(currentClerkUserId()!==identity.userId) return;
     if(!force&&plusAccessCheckedFor===identity.userId){
       if(plusAllowed) showPlusReady();
       return;
@@ -878,6 +969,7 @@
         cache:"no-store"
       });
       const payload=await response.json().catch(()=>({}));
+      if(accessRequestGeneration!==plusAccessRequestGeneration||accountGeneration!==beansAccountGeneration||currentClerkUserId()!==identity.userId) return;
       if(response.status===401){
         plusAccessCheckedFor=null;
         return showPlusLocked("Your NBL session needs to be refreshed. Sign in again to check Plus access.",{signedOut:true});
@@ -887,14 +979,15 @@
       if(payload?.chatPlus?.allowed===true) showPlusReady();
       else showPlusLocked("NBL Chat Plus guided learning is not active for this account.");
     }catch(error){
+      if(accessRequestGeneration!==plusAccessRequestGeneration||accountGeneration!==beansAccountGeneration||currentClerkUserId()!==identity.userId) return;
       plusAccessCheckedFor=null;
       showPlusLocked(error?.message||"NBL Chat Plus access could not be checked right now.");
     }finally{
-      if(plusAccessLoadingFor===identity.userId) plusAccessLoadingFor=null;
+      if(accessRequestGeneration===plusAccessRequestGeneration&&plusAccessLoadingFor===identity.userId) plusAccessLoadingFor=null;
     }
   };
 
-  const setChatMode=mode=>{
+  const setChatMode=(mode,{focusInput=true}={})=>{
     activeChatMode=mode==="plus"?"plus":"beans";
     const isPlus=activeChatMode==="plus";
     regularBeansShell.hidden=isPlus;
@@ -903,28 +996,38 @@
       const selected=button.dataset.nblChatMode===activeChatMode;
       button.classList.toggle("is-active",selected);
       button.setAttribute("aria-selected",selected?"true":"false");
+      button.tabIndex=selected?0:-1;
     }
     if(isPlus){
       void refreshPlusAccess();
-      window.setTimeout(()=>{ if(plusAllowed) plusInput.focus(); else if(!plusSignIn.hidden) plusSignIn.focus(); },20);
+      if(focusInput) window.setTimeout(()=>{ if(plusAllowed) plusInput.focus(); else if(!plusSignIn.hidden) plusSignIn.focus(); },20);
     }else{
       void loadSignedInBeansHistory();
-      window.setTimeout(()=>beansInput.focus(),20);
+      if(focusInput) window.setTimeout(()=>beansInput.focus(),20);
     }
   };
 
-  const closeBeans=()=>{
+  const closeBeans=({fromPopState=false}={})=>{
     setChatDrawerOpen(false);
     setModalIsolation(beansPanel,false);
     beansPanel.hidden=true;
     document.body.classList.remove("nbl-beans-open");
     beansToggle.setAttribute("aria-expanded","false");
     beansToggle.focus();
+    if(!fromPopState&&chatHistoryEntry&&window.history.state?.nblChatOverlay===chatHistoryEntry){
+      const state={...window.history.state};
+      delete state.nblChatOverlay;
+      window.history.replaceState(state,"",location.href);
+    }
+    chatHistoryEntry=null;
   };
 
   const openBeans=()=>{
+    if(!beansPanel.hidden) return;
     setOpen(false);
     if(!searchPanel.hidden) closeSearch();
+    chatHistoryEntry=`nbl-chat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    window.history.pushState({...window.history.state,nblChatOverlay:chatHistoryEntry},"",location.href);
     beansPanel.hidden=false;
     setModalIsolation(beansPanel,true);
     document.body.classList.add("nbl-beans-open");
@@ -973,7 +1076,7 @@
         ?"Beans checked the live web."
         :payload?.authenticated
           ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
-          :"Beans is live · free to use.";
+          :"Beans replied.";
     }catch(error){
       const message=error?.message||"Beans could not answer just now.";
       appendBeansMessage("assistant",message);
@@ -989,8 +1092,15 @@
     event.preventDefault();
     const text=plusInput.value.trim();
     if(!text||!plusAllowed) return;
+    const accountGeneration=beansAccountGeneration;
+    const accessRequestGeneration=plusAccessRequestGeneration;
+    const requestedUserId=currentClerkUserId();
     const identity=await getSignedInNblIdentity();
-    if(!identity){
+    if(!identity||accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||!plusAllowed||identity.userId!==requestedUserId){
+      if(accountGeneration===beansAccountGeneration&&!identity) showPlusLocked("Sign in with your NBL account to use NBL Chat Plus.",{signedOut:true});
+      return;
+    }
+    if(currentClerkUserId()!==identity.userId){
       showPlusLocked("Sign in with your NBL account to use NBL Chat Plus.",{signedOut:true});
       return;
     }
@@ -1008,6 +1118,7 @@
         body:JSON.stringify({action:"grey",courseCode:plusCourse.value,messages:plusHistory.slice(-10)})
       });
       const payload=await response.json().catch(()=>({}));
+      if(accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||!plusAllowed||currentClerkUserId()!==identity.userId) return;
       if(response.status===401||response.status===403){
         plusAccessCheckedFor=null;
         showPlusLocked(response.status===401?"Your NBL session needs to be refreshed.":"NBL Chat Plus guided learning is not active for this account.",{signedOut:response.status===401});
@@ -1021,6 +1132,7 @@
       appendPlusSources(payload?.sources);
       plusStatus.textContent=`Professor Grey · ${plusCourse.value}`;
     }catch(error){
+      if(accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||currentClerkUserId()!==identity.userId) return;
       const message=error?.message||"Professor Grey could not answer just now.";
       appendPlusMessage("assistant",message);
       plusStatus.textContent=message;
@@ -1064,11 +1176,18 @@
       const clerk=await getNblClerk();
       if(clerk?.isSignedIn){
         await clerk.signOut();
+        beansAccountGeneration++;
+        invalidateBeansHistoryLoad();
+        plusAccessRequestGeneration++;
+        beansIdentityUserId=null;
         beansHistoryLoadedFor=null;
         beansHistoryLoadingFor=null;
         plusAccessCheckedFor=null;
+        plusAccessLoadingFor=null;
         plusAllowed=false;
-        await startNewBeansConversation();
+        clearBeansTranscript("You are signed out. Sign in to keep your history.");
+        showPlusLocked("Sign in with your NBL account to check NBL Chat Plus access.",{signedOut:true});
+        startNewBeansConversation();
         setChatDrawerOpen(false);
         return;
       }
@@ -1079,15 +1198,33 @@
   for(const button of modeButtons){
     button.addEventListener("click",()=>setChatMode(button.dataset.nblChatMode));
   }
+  const modeTabList=beansPanel.querySelector('[role="tablist"]');
+  modeTabList.addEventListener("keydown",event=>{
+    if(!["ArrowRight","ArrowLeft","Home","End"].includes(event.key)) return;
+    event.preventDefault();
+    const currentIndex=modeButtons.indexOf(document.activeElement);
+    const nextIndex=event.key==="Home"?0:event.key==="End"?modeButtons.length-1:(currentIndex+(event.key==="ArrowRight"?1:-1)+modeButtons.length)%modeButtons.length;
+    setChatMode(modeButtons[nextIndex].dataset.nblChatMode,{focusInput:false});
+    modeButtons[nextIndex].focus();
+  });
 
   void getNblClerk().then(clerk=>{
     if(typeof clerk?.addListener!=="function") return;
+    beansIdentityUserId=currentClerkUserId();
     clerk.addListener(()=>{
+      const nextUserId=currentClerkUserId();
+      const accountChanged=nextUserId!==beansIdentityUserId;
+      beansIdentityUserId=nextUserId;
+      beansAccountGeneration++;
+      invalidateBeansHistoryLoad();
+      drawerHistoryRequestGeneration++;
+      plusAccessRequestGeneration++;
       beansHistoryLoadedFor=null;
-      beansHistoryLoadingFor=null;
       plusAccessCheckedFor=null;
       plusAccessLoadingFor=null;
       plusAllowed=false;
+      if(accountChanged||!nextUserId) clearBeansTranscript(nextUserId?"Account changed. Saved history is loading…":"You are signed out. Sign in to keep your history.");
+      showPlusLocked(nextUserId?"Checking NBL Chat Plus access…":"Sign in with your NBL account to check NBL Chat Plus access.",{signedOut:!nextUserId});
       if(beansPanel.hidden) return;
       if(chatDrawer.classList.contains("is-open")){
         void renderChatDrawerHistory();
@@ -1100,6 +1237,9 @@
 
   beansToggle.addEventListener("click",openBeans);
   beansClose.addEventListener("click",closeBeans);
+  beansPanel.addEventListener("click",event=>{
+    if(event.target===beansPanel) closeBeans();
+  });
 
   const searchForm=searchPanel.querySelector("[data-nbl-search-form]");
   const searchInput=searchPanel.querySelector("#nbl-search-input");
@@ -1205,9 +1345,20 @@
         credentials:"omit",
         signal:controller.signal
       });
-      const payload=await response.json().catch(()=>({}));
+      let payload=await response.json().catch(()=>({}));
       if(!response.ok){
         throw new Error(payload?.message||"NBL Search is not ready right now.");
+      }
+      if(/\b(price|pricing|prices|cost|costs|plan|plans|membership|how much)\b/i.test(query)&&["results","not_found"].includes(payload?.status)){
+        const catalogText=[
+          `${NBL_PRODUCT_PLANS.beans.name}: ${NBL_PRODUCT_PLANS.beans.price}, ${NBL_PRODUCT_PLANS.beans.replies}.`,
+          `${NBL_PRODUCT_PLANS.chatPlus.name}: ${NBL_PRODUCT_PLANS.chatPlus.price}, ${NBL_PRODUCT_PLANS.chatPlus.replies}.`,
+          `${NBL_PRODUCT_PLANS.getMore.name}: ${NBL_PRODUCT_PLANS.getMore.price}, ${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}`,
+          `${NBL_PRODUCT_PLANS.foundationProgram.name}: ${NBL_PRODUCT_PLANS.foundationProgram.price}.`,
+          `${NBL_PRODUCT_PLANS.fullFoundation.name}: ${NBL_PRODUCT_PLANS.fullFoundation.price}.`,
+          "These catalog prices do not mean website checkout is available."
+        ].join(" ");
+        payload={...payload,status:"results",results:[{title:"New Beansland public plan catalog",excerpt:catalogText,sourceUrl:"https://newbeansland.org/nbl-chat-support.html"},...(Array.isArray(payload?.results)?payload.results:[])]};
       }
       renderSearchResults(payload);
     }catch(error){
@@ -1240,6 +1391,15 @@
     menu.addEventListener("click",()=>setOpen(!header.classList.contains("is-open")));
     header.querySelectorAll(".nbl-world-nav a").forEach(a=>a.addEventListener("click",()=>setOpen(false)));
   }
+  window.addEventListener("popstate",()=>{
+    if(beansPanel.hidden) return;
+    if(chatDrawer.classList.contains("is-open")){
+      setChatDrawerOpen(false);
+      if(chatHistoryEntry) window.history.pushState({...window.history.state,nblChatOverlay:chatHistoryEntry},"",location.href);
+      return;
+    }
+    closeBeans({fromPopState:true});
+  });
   document.addEventListener("keydown",event=>{
     if(event.key!=="Escape") return;
     if(!beansPanel.hidden){
@@ -1287,12 +1447,12 @@
         <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans from NBL Chat">
         <p class="nbl-beta-kicker">Beans · Beta testing</p>
         <h2 id="nbl-beta-title">Get on the list for what Beans is testing next.</h2>
-        <p>Join the NBL email list for an invitation to beta test NBL Chat when the next round is ready.</p>
+        <p>Join the NBL email list for updates about future NBL Chat features and upcoming testing opportunities.</p>
         <form class="nbl-beta-form">
           <label for="nbl-beta-email">Email address</label>
           <div class="nbl-beta-row">
             <input id="nbl-beta-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
-            <button type="submit">Join the beta list</button>
+            <button type="submit">Get future updates</button>
           </div>
           <small>Your address is not stored on this website. Submitting opens an email to New Beansland so you can request beta access.</small>
         </form>
@@ -1301,8 +1461,8 @@
       event.preventDefault();
       const email=beta.querySelector("input").value.trim();
       if(!email) return;
-      const subject=encodeURIComponent("NBL Chat Beta Testing List");
-      const body=encodeURIComponent(`Please add ${email} to the NBL Chat beta-testing email list.`);
+      const subject=encodeURIComponent("NBL Chat Future Features");
+      const body=encodeURIComponent(`Please add ${email} to the NBL Chat future-features update list.`);
       location.href=`mailto:founder@newbeansland.org?subject=${subject}&body=${body}`;
     });
     document.body.append(beta);
@@ -1341,7 +1501,7 @@
         <p class="nbl-world-footer-mark"><strong>New Beansland™</strong> Stories. Questions. Worlds.</p>
         <nav class="nbl-world-footer-links" aria-label="New Beansland footer navigation">
           <a href="/about.html">About NBL</a>
-          <a href="/search.html">Search NBL</a>
+          <a href="#nbl-search" data-nbl-open-search>Search NBL</a>
           <a href="https://www.youtube.com/@FounderNBL" target="_blank" rel="noopener noreferrer">YouTube</a>
           <a href="https://www.instagram.com/newbeansland/" target="_blank" rel="noopener noreferrer">Instagram</a>
           <a href="https://x.com/FounderNBL" target="_blank" rel="noopener noreferrer">X</a>
@@ -1363,4 +1523,11 @@
       else closeSearch();
     });
   }
+  document.addEventListener("click",event=>{
+    const searchLink=event.target?.closest?.("[data-nbl-open-search]");
+    if(!searchLink) return;
+    event.preventDefault();
+    searchTrigger=searchLink;
+    openSearch();
+  });
 })();
