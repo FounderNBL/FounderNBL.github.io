@@ -36,6 +36,8 @@ forbidText(js,'STRIPE_SECRET_KEY',"A Stripe secret marker appeared in public web
 forbidText(js,'SUPABASE_SERVICE_ROLE_KEY',"A Supabase service-role marker appeared in public website code.");
 forbidText(js,'OPENAI_API_KEY',"An OpenAI secret marker appeared in public website code.");
 forbidText(js,'sk-proj-',"An OpenAI private key marker appeared in public website code.");
+forbidText(js,'nbl-chat.replit.app',"Website chat/account flow still depends on the old Replit runtime.");
+forbidText(js,'NBL_ACCOUNT_API',"Legacy Replit account API constant appeared in public website code.");
 
 const beansListener=(js.match(/beansToggle\.addEventListener\("click",openBeans\);/g)||[]).length;
 if(beansListener!==1){
