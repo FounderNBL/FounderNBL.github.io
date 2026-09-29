@@ -18,7 +18,7 @@ function forbidText(source,text,message){
   }
 }
 
-// Auth/session regression checks mirrored from the Android audit where they apply to web.
+// Website Chat is the UX/behavior standard. Mobile follows this contract where native platform differences require it.
 requireText(header,'accountPortalUrl("/sign-in")',"Website sign-in is not routed through the production account portal.");
 requireText(header,'redirect_url=',"Sign-in does not preserve a safe return URL.");
 requireText(header,'clerk.addListener?.(render)',"Header account state can go stale after sign-in/sign-out.");
@@ -43,7 +43,13 @@ forbidText(header,'exam-prep/access',"Legacy Replit University access route is s
 requireText(header,'fetch(NBL_CHAT_PLUS_API',"University account status is not using the canonical NBL Foundation runtime.");
 requireText(header,'Guided Learning access is active in NBL Chat Plus.',"University account panel does not reflect current LOCKE-backed Plus status.");
 
-// Beans continuity.
+// Website-standard Chat shell and Beans continuity.
+requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat drawer is missing.");
+requireText(header,'data-nbl-drawer-new',"Website-standard New Chat action is missing.");
+requireText(header,'?action=conversations',"Website-standard recent Chat history is missing.");
+requireText(header,'data-nbl-drawer-grey',"Website-standard Professor Grey entry is missing.");
+requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans entry is missing.");
+requireText(header,'$4.99 Beans · $19.99 Plus · Get More',"Website-standard plan labels are missing.");
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
 requireText(header,'NBL_ACCOUNT_STORE_API',"Account/history storage endpoint is missing.");
@@ -80,6 +86,6 @@ for(const forbidden of [
 if(failed){
   process.exitCode=1;
 }else{
-  console.log("[website-chat-parity] PASS: website-owned auth/session, Beans continuity, Grey/LOCKE routing, course separation, source rendering, world routes, deletion controls, and secret guards are present.");
-  console.log("[website-chat-parity] EXTERNAL LIVE CHECK: Clerk-hosted password visibility/reset/MFA/Google sign-in still require a real browser check; Replit may perform that final physical pass after this source audit.");
+  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, Beans continuity, Grey/LOCKE routing, course separation, source rendering, world routes, deletion controls, and secret guards are present.");
+  console.log("[website-chat-parity] EXTERNAL LIVE CHECK: Clerk-hosted account flows and responsive browser behavior still require a real browser pass after this source audit.");
 }
