@@ -2,6 +2,7 @@ import fs from "node:fs";
 
 const js=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
 const css=fs.readFileSync(new URL("../nbl-world-header.css",import.meta.url),"utf8");
+const plans=fs.readFileSync(new URL("../nbl-product-plans.js",import.meta.url),"utf8");
 
 function requireText(source,text,message){
   if(!source.includes(text)){
@@ -35,9 +36,12 @@ requireText(js,'data-nbl-drawer-new',"New Chat drawer action is missing.");
 requireText(js,'data-nbl-drawer-grey',"Professor Grey drawer action is missing.");
 requireText(js,'data-nbl-drawer-plans',"Membership & plans drawer action is missing.");
 requireText(js,'?action=conversations',"Recent saved conversations are not loaded into the NBL drawer.");
-requireText(js,'$4.99 Beans · $19.99 Plus · Get More',"Locked plan naming is missing from the drawer.");
-requireText(js,'NBL Chat Plus · $19.99/month',"Locked $19.99 Plus price is missing.");
-requireText(js,'Get More · $9.99',"Locked Get More price is missing.");
+requireText(js,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More',"Drawer prices are not sourced from the canonical catalog.");
+requireText(js,'${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}',"NBL Chat Plus drawer price is missing.");
+requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}',"Get More drawer price is missing.");
+for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time']){
+  requireText(plans,value,`Canonical locked product value is missing: ${value}`);
+}
 requireText(js,'NBL Chat Plus guided learning is not active for this account.',"Locked Plus state is missing.");
 requireText(css,'.nbl-chat-modes',"Chat mode styling is missing.");
 requireText(css,'.nbl-plus-access',"Plus access styling is missing.");

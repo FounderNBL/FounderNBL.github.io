@@ -6,19 +6,25 @@ on:
     paths:
       - "nbl-world-header.js"
       - "nbl-world-header.css"
+      - "nbl-product-plans.js"
+      - "**.html"
       - "account.html"
       - "account-deletion.html"
       - "scripts/check-website-chat-plus.mjs"
       - "scripts/check-website-chat-parity.mjs"
+      - "scripts/check-website-repair.mjs"
       - ".github/workflows/nbl-website-chat-parity.yml"
   pull_request:
     paths:
       - "nbl-world-header.js"
       - "nbl-world-header.css"
+      - "nbl-product-plans.js"
+      - "**.html"
       - "account.html"
       - "account-deletion.html"
       - "scripts/check-website-chat-plus.mjs"
       - "scripts/check-website-chat-parity.mjs"
+      - "scripts/check-website-repair.mjs"
       - ".github/workflows/nbl-website-chat-parity.yml"
 
 jobs:
@@ -35,3 +41,5 @@ jobs:
         run: node scripts/check-website-chat-plus.mjs
       - name: Check website Chat standard regressions
         run: node scripts/check-website-chat-parity.mjs
+      - name: Check website-only repair regressions
+        run: node scripts/check-website-repair.mjs
