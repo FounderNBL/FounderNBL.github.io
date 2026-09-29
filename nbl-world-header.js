@@ -30,7 +30,6 @@
     ["search","Search","/search.html",false]
   ];
 
-  const NBL_ACCOUNT_API="https://nbl-chat.replit.app";
   const NBL_PUBLIC_BEANS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/beans-public";
   const NBL_CHAT_PLUS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
   const NBL_ACCOUNT_STORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
@@ -137,10 +136,9 @@
         <p>Browsing the website, reading about the University, and using the normal checkout do not require an account. Sign in only if you want your University access to follow the same identity into NBL Chat.</p>
         <div class="nbl-connected-account-actions">
           <button type="button" data-nbl-panel-signin>Sign in / Create account</button>
-          <button type="button" data-nbl-panel-request hidden>Request University access</button>
         </div>
         <p class="nbl-connected-account-status" data-nbl-panel-status>Account connection is optional.</p>
-        <small>A University access request does not purchase or enroll you in a course. Founder approval and the existing manual course process remain unchanged.</small>
+        <small>LOCKE checks Guided Learning access server-side. Checkout and enrollment stay separate from this account-status check.</small>
       </div>`;
     const hero=main.querySelector(".hero");
     if(hero) hero.insertAdjacentElement("afterend",panel);
@@ -152,25 +150,26 @@
     const panel=getUniversityPanel();
     if(!panel||!clerk?.isSignedIn||!clerk.session) return;
     const statusEl=panel.querySelector("[data-nbl-panel-status]");
-    const requestButton=panel.querySelector("[data-nbl-panel-request]");
     try{
-      statusEl.textContent="Checking connected University access…";
+      statusEl.textContent="Checking Guided Learning access…";
       const token=await clerk.session.getToken();
-      const response=await fetch(`${NBL_ACCOUNT_API}/api/university/exam-prep/access`,{
-        headers:{Accept:"application/json",Authorization:`Bearer ${token}`},
+      const response=await fetch(NBL_CHAT_PLUS_API,{
+        method:"POST",
+        headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
+        body:JSON.stringify({action:"status"}),
         cache:"no-store"
       });
       const payload=await response.json().catch(()=>({}));
-      if(!response.ok) throw new Error(payload.message||"University access could not be checked.");
-      const status=payload?.access?.status||"none";
-      requestButton.hidden=!["none","revoked"].includes(status);
-      if(status==="approved") statusEl.textContent="Account connected. University access is approved and follows this same account into NBL Chat.";
-      else if(status==="pending") statusEl.textContent="Account connected. University access is pending Founder approval.";
-      else if(status==="revoked") statusEl.textContent="Account connected. University access is not currently active.";
-      else statusEl.textContent="Account connected. University access has not been requested.";
+      if(response.status===401){
+        statusEl.textContent="Your NBL session needs to be refreshed. Sign in again to check Guided Learning access.";
+        return;
+      }
+      if(!response.ok) throw new Error("Guided Learning access could not be checked right now.");
+      statusEl.textContent=payload?.chatPlus?.allowed===true
+        ?"Account connected. Guided Learning access is active in NBL Chat Plus."
+        :"Account connected. Guided Learning access is not active for this account.";
     }catch(error){
-      requestButton.hidden=true;
-      statusEl.textContent=error?.message||"University access is temporarily unavailable.";
+      statusEl.textContent=error?.message||"Guided Learning access is temporarily unavailable.";
     }
   };
 
@@ -180,7 +179,6 @@
     if(!accountButton||!userHost) return;
     const panel=getUniversityPanel();
     const panelSignIn=panel?.querySelector("[data-nbl-panel-signin]");
-    const panelRequest=panel?.querySelector("[data-nbl-panel-request]");
     const panelStatus=panel?.querySelector("[data-nbl-panel-status]");
     let clerk=null;
 
@@ -235,7 +233,6 @@
           panelSignIn.disabled=false;
           panelSignIn.textContent="Sign in";
         }
-        if(panelRequest) panelRequest.hidden=true;
         if(panelStatus) panelStatus.textContent="Account connection is optional.";
       }
     };
@@ -254,31 +251,6 @@
 
     accountButton.addEventListener("click",openAccount);
     panelSignIn?.addEventListener("click",openSignIn);
-
-    panelRequest?.addEventListener("click",async()=>{
-      if(!clerk?.isSignedIn||!clerk.session) return;
-      panelRequest.disabled=true;
-      const original=panelRequest.textContent;
-      panelRequest.textContent="Requesting…";
-      try{
-        const token=await clerk.session.getToken();
-        const response=await fetch(`${NBL_ACCOUNT_API}/api/university/exam-prep/access/request`,{
-          method:"POST",
-          headers:{Accept:"application/json",Authorization:`Bearer ${token}`}
-        });
-        const payload=await response.json().catch(()=>({}));
-        if(!response.ok) throw new Error(payload.message||"University access request failed.");
-        if(panelStatus) panelStatus.textContent=payload?.access?.status==="approved"
-          ?"Account connected. University access is already approved."
-          :"Account connected. University access request is pending Founder approval.";
-        panelRequest.hidden=true;
-      }catch(error){
-        if(panelStatus) panelStatus.textContent=error?.message||"University access request is temporarily unavailable.";
-      }finally{
-        panelRequest.disabled=false;
-        panelRequest.textContent=original;
-      }
-    });
 
     render();
     accountButton.disabled=true;
