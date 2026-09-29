@@ -33,5 +33,5 @@ jobs:
         run: node --check nbl-world-header.js
       - name: Check NBL Chat Plus wiring
         run: node scripts/check-website-chat-plus.mjs
-      - name: Check Android-to-web parity regressions
+      - name: Check website Chat standard regressions
         run: node scripts/check-website-chat-parity.mjs

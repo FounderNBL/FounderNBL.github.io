@@ -384,18 +384,87 @@
   beansPanel.innerHTML=`
     <div class="nbl-beans-card" role="dialog" aria-modal="true" aria-labelledby="nbl-beans-title">
       <div class="nbl-beans-head">
+        <button class="nbl-chat-drawer-toggle" type="button" data-nbl-chat-drawer-toggle aria-expanded="false" aria-controls="nbl-chat-drawer" aria-label="Open NBL Chat menu">
+          <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
+        </button>
         <div class="nbl-beans-title-wrap">
           <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-beans-avatar">
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
-            <h2 id="nbl-beans-title">NBL Chat Plus</h2>
-            <p class="nbl-beans-note">Beans is the front door. Professor Grey opens through LOCKE for authorized NBL accounts.</p>
+            <h2 id="nbl-beans-title">NBL Chat</h2>
+            <p class="nbl-beans-note">Beans is the front door. Professor Grey is the Guided Learning experience inside NBL Chat Plus.</p>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close NBL Chat">✕</button>
       </div>
 
-      <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat Plus mode">
+      <div class="nbl-chat-drawer-shade" data-nbl-chat-drawer-shade hidden></div>
+      <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="NBL Chat menu" hidden>
+        <div class="nbl-chat-drawer-head">
+          <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-chat-drawer-logo">
+          <div>
+            <p>New Beansland™</p>
+            <strong>NBL Chat</strong>
+            <small>Beans, Guided Learning, history, and your NBL account.</small>
+          </div>
+          <button type="button" data-nbl-chat-drawer-close aria-label="Close NBL Chat menu">✕</button>
+        </div>
+        <div class="nbl-chat-drawer-scroll">
+          <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-new>
+            <img src="/NBLChat_Beans.png" alt="" aria-hidden="true">
+            <span><strong>New chat</strong><small>Start fresh with Beans</small></span>
+          </button>
+
+          <section class="nbl-chat-drawer-history" aria-labelledby="nbl-chat-drawer-history-title">
+            <div class="nbl-chat-drawer-section-head">
+              <strong id="nbl-chat-drawer-history-title">Recent conversations</strong>
+              <a href="/account.html">Manage all</a>
+            </div>
+            <p data-nbl-drawer-history-status>Sign in to see saved conversations.</p>
+            <div data-nbl-drawer-history-list></div>
+          </section>
+
+          <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-grey>
+            <img src="/NBL_University.png" alt="" aria-hidden="true">
+            <span><strong>Professor Grey</strong><small>Guided Learning · NBL Chat Plus</small></span>
+          </button>
+
+          <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
+            <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
+            <span><strong>Membership &amp; plans</strong><small>$4.99 Beans · $19.99 Plus · Get More</small></span>
+          </button>
+          <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
+            <article><strong>Beans · $4.99/month</strong><span>300 successful replies per billing period.</span></article>
+            <article><strong>NBL Chat Plus · $19.99/month</strong><span>1,050 successful replies total + Professor Grey / Virgo + plan-approved premium tools.</span></article>
+            <article><strong>Get More · $9.99</strong><span>+500 successful replies. No renewal-date change and no plan upgrade.</span></article>
+          </div>
+
+          <a class="nbl-chat-drawer-item" href="/university.html">
+            <img src="/NBL_University.png" alt="" aria-hidden="true">
+            <span><strong>NBL University</strong><small>Courses, Foundation Program, and University doors</small></span>
+          </a>
+
+          <button class="nbl-chat-drawer-item is-disabled" type="button" disabled>
+            <span class="nbl-chat-drawer-fallback" aria-hidden="true">+</span>
+            <span><strong>Uploads / files</strong><small>Opens after the secure upload rail is connected</small></span>
+          </button>
+
+          <a class="nbl-chat-drawer-item" href="/account.html">
+            <span class="nbl-chat-drawer-fallback" aria-hidden="true">NBL</span>
+            <span><strong>Account</strong><small>Username, security, usage, and saved history</small></span>
+          </a>
+
+          <a class="nbl-chat-drawer-item" href="/">
+            <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
+            <span><strong>New Beansland</strong><small>Return to the public world</small></span>
+          </a>
+        </div>
+        <div class="nbl-chat-drawer-foot">
+          <button class="nbl-chat-drawer-account" type="button" data-nbl-drawer-account-action>Sign in</button>
+        </div>
+      </aside>
+
+      <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat mode">
         <button type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-selected="true">Beans</button>
         <button type="button" data-nbl-chat-mode="plus" role="tab" aria-selected="false">Professor Grey</button>
       </div>
@@ -451,6 +520,17 @@
     </div>`;
 
   const beansClose=beansPanel.querySelector("[data-nbl-beans-close]");
+  const chatDrawer=beansPanel.querySelector("[data-nbl-chat-drawer]");
+  const chatDrawerShade=beansPanel.querySelector("[data-nbl-chat-drawer-shade]");
+  const chatDrawerToggle=beansPanel.querySelector("[data-nbl-chat-drawer-toggle]");
+  const chatDrawerClose=beansPanel.querySelector("[data-nbl-chat-drawer-close]");
+  const chatDrawerNew=beansPanel.querySelector("[data-nbl-drawer-new]");
+  const chatDrawerGrey=beansPanel.querySelector("[data-nbl-drawer-grey]");
+  const chatDrawerPlans=beansPanel.querySelector("[data-nbl-drawer-plans]");
+  const chatDrawerPlanCard=beansPanel.querySelector("[data-nbl-drawer-plan-card]");
+  const chatDrawerHistoryStatus=beansPanel.querySelector("[data-nbl-drawer-history-status]");
+  const chatDrawerHistoryList=beansPanel.querySelector("[data-nbl-drawer-history-list]");
+  const chatDrawerAccountAction=beansPanel.querySelector("[data-nbl-drawer-account-action]");
   const beansForm=beansPanel.querySelector("[data-nbl-beans-form]");
   const beansInput=beansPanel.querySelector("#nbl-beans-input");
   const beansSubmit=beansForm.querySelector('button[type="submit"]');
@@ -478,6 +558,7 @@
   let plusAccessCheckedFor=null;
   let plusAccessLoadingFor=null;
   let plusAllowed=false;
+  let chatDrawerCloseTimer=null;
 
   const modalInertState=new Map();
   const setModalIsolation=(panel,open)=>{
@@ -587,6 +668,129 @@
     }finally{
       if(beansHistoryLoadingFor===identity.userId) beansHistoryLoadingFor=null;
     }
+  };
+
+  const replaceBeansConversation=(messages,conversationId,{status="Saved conversation opened from your NBL account.",loadedFor=null}={})=>{
+    const saved=Array.isArray(messages)?messages:[];
+    beansLog.replaceChildren();
+    beansHistory.length=0;
+    for(const item of saved.slice(-80)){
+      const role=item?.role==="assistant"?"assistant":"user";
+      const content=String(item?.content||"").trim();
+      if(!content) continue;
+      beansHistory.push({role,content});
+      appendBeansMessage(role,content);
+    }
+    if(!beansHistory.length){
+      const welcome={role:"assistant",content:"I'm Beans. What's up?"};
+      beansHistory.push(welcome);
+      appendBeansMessage(welcome.role,welcome.content);
+    }
+    beansConversationId=conversationId?String(conversationId):null;
+    if(loadedFor) beansHistoryLoadedFor=loadedFor;
+    beansStatus.textContent=status;
+  };
+
+  const startNewBeansConversation=async()=>{
+    const identity=await getSignedInNblIdentity();
+    replaceBeansConversation(
+      [{role:"assistant",content:"I'm Beans. What's up?"}],
+      null,
+      {
+        status:identity?"New Beans conversation started. It will save to your NBL account.":"New Beans conversation started.",
+        loadedFor:identity?.userId||null
+      }
+    );
+    setChatMode("beans");
+  };
+
+  const loadDrawerConversation=async(id)=>{
+    const identity=await getSignedInNblIdentity();
+    if(!identity) return;
+    chatDrawerHistoryStatus.textContent="Opening conversation…";
+    try{
+      const response=await fetch(`${NBL_ACCOUNT_STORE_API}?action=conversation&id=${encodeURIComponent(id)}`,{
+        headers:{Accept:"application/json",Authorization:`Bearer ${identity.token}`},
+        cache:"no-store"
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok) throw new Error(payload?.message||"That conversation could not be opened.");
+      replaceBeansConversation(payload?.messages,id,{loadedFor:identity.userId});
+      setChatMode("beans");
+      setChatDrawerOpen(false);
+    }catch(error){
+      chatDrawerHistoryStatus.textContent=error?.message||"That conversation could not be opened.";
+    }
+  };
+
+  const renderChatDrawerHistory=async()=>{
+    chatDrawerHistoryList.replaceChildren();
+    const identity=await getSignedInNblIdentity();
+    if(!identity){
+      chatDrawerHistoryStatus.textContent="Sign in to see saved conversations.";
+      return;
+    }
+    chatDrawerHistoryStatus.textContent="Loading saved conversations…";
+    try{
+      const response=await fetch(`${NBL_ACCOUNT_STORE_API}?action=conversations`,{
+        headers:{Accept:"application/json",Authorization:`Bearer ${identity.token}`},
+        cache:"no-store"
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok) throw new Error(payload?.message||"Saved conversations could not be loaded.");
+      const conversations=Array.isArray(payload?.conversations)?payload.conversations.slice(0,8):[];
+      if(!conversations.length){
+        chatDrawerHistoryStatus.textContent="No saved Beans conversations yet.";
+        return;
+      }
+      chatDrawerHistoryStatus.textContent="";
+      for(const item of conversations){
+        const button=document.createElement("button");
+        button.type="button";
+        button.className="nbl-chat-drawer-history-item";
+        const title=document.createElement("strong");
+        title.textContent=String(item?.title||"Beans conversation").slice(0,90);
+        const when=document.createElement("small");
+        const stamp=Date.parse(item?.updated_at||"");
+        when.textContent=Number.isFinite(stamp)?new Date(stamp).toLocaleString():"Saved conversation";
+        button.append(title,when);
+        button.addEventListener("click",()=>{void loadDrawerConversation(item.id)});
+        chatDrawerHistoryList.appendChild(button);
+      }
+    }catch(error){
+      chatDrawerHistoryStatus.textContent=error?.message||"Saved conversations could not be loaded.";
+    }
+  };
+
+  const updateChatDrawerAccountAction=async()=>{
+    try{
+      const clerk=await getNblClerk();
+      chatDrawerAccountAction.textContent=clerk?.isSignedIn?"Sign out":"Sign in";
+    }catch{
+      chatDrawerAccountAction.textContent="Sign in";
+    }
+  };
+
+  const setChatDrawerOpen=open=>{
+    if(chatDrawerCloseTimer){
+      clearTimeout(chatDrawerCloseTimer);
+      chatDrawerCloseTimer=null;
+    }
+    if(open){
+      chatDrawer.hidden=false;
+      chatDrawerShade.hidden=false;
+      chatDrawerToggle.setAttribute("aria-expanded","true");
+      requestAnimationFrame(()=>chatDrawer.classList.add("is-open"));
+      void Promise.all([renderChatDrawerHistory(),updateChatDrawerAccountAction()]);
+      return;
+    }
+    chatDrawer.classList.remove("is-open");
+    chatDrawerToggle.setAttribute("aria-expanded","false");
+    chatDrawerCloseTimer=setTimeout(()=>{
+      chatDrawer.hidden=true;
+      chatDrawerShade.hidden=true;
+      chatDrawerCloseTimer=null;
+    },180);
   };
 
   const appendPlusMessage=(role,content)=>{
@@ -710,6 +914,7 @@
   };
 
   const closeBeans=()=>{
+    setChatDrawerOpen(false);
     setModalIsolation(beansPanel,false);
     beansPanel.hidden=true;
     document.body.classList.remove("nbl-beans-open");
@@ -839,6 +1044,38 @@
     location.href=accountPortalUrl("/sign-in");
   });
 
+  chatDrawerToggle.addEventListener("click",()=>setChatDrawerOpen(!chatDrawer.classList.contains("is-open")));
+  chatDrawerClose.addEventListener("click",()=>setChatDrawerOpen(false));
+  chatDrawerShade.addEventListener("click",()=>setChatDrawerOpen(false));
+  chatDrawerNew.addEventListener("click",async()=>{
+    setChatDrawerOpen(false);
+    await startNewBeansConversation();
+  });
+  chatDrawerGrey.addEventListener("click",()=>{
+    setChatDrawerOpen(false);
+    setChatMode("plus");
+  });
+  chatDrawerPlans.addEventListener("click",()=>{
+    chatDrawerPlanCard.hidden=!chatDrawerPlanCard.hidden;
+    chatDrawerPlans.setAttribute("aria-expanded",chatDrawerPlanCard.hidden?"false":"true");
+  });
+  chatDrawerAccountAction.addEventListener("click",async()=>{
+    try{
+      const clerk=await getNblClerk();
+      if(clerk?.isSignedIn){
+        await clerk.signOut();
+        beansHistoryLoadedFor=null;
+        beansHistoryLoadingFor=null;
+        plusAccessCheckedFor=null;
+        plusAllowed=false;
+        await startNewBeansConversation();
+        setChatDrawerOpen(false);
+        return;
+      }
+    }catch{}
+    location.href=accountPortalUrl("/sign-in");
+  });
+
   for(const button of modeButtons){
     button.addEventListener("click",()=>setChatMode(button.dataset.nblChatMode));
   }
@@ -852,6 +1089,10 @@
       plusAccessLoadingFor=null;
       plusAllowed=false;
       if(beansPanel.hidden) return;
+      if(chatDrawer.classList.contains("is-open")){
+        void renderChatDrawerHistory();
+        void updateChatDrawerAccountAction();
+      }
       if(activeChatMode==="plus") void refreshPlusAccess({force:true});
       else void loadSignedInBeansHistory();
     });
@@ -1002,6 +1243,10 @@
   document.addEventListener("keydown",event=>{
     if(event.key!=="Escape") return;
     if(!beansPanel.hidden){
+      if(chatDrawer.classList.contains("is-open")){
+        setChatDrawerOpen(false);
+        return;
+      }
       closeBeans();
       return;
     }
