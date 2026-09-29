@@ -39,6 +39,7 @@ const accountListener=block("clerk.addListener(()=>{","});\n  }).catch");
 const popstate=block('window.addEventListener("popstate",()=>{','document.addEventListener("keydown",event=>{');
 const plusLock=block("const showPlusLocked=","const showPlusReady=");
 const drawerOpen=block("const setChatDrawerOpen=open=>{","const appendPlusMessage=");
+const beansChat=block('beansForm.addEventListener("submit",async event=>{','plusForm.addEventListener("submit",async event=>{');
 const plusChat=block('plusForm.addEventListener("submit",async event=>{','plusCourse.addEventListener("change",()=>{');
 
 requireText(historyLoad,"beansHistoryRequestGeneration","Latest history load has no request-generation guard.");
@@ -53,10 +54,14 @@ requireText(signOut,"clearBeansTranscript(","Sign-out does not clear the in-memo
 requireText(signOut,"showPlusLocked(","Sign-out does not clear/hide the Professor Grey transcript.");
 requireText(accountListener,"beansAccountGeneration++;","Clerk account changes do not advance the account generation.");
 requireText(accountListener,"invalidateBeansHistoryLoad();","Clerk account changes do not invalidate outstanding history loads.");
-requireText(accountListener,"accountChanged||!nextUserId","Account switch/sign-out does not clear the visible Beans transcript.");
+requireText(accountListener,"if(!accountChanged)","Same-user Clerk/session updates should not reload the latest conversation.");
+requireText(accountListener,"clearBeansTranscript(","Account switch/sign-out does not clear the visible Beans transcript.");
 requireText(plusLock,"clearPlusTranscript();","Loss of Professor Grey access leaves its in-memory transcript intact.");
 requireText(plusChat,"accessRequestGeneration!==plusAccessRequestGeneration","Professor Grey responses are not guarded against account/access changes.");
 requireText(plusChat,"currentClerkUserId()!==identity.userId","Professor Grey response does not verify the active account.");
+requireText(beansChat,"accountGeneration!==beansAccountGeneration","Beans responses are not guarded against account changes.");
+requireText(beansChat,"conversationGeneration!==beansConversationGeneration","Beans responses are not guarded against New Chat or conversation switches.");
+requireText(beansChat,"currentClerkUserId()!==requestedUserId","Beans responses do not verify the active signed-in account.");
 
 requireText(header,'["search","Search","#nbl-search",false]',"Search navigation still targets a missing page.");
 requireText(header,'data-nbl-open-search',"Search links do not open the existing modal.");
@@ -88,7 +93,7 @@ requireText(header,'<h2 id="nbl-beans-title">NBL Chat</h2>',"The Chat dialog tit
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab"',"Professor Grey is not a Chat tab.");
 requireText(header,'aria-label="Professor Grey, NBL Chat Plus Guided Learning"',"Professor Grey's premium Guided Learning name is not accessible.");
-for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat"]){
+for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
 }
 requireText(header,"Beans includes limited free replies. Sign in to keep your history","Limited-free and signed-in history context is missing.");
@@ -108,7 +113,8 @@ requireText(header,'if(event.target===beansPanel) closeBeans();',"Outer Chat bac
 requireText(popstate,"setChatDrawerOpen(false);","Back does not close the drawer first.");
 requireText(popstate,"window.history.pushState","Back does not preserve the open Chat state after dismissing the drawer.");
 requireText(header,"window.history.pushState({...window.history.state,nblChatOverlay:chatHistoryEntry}","Opening Chat does not create a UI history state.");
-requireText(header,"window.history.replaceState(state,\"\",location.href)","Closing Chat does not remove its UI history marker.");
+requireText(header,"const shouldConsumeHistory=!fromPopState","Closing Chat does not distinguish UI-close from browser Back.");
+requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Chat leaves a duplicate same-page history entry behind.");
 
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
