@@ -9,3 +9,22 @@ This repository contains public-facing production pages, assets, and checks that
 **Public site:** https://newbeansland.org/
 
 **Production hosting:** GitHub Pages. Replit is a mirror/test bench; Cloudflare Wrangler is not the production deployment path.
+
+
+## NBL Chat product standard
+
+For NBL Chat experience and behavior, **the production website is the reference implementation**.
+
+The Android/mobile client should follow the website's product language, drawer structure, Beans / Professor Grey separation, account/history behavior, pricing labels, and capability state wherever the native platform allows it. Native billing, permissions, and device APIs may differ technically, but they should not invent a second product or a different user experience.
+
+Current website Chat standard includes:
+
+- NBL-branded side drawer;
+- New Chat and recent signed-in conversation history;
+- Beans as the regular Chat experience;
+- Professor Grey as the NBL Chat Plus / Guided Learning experience;
+- locked plan language: $4.99 Beans / 300 replies, $19.99 Plus / 1,050 replies, $9.99 Get More / +500;
+- NBL University and account doors;
+- Uploads / files visibly held until the secure upload rail is implemented.
+
+Website first. App follows.
