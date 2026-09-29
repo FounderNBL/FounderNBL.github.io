@@ -405,7 +405,7 @@
           <div>
             <p>New Beansland™</p>
             <strong>NBL Chat</strong>
-            <small>Website standard · the app follows this experience.</small>
+            <small>Beans, Guided Learning, history, and your NBL account.</small>
           </div>
           <button type="button" data-nbl-chat-drawer-close aria-label="Close NBL Chat menu">✕</button>
         </div>
