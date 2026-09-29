@@ -36,6 +36,13 @@ forbidText(account,'type="password"',"A local website password field appeared; p
 forbidText(header,'type="password"',"A local header password field appeared; password handling must stay in Clerk.");
 forbidText(header,'resetPasswordEmailCode',"Website code should not store/process reset credentials locally.");
 
+// Current backend boundary: public website must not depend on the old Replit account runtime.
+forbidText(header,'nbl-chat.replit.app',"Website still depends on the old Replit account runtime.");
+forbidText(header,'NBL_ACCOUNT_API',"Legacy Replit account API constant is still present.");
+forbidText(header,'exam-prep/access',"Legacy Replit University access route is still present.");
+requireText(header,'fetch(NBL_CHAT_PLUS_API',"University account status is not using the canonical NBL Foundation runtime.");
+requireText(header,'Guided Learning access is active in NBL Chat Plus.',"University account panel does not reflect current LOCKE-backed Plus status.");
+
 // Beans continuity.
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
@@ -74,5 +81,5 @@ if(failed){
   process.exitCode=1;
 }else{
   console.log("[website-chat-parity] PASS: website-owned auth/session, Beans continuity, Grey/LOCKE routing, course separation, source rendering, world routes, deletion controls, and secret guards are present.");
-  console.log("[website-chat-parity] EXTERNAL LIVE CHECK: password Show/Hide, password reset/MFA, and Google sign-in are hosted by Clerk at accounts.newbeansland.org and cannot be proven by static website source.");
+  console.log("[website-chat-parity] EXTERNAL LIVE CHECK: Clerk-hosted password visibility/reset/MFA/Google sign-in still require a real browser check; Replit may perform that final physical pass after this source audit.");
 }
