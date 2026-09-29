@@ -69,6 +69,14 @@ const findHtml=(directory)=>{
 };
 for(const filename of findHtml(rootPath)){
   const html=fs.readFileSync(filename,"utf8");
+  const headerScript=html.indexOf("nbl-world-header.js");
+  if(headerScript>=0){
+    const catalogScript=html.indexOf("nbl-product-plans.js");
+    if(catalogScript<0||catalogScript>headerScript){
+      console.error("[website-repair] FAIL: shared header loads without its earlier canonical catalog in",path.relative(rootPath,filename));
+      failed=true;
+    }
+  }
   if(/<a\b[^>]*\bhref\s*=\s*["'][^"']*(?:^|\/)search\.html(?:[?#][^"']*)?["']/i.test(html)){
     console.error("[website-repair] FAIL: visible Search link points to /search.html in",path.relative(rootPath,filename));
     failed=true;
