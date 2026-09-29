@@ -488,7 +488,7 @@
       </section>
 
       <section id="nbl-chat-panel-plus" class="nbl-plus-shell" role="tabpanel" aria-labelledby="nbl-chat-tab-plus" tabindex="0" data-nbl-plus hidden>
-        <div class="nbl-plus-access" data-nbl-plus-access>
+        <div class="nbl-plus-access" data-nbl-plus-access tabindex="-1">
           <p class="nbl-beans-kicker">NBL Chat Plus</p>
           <h3>Professor Grey · Guided Learning</h3>
           <p data-nbl-plus-access-copy>Sign in with your NBL account to check NBL Chat Plus access.</p>
@@ -844,7 +844,9 @@
       chatDrawerToggle.setAttribute("aria-expanded","true");
       requestAnimationFrame(()=>chatDrawer.classList.add("is-open"));
       void Promise.all([renderChatDrawerHistory(),updateChatDrawerAccountAction()]);
-      window.setTimeout(()=>chatDrawer.querySelector("[data-nbl-chat-drawer-close]")?.focus(),20);
+      window.setTimeout(()=>{
+        if(!chatDrawer.hidden&&chatDrawer.classList.contains("is-open")) chatDrawer.querySelector("[data-nbl-chat-drawer-close]")?.focus();
+      },20);
       return;
     }
     if(chatDrawer.hidden&&chatDrawerCloseTimer===null) return;
@@ -1000,7 +1002,7 @@
     }
     if(isPlus){
       void refreshPlusAccess();
-      if(focusInput) window.setTimeout(()=>{ if(plusAllowed) plusInput.focus(); else if(!plusSignIn.hidden) plusSignIn.focus(); },20);
+      if(focusInput) window.setTimeout(()=>{ if(plusAllowed) plusInput.focus(); else if(!plusSignIn.hidden) plusSignIn.focus(); else plusAccess.focus(); },20);
     }else{
       void loadSignedInBeansHistory();
       if(focusInput) window.setTimeout(()=>beansInput.focus(),20);
@@ -1036,6 +1038,8 @@
     else void loadSignedInBeansHistory();
     window.setTimeout(()=>{
       if(activeChatMode==="plus"&&plusAllowed) plusInput.focus();
+      else if(activeChatMode==="plus"&&!plusSignIn.hidden) plusSignIn.focus();
+      else if(activeChatMode==="plus") plusAccess.focus();
       else if(activeChatMode==="beans") beansInput.focus();
     },20);
   };
@@ -1445,8 +1449,8 @@
     beta.innerHTML=`
       <div class="nbl-beta-inner">
         <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans from NBL Chat">
-        <p class="nbl-beta-kicker">Beans · Beta testing</p>
-        <h2 id="nbl-beta-title">Get on the list for what Beans is testing next.</h2>
+        <p class="nbl-beta-kicker">NBL Chat · What’s next</p>
+        <h2 id="nbl-beta-title">Get updates on what Beans is building next.</h2>
         <p>Join the NBL email list for updates about future NBL Chat features and upcoming testing opportunities.</p>
         <form class="nbl-beta-form">
           <label for="nbl-beta-email">Email address</label>

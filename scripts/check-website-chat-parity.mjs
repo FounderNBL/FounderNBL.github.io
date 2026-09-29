@@ -1,6 +1,7 @@
 import fs from "node:fs";
 
 const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
+const plans=fs.readFileSync(new URL("../nbl-product-plans.js",import.meta.url),"utf8");
 const account=fs.readFileSync(new URL("../account.html",import.meta.url),"utf8");
 const deletion=fs.readFileSync(new URL("../account-deletion.html",import.meta.url),"utf8");
 
@@ -49,7 +50,8 @@ requireText(header,'data-nbl-drawer-new',"Website-standard New Chat action is mi
 requireText(header,'?action=conversations',"Website-standard recent Chat history is missing.");
 requireText(header,'data-nbl-drawer-grey',"Website-standard Professor Grey entry is missing.");
 requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans entry is missing.");
-requireText(header,'$4.99 Beans · $19.99 Plus · Get More',"Website-standard plan labels are missing.");
+requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More',"Website-standard plan labels do not use the canonical catalog.");
+requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
 requireText(header,'NBL_ACCOUNT_STORE_API',"Account/history storage endpoint is missing.");
