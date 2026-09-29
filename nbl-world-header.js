@@ -1010,18 +1010,15 @@
   };
 
   const closeBeans=({fromPopState=false}={})=>{
+    const shouldConsumeHistory=!fromPopState&&Boolean(chatHistoryEntry)&&window.history.state?.nblChatOverlay===chatHistoryEntry;
     setChatDrawerOpen(false);
     setModalIsolation(beansPanel,false);
     beansPanel.hidden=true;
     document.body.classList.remove("nbl-beans-open");
     beansToggle.setAttribute("aria-expanded","false");
     beansToggle.focus();
-    if(!fromPopState&&chatHistoryEntry&&window.history.state?.nblChatOverlay===chatHistoryEntry){
-      const state={...window.history.state};
-      delete state.nblChatOverlay;
-      window.history.replaceState(state,"",location.href);
-    }
     chatHistoryEntry=null;
+    if(shouldConsumeHistory) window.history.back();
   };
 
   const openBeans=()=>{
@@ -1049,6 +1046,9 @@
     const text=beansInput.value.trim();
     if(!text) return;
     await loadSignedInBeansHistory();
+    const accountGeneration=beansAccountGeneration;
+    const conversationGeneration=beansConversationGeneration;
+    const requestedUserId=currentClerkUserId();
     beansInput.value="";
     appendBeansMessage("user",text);
     beansHistory.push({role:"user",content:text});
@@ -1069,6 +1069,7 @@
         body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),mode:"live"})
       });
       const payload=await response.json().catch(()=>({}));
+      if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
       if(!response.ok) throw new Error(payload.message||"Beans could not answer just now.");
       const reply=String(payload.message||payload.reply||"").trim();
       if(!reply) throw new Error("Beans returned no text.");
@@ -1082,6 +1083,7 @@
           ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
           :"Beans replied.";
     }catch(error){
+      if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
       const message=error?.message||"Beans could not answer just now.";
       appendBeansMessage("assistant",message);
       beansStatus.textContent=message;
@@ -1218,6 +1220,10 @@
     clerk.addListener(()=>{
       const nextUserId=currentClerkUserId();
       const accountChanged=nextUserId!==beansIdentityUserId;
+      if(!accountChanged){
+        if(!beansPanel.hidden&&chatDrawer.classList.contains("is-open")) void updateChatDrawerAccountAction();
+        return;
+      }
       beansIdentityUserId=nextUserId;
       beansAccountGeneration++;
       invalidateBeansHistoryLoad();
@@ -1227,7 +1233,7 @@
       plusAccessCheckedFor=null;
       plusAccessLoadingFor=null;
       plusAllowed=false;
-      if(accountChanged||!nextUserId) clearBeansTranscript(nextUserId?"Account changed. Saved history is loading…":"You are signed out. Sign in to keep your history.");
+      clearBeansTranscript(nextUserId?"Account changed. Saved history is loading…":"You are signed out. Sign in to keep your history.");
       showPlusLocked(nextUserId?"Checking NBL Chat Plus access…":"Sign in with your NBL account to check NBL Chat Plus access.",{signedOut:!nextUserId});
       if(beansPanel.hidden) return;
       if(chatDrawer.classList.contains("is-open")){
@@ -1458,7 +1464,7 @@
             <input id="nbl-beta-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
             <button type="submit">Get future updates</button>
           </div>
-          <small>Your address is not stored on this website. Submitting opens an email to New Beansland so you can request beta access.</small>
+          <small>Your address is not stored on this website. Submitting opens an email to New Beansland so you can request future-feature updates.</small>
         </form>
       </div>`;
     beta.querySelector("form").addEventListener("submit",event=>{
