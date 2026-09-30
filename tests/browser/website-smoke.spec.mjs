@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 
-const checkingLive = Boolean(process.env.NBL_BASE_URL); // Live watch checks deployed baseline; PR run checks unreleased release-candidate UI.
+const checkingLive = Boolean(process.env.NBL_BASE_URL);
+const expectBillingReleaseUi = !checkingLive || process.env.NBL_EXPECT_BILLING_LIVE === "1";
 
 async function open(path, page) {
   await page.goto(path, { waitUntil: "domcontentloaded" });
@@ -37,7 +38,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.getByRole("button", { name: /Search the live web/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Code \/ data analysis/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Create an image/i })).toBeVisible();
-    if (!checkingLive) {
+    if (expectBillingReleaseUi) {
       await page.getByRole("button", { name: /Open NBL Chat menu/i }).click();
       await page.getByRole("button", { name: /Membership & plans/i }).click();
       await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
@@ -70,7 +71,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page).toHaveTitle(/New Beansland University/i);
     await expect(page.locator("body")).toContainText("Foundation Program");
     await expect(page.locator("body")).toContainText(/enrollment/i);
-    if (!checkingLive) {
+    if (expectBillingReleaseUi) {
       await expect(page.locator('[data-nbl-university-checkout="foundation"]').first()).toBeVisible();
       await expect(page.locator('[data-nbl-university-checkout="full_foundation"]').first()).toBeVisible();
       await expect(page.locator("body")).not.toContainText("Account connection is optional.");
@@ -82,7 +83,7 @@ test.describe("New Beansland web app browser smoke", () => {
 
     await expect(page.getByRole("link", { name: "Forgot password?" })).toBeVisible();
     await expect(page.locator("#signInButton")).toBeVisible();
-    if (!checkingLive) {
+    if (expectBillingReleaseUi) {
       await expect(page.locator("#membershipCard")).toBeAttached();
     }
   });
