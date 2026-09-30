@@ -42,25 +42,27 @@ forbidText(header,'nbl-chat.replit.app',"Website still depends on the old Replit
 forbidText(header,'NBL_ACCOUNT_API',"Legacy Replit account API constant is still present.");
 forbidText(header,'exam-prep/access',"Legacy Replit University access route is still present.");
 requireText(header,'fetch(NBL_CHAT_PLUS_API',"University account status is not using the canonical NBL Foundation runtime.");
-requireText(header,'Guided Learning access is active in NBL Chat Plus.',"University account panel does not reflect current LOCKE-backed Plus status.");
+requireText(header,'NBL University and Professor Grey are separate.',"Public Chat header does not state the University separation.");
 
 // Website-standard Chat shell and Beans continuity.
 requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat drawer is missing.");
 requireText(header,'data-nbl-drawer-new',"Website-standard New Chat action is missing.");
 requireText(header,'?action=conversations',"Website-standard recent Chat history is missing.");
-requireText(header,'data-nbl-drawer-grey',"Website-standard Professor Grey entry is missing.");
+requireText(header,'data-nbl-drawer-grey hidden',"Preserved Professor Grey entry must stay hidden from public Chat.");
+requireText(header,'data-nbl-drawer-tools',"Website-standard Beans tools entry is missing.");
 requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans entry is missing.");
 requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More',"Website-standard plan labels do not use the canonical catalog.");
 requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
-requireText(header,'mode:"guided_learning"', "Guided Learning mode is not routed through the shared Chat controller.");
-requireText(header,'beansHistory.push({role:"assistant",content:reply})',"Guided Learning replies are not preserved in the shared Beans conversation.");
+requireText(header,'NBL_CHAT_GATEWAY_API',"Signed-in Beans metering gateway is missing.");
+requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to the backend.");
+requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
 requireText(header,'NBL_ACCOUNT_STORE_API',"Account/history storage endpoint is missing.");
 
-// Grey / Virgo / LOCKE parity.
-requireText(header,'action:"status"',"Grey access is not checked server-side.");
-requireText(header,'action:"chat"',"Unified Guided Learning request route is missing.");
+// Preserved University source remains present but is not a Chat Plus door.
+requireText(header,'action:"status"',"Preserved University access check is missing.");
+requireText(header,'action:"chat"',"Unified Foundation request route is missing.");
 requireText(header,'APSK 101',"APSK 101 is missing.");
 requireText(header,'ANSY 110',"ANSY 110 is missing.");
 requireText(header,'EBPR 120',"EBPR 120 is missing.");
@@ -90,6 +92,6 @@ for(const forbidden of [
 if(failed){
   process.exitCode=1;
 }else{
-  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, Beans continuity, Grey/LOCKE routing, course separation, source rendering, world routes, deletion controls, and secret guards are present.");
+  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, metered Beans continuity, premium tool controls, hidden/preserved University source, world routes, deletion controls, and secret guards are present.");
   console.log("[website-chat-parity] EXTERNAL LIVE CHECK: Clerk-hosted account flows and responsive browser behavior still require a real browser pass after this source audit.");
 }
