@@ -1,73 +1,74 @@
 import { readFile, stat } from "node:fs/promises";
-import vm from "node:vm";
 
 const html = await readFile("founder-office.html", "utf8");
+const game = await readFile("founder-office-3d.js", "utf8");
+const css = await readFile("founder-office-3d.css", "utf8");
+const enter = await readFile("enter/index.html", "utf8");
 const errors = [];
 
 const requireText = (source, text, reason) => {
   if (!source.includes(text)) errors.push(reason);
 };
 
-const forbidText = (source, text, reason) => {
-  if (source.includes(text)) errors.push(reason);
-};
+requireText(html, 'id="officeCanvas"', "3D canvas is missing.");
+requireText(html, 'id="moveZone"', "BODY movement control is missing.");
+requireText(html, 'id="lookZone"', "HEAD movement control is missing.");
+requireText(html, 'id="grabButton"', "GRAB control is missing.");
+requireText(html, 'id="useButton"', "USE control is missing.");
+requireText(html, 'founder-office-3d.js', "production 3D module is not loaded.");
+requireText(enter, '../founder-office.html', "/enter/ no longer redirects to the live Founder Office.");
 
-// Current approved office: fixed room view + hotspots + object inspection.
-// Do not force the retired first-person walking/joystick build back into production.
-requireText(html, 'class="room-stage"', "Founder Office room stage is missing.");
-requireText(html, 'class="room-image"', "Founder Office room image is missing.");
-requireText(html, 'src="founder-office-room.png"', "Founder Office master room image is missing.");
-requireText(html, '@google/model-viewer', "3D artifact viewer dependency is missing.");
-
-for (const key of ["graduation","banner","doctorate","masters","family","founder","chair","yolanda","clue"]) {
-  requireText(html, `data-panel="${key}"`, `hotspot '${key}' is missing.`);
-}
-requireText(html, 'data-action="lamp"', "lamp hotspot is missing.");
-requireText(html, 'setLampState((lampState + 1) % 3)', "three-touch lamp sequence is missing.");
-requireText(html, 'panel === "chair" && lampState !== 2', "chair light gate is missing.");
-requireText(html, 'panel === "clue"', "clue-to-lamp behavior is missing.");
-requireText(html, 'id="deskBean"', "interactive Beanie Bean is missing.");
-requireText(html, 'id="beanGrab"', "Beanie Bean pick-up control is missing.");
-requireText(html, 'returnBeanHome', "Beanie Bean return-home behavior is missing.");
-
-forbidText(html, 'id="officeCanvas"', "Retired walking-game canvas returned to the approved static office.");
-forbidText(html, 'id="moveZone"', "Retired BODY joystick returned to the approved static office.");
-forbidText(html, 'id="lookZone"', "Retired HEAD joystick returned to the approved static office.");
-
-// Catch accidental literal escape corruption and other inline JavaScript parse failures.
-const inlineScripts = html
-  .split("<script")
-  .slice(1)
-  .map((block) => {
-    const open = block.indexOf(">");
-    const close = block.indexOf("</script>");
-    if (open < 0 || close < 0) return "";
-    const attrs = block.slice(0, open);
-    if (/\\bsrc\\s*=/.test(attrs)) return "";
-    return block.slice(open + 1, close);
-  })
-  .filter((source) => source.trim());
-
-for (const source of inlineScripts) {
-  try {
-    new vm.Script(source);
-  } catch (error) {
-    errors.push(`inline Founder Office JavaScript does not parse: ${error.message}`);
-  }
+for (const key of ["desk","lamp","bean","toy1","toy2","founder","yolanda","chair","doctorate","masters","clue","graduation","banner","family"]) {
+  requireText(game, key, `interaction '${key}' is missing.`);
 }
 
-const requiredAssets = [
-  "founder-office-room.png",
-  "official-nbl-emblem.png",
+requireText(game, "lampState = (lampState + 1) % 3", "three-touch lamp sequence is missing.");
+requireText(game, "lampState < 2", "chair light gate is missing.");
+requireText(game, "bindStick(moveZone", "BODY joystick is not wired.");
+requireText(game, "bindStick(lookZone", "HEAD joystick is not wired.");
+requireText(game, "for (const spec of specs) await loadWorldModel(spec);", "phone-safe sequential GLB loading is missing.");
+requireText(game, 'renderer.shadowMap.enabled = true', "room shadows are disabled.");
+requireText(game, 'THREE.ACESFilmicToneMapping', "filmic tone mapping is missing.");
+requireText(game, 'signCtx.fillText("JAMEL HAWKINS"', "Founder night sign is missing.");
+requireText(game, 'position: new THREE.Vector3(0, .02, .72)', "Beans is not grounded on the rug in front of the desk.");
+requireText(game, 'position: new THREE.Vector3(-3.5, .02, -1.35)', "NBL Toy is not on the left side of the desk.");
+requireText(game, 'position: new THREE.Vector3(3.5, .02, -1.35)', "NBL Toy 2 is not on the right side of the desk.");
+requireText(game, 'if (currentKey && currentKey !== "lamp" && lampState !== 2) currentKey = null;', "Museum objects are not locked until lamp touch #2.");
+requireText(game, 'const roomLit = lampState >= 1;', "First-touch room-light state is missing.");
+requireText(game, 'const collectionActive = lampState === 2;', "Second-touch collection state is missing.");
+requireText(game, 'pulseCollection()', "Second-touch exhibit illumination cue is missing.");
+requireText(game, 'applyMuseumLightState(false);', "Initial night/reset state is not applied before play.");
+requireText(css, ".portrait-note", "portrait fallback controls/hint are missing.");
+requireText(css, ".inspector", "3D artifact inspector styling is missing.");
+
+const requiredGlbs = [
   "Beanie Bean_Meshy_AI_2026-09-20_19b948-optimized.glb",
-  "Founder_Plaque.glb",
-  "Master_Of_Applied_Skepticism_Certificate-optimized.glb",
   "For You, Mom Keepsake Necklace_Meshy_AI_2026-08-04_bb6999.glb",
+  "Founder_Plaque.glb",
+  "Institute_Of_Evidence-Based_Practice_Certificate.glb",
+  "Master_Of_Applied_Skepticism_Certificate-optimized.glb",
+  "NBL_Desk_Lamp.glb",
+  "NBL_Model_Toy.glb",
+  "NBL_Model_Toy_2-optimized.glb",
+  "NBL_Office_Desk.glb",
   "New_Beansland_University_Crest-optimized.glb",
   "Use_A_Light_.glb"
 ];
 
-for (const path of requiredAssets) {
+const requiredImages = [
+  "if-it-is-is-it-banner.png",
+  "founder-graduation-remarks.png",
+  "founder-doctorate-degree.png",
+  "founder-masters-degree.png",
+  "new-beansland-family-photo.png",
+  "founder-nameplate.png",
+  "desk-clue-plaque.png",
+  "official-nbl-emblem.png",
+  "founders-office-yolanda.png",
+  "founder-office-room.png"
+];
+
+for (const path of [...requiredGlbs, ...requiredImages]) {
   try {
     const info = await stat(path);
     if (!info.isFile() || info.size <= 0) errors.push(`asset '${path}' is empty or invalid.`);
@@ -76,10 +77,14 @@ for (const path of requiredAssets) {
   }
 }
 
+if (game.includes("assets/3d/models/founder-")) {
+  errors.push("production code still references the broken zero-byte Founder Office GLB copies.");
+}
+
 if (errors.length) {
   console.error("Founder’s Office integrity check failed:\n");
   errors.forEach((error) => console.error(`- ${error}`));
   process.exit(1);
 }
 
-console.log("Founder’s Office approved static/hotspot experience, lamp puzzle, Beanie interaction, syntax, and required assets passed.");
+console.log("Founder’s Office living museum, three-touch lighting, Beans/toy placement, controls, and real GLB checks passed.");
