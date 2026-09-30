@@ -25,6 +25,8 @@ test.describe("New Beansland web app browser smoke", () => {
 
     await expect(page.locator("#nbl-beans-panel")).toBeVisible();
     await expect(page.getByRole("heading", { name: "NBL Chat" })).toBeVisible();
+    await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
+    await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect(page.getByRole("tab", { name: "Beans" })).toBeVisible();
     await expect(page.getByRole("tab", { name: /Professor Grey/i })).toBeVisible();
   });
