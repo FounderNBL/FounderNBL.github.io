@@ -68,6 +68,23 @@
         </div>
       </section>
 
+      <section class="card" id="membershipCard">
+        <h2>Membership &amp; billing</h2>
+        <p id="membershipStatus" class="status">Checking your Beans membership…</p>
+        <div class="grid" aria-label="Membership usage">
+          <div class="card metric"><strong id="planName">Free</strong><span>current Beans plan</span></div>
+          <div class="card metric"><strong id="replyRemaining">—</strong><span>successful replies remaining</span></div>
+          <div class="card metric"><strong id="topUpRemaining">—</strong><span>Get More replies remaining</span></div>
+        </div>
+        <div class="row">
+          <button type="button" data-nbl-checkout-plan="beans">Beans · $4.99/month</button>
+          <button type="button" data-nbl-checkout-plan="chat_plus">NBL Chat Plus · $19.99/month</button>
+          <button type="button" data-nbl-checkout-plan="topup_500">Get More · $9.99</button>
+          <button type="button" data-nbl-billing-portal>Manage billing</button>
+        </div>
+        <p class="status">Chat Plus adds premium Beans tools. NBL University and Professor Grey remain separate.</p>
+      </section>
+
       <section class="grid" aria-label="Account usage">
         <div class="card metric"><strong id="conversationCount">0</strong><span>saved conversations</span></div>
         <div class="card metric"><strong id="messageCount">0</strong><span>saved messages</span></div>
@@ -110,6 +127,10 @@
     const deleteDataButton=document.getElementById("deleteDataButton");
     const deleteAccountButton=document.getElementById("deleteAccountButton");
     const deleteStatus=document.getElementById("deleteStatus");
+    const membershipStatus=document.getElementById("membershipStatus");
+    const planName=document.getElementById("planName");
+    const replyRemaining=document.getElementById("replyRemaining");
+    const topUpRemaining=document.getElementById("topUpRemaining");
 
     const waitForBridge=async()=>{
       for(let i=0;i<60;i++){
@@ -165,6 +186,30 @@
       document.getElementById("modelCount").textContent=String(payload?.usage?.modelResponses||0);
     };
 
+    const renderMembership=async()=>{
+      if(!bridge.meter)return;
+      const meter=await bridge.meter();
+      if(!meter){
+        planName.textContent="Free";
+        replyRemaining.textContent="10";
+        topUpRemaining.textContent="0";
+        membershipStatus.textContent="Sign in to see membership status.";
+        return;
+      }
+      const plan=meter.privileged?"Founder":meter.planKey==="chat_plus"?"NBL Chat Plus":meter.planKey==="beans"?"Beans":"Free";
+      planName.textContent=plan;
+      replyRemaining.textContent=String(meter.totalReplyRemaining??meter.paidRemaining??meter.freeRemaining??0);
+      topUpRemaining.textContent=String(meter.topUpRemaining??0);
+      const end=meter.paidPeriodEnd?new Date(meter.paidPeriodEnd):null;
+      const endText=end&&!Number.isNaN(end.getTime())?" · current period through "+end.toLocaleDateString():"";
+      membershipStatus.textContent=(meter.privileged?"Founder reserve":String(meter.membershipStatus||"free").replaceAll("_"," "))+endText;
+    };
+
+    const checkoutState=new URLSearchParams(location.search).get("checkout");
+    if(checkoutState==="success"){
+      membershipStatus.textContent="Stripe checkout completed. Waiting for LOCKE to confirm your membership…";
+    }
+
     const renderHistory=async()=>{
       viewer.replaceChildren();
       const payload=await accountFetch("?action=conversations");
@@ -201,6 +246,20 @@
       }
     };
 
+    document.querySelectorAll("[data-nbl-checkout-plan]").forEach(button=>button.addEventListener("click",async()=>{
+      if(!bridge.billingCheckout)return;
+      button.disabled=true;
+      membershipStatus.textContent="Opening secure Stripe checkout…";
+      try{await bridge.billingCheckout(button.dataset.nblCheckoutPlan);}
+      catch(error){membershipStatus.textContent=error.message||"Checkout could not be opened.";button.disabled=false;}
+    }));
+    document.querySelector("[data-nbl-billing-portal]")?.addEventListener("click",async event=>{
+      const button=event.currentTarget;button.disabled=true;
+      membershipStatus.textContent="Opening secure billing management…";
+      try{await bridge.billingPortal();}
+      catch(error){membershipStatus.textContent=error.message||"Billing management could not be opened.";button.disabled=false;}
+    });
+
     usernameForm.addEventListener("submit",async event=>{
       event.preventDefault();profileStatus.textContent="Saving…";
       try{
@@ -235,7 +294,17 @@
       finally{deleteAccountButton.disabled=false}
     };
 
-    try{await Promise.all([renderSummary(),renderHistory()])}
+    try{
+      await Promise.all([renderSummary(),renderHistory(),renderMembership()]);
+      if(checkoutState==="success"){
+        for(let attempt=0;attempt<3;attempt++){
+          await new Promise(resolve=>setTimeout(resolve,1500));
+          await renderMembership();
+          if(!/none|free/i.test(membershipStatus.textContent||""))break;
+        }
+        history.scrollIntoView({behavior:"smooth",block:"nearest"});
+      }
+    }
     catch(error){profileStatus.textContent=error.message;history.innerHTML='<p class="status">'+error.message.replace(/[<>&]/g,"")+'</p>'}
   });
   </script>
