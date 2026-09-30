@@ -29,7 +29,7 @@
     @media(max-width:720px){main{padding-top:96px}.grid{grid-template-columns:1fr}.card{padding:17px}}
   </style>
   <script defer src="/nbl-product-plans.js?v=20260929"></script>
-  <script defer src="/nbl-world-header.js?v=20260930-beans-tools"></script>
+  <script defer src="/nbl-world-header.js?v=20260930-billing-rc1"></script>
 </head>
 <body>
   <main>
@@ -37,6 +37,11 @@
       <p class="eyebrow">New Beansland · My Account</p>
       <h1>Your NBL account</h1>
       <p class="lead">Your username, Beans conversations and usage belong to your signed-in account. You can review or delete your own history here.</p>
+    </section>
+
+    <section id="checkoutNotice" class="card hidden" aria-live="polite">
+      <h2>Payment returned to New Beansland</h2>
+      <p class="status">Stripe completed checkout. LOCKE is attaching the verified purchase to this signed-in account. Your membership or University enrollment may take a moment to appear while the webhook finishes.</p>
     </section>
 
     <section id="signedOut" class="card signed-out">
@@ -64,6 +69,7 @@
         <p id="profileStatus" class="status"></p>
         <div class="row">
           <button id="securityButton" type="button">Manage sign-in & security</button>
+          <button id="billingButton" type="button">Manage billing</button>
           <button id="signOutButton" type="button">Sign out</button>
         </div>
       </section>
@@ -104,7 +110,9 @@
     const usernameInput=document.getElementById("username");
     const profileStatus=document.getElementById("profileStatus");
     const securityButton=document.getElementById("securityButton");
+    const billingButton=document.getElementById("billingButton");
     const signOutButton=document.getElementById("signOutButton");
+    const checkoutNotice=document.getElementById("checkoutNotice");
     const history=document.getElementById("history");
     const viewer=document.getElementById("conversationViewer");
     const deleteDataButton=document.getElementById("deleteDataButton");
@@ -138,6 +146,14 @@
 
     signedOut.classList.remove("show");
     accountBody.classList.remove("hidden");
+    const checkoutParams=new URLSearchParams(location.search);
+    if(checkoutParams.get("checkout")==="success"){
+      checkoutNotice?.classList.remove("hidden");
+      const cleanUrl=new URL(location.href);
+      cleanUrl.searchParams.delete("checkout");
+      cleanUrl.searchParams.delete("session_id");
+      history.replaceState(history.state,"",cleanUrl.href);
+    }
 
     const user=clerk.user;
     const primaryEmail=user?.primaryEmailAddress?.emailAddress||"signed-in account";
@@ -211,6 +227,16 @@
     });
 
     securityButton.onclick=()=>{location.href="https://accounts.newbeansland.org/user?redirect_url="+encodeURIComponent(location.href)};
+    billingButton.onclick=async()=>{
+      billingButton.disabled=true;profileStatus.textContent="Opening secure billing…";
+      try{
+        const result=await window.NBLBillingBridge?.portal?.();
+        if(result?.signInRequired){location.href=result.signInUrl;return;}
+        if(!result?.destination)throw new Error("Secure billing is temporarily unavailable.");
+        location.href=result.destination;
+      }catch(error){profileStatus.textContent=error?.message||"Secure billing is temporarily unavailable."}
+      finally{billingButton.disabled=false}
+    };
     signOutButton.onclick=async()=>{await clerk.signOut();location.href="/"};
 
     deleteDataButton.onclick=async()=>{
