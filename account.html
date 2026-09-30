@@ -152,7 +152,7 @@
       const cleanUrl=new URL(location.href);
       cleanUrl.searchParams.delete("checkout");
       cleanUrl.searchParams.delete("session_id");
-      history.replaceState(history.state,"",cleanUrl.href);
+      window.history.replaceState(window.history.state,"",cleanUrl.href);
     }
 
     const user=clerk.user;
