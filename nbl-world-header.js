@@ -394,7 +394,7 @@
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">NBL Chat</h2>
-            <p class="nbl-beans-note">Beans is the front door. Professor Grey is the Guided Learning experience inside NBL Chat Plus.</p>
+            <p class="nbl-beans-note">Beans is NBL Chat. Plus opens premium Beans tools; NBL University and Professor Grey are separate.</p>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close NBL Chat">✕</button>
