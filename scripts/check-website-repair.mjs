@@ -143,6 +143,20 @@ requireText(universityCheckout,"window.NBLBillingBridge","University checkout do
 requireText(universityCheckout,'["foundation","full_foundation"]',"University checkout accepts an unexpected package set.");
 forbidText(university,"https://buy.stripe.com/9B68wR2Fk3vW06n0cL4ko04","University page still bypasses the authenticated LOCKE checkout rail.");
 requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridge is missing.");
+requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
+requireText(account,'id="membershipCard"',"Account membership card is missing.");
+requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
+requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout control is missing.");
+requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
+requireText(account,"renderMembership","Account membership meter rendering is missing.");
+for(const staleUniversityAccountCopy of [
+  "Optional connected account",
+  "using the normal checkout do not require an account",
+  "Account connection is optional.",
+  "Checkout and enrollment stay separate from this account-status check."
+]){
+  forbidText(header,staleUniversityAccountCopy,"University account panel still describes enrollment identity as optional.");
+}
 requireText(header,'data-nbl-billing-plan="beans"',"Beans checkout control is missing.");
 requireText(header,'data-nbl-billing-plan="chat_plus"',"Chat Plus checkout control is missing.");
 requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout control is missing.");
