@@ -2,7 +2,9 @@ name: NBL live production watch
 
 on:
   schedule:
-    - cron: "17 * * * *"
+    # Twice weekly: Monday and Thursday. This keeps the live browser watch
+    # roughly 3–4 days apart without wasting hourly CI runs.
+    - cron: "17 14 * * 1,4"
   workflow_dispatch:
   pull_request:
     paths:
