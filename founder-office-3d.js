@@ -51,6 +51,8 @@ const keyState = new Set();
 let interactives = [];
 const loadedObjects = new Map();
 const proxyObjects = new Map();
+const museumLights = { ambient: null, key: null, points: [] };
+let collectionPulseTimer = null;
 const moveInput = new THREE.Vector2();
 const lookInput = new THREE.Vector2();
 
@@ -200,25 +202,25 @@ const panelData = {
     body: `<p>The lamp is an object and a key. In this room, light is part of the story.</p><p class="closing-line">One room. One light.</p>`
   },
   bean: {
-    kicker: "Desk Toy",
+    kicker: "NBL Resident",
     title: "Beanie Bean",
-    subtitle: "A little piece of New Beansland on the desk.",
+    subtitle: "On the rug in front of the Founder’s desk.",
     model: "/Beanie Bean_Meshy_AI_2026-09-20_19b948-optimized.glb",
-    body: `<p>Pick it up, turn it around, and put it back in the room. New Beansland keeps little pieces of itself everywhere.</p>`
+    body: `<p>Beans belongs in the room, grounded on the rug in front of the desk. Pick him up, turn him around, and return him to his place.</p>`
   },
   toy1: {
-    kicker: "NBL Model",
-    title: "NBL Model Toy",
-    subtitle: "A physical little world inside the bigger one.",
+    kicker: "NBL Display Toy",
+    title: "NBL Toy",
+    subtitle: "One of the two clothing-model toys beside the desk.",
     model: "/NBL_Model_Toy.glb",
-    body: `<p>One of the New Beansland model figures kept in the Founder’s Office.</p>`
+    body: `<p>An NBL clothing-model display toy. It is not the Founder.</p>`
   },
   toy2: {
-    kicker: "NBL Model",
-    title: "NBL Model Toy II",
-    subtitle: "Another piece from the shelf and the floor.",
+    kicker: "NBL Display Toy",
+    title: "NBL Toy 2",
+    subtitle: "The second clothing-model toy beside the desk.",
     model: "/NBL_Model_Toy_2-optimized.glb",
-    body: `<p>The second New Beansland model figure. The office is allowed to feel lived in, not staged.</p>`
+    body: `<p>The second NBL clothing-model display toy. It is not the Founder.</p>`
   }
 };
 
@@ -348,10 +350,41 @@ function buildRoom() {
   addPictureProxy("clue", "/desk-clue-plaque.png", new THREE.Vector3(0, .86, -1.86), new THREE.Vector2(1.58, .55));
 }
 
-function addLights() {
-  scene.add(new THREE.HemisphereLight(0x8ba4c7, 0x24160f, 1.0));
+function addFounderNightSign() {
+  const signCanvas = document.createElement("canvas");
+  signCanvas.width = 1600;
+  signCanvas.height = 420;
+  const signCtx = signCanvas.getContext("2d");
+  signCtx.textAlign = "center";
+  signCtx.textBaseline = "middle";
+  signCtx.shadowColor = "rgba(255, 202, 102, .82)";
+  signCtx.shadowBlur = 30;
+  signCtx.fillStyle = "#ffe4a3";
+  signCtx.font = "700 112px Georgia";
+  signCtx.fillText("JAMEL HAWKINS", 800, 150);
+  signCtx.shadowBlur = 14;
+  signCtx.fillStyle = "#d7b45a";
+  signCtx.font = "700 54px Arial";
+  signCtx.fillText("FOUNDER · NEW BEANSLAND", 800, 278);
 
-  const key = new THREE.DirectionalLight(0xffd9a5, 2.0);
+  const texture = new THREE.CanvasTexture(signCanvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  const sign = new THREE.Mesh(
+    new THREE.PlaneGeometry(6.9, 1.8),
+    new THREE.MeshBasicMaterial({ map: texture, transparent: true, toneMapped: false })
+  );
+  sign.name = "Founder night sign";
+  sign.position.set(0, 4.7, -5.16);
+  scene.add(sign);
+  scene.userData.founderNightSign = sign;
+}
+
+function addLights() {
+  const ambient = new THREE.HemisphereLight(0x8ba4c7, 0x24160f, 0.015);
+  scene.add(ambient);
+  museumLights.ambient = ambient;
+
+  const key = new THREE.DirectionalLight(0xffd9a5, 0);
   key.position.set(-3.5, 5.6, 4.8);
   key.castShadow = true;
   key.shadow.mapSize.set(isCoarse ? 1024 : 2048, isCoarse ? 1024 : 2048);
@@ -360,14 +393,16 @@ function addLights() {
   key.shadow.camera.top = 8;
   key.shadow.camera.bottom = -8;
   scene.add(key);
+  museumLights.key = key;
 
   for (const x of [-3.7, 0, 3.7]) {
-    const light = new THREE.PointLight(0xffd08b, .85, 9, 2);
+    const light = new THREE.PointLight(0xffd08b, 0, 9, 2);
     light.position.set(x, 5.1, -1.0);
     scene.add(light);
+    museumLights.points.push(light);
   }
 
-  const lampLight = new THREE.PointLight(0xffb84f, 0, 7, 1.7);
+  const lampLight = new THREE.PointLight(0xffb84f, 2.2, 4.8, 1.7);
   lampLight.position.set(1.95, 2.15, -1.35);
   lampLight.castShadow = !isCoarse;
   scene.add(lampLight);
@@ -377,6 +412,74 @@ function addLights() {
   chairGlow.position.set(0, 1.8, -3.0);
   scene.add(chairGlow);
   scene.userData.chairGlow = chairGlow;
+}
+
+function setModelGlow(root, intensity) {
+  root?.traverse?.((child) => {
+    if (!child.isMesh || !child.material) return;
+    const materials = Array.isArray(child.material) ? child.material : [child.material];
+    materials.forEach((mat) => {
+      if (!mat || !("emissiveIntensity" in mat)) return;
+      if (mat.userData.nblBaseEmissiveIntensity === undefined) {
+        mat.userData.nblBaseEmissiveIntensity = mat.emissiveIntensity || 0;
+        if (mat.emissive?.isColor) mat.userData.nblBaseEmissive = mat.emissive.clone();
+      }
+      if (mat.emissive?.isColor) {
+        if (intensity > 0) mat.emissive.setHex(0xffcc68);
+        else if (mat.userData.nblBaseEmissive?.isColor) mat.emissive.copy(mat.userData.nblBaseEmissive);
+      }
+      mat.emissiveIntensity = Math.max(mat.userData.nblBaseEmissiveIntensity, intensity);
+      mat.needsUpdate = true;
+    });
+  });
+}
+
+function setCollectionGlow(intensity) {
+  for (const [key, root] of loadedObjects) {
+    if (key === "desk" || key === "lamp") continue;
+    setModelGlow(root, intensity);
+  }
+  for (const [key, root] of proxyObjects) {
+    if (["graduation", "banner", "doctorate", "masters", "family", "clue"].includes(key)) {
+      setModelGlow(root, intensity);
+    }
+  }
+}
+
+function pulseCollection() {
+  clearTimeout(collectionPulseTimer);
+  setCollectionGlow(1.5);
+  collectionPulseTimer = setTimeout(() => {
+    if (lampState === 2) setCollectionGlow(.16);
+  }, matchMedia("(prefers-reduced-motion: reduce)").matches ? 50 : 1100);
+}
+
+function applyMuseumLightState(announce = false) {
+  const roomLit = lampState >= 1;
+  const collectionActive = lampState === 2;
+  museumLights.ambient.intensity = roomLit ? 1.0 : 0.015;
+  museumLights.key.intensity = roomLit ? 2.0 : 0;
+  museumLights.points.forEach((light) => { light.intensity = roomLit ? .85 : 0; });
+
+  const lamp = scene.userData.lampLight;
+  const chair = scene.userData.chairGlow;
+  lamp.intensity = lampState === 0 ? 2.2 : lampState === 1 ? 4.8 : 6.6;
+  chair.intensity = collectionActive ? 4.4 : 0;
+  renderer.toneMappingExposure = lampState === 0 ? .62 : lampState === 1 ? 1.0 : 1.08;
+
+  const sign = scene.userData.founderNightSign;
+  if (sign?.material) sign.material.opacity = lampState === 0 ? 1 : .48;
+
+  if (collectionActive) pulseCollection();
+  else {
+    clearTimeout(collectionPulseTimer);
+    setCollectionGlow(0);
+  }
+
+  if (!announce) return;
+  if (lampState === 1) showToast("The room lights are on. Touch the lamp again to wake the collection.");
+  else if (lampState === 2) showToast("The collection is awake. The illuminated objects can now be touched.");
+  else showToast("Night returns. The Founder sign and the lamp remain awake.");
 }
 
 function fitModel(root, targetSize, desired, anchor = "ground") {
@@ -414,6 +517,7 @@ async function loadWorldModel(spec) {
       tagInteractive(root, spec.interaction || spec.key);
       scene.add(root);
       loadedObjects.set(spec.key, root);
+      if (lampState === 2 && spec.key !== "desk" && spec.key !== "lamp") setModelGlow(root, .16);
 
       if (spec.replaceProxy && proxyObjects.has(spec.replaceProxy)) {
         const proxy = proxyObjects.get(spec.replaceProxy);
@@ -434,9 +538,9 @@ async function loadArtifacts() {
   const specs = [
     { key: "desk", label: "Founder desk", url: "/NBL_Office_Desk.glb", position: new THREE.Vector3(0, 0, -1.65), rotation: new THREE.Euler(0, Math.PI, 0), target: 5.0, interaction: "desk" },
     { key: "lamp", label: "Desk lamp", url: "/NBL_Desk_Lamp.glb", position: new THREE.Vector3(1.95, 1.18, -1.45), rotation: new THREE.Euler(0, -.45, 0), target: 1.3, interaction: "lamp" },
-    { key: "bean", label: "Beanie Bean", url: "/Beanie Bean_Meshy_AI_2026-09-20_19b948-optimized.glb", position: new THREE.Vector3(.8, 1.2, -1.65), rotation: new THREE.Euler(0, -.25, 0), target: .74, interaction: "bean" },
-    { key: "toy2", label: "Model Toy II", url: "/NBL_Model_Toy_2-optimized.glb", position: new THREE.Vector3(1.3, .02, .65), rotation: new THREE.Euler(0, -2.35, 0), target: 1.08, interaction: "toy2" },
-    { key: "toy1", label: "Model Toy", url: "/NBL_Model_Toy.glb", position: new THREE.Vector3(-1.35, .02, .45), rotation: new THREE.Euler(0, 2.5, 0), target: 1.12, interaction: "toy1" },
+    { key: "bean", label: "Beanie Bean", url: "/Beanie Bean_Meshy_AI_2026-09-20_19b948-optimized.glb", position: new THREE.Vector3(0, .02, .72), rotation: new THREE.Euler(0, Math.PI, 0), target: .82, interaction: "bean" },
+    { key: "toy1", label: "NBL Toy", url: "/NBL_Model_Toy.glb", position: new THREE.Vector3(-3.5, .02, -1.35), rotation: new THREE.Euler(0, 2.5, 0), target: 1.12, interaction: "toy1" },
+    { key: "toy2", label: "NBL Toy 2", url: "/NBL_Model_Toy_2-optimized.glb", position: new THREE.Vector3(3.5, .02, -1.35), rotation: new THREE.Euler(0, -2.35, 0), target: 1.08, interaction: "toy2" },
     { key: "founder", label: "Founder plaque", url: "/Founder_Plaque.glb", position: new THREE.Vector3(-.85, 1.15, -1.86), rotation: new THREE.Euler(0, .08, 0), target: .95, interaction: "founder" },
     { key: "yolanda", label: "Yolanda keepsake", url: "/For You, Mom Keepsake Necklace_Meshy_AI_2026-08-04_bb6999.glb", position: new THREE.Vector3(2.75, 1.18, -1.72), rotation: new THREE.Euler(0, -.3, 0), target: .62, interaction: "yolanda" },
     { key: "crest", label: "University crest", url: "/New_Beansland_University_Crest-optimized.glb", position: new THREE.Vector3(0, 1.72, -2.53), rotation: new THREE.Euler(0, 0, 0), target: .72, interaction: "chair", anchor: "center" },
@@ -464,6 +568,7 @@ function updateInteraction() {
   raycaster.far = 4.1;
   const hit = raycaster.intersectObjects(interactives, false)[0];
   currentKey = hit?.object?.userData?.interactionKey || null;
+  if (currentKey && currentKey !== "lamp" && lampState !== 2) currentKey = null;
   if (currentKey) {
     promptEl.textContent = interactionLabel(currentKey);
     promptEl.classList.add("show");
@@ -492,24 +597,7 @@ function interact(preferUse = false) {
 
 function useLamp() {
   lampState = (lampState + 1) % 3;
-  const lamp = scene.userData.lampLight;
-  const chair = scene.userData.chairGlow;
-  if (lampState === 1) {
-    lamp.intensity = 5.5;
-    chair.intensity = 0;
-    renderer.toneMappingExposure = 1.08;
-    showToast("The room is waking up. One more touch.");
-  } else if (lampState === 2) {
-    lamp.intensity = 10;
-    chair.intensity = 5.2;
-    renderer.toneMappingExposure = 1.17;
-    showToast("The walk is lit. The chair is ready.");
-  } else {
-    lamp.intensity = 0;
-    chair.intensity = 0;
-    renderer.toneMappingExposure = 1.0;
-    showToast("The room returns to rest.");
-  }
+  applyMuseumLightState(true);
 }
 
 function openInspector(key) {
@@ -696,7 +784,9 @@ function animate() {
 }
 
 buildRoom();
+addFounderNightSign();
 addLights();
+applyMuseumLightState(false);
 setupKeyboardAndMouse();
 bindStick(moveZone, moveKnob, moveInput, false);
 bindStick(lookZone, lookKnob, lookInput, true);
@@ -708,7 +798,7 @@ inspector.addEventListener("click", (e) => { if (e.target === inspector) closeAr
 enterButton.addEventListener("click", () => {
   started = true;
   entryOverlay.hidden = true;
-  showToast("Find the one-room light. Look closely.");
+  showToast("The office is asleep. Find the one-room light.");
   canvas.focus?.();
 });
 
