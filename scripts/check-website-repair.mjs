@@ -91,8 +91,8 @@ for(const filename of findHtml(rootPath)){
 requireText(header,'aria-label="Open NBL Chat"',"The Chat launcher is not named NBL Chat.");
 requireText(header,'<h2 id="nbl-beans-title">NBL Chat</h2>',"The Chat dialog title is not NBL Chat.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
-requireText(header,'data-nbl-chat-mode="plus" role="tab"',"Professor Grey is not a Chat tab.");
-requireText(header,'aria-label="Turn on Guided Learning with Professor Grey"',"Professor Grey's premium Guided Learning name is not accessible.");
+requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
+requireText(header,'Plus opens premium Beans tools; NBL University and Professor Grey are separate.',"Public Chat does not describe the new Plus / University boundary.");
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
 }
@@ -107,7 +107,9 @@ requireText(header,'else if(!event.shiftKey&&(document.activeElement===last||!ch
 requireText(header,'chatDrawerOpener?.isConnected?chatDrawerOpener:chatDrawerToggle',"Drawer close does not restore focus to its opener.");
 requireText(header,'event.key!=="Escape"',"Escape handling for overlays is missing.");
 requireText(header,'aria-controls="nbl-chat-panel-beans"',"Beans tab does not control its tabpanel.");
-requireText(header,'aria-controls="nbl-chat-panel-plus"',"Professor Grey tab does not control its tabpanel.");
+requireText(header,'aria-controls="nbl-chat-panel-plus"',"Preserved University tabpanel relationship is missing.");
+requireText(header,'data-nbl-tools-toggle',"Beans + tools control is missing.");
+requireText(header,'data-nbl-drawer-tools',"Beans tools drawer control is missing.");
 requireText(header,'event.key==="ArrowRight"',"Arrow-key tab navigation is missing.");
 requireText(header,'if(event.target===beansPanel) closeBeans();',"Outer Chat backdrop does not close the dialog.");
 requireText(popstate,"setChatDrawerOpen(false);","Back does not close the drawer first.");
