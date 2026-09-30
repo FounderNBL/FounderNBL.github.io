@@ -6,11 +6,6 @@ on:
     # roughly 3–4 days apart without wasting hourly CI runs.
     - cron: "17 14 * * 1,4"
   workflow_dispatch:
-  pull_request:
-    paths:
-      - "playwright.config.mjs"
-      - "tests/browser/**"
-      - ".github/workflows/nbl-live-production-watch.yml"
 
 permissions:
   contents: read
