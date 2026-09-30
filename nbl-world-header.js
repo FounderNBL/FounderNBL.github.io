@@ -32,6 +32,7 @@
 
   const NBL_PUBLIC_BEANS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/beans-public";
   const NBL_CHAT_PLUS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
+  const NBL_CHAT_GATEWAY_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-chat-gateway";
   const NBL_ACCOUNT_STORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
   const NBL_SEARCH_API=NBL_PUBLIC_BEANS_API;
   const NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API;
@@ -406,7 +407,7 @@
           <div>
             <p>New Beansland™</p>
             <strong>NBL Chat</strong>
-            <small>Beans, Guided Learning, history, and your NBL account.</small>
+            <small>Beans, tools, history, and your NBL account.</small>
           </div>
           <button type="button" data-nbl-chat-drawer-close aria-label="Close NBL Chat menu">✕</button>
         </div>
@@ -425,9 +426,9 @@
             <div data-nbl-drawer-history-list></div>
           </section>
 
-          <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-grey>
+          <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-grey hidden>
             <img src="/NBL_University.png" alt="" aria-hidden="true">
-            <span><strong>Professor Grey</strong><small>Guided Learning · NBL Chat Plus</small></span>
+            <span><strong>Professor Grey</strong><small>NBL University faculty · University entitlement required</small></span>
           </button>
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
@@ -436,18 +437,18 @@
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
             <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span></article>
-            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + Professor Grey / Virgo + plan-approved premium tools.</span></article>
+            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. University / Professor Grey access is separate.</span></article>
             <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span></article>
           </div>
 
           <a class="nbl-chat-drawer-item" href="/university.html">
             <img src="/NBL_University.png" alt="" aria-hidden="true">
-            <span><strong>NBL University</strong><small>Courses, Foundation Program, and University doors</small></span>
+            <span><strong>NBL University</strong><small>Courses and University doors · separate from Chat Plus</small></span>
           </a>
 
-          <button class="nbl-chat-drawer-item is-disabled" type="button" disabled>
+          <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-tools>
             <span class="nbl-chat-drawer-fallback" aria-hidden="true">+</span>
-            <span><strong>Uploads / files</strong><small>Opens after the secure upload rail is connected</small></span>
+            <span><strong>Beans tools</strong><small>Photos, files, web, code/data, and image creation</small></span>
           </button>
 
           <a class="nbl-chat-drawer-item" href="/account.html">
@@ -467,7 +468,7 @@
 
       <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat mode">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
-        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="Turn on Guided Learning with Professor Grey" tabindex="-1">Guided Learning</button>
+        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey" tabindex="-1" hidden>University</button>
       </div>
 
       <section id="nbl-chat-panel-beans" role="tabpanel" aria-labelledby="nbl-chat-tab-beans" tabindex="0" data-nbl-beans-regular>
@@ -476,9 +477,26 @@
         </div>
         <form class="nbl-beans-form" data-nbl-beans-form>
           <label for="nbl-beans-input">Message Beans</label>
-          <div class="nbl-beans-row">
+          <div class="nbl-beans-tool-state" data-nbl-tool-state hidden>
+            <span data-nbl-tool-mode-label>Auto</span>
+            <button type="button" data-nbl-tool-reset aria-label="Clear selected Beans tool">×</button>
+          </div>
+          <div class="nbl-beans-attachments" data-nbl-beans-attachments hidden></div>
+          <div class="nbl-beans-composer">
+            <div class="nbl-beans-tools-wrap">
+              <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
+              <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
+                <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · Plus</span></button>
+                <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · Plus</span></button>
+                <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · Plus</span></button>
+                <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · Plus</span></button>
+                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>Use your browser's speech voice</span></button>
+              </div>
+              <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
+            </div>
             <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
-            <button type="submit">Send</button>
+            <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans">🎙</button>
+            <button class="nbl-beans-send" type="submit">Send</button>
           </div>
         </form>
         <p class="nbl-beans-note" style="margin-top:10px">
@@ -535,6 +553,15 @@
   const beansForm=beansPanel.querySelector("[data-nbl-beans-form]");
   const beansInput=beansPanel.querySelector("#nbl-beans-input");
   const beansSubmit=beansForm.querySelector('button[type="submit"]');
+  const beansToolsToggle=beansPanel.querySelector("[data-nbl-tools-toggle]");
+  const beansToolsMenu=beansPanel.querySelector("[data-nbl-tools-menu]");
+  const beansFileInput=beansPanel.querySelector("[data-nbl-beans-file]");
+  const beansAttachmentsEl=beansPanel.querySelector("[data-nbl-beans-attachments]");
+  const beansToolState=beansPanel.querySelector("[data-nbl-tool-state]");
+  const beansToolModeLabel=beansPanel.querySelector("[data-nbl-tool-mode-label]");
+  const beansToolReset=beansPanel.querySelector("[data-nbl-tool-reset]");
+  const beansMic=beansPanel.querySelector("[data-nbl-beans-mic]");
+  const chatDrawerTools=beansPanel.querySelector("[data-nbl-drawer-tools]");
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
   const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
   const regularBeansShell=beansPanel.querySelector("[data-nbl-beans-regular]");
@@ -568,6 +595,8 @@
   let chatDrawerOpener=null;
   let chatHistoryEntry=null;
   let drawerHistoryRequestGeneration=0;
+  let beansToolMode="auto";
+  let beansAttachments=[];
 
   const modalInertState=new Map();
   const setModalIsolation=(panel,open)=>{
@@ -624,6 +653,115 @@
     }
     beansLog.appendChild(box);
     beansLog.scrollTop=beansLog.scrollHeight;
+  };
+
+  const appendBeansImages=images=>{
+    const list=Array.isArray(images)?images.filter(src=>typeof src==="string"&&src.startsWith("data:image/")).slice(0,2):[];
+    for(const src of list){
+      const figure=document.createElement("figure");
+      figure.className="nbl-beans-generated";
+      const img=document.createElement("img");
+      img.src=src;
+      img.alt="Image created by Beans";
+      img.loading="eager";
+      figure.appendChild(img);
+      beansLog.appendChild(figure);
+    }
+    if(list.length) beansLog.scrollTop=beansLog.scrollHeight;
+  };
+
+  const setBeansToolMenu=open=>{
+    beansToolsMenu.hidden=!open;
+    beansToolsToggle.setAttribute("aria-expanded",open?"true":"false");
+  };
+
+  const renderBeansToolState=()=>{
+    const labels={web:"Live web",code:"Code / data",image:"Create image",auto:"Auto"};
+    const hasSpecial=beansToolMode!=="auto";
+    beansToolModeLabel.textContent=labels[beansToolMode]||"Auto";
+    beansToolState.hidden=!hasSpecial;
+    beansAttachmentsEl.hidden=!beansAttachments.length;
+    beansAttachmentsEl.replaceChildren();
+    for(const [index,item] of beansAttachments.entries()){
+      const chip=document.createElement("span");
+      chip.className="nbl-beans-attachment-chip";
+      const label=document.createElement("span");
+      label.textContent=item.name;
+      const remove=document.createElement("button");
+      remove.type="button";
+      remove.setAttribute("aria-label",`Remove ${item.name}`);
+      remove.textContent="×";
+      remove.addEventListener("click",()=>{
+        beansAttachments.splice(index,1);
+        renderBeansToolState();
+      });
+      chip.append(label,remove);
+      beansAttachmentsEl.appendChild(chip);
+    }
+  };
+
+  const clearBeansTools=()=>{
+    beansToolMode="auto";
+    beansAttachments=[];
+    beansFileInput.value="";
+    setBeansToolMenu(false);
+    renderBeansToolState();
+  };
+
+  const fileToBeansAttachment=file=>new Promise((resolve,reject)=>{
+    if(!file||file.size>4*1024*1024) return reject(new Error("Each Beans upload must be 4 MB or smaller right now."));
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error("That file could not be read."));
+    reader.onload=()=>{
+      const value=String(reader.result||"");
+      const comma=value.indexOf(",");
+      if(comma<0) return reject(new Error("That file could not be prepared."));
+      resolve({name:file.name||"attachment",mime:file.type||"application/octet-stream",data:value.slice(comma+1),size:file.size});
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const addBeansFiles=async files=>{
+    const incoming=[...(files||[])].slice(0,3);
+    const next=[...beansAttachments];
+    let total=next.reduce((sum,item)=>sum+Number(item.size||0),0);
+    for(const file of incoming){
+      if(next.length>=3) break;
+      if(total+file.size>8*1024*1024) throw new Error("Beans can take up to 8 MB across this message right now.");
+      const item=await fileToBeansAttachment(file);
+      next.push(item);
+      total+=item.size;
+    }
+    beansAttachments=next;
+    renderBeansToolState();
+    beansStatus.textContent=`${beansAttachments.length} attachment${beansAttachments.length===1?"":"s"} ready. NBL Chat Plus is required to send them.`;
+  };
+
+  const lastBeansReply=()=>[...beansHistory].reverse().find(item=>item.role==="assistant"&&String(item.content||"").trim())?.content||"";
+
+  const startBeansDictation=()=>{
+    const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SpeechRecognition){
+      beansStatus.textContent="Voice dictation is not available in this browser.";
+      return;
+    }
+    const recognition=new SpeechRecognition();
+    recognition.lang=navigator.language||"en-US";
+    recognition.interimResults=false;
+    recognition.maxAlternatives=1;
+    beansMic.disabled=true;
+    beansStatus.textContent="Listening…";
+    recognition.onresult=event=>{
+      const text=event.results?.[0]?.[0]?.transcript||"";
+      if(text) beansInput.value=(beansInput.value.trim()?beansInput.value.trim()+" ":"")+text;
+    };
+    recognition.onerror=()=>{beansStatus.textContent="I couldn't hear that clearly. You can type instead.";};
+    recognition.onend=()=>{
+      beansMic.disabled=false;
+      if(beansInput.value.trim()) beansStatus.textContent="Dictation added. Send when ready.";
+      beansInput.focus();
+    };
+    recognition.start();
   };
 
   const getSignedInNblIdentity=async()=>{
@@ -1064,10 +1202,13 @@
       };
       const accountToken=await getNblBeansAuthToken();
       if(accountToken) headers.Authorization=`Bearer ${accountToken}`;
-      const response=await fetch(NBL_BEANS_WEB_API,{
+      const requestId=(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      const requestBody={action:"chat",mode:"beans",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),toolMode:beansToolMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
+      const endpoint=accountToken?`${NBL_CHAT_GATEWAY_API}/chat`:NBL_BEANS_WEB_API;
+      const response=await fetch(endpoint,{
         method:"POST",
         headers,
-        body:JSON.stringify({action:"chat",mode:"beans",requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12)})
+        body:JSON.stringify(requestBody)
       });
       const payload=await response.json().catch(()=>({}));
       if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
@@ -1078,11 +1219,18 @@
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply);
       appendBeansSources(payload?.sources);
+      appendBeansImages(payload?.generatedImages);
+      const used=Array.isArray(payload?.toolsUsed)?payload.toolsUsed:[];
       beansStatus.textContent=payload?.webSearchUsed
         ?"Beans checked the live web."
-        :payload?.authenticated
-          ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
-          :"Beans replied.";
+        :used.includes("code")
+          ?"Beans used the code/data tool."
+          :used.includes("image")
+            ?"Beans created an image."
+            :payload?.authenticated
+              ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
+              :"Beans replied.";
+      clearBeansTools();
     }catch(error){
       if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
       const message=error?.message||"Beans could not answer just now.";
@@ -1093,6 +1241,45 @@
       beansInput.disabled=false;
       beansInput.focus();
     }
+  });
+
+  beansToolsToggle.addEventListener("click",()=>setBeansToolMenu(beansToolsMenu.hidden));
+  beansToolReset.addEventListener("click",clearBeansTools);
+  beansFileInput.addEventListener("change",async()=>{
+    try{await addBeansFiles(beansFileInput.files);}catch(error){beansStatus.textContent=error?.message||"That upload could not be added.";}
+  });
+  beansMic.addEventListener("click",startBeansDictation);
+  beansToolsMenu.addEventListener("click",event=>{
+    const button=event.target.closest("[data-nbl-tool]");
+    if(!button) return;
+    const tool=button.dataset.nblTool;
+    if(tool==="attach"){
+      setBeansToolMenu(false);
+      beansFileInput.click();
+      return;
+    }
+    if(tool==="read"){
+      setBeansToolMenu(false);
+      const reply=lastBeansReply();
+      if(!reply){beansStatus.textContent="Beans has not replied yet.";return;}
+      if(!("speechSynthesis" in window)){beansStatus.textContent="Read aloud is not available in this browser.";return;}
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(new SpeechSynthesisUtterance(reply));
+      beansStatus.textContent="Reading Beans' last reply aloud.";
+      return;
+    }
+    if(["web","code","image"].includes(tool)){
+      beansToolMode=tool;
+      setBeansToolMenu(false);
+      renderBeansToolState();
+      beansStatus.textContent=tool==="web"?"Live web selected · NBL Chat Plus.":tool==="code"?"Code / data analysis selected · NBL Chat Plus.":"Image creation selected · NBL Chat Plus.";
+      beansInput.focus();
+    }
+  });
+  chatDrawerTools?.addEventListener("click",()=>{
+    setChatDrawerOpen(false);
+    setBeansToolMenu(true);
+    beansToolsToggle.focus();
   });
 
   plusForm.addEventListener("submit",async event=>{
@@ -1173,9 +1360,9 @@
     setChatDrawerOpen(false);
     await startNewBeansConversation();
   });
-  chatDrawerGrey.addEventListener("click",()=>{
+  chatDrawerGrey?.addEventListener("click",()=>{
     setChatDrawerOpen(false);
-    setChatMode("plus");
+    location.href="/university.html";
   });
   chatDrawerPlans.addEventListener("click",()=>{
     chatDrawerPlanCard.hidden=!chatDrawerPlanCard.hidden;
