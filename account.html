@@ -74,6 +74,22 @@
         </div>
       </section>
 
+      <section class="card" id="membershipCard">
+        <h2>Membership &amp; billing</h2>
+        <p id="membershipStatus" class="status">Checking your Beans membership…</p>
+        <div class="grid" aria-label="Membership usage">
+          <div class="card metric"><strong id="membershipPlan">—</strong><span>current plan</span></div>
+          <div class="card metric"><strong id="replyRemaining">—</strong><span>successful replies remaining</span></div>
+          <div class="card metric"><strong id="topUpRemaining">—</strong><span>Get More replies remaining</span></div>
+        </div>
+        <div class="row">
+          <button type="button" data-account-billing-plan="beans">Beans · $4.99/month</button>
+          <button type="button" data-account-billing-plan="chat_plus">NBL Chat Plus · $19.99/month</button>
+          <button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button>
+        </div>
+        <p class="status">Chat Plus unlocks premium Beans tools. NBL University and Professor Grey are separate.</p>
+      </section>
+
       <section class="grid" aria-label="Account usage">
         <div class="card metric"><strong id="conversationCount">0</strong><span>saved conversations</span></div>
         <div class="card metric"><strong id="messageCount">0</strong><span>saved messages</span></div>
@@ -118,6 +134,11 @@
     const deleteDataButton=document.getElementById("deleteDataButton");
     const deleteAccountButton=document.getElementById("deleteAccountButton");
     const deleteStatus=document.getElementById("deleteStatus");
+    const membershipStatus=document.getElementById("membershipStatus");
+    const membershipPlan=document.getElementById("membershipPlan");
+    const replyRemaining=document.getElementById("replyRemaining");
+    const topUpRemaining=document.getElementById("topUpRemaining");
+    const membershipButtons=[...document.querySelectorAll("[data-account-billing-plan]")];
 
     const waitForBridge=async()=>{
       for(let i=0;i<60;i++){
@@ -180,6 +201,53 @@
       document.getElementById("messageCount").textContent=String(payload?.usage?.messages||0);
       document.getElementById("modelCount").textContent=String(payload?.usage?.modelResponses||0);
     };
+
+    const renderMembership=async()=>{
+      const billing=window.NBLBillingBridge;
+      if(!billing?.meter){
+        membershipStatus.textContent="Membership status is temporarily unavailable.";
+        return null;
+      }
+      const result=await billing.meter();
+      if(result?.signInRequired){
+        membershipStatus.textContent="Sign in to see membership status.";
+        return null;
+      }
+      const meter=result?.meter||{};
+      const planKey=String(meter.planKey||"").toLowerCase();
+      const plan=meter.privileged
+        ?"Founder"
+        :planKey==="chat_plus"
+          ?"NBL Chat Plus"
+          :planKey==="beans"
+            ?"Beans"
+            :"Free";
+      membershipPlan.textContent=plan;
+      replyRemaining.textContent=String(meter.totalReplyRemaining??meter.paidRemaining??meter.freeRemaining??0);
+      topUpRemaining.textContent=String(meter.topUpRemaining??0);
+      const end=meter.paidPeriodEnd?new Date(meter.paidPeriodEnd):null;
+      const endText=end&&!Number.isNaN(end.getTime())?" · current period through "+end.toLocaleDateString():"";
+      membershipStatus.textContent=(meter.privileged?"Founder reserve":String(meter.membershipStatus||"free").replaceAll("_"," "))+endText;
+      return meter;
+    };
+
+    const openCheckout=async(plan,button)=>{
+      button.disabled=true;
+      membershipStatus.textContent="Preparing secure Stripe checkout…";
+      try{
+        const result=await window.NBLBillingBridge?.checkout?.(plan);
+        if(result?.signInRequired){location.href=result.signInUrl;return;}
+        if(!result?.destination)throw new Error("Secure checkout is temporarily unavailable.");
+        membershipStatus.textContent=result?.payload?.route==="manage_existing_subscription"
+          ?(result.payload.message||"Opening billing management…")
+          :"Opening Stripe secure checkout…";
+        location.href=result.destination;
+      }catch(error){
+        membershipStatus.textContent=error?.message||"Secure checkout is temporarily unavailable.";
+        button.disabled=false;
+      }
+    };
+    membershipButtons.forEach(button=>button.addEventListener("click",()=>openCheckout(button.dataset.accountBillingPlan||"",button)));
 
     const renderHistory=async()=>{
       viewer.replaceChildren();
@@ -261,7 +329,16 @@
       finally{deleteAccountButton.disabled=false}
     };
 
-    try{await Promise.all([renderSummary(),renderHistory()])}
+    try{
+      await Promise.all([renderSummary(),renderHistory(),renderMembership()]);
+      if(checkoutParams.get("checkout")==="success"){
+        for(let attempt=0;attempt<3;attempt++){
+          await new Promise(resolve=>setTimeout(resolve,1500));
+          const meter=await renderMembership();
+          if(meter&&String(meter.membershipStatus||"").toLowerCase()!=="none")break;
+        }
+      }
+    }
     catch(error){profileStatus.textContent=error.message;history.innerHTML='<p class="status">'+error.message.replace(/[<>&]/g,"")+'</p>'}
   });
   </script>
