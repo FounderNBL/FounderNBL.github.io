@@ -36,7 +36,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await page.getByRole("button", { name: "Open NBL Chat" }).click();
     const input = page.locator("#nbl-beans-input");
     const send = page.locator("[data-nbl-beans-form] button[type=\"submit\"]");
-    const beansReplies = page.locator(".nbl-beans-message.is-beans p");
+    const beansReplies = page.locator("[data-nbl-beans-regular] .nbl-beans-message.is-beans p");
 
     await input.fill("Hi Beans");
     await send.click();
