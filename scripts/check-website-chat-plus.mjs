@@ -17,9 +17,11 @@ function forbidText(source,text,message){
   }
 }
 
-requireText(js,'NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API',"Regular Beans is not using the NBL Foundation runtime.");
+requireText(js,'NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API',"Signed-out Beans is not using the NBL Foundation runtime.");
+requireText(js,'NBL_CHAT_GATEWAY_API',"Signed-in Beans gateway endpoint is missing.");
+requireText(js,'const endpoint=accountToken?\`\${NBL_CHAT_GATEWAY_API}/chat\`:NBL_BEANS_WEB_API',"Signed-in Beans is not routed through the metered gateway.");
 requireText(js,'data-nbl-chat-mode="beans"',"Beans mode is missing.");
-requireText(js,'data-nbl-chat-mode="plus"',"NBL Chat Plus mode is missing.");
+requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
 requireText(js,'NBL_CHAT_PLUS_API',"NBL Chat Plus runtime endpoint is missing.");
 requireText(js,'functions/v1/nbl-foundation-runtime',"Canonical NBL Foundation runtime endpoint is missing.");
 requireText(js,'action:"status"',"Plus access is not checked server-side.");
@@ -31,11 +33,19 @@ requireText(js,'ANSY 110',"ANSY 110 is missing.");
 requireText(js,'EBPR 120',"EBPR 120 is missing.");
 requireText(js,'beansHistoryLoadedFor',"Signed-in Beans history is not tracked per account.");
 requireText(js,'clerk.addListener',"Account state changes do not retrigger Beans/Plus continuity.");
-requireText(js,'Professor Grey',"Professor Grey UI is missing.");
+requireText(js,'University / Professor Grey access is separate.',"Plus catalog does not separate University/Grey.");
+requireText(js,'data-nbl-drawer-tools',"Beans tools drawer entry is missing.");
+requireText(js,'data-nbl-tools-toggle',"Beans + tool button is missing.");
+requireText(js,'data-nbl-tool="attach"',"Photo/file tool is missing.");
+requireText(js,'data-nbl-tool="web"',"Web tool is missing.");
+requireText(js,'data-nbl-tool="code"',"Code/data tool is missing.");
+requireText(js,'data-nbl-tool="image"',"Image creation tool is missing.");
+requireText(js,'data-nbl-beans-mic',"Browser dictation control is missing.");
+requireText(js,'appendBeansImages',"Generated-image rendering is missing.");
 requireText(js,'<h2 id="nbl-beans-title">NBL Chat</h2>',"Overall website Chat title must be NBL Chat, not the Plus tier.");
 requireText(js,'data-nbl-chat-drawer',"NBL Chat side drawer is missing.");
 requireText(js,'data-nbl-drawer-new',"New Chat drawer action is missing.");
-requireText(js,'data-nbl-drawer-grey',"Professor Grey drawer action is missing.");
+requireText(js,'data-nbl-drawer-grey hidden',"Preserved Grey drawer entry is not hidden from public Chat.");
 requireText(js,'data-nbl-drawer-plans',"Membership & plans drawer action is missing.");
 requireText(js,'?action=conversations',"Recent saved conversations are not loaded into the NBL drawer.");
 requireText(js,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More',"Drawer prices are not sourced from the canonical catalog.");
@@ -44,7 +54,7 @@ requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time']){
   requireText(plans,value,`Canonical locked product value is missing: ${value}`);
 }
-requireText(js,'Guided Learning requires active course enrollment and Grey access for this account.',"Locked Plus state is missing.");
+requireText(js,'Files, photos, code analysis, forced web search, and image generation are NBL Chat Plus tools.',"Plus-tool boundary message is missing from the public contract.");
 requireText(css,'.nbl-chat-modes',"Chat mode styling is missing.");
 requireText(css,'.nbl-plus-access',"Plus access styling is missing.");
 requireText(css,'.nbl-chat-drawer',"NBL Chat drawer styling is missing.");
@@ -62,4 +72,4 @@ if(beansListener!==1){
   process.exitCode=1;
 }
 
-if(!process.exitCode) console.log("[website-chat-plus] PASS: website-standard NBL Chat drawer, locked plan naming, account continuity, Foundation Beans, LOCKE-protected Grey, course choices, and public-secret guards are present.");
+if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat keeps Beans public, routes signed-in use through metering, exposes the + tool rail, keeps Grey/University hidden and separate from Plus, preserves history, and contains no public secrets.");
