@@ -9,11 +9,11 @@ test.describe("New Beansland web app browser smoke", () => {
     await open("/", page);
 
     await expect(page).toHaveTitle(/New Beansland/i);
-    await expect(page.locator('a[href="books.html"]').first()).toBeVisible();
-    await expect(page.locator('a[href="stories.html"]').first()).toBeVisible();
-    await expect(page.locator('a[href="university.html"]').first()).toBeVisible();
-    await expect(page.locator('a[href="studio/"]').first()).toBeVisible();
-    await expect(page.locator('a[href="founder-office.html"]').first()).toBeVisible();
+    await expect(page.locator('.world-card[href="books.html"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="stories.html"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="university.html"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="studio/"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="founder-office.html"]')).toBeVisible();
   });
 
   test("NBL Chat opens in a real browser", async ({ page }) => {
@@ -41,6 +41,6 @@ test.describe("New Beansland web app browser smoke", () => {
     await open("/account.html", page);
 
     await expect(page.getByRole("link", { name: "Forgot password?" })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Sign in/i })).toBeVisible();
+    await expect(page.locator("#signInButton")).toBeVisible();
   });
 });
