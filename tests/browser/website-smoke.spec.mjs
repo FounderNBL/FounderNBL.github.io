@@ -29,6 +29,24 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.getByRole("tab", { name: /Professor Grey/i })).toBeVisible();
   });
 
+  test("live Beans keeps greeting and NBL acronym answers on the right rail", async ({ page }) => {
+    test.skip(!process.env.NBL_BASE_URL, "Live semantic check only runs against the deployed web app.");
+    await open("/", page);
+
+    await page.getByRole("button", { name: "Open NBL Chat" }).click();
+    const input = page.locator("#nbl-beans-input");
+    const send = page.locator("[data-nbl-beans-form] button[type=\"submit\"]");
+    const beansReplies = page.locator("[data-nbl-beans-regular] .nbl-beans-message.is-beans p");
+
+    await input.fill("Hi Beans");
+    await send.click();
+    await expect(beansReplies.last()).toHaveText("Hey. What's up?");
+
+    await input.fill("What does NBL stand for?");
+    await send.click();
+    await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
+  });
+
   test("University remains an enrollment door, not a public classroom", async ({ page }) => {
     await open("/university.html", page);
 
