@@ -28,7 +28,13 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect(page.getByRole("tab", { name: "Beans" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: /Professor Grey/i })).toBeVisible();
+    await expect(page.getByRole("tab", { name: /NBL University Professor Grey/i })).toBeHidden();
+    await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
+    await page.getByRole("button", { name: "Open Beans tools" }).click();
+    await expect(page.getByRole("button", { name: /Photo \/ file/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Search the live web/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Code \/ data analysis/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Create an image/i })).toBeVisible();
   });
 
   test("live Beans keeps greeting and NBL acronym answers on the right rail", async ({ page }) => {
