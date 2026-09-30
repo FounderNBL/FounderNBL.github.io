@@ -22,9 +22,9 @@ Current website Chat standard includes:
 - NBL-branded side drawer;
 - New Chat and recent signed-in conversation history;
 - Beans as the regular Chat experience;
-- Professor Grey as the NBL Chat Plus / Guided Learning experience;
+- Beans across the regular and NBL Chat Plus experience; Professor Grey / Guided Learning belongs to separately enrolled NBL University;
 - locked plan language: $4.99 Beans / 300 replies, $19.99 Plus / 1,050 replies, $9.99 Get More / +500;
 - NBL University and account doors;
-- Uploads / files visibly held until the secure upload rail is implemented.
+- NBL Chat Plus file/photo/code/image tools route through the server-side entitlement and metering rail;
 
 Website first. App follows.
