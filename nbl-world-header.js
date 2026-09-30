@@ -467,7 +467,7 @@
 
       <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat mode">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
-        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="Professor Grey, NBL Chat Plus Guided Learning" tabindex="-1">Professor Grey</button>
+        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="Turn on Guided Learning with Professor Grey" tabindex="-1">Guided Learning</button>
       </div>
 
       <section id="nbl-chat-panel-beans" role="tabpanel" aria-labelledby="nbl-chat-tab-beans" tabindex="0" data-nbl-beans-regular>
@@ -490,8 +490,8 @@
       <section id="nbl-chat-panel-plus" class="nbl-plus-shell" role="tabpanel" aria-labelledby="nbl-chat-tab-plus" tabindex="0" data-nbl-plus hidden>
         <div class="nbl-plus-access" data-nbl-plus-access tabindex="-1">
           <p class="nbl-beans-kicker">NBL Chat Plus</p>
-          <h3>Professor Grey · Guided Learning</h3>
-          <p data-nbl-plus-access-copy>Sign in with your NBL account to check NBL Chat Plus access.</p>
+          <h3>Beans · Guided Learning on · Professor Grey</h3>
+          <p data-nbl-plus-access-copy>Turn on Guided Learning after LOCKE confirms your course enrollment and Grey access.</p>
           <button type="button" data-nbl-plus-signin>Sign in to check access</button>
         </div>
 
@@ -514,7 +514,7 @@
               <button type="submit">Send</button>
             </div>
           </form>
-          <p class="nbl-beans-note" style="margin-top:10px">Guided Learning uses learner-safe NBL University material. Protected grading material and answer keys are not exposed here.</p>
+          <p class="nbl-beans-note" style="margin-top:10px">Guided Learning is Beans in Professor Grey mode. Grey can teach and practice from the protected course library, but test answers, rubrics, grading keys, and future assessment material stay sealed.</p>
           <p class="nbl-beans-status" data-nbl-plus-status role="status">Professor Grey is ready for the selected course.</p>
         </div>
       </section>
@@ -741,6 +741,7 @@
     invalidateBeansHistoryLoad();
     beansConversationGeneration++;
     const userId=currentClerkUserId();
+    clearPlusTranscript();
     replaceBeansConversation(
       [{role:"assistant",content:"I'm Beans. What's up?"}],
       null,
@@ -979,7 +980,7 @@
       if(!response.ok) throw new Error("NBL Chat Plus access could not be checked right now.");
       plusAccessCheckedFor=identity.userId;
       if(payload?.chatPlus?.allowed===true) showPlusReady();
-      else showPlusLocked("NBL Chat Plus guided learning is not active for this account.");
+      else showPlusLocked("Guided Learning requires active course enrollment and Grey access for this account.");
     }catch(error){
       if(accessRequestGeneration!==plusAccessRequestGeneration||accountGeneration!==beansAccountGeneration||currentClerkUserId()!==identity.userId) return;
       plusAccessCheckedFor=null;
@@ -1066,7 +1067,7 @@
       const response=await fetch(NBL_BEANS_WEB_API,{
         method:"POST",
         headers,
-        body:JSON.stringify({requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),mode:"live"})
+        body:JSON.stringify({action:"chat",mode:"beans",requestId:(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`),conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12)})
       });
       const payload=await response.json().catch(()=>({}));
       if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
@@ -1113,6 +1114,7 @@
     plusInput.value="";
     appendPlusMessage("user",text);
     plusHistory.push({role:"user",content:text});
+    beansHistory.push({role:"user",content:text});
     plusSubmit.disabled=true;
     plusInput.disabled=true;
     plusCourse.disabled=true;
@@ -1121,19 +1123,21 @@
       const response=await fetch(NBL_CHAT_PLUS_API,{
         method:"POST",
         headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${identity.token}`},
-        body:JSON.stringify({action:"grey",courseCode:plusCourse.value,messages:plusHistory.slice(-10)})
+        body:JSON.stringify({action:"chat",mode:"guided_learning",conversationId:beansConversationId,courseCode:plusCourse.value,messages:beansHistory.slice(-12)})
       });
       const payload=await response.json().catch(()=>({}));
       if(accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||!plusAllowed||currentClerkUserId()!==identity.userId) return;
       if(response.status===401||response.status===403){
         plusAccessCheckedFor=null;
-        showPlusLocked(response.status===401?"Your NBL session needs to be refreshed.":"NBL Chat Plus guided learning is not active for this account.",{signedOut:response.status===401});
+        showPlusLocked(response.status===401?"Your NBL session needs to be refreshed.":"Guided Learning requires active course enrollment and Grey access for this account.",{signedOut:response.status===401});
         return;
       }
       if(!response.ok) throw new Error(payload.message||"Professor Grey could not answer just now.");
       const reply=String(payload.message||"").trim();
       if(!reply) throw new Error("Professor Grey returned no answer.");
+      if(payload?.conversationId) beansConversationId=String(payload.conversationId);
       plusHistory.push({role:"assistant",content:reply});
+      beansHistory.push({role:"assistant",content:reply});
       appendPlusMessage("assistant",reply);
       appendPlusSources(payload?.sources);
       plusStatus.textContent=`Professor Grey · ${plusCourse.value}`;
