@@ -23,7 +23,9 @@ requireText(js,'data-nbl-chat-mode="plus"',"NBL Chat Plus mode is missing.");
 requireText(js,'NBL_CHAT_PLUS_API',"NBL Chat Plus runtime endpoint is missing.");
 requireText(js,'functions/v1/nbl-foundation-runtime',"Canonical NBL Foundation runtime endpoint is missing.");
 requireText(js,'action:"status"',"Plus access is not checked server-side.");
-requireText(js,'action:"grey"',"Professor Grey runtime route is missing.");
+requireText(js,'action:"chat"',"Unified Chat mode controller is missing.");
+requireText(js,'mode:"guided_learning"', "Guided Learning mode request is missing.");
+requireText(js,'conversationId:beansConversationId',"Guided Learning is not using the shared conversation rail.");
 requireText(js,'APSK 101',"APSK 101 is missing.");
 requireText(js,'ANSY 110',"ANSY 110 is missing.");
 requireText(js,'EBPR 120',"EBPR 120 is missing.");
@@ -42,7 +44,7 @@ requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time']){
   requireText(plans,value,`Canonical locked product value is missing: ${value}`);
 }
-requireText(js,'NBL Chat Plus guided learning is not active for this account.',"Locked Plus state is missing.");
+requireText(js,'Guided Learning requires active course enrollment and Grey access for this account.',"Locked Plus state is missing.");
 requireText(css,'.nbl-chat-modes',"Chat mode styling is missing.");
 requireText(css,'.nbl-plus-access',"Plus access styling is missing.");
 requireText(css,'.nbl-chat-drawer',"NBL Chat drawer styling is missing.");
