@@ -116,6 +116,42 @@
     }
   };
 
+  const trustedNblBillingDestination=value=>{
+    const url=new URL(String(value||""));
+    if(url.protocol!=="https:"||!["buy.stripe.com","billing.stripe.com"].includes(url.hostname)){
+      throw new Error("The secure billing destination could not be verified.");
+    }
+    return url.href;
+  };
+  const requestNblBilling=async({plan=null,portal=false}={})=>{
+    const token=await getNblBeansAuthToken();
+    if(!token) return {signInRequired:true,signInUrl:accountPortalUrl("/sign-in")};
+    const route=portal?"/billing/portal":"/billing/checkout";
+    const response=await fetch(`${NBL_CHAT_GATEWAY_API}${route}`,{
+      method:"POST",
+      headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
+      body:JSON.stringify(portal?{}:{plan}),
+      cache:"no-store"
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(payload?.message||"Secure billing is temporarily unavailable.");
+    const destination=portal
+      ?payload?.portalUrl
+      :payload?.route==="manage_existing_subscription"
+        ?payload?.portalUrl
+        :payload?.checkoutUrl;
+    return {
+      signInRequired:false,
+      payload,
+      destination:trustedNblBillingDestination(destination)
+    };
+  };
+
+  window.NBLBillingBridge={
+    checkout:plan=>requestNblBilling({plan}),
+    portal:()=>requestNblBilling({portal:true})
+  };
+
   window.NBLAccountBridge={
     getClerk:getNblClerk,
     getToken:getNblBeansAuthToken,
@@ -1374,44 +1410,26 @@
     chatDrawerPlans.setAttribute("aria-expanded",chatDrawerPlanCard.hidden?"false":"true");
   });
 
-  const trustedBillingDestination=value=>{
-    const url=new URL(String(value||""));
-    if(url.protocol!=="https:"||!["buy.stripe.com","billing.stripe.com"].includes(url.hostname)){
-      throw new Error("The secure billing destination could not be verified.");
-    }
-    return url.href;
-  };
   const runBillingAction=async({plan=null,portal=false}={})=>{
     billingButtons.forEach(button=>button.disabled=true);
     if(billingPortal) billingPortal.disabled=true;
     if(billingStatus) billingStatus.textContent=portal?"Opening secure billing…":"Preparing secure checkout…";
     try{
-      const token=await getNblBeansAuthToken();
-      if(!token){
+      const result=portal
+        ?await window.NBLBillingBridge.portal()
+        :await window.NBLBillingBridge.checkout(plan);
+      if(result?.signInRequired){
         if(billingStatus) billingStatus.textContent="Sign in with your NBL account before checkout.";
-        location.href=accountPortalUrl("/sign-in");
+        location.href=result.signInUrl;
         return;
       }
-      const route=portal?"/billing/portal":"/billing/checkout";
-      const response=await fetch(`${NBL_CHAT_GATEWAY_API}${route}`,{
-        method:"POST",
-        headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
-        body:JSON.stringify(portal?{}:{plan}),
-        cache:"no-store"
-      });
-      const payload=await response.json().catch(()=>({}));
-      if(!response.ok) throw new Error(payload?.message||"Secure billing is temporarily unavailable.");
-      const destination=portal
-        ?payload?.portalUrl
-        :payload?.route==="manage_existing_subscription"
-          ?payload?.portalUrl
-          :payload?.checkoutUrl;
+      const payload=result?.payload||{};
       if(billingStatus){
         billingStatus.textContent=payload?.route==="manage_existing_subscription"
           ?(payload?.message||"Opening billing management for your existing membership…")
           :"Opening Stripe secure checkout…";
       }
-      location.href=trustedBillingDestination(destination);
+      location.href=result.destination;
     }catch(error){
       if(billingStatus) billingStatus.textContent=error?.message||"Secure billing is temporarily unavailable.";
     }finally{
