@@ -131,6 +131,7 @@
     const planName=document.getElementById("planName");
     const replyRemaining=document.getElementById("replyRemaining");
     const topUpRemaining=document.getElementById("topUpRemaining");
+    let currentMeter=null;
 
     const waitForBridge=async()=>{
       for(let i=0;i<60;i++){
@@ -189,6 +190,7 @@
     const renderMembership=async()=>{
       if(!bridge.meter)return;
       const meter=await bridge.meter();
+      currentMeter=meter;
       if(!meter){
         planName.textContent="Free";
         replyRemaining.textContent="10";
@@ -270,7 +272,15 @@
     };
 
     deleteAccountButton.onclick=async()=>{
-      if(!confirm("This starts account deletion. First your saved NBL data will be erased, then your sign-in/security panel will open so you can delete the login account too.")) return;
+      const recurring=["beans","chat_plus"].includes(String(currentMeter?.planKey||""));
+      const status=String(currentMeter?.membershipStatus||"").toLowerCase();
+      if(recurring&&["active","grace"].includes(status)){
+        if(!confirm("Your recurring Beans membership can still renew. Open billing management and cancel renewal before deleting the sign-in account?")) return;
+        deleteStatus.textContent="Opening billing management first so you do not leave a renewing subscription behind…";
+        try{await bridge.billingPortal();}catch(error){deleteStatus.textContent=error.message}
+        return;
+      }
+      if(!confirm("This starts account deletion. Your saved NBL data will be erased, then Clerk's secure account controls will open so you can delete the login account too. This cannot be undone.")) return;
       deleteAccountButton.disabled=true;deleteStatus.textContent="Removing saved NBL data first…";
       try{
         await accountFetch("?action=data",{method:"DELETE"});
