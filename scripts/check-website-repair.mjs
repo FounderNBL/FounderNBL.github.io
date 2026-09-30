@@ -92,7 +92,7 @@ requireText(header,'aria-label="Open NBL Chat"',"The Chat launcher is not named 
 requireText(header,'<h2 id="nbl-beans-title">NBL Chat</h2>',"The Chat dialog title is not NBL Chat.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab"',"Professor Grey is not a Chat tab.");
-requireText(header,'aria-label="Professor Grey, NBL Chat Plus Guided Learning"',"Professor Grey's premium Guided Learning name is not accessible.");
+requireText(header,'aria-label="Turn on Guided Learning with Professor Grey"',"Professor Grey's premium Guided Learning name is not accessible.");
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
 }
