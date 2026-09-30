@@ -589,6 +589,14 @@ body.nbl-beans-open{overflow:hidden!important}
 }
 .nbl-chat-drawer-plans strong{display:block;color:var(--nbl-world-gold2);font-size:.77rem}
 .nbl-chat-drawer-plans span{display:block;margin-top:3px;color:#b9aa92;font-size:.66rem;line-height:1.4}
+.nbl-billing-action,.nbl-billing-manage{
+  width:100%;min-height:34px;margin-top:8px;padding:7px 9px;border:1px solid rgba(240,197,111,.42);border-radius:9px;
+  color:var(--nbl-world-gold2);background:#071421;font-size:.68rem;font-weight:900;cursor:pointer;
+}
+.nbl-billing-action:hover,.nbl-billing-manage:hover{border-color:var(--nbl-world-gold2);background:rgba(214,161,75,.10)}
+.nbl-billing-action:disabled,.nbl-billing-manage:disabled{opacity:.55;cursor:wait}
+.nbl-billing-manage{margin-top:2px}
+.nbl-billing-status{margin:1px 3px 0;color:#b9aa92;font-size:.64rem;line-height:1.45}
 .nbl-chat-drawer-foot{padding:12px;border-top:1px solid rgba(214,161,75,.24)}
 .nbl-chat-drawer-account{
   width:100%;min-height:44px;border:1px solid rgba(240,197,111,.44);border-radius:12px;

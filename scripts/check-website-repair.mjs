@@ -14,6 +14,8 @@ const terms=read("terms.html");
 const privacy=read("privacy.html");
 const deletion=read("account-deletion.html");
 const university=read("university.html");
+const account=read("account.html");
+const universityCheckout=read("nbl-university-checkout.js");
 let failed=false;
 
 function requireText(source,text,message){
@@ -136,9 +138,42 @@ requireText(header,"NBL_PRODUCT_PLANS.foundationProgram.price","Public search do
 requireText(terms,'data-nbl-plan-value="foundationProgram.price"',"Terms do not use the canonical Foundation Program price.");
 requireText(terms,'data-nbl-plan-value="fullFoundation.price"',"Terms do not use the canonical Full Foundation price.");
 requireText(university,'data-nbl-plan-value="foundationProgram.price"',"Foundation Program display does not use the canonical price.");
+requireText(university,'data-nbl-university-checkout="foundation"',"Foundation enrollment is not routed through the authenticated billing rail.");
+requireText(university,'data-nbl-university-checkout="full_foundation"',"Full Foundation enrollment is not routed through the authenticated billing rail.");
+requireText(universityCheckout,"window.NBLBillingBridge","University checkout does not use the shared authenticated billing bridge.");
+requireText(universityCheckout,'["foundation","full_foundation"]',"University checkout accepts an unexpected package set.");
+forbidText(university,"https://buy.stripe.com/9B68wR2Fk3vW06n0cL4ko04","University page still bypasses the authenticated LOCKE checkout rail.");
+requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridge is missing.");
+requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
+requireText(account,'id="membershipCard"',"Account membership card is missing.");
+requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
+requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout control is missing.");
+requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
+requireText(account,"renderMembership","Account membership meter rendering is missing.");
+for(const staleUniversityAccountCopy of [
+  "Optional connected account",
+  "using the normal checkout do not require an account",
+  "Account connection is optional.",
+  "Checkout and enrollment stay separate from this account-status check."
+]){
+  forbidText(header,staleUniversityAccountCopy,"University account panel still describes enrollment identity as optional.");
+}
+requireText(header,'data-nbl-billing-plan="beans"',"Beans checkout control is missing.");
+requireText(header,'data-nbl-billing-plan="chat_plus"',"Chat Plus checkout control is missing.");
+requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout control is missing.");
+requireText(header,'/billing/checkout',"Chat checkout is not routed through the server gateway.");
+requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
 requireText(support,'data-nbl-plan-value="chatPlus.price"',"Support does not use the canonical Chat Plus price.");
-requireText(support,"website checkout/payment rails for the Chat plans are not currently available","Support suggests website checkout is available.");
-requireText(terms,"website checkout/payment rails for these plans are not currently available","Terms do not distinguish the catalog from website checkout.");
+requireText(support,"Signed-in website checkout is available from Membership & plans in NBL Chat.","Support does not document signed-in Chat checkout.");
+requireText(terms,"Signed-in website checkout is available through NBL Chat.","Terms do not document authenticated website checkout.");
+requireText(privacy,"signed-in website checkout is handed off to Stripe","Privacy does not document Stripe checkout handling.");
+requireText(deletion,"Deleting NBL application data does not by itself cancel an active Stripe subscription","Account deletion does not explain active subscription cancellation.");
+for(const staleBillingCopy of ["website checkout/payment rails for the Chat plans are not currently available","website checkout/payment rails for these plans are not currently available","The public Chat-plan catalog is not a website checkout"]){
+  forbidText(support,staleBillingCopy,"Support still says checkout is unavailable.");
+  forbidText(terms,staleBillingCopy,"Terms still say checkout is unavailable.");
+  forbidText(privacy,staleBillingCopy,"Privacy still says checkout is unavailable.");
+  forbidText(deletion,staleBillingCopy,"Account deletion still says checkout is unavailable.");
+}
 requireText(terms,"Beans includes limited free replies.","Terms omit the limited free Beans allowance.");
 requireText(privacy,'data-nbl-plan-value="getMore.replies"',"Privacy does not use canonical reply allowances.");
 requireText(deletion,'data-nbl-plan-value="getMore.price"',"Account deletion information omits the canonical Get More catalog.");
@@ -161,4 +196,4 @@ for(const forbidden of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_
 }
 
 if(failed) process.exitCode=1;
-else console.log("[website-repair] PASS: history races, search routing, naming, legal copy, drawer accessibility/navigation, locked catalog, and public-secret boundaries.");
+else console.log("[website-repair] PASS: history races, search routing, authenticated billing, University enrollment identity, naming, legal copy, drawer accessibility/navigation, locked catalog, and public-secret boundaries.");

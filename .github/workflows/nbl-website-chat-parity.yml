@@ -7,6 +7,7 @@ on:
       - "nbl-world-header.js"
       - "nbl-world-header.css"
       - "nbl-product-plans.js"
+      - "nbl-university-checkout.js"
       - "**.html"
       - "account.html"
       - "account-deletion.html"
@@ -21,6 +22,7 @@ on:
       - "nbl-world-header.js"
       - "nbl-world-header.css"
       - "nbl-product-plans.js"
+      - "nbl-university-checkout.js"
       - "**.html"
       - "account.html"
       - "account-deletion.html"
@@ -40,7 +42,9 @@ jobs:
         with:
           node-version: "22"
       - name: Check website JavaScript syntax
-        run: node --check nbl-world-header.js
+        run: |
+          node --check nbl-world-header.js
+          node --check nbl-university-checkout.js
       - name: Check NBL Chat Plus wiring
         run: node scripts/check-website-chat-plus.mjs
       - name: Check website Chat standard regressions

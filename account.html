@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>My Account · New Beansland</title>
   <meta name="description" content="Manage your New Beansland account, Beans history, usage and account data.">
-  <link rel="stylesheet" href="/nbl-world-header.css?v=20260930-beans-tools">
+  <link rel="stylesheet" href="/nbl-world-header.css?v=20260930-billing-rc1">
   <style>
     :root{--ink:#eef4f8;--muted:#aebdca;--gold:#efc66f;--panel:rgba(9,24,38,.94);--line:rgba(239,198,111,.25);--danger:#f4a1a1}
     body{margin:0;background:radial-gradient(circle at top,#153047 0,#07131f 42%,#040b12 100%);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
@@ -29,7 +29,7 @@
     @media(max-width:720px){main{padding-top:96px}.grid{grid-template-columns:1fr}.card{padding:17px}}
   </style>
   <script defer src="/nbl-product-plans.js?v=20260929"></script>
-  <script defer src="/nbl-world-header.js?v=20260930-beans-tools"></script>
+  <script defer src="/nbl-world-header.js?v=20260930-billing-rc1"></script>
 </head>
 <body>
   <main>
@@ -37,6 +37,11 @@
       <p class="eyebrow">New Beansland · My Account</p>
       <h1>Your NBL account</h1>
       <p class="lead">Your username, Beans conversations and usage belong to your signed-in account. You can review or delete your own history here.</p>
+    </section>
+
+    <section id="checkoutNotice" class="card hidden" aria-live="polite">
+      <h2>Payment returned to New Beansland</h2>
+      <p class="status">Stripe completed checkout. LOCKE is attaching the verified purchase to this signed-in account. Your membership or University enrollment may take a moment to appear while the webhook finishes.</p>
     </section>
 
     <section id="signedOut" class="card signed-out">
@@ -64,8 +69,25 @@
         <p id="profileStatus" class="status"></p>
         <div class="row">
           <button id="securityButton" type="button">Manage sign-in & security</button>
+          <button id="billingButton" type="button">Manage billing</button>
           <button id="signOutButton" type="button">Sign out</button>
         </div>
+      </section>
+
+      <section class="card" id="membershipCard">
+        <h2>Membership &amp; billing</h2>
+        <p id="membershipStatus" class="status">Checking your Beans membership…</p>
+        <div class="grid" aria-label="Membership usage">
+          <div class="card metric"><strong id="membershipPlan">—</strong><span>current plan</span></div>
+          <div class="card metric"><strong id="replyRemaining">—</strong><span>successful replies remaining</span></div>
+          <div class="card metric"><strong id="topUpRemaining">—</strong><span>Get More replies remaining</span></div>
+        </div>
+        <div class="row">
+          <button type="button" data-account-billing-plan="beans">Beans · $4.99/month</button>
+          <button type="button" data-account-billing-plan="chat_plus">NBL Chat Plus · $19.99/month</button>
+          <button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button>
+        </div>
+        <p class="status">Chat Plus unlocks premium Beans tools. NBL University and Professor Grey are separate.</p>
       </section>
 
       <section class="grid" aria-label="Account usage">
@@ -104,12 +126,19 @@
     const usernameInput=document.getElementById("username");
     const profileStatus=document.getElementById("profileStatus");
     const securityButton=document.getElementById("securityButton");
+    const billingButton=document.getElementById("billingButton");
     const signOutButton=document.getElementById("signOutButton");
+    const checkoutNotice=document.getElementById("checkoutNotice");
     const history=document.getElementById("history");
     const viewer=document.getElementById("conversationViewer");
     const deleteDataButton=document.getElementById("deleteDataButton");
     const deleteAccountButton=document.getElementById("deleteAccountButton");
     const deleteStatus=document.getElementById("deleteStatus");
+    const membershipStatus=document.getElementById("membershipStatus");
+    const membershipPlan=document.getElementById("membershipPlan");
+    const replyRemaining=document.getElementById("replyRemaining");
+    const topUpRemaining=document.getElementById("topUpRemaining");
+    const membershipButtons=[...document.querySelectorAll("[data-account-billing-plan]")];
 
     const waitForBridge=async()=>{
       for(let i=0;i<60;i++){
@@ -138,6 +167,14 @@
 
     signedOut.classList.remove("show");
     accountBody.classList.remove("hidden");
+    const checkoutParams=new URLSearchParams(location.search);
+    if(checkoutParams.get("checkout")==="success"){
+      checkoutNotice?.classList.remove("hidden");
+      const cleanUrl=new URL(location.href);
+      cleanUrl.searchParams.delete("checkout");
+      cleanUrl.searchParams.delete("session_id");
+      window.history.replaceState(window.history.state,"",cleanUrl.href);
+    }
 
     const user=clerk.user;
     const primaryEmail=user?.primaryEmailAddress?.emailAddress||"signed-in account";
@@ -164,6 +201,53 @@
       document.getElementById("messageCount").textContent=String(payload?.usage?.messages||0);
       document.getElementById("modelCount").textContent=String(payload?.usage?.modelResponses||0);
     };
+
+    const renderMembership=async()=>{
+      const billing=window.NBLBillingBridge;
+      if(!billing?.meter){
+        membershipStatus.textContent="Membership status is temporarily unavailable.";
+        return null;
+      }
+      const result=await billing.meter();
+      if(result?.signInRequired){
+        membershipStatus.textContent="Sign in to see membership status.";
+        return null;
+      }
+      const meter=result?.meter||{};
+      const planKey=String(meter.planKey||"").toLowerCase();
+      const plan=meter.privileged
+        ?"Founder"
+        :planKey==="chat_plus"
+          ?"NBL Chat Plus"
+          :planKey==="beans"
+            ?"Beans"
+            :"Free";
+      membershipPlan.textContent=plan;
+      replyRemaining.textContent=String(meter.totalReplyRemaining??meter.paidRemaining??meter.freeRemaining??0);
+      topUpRemaining.textContent=String(meter.topUpRemaining??0);
+      const end=meter.paidPeriodEnd?new Date(meter.paidPeriodEnd):null;
+      const endText=end&&!Number.isNaN(end.getTime())?" · current period through "+end.toLocaleDateString():"";
+      membershipStatus.textContent=(meter.privileged?"Founder reserve":String(meter.membershipStatus||"free").replaceAll("_"," "))+endText;
+      return meter;
+    };
+
+    const openCheckout=async(plan,button)=>{
+      button.disabled=true;
+      membershipStatus.textContent="Preparing secure Stripe checkout…";
+      try{
+        const result=await window.NBLBillingBridge?.checkout?.(plan);
+        if(result?.signInRequired){location.href=result.signInUrl;return;}
+        if(!result?.destination)throw new Error("Secure checkout is temporarily unavailable.");
+        membershipStatus.textContent=result?.payload?.route==="manage_existing_subscription"
+          ?(result.payload.message||"Opening billing management…")
+          :"Opening Stripe secure checkout…";
+        location.href=result.destination;
+      }catch(error){
+        membershipStatus.textContent=error?.message||"Secure checkout is temporarily unavailable.";
+        button.disabled=false;
+      }
+    };
+    membershipButtons.forEach(button=>button.addEventListener("click",()=>openCheckout(button.dataset.accountBillingPlan||"",button)));
 
     const renderHistory=async()=>{
       viewer.replaceChildren();
@@ -211,6 +295,16 @@
     });
 
     securityButton.onclick=()=>{location.href="https://accounts.newbeansland.org/user?redirect_url="+encodeURIComponent(location.href)};
+    billingButton.onclick=async()=>{
+      billingButton.disabled=true;profileStatus.textContent="Opening secure billing…";
+      try{
+        const result=await window.NBLBillingBridge?.portal?.();
+        if(result?.signInRequired){location.href=result.signInUrl;return;}
+        if(!result?.destination)throw new Error("Secure billing is temporarily unavailable.");
+        location.href=result.destination;
+      }catch(error){profileStatus.textContent=error?.message||"Secure billing is temporarily unavailable."}
+      finally{billingButton.disabled=false}
+    };
     signOutButton.onclick=async()=>{await clerk.signOut();location.href="/"};
 
     deleteDataButton.onclick=async()=>{
@@ -235,7 +329,16 @@
       finally{deleteAccountButton.disabled=false}
     };
 
-    try{await Promise.all([renderSummary(),renderHistory()])}
+    try{
+      await Promise.all([renderSummary(),renderHistory(),renderMembership()]);
+      if(checkoutParams.get("checkout")==="success"){
+        for(let attempt=0;attempt<3;attempt++){
+          await new Promise(resolve=>setTimeout(resolve,1500));
+          const meter=await renderMembership();
+          if(meter&&String(meter.membershipStatus||"").toLowerCase()!=="none")break;
+        }
+      }
+    }
     catch(error){profileStatus.textContent=error.message;history.innerHTML='<p class="status">'+error.message.replace(/[<>&]/g,"")+'</p>'}
   });
   </script>
