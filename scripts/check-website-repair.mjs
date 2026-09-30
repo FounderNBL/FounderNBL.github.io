@@ -14,6 +14,7 @@ const terms=read("terms.html");
 const privacy=read("privacy.html");
 const deletion=read("account-deletion.html");
 const university=read("university.html");
+const account=read("account.html");
 const universityCheckout=read("nbl-university-checkout.js");
 let failed=false;
 
