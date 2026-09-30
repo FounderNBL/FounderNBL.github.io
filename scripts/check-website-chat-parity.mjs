@@ -54,11 +54,13 @@ requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLAN
 requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
+requireText(header,'mode:"guided_learning"', "Guided Learning mode is not routed through the shared Chat controller.");
+requireText(header,'beansHistory.push({role:"assistant",content:reply})',"Guided Learning replies are not preserved in the shared Beans conversation.");
 requireText(header,'NBL_ACCOUNT_STORE_API',"Account/history storage endpoint is missing.");
 
 // Grey / Virgo / LOCKE parity.
 requireText(header,'action:"status"',"Grey access is not checked server-side.");
-requireText(header,'action:"grey"',"Grey request route is missing.");
+requireText(header,'action:"chat"',"Unified Guided Learning request route is missing.");
 requireText(header,'APSK 101',"APSK 101 is missing.");
 requireText(header,'ANSY 110',"ANSY 110 is missing.");
 requireText(header,'EBPR 120',"EBPR 120 is missing.");
