@@ -246,20 +246,6 @@
       }
     };
 
-    document.querySelectorAll("[data-nbl-checkout-plan]").forEach(button=>button.addEventListener("click",async()=>{
-      if(!bridge.billingCheckout)return;
-      button.disabled=true;
-      membershipStatus.textContent="Opening secure Stripe checkout…";
-      try{await bridge.billingCheckout(button.dataset.nblCheckoutPlan);}
-      catch(error){membershipStatus.textContent=error.message||"Checkout could not be opened.";button.disabled=false;}
-    }));
-    document.querySelector("[data-nbl-billing-portal]")?.addEventListener("click",async event=>{
-      const button=event.currentTarget;button.disabled=true;
-      membershipStatus.textContent="Opening secure billing management…";
-      try{await bridge.billingPortal();}
-      catch(error){membershipStatus.textContent=error.message||"Billing management could not be opened.";button.disabled=false;}
-    });
-
     usernameForm.addEventListener("submit",async event=>{
       event.preventDefault();profileStatus.textContent="Saving…";
       try{
