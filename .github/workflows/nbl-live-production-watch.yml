@@ -30,6 +30,9 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Check the live NBL web app
+        # NBL_BASE_URL intentionally tells the shared smoke suite that this is
+        # production, so branch-only release-candidate assertions stay on the
+        # local PR browser run until the Founder actually publishes them.
         env:
           NBL_BASE_URL: https://newbeansland.org
         run: npx playwright test --project=chromium
