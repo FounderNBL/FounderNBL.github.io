@@ -147,9 +147,23 @@
     };
   };
 
+  const requestNblMeter=async()=>{
+    const token=await getNblBeansAuthToken();
+    if(!token) return {signInRequired:true,signInUrl:accountPortalUrl("/sign-in"),meter:null};
+    const response=await fetch(`${NBL_CHAT_GATEWAY_API}/chat/meter`,{
+      method:"GET",
+      headers:{Accept:"application/json",Authorization:`Bearer ${token}`},
+      cache:"no-store"
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(payload?.message||"Membership status is temporarily unavailable.");
+    return {signInRequired:false,meter:payload?.meter||null};
+  };
+
   window.NBLBillingBridge={
     checkout:plan=>requestNblBilling({plan}),
-    portal:()=>requestNblBilling({portal:true})
+    portal:()=>requestNblBilling({portal:true}),
+    meter:requestNblMeter
   };
 
   window.NBLAccountBridge={
@@ -169,14 +183,14 @@
     panel.setAttribute("aria-labelledby","nbl-connected-account-title");
     panel.innerHTML=`
       <div class="nbl-connected-account-inner">
-        <p class="nbl-connected-account-kicker">Optional connected account</p>
-        <h2 id="nbl-connected-account-title">Use the same NBL account here and in NBL Chat.</h2>
-        <p>Browsing the website, reading about the University, and using the normal checkout do not require an account. Sign in only if you want your University access to follow the same identity into NBL Chat.</p>
+        <p class="nbl-connected-account-kicker">Student account</p>
+        <h2 id="nbl-connected-account-title">Use the same NBL account for enrollment and the campus.</h2>
+        <p>You can browse the University without signing in. Enrollment checkout requires your NBL account so LOCKE can attach the verified Stripe purchase to the correct student record.</p>
         <div class="nbl-connected-account-actions">
           <button type="button" data-nbl-panel-signin>Sign in / Create account</button>
         </div>
-        <p class="nbl-connected-account-status" data-nbl-panel-status>Account connection is optional.</p>
-        <small>LOCKE checks Guided Learning access server-side. Checkout and enrollment stay separate from this account-status check.</small>
+        <p class="nbl-connected-account-status" data-nbl-panel-status>Sign in before enrollment checkout.</p>
+        <small>LOCKE checks University access server-side. Stripe handles payment; University doors open only after the verified purchase is attached to this NBL identity.</small>
       </div>`;
     const hero=main.querySelector(".hero");
     if(hero) hero.insertAdjacentElement("afterend",panel);
@@ -271,7 +285,7 @@
           panelSignIn.disabled=false;
           panelSignIn.textContent="Sign in";
         }
-        if(panelStatus) panelStatus.textContent="Account connection is optional.";
+        if(panelStatus) panelStatus.textContent="Sign in before enrollment checkout.";
       }
     };
 
