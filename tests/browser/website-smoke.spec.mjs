@@ -35,6 +35,11 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.getByRole("button", { name: /Search the live web/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Code \/ data analysis/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Create an image/i })).toBeVisible();
+    await page.getByRole("button", { name: /Open NBL Chat menu/i }).click();
+    await page.getByRole("button", { name: /Membership & plans/i }).click();
+    await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Choose Chat Plus" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Get \+500 replies/i })).toBeVisible();
   });
 
   test("live Beans keeps greeting and NBL acronym answers on the right rail", async ({ page }) => {
@@ -61,6 +66,9 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page).toHaveTitle(/New Beansland University/i);
     await expect(page.locator("body")).toContainText("Foundation Program");
     await expect(page.locator("body")).toContainText(/enrollment/i);
+    await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-university-checkout="full_foundation"]')).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("Account connection is optional.");
   });
 
   test("account recovery remains reachable", async ({ page }) => {
@@ -68,5 +76,6 @@ test.describe("New Beansland web app browser smoke", () => {
 
     await expect(page.getByRole("link", { name: "Forgot password?" })).toBeVisible();
     await expect(page.locator("#signInButton")).toBeVisible();
+    await expect(page.locator("#membershipCard")).toBeAttached();
   });
 });
