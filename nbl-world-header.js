@@ -153,7 +153,7 @@
     if(!panel||!clerk?.isSignedIn||!clerk.session) return;
     const statusEl=panel.querySelector("[data-nbl-panel-status]");
     try{
-      statusEl.textContent="Checking Guided Learning access…";
+      statusEl.textContent="Checking NBL University access…";
       const token=await clerk.session.getToken();
       const response=await fetch(NBL_CHAT_PLUS_API,{
         method:"POST",
@@ -163,15 +163,15 @@
       });
       const payload=await response.json().catch(()=>({}));
       if(response.status===401){
-        statusEl.textContent="Your NBL session needs to be refreshed. Sign in again to check Guided Learning access.";
+        statusEl.textContent="Your NBL session needs to be refreshed. Sign in again to check NBL University access.";
         return;
       }
-      if(!response.ok) throw new Error("Guided Learning access could not be checked right now.");
-      statusEl.textContent=payload?.chatPlus?.allowed===true
-        ?"Account connected. Guided Learning access is active in NBL Chat Plus."
-        :"Account connected. Guided Learning access is not active for this account.";
+      if(!response.ok) throw new Error("NBL University access could not be checked right now.");
+      statusEl.textContent=payload?.university?.allowed===true
+        ?"Account connected. NBL University access is active for this account."
+        :"Account connected. NBL University enrollment is not active for this account.";
     }catch(error){
-      statusEl.textContent=error?.message||"Guided Learning access is temporarily unavailable.";
+      statusEl.textContent=error?.message||"NBL University access is temporarily unavailable.";
     }
   };
 
@@ -532,7 +532,7 @@
               <button type="submit">Send</button>
             </div>
           </form>
-          <p class="nbl-beans-note" style="margin-top:10px">Guided Learning is Beans in Professor Grey mode. Grey can teach and practice from the protected course library, but test answers, rubrics, grading keys, and future assessment material stay sealed.</p>
+          <p class="nbl-beans-note" style="margin-top:10px">Professor Grey is NBL University faculty. Grey can teach and practice for an enrolled course, while test answers, rubrics, grading keys, and future assessment material stay sealed.</p>
           <p class="nbl-beans-status" data-nbl-plus-status role="status">Professor Grey is ready for the selected course.</p>
         </div>
       </section>
@@ -1088,7 +1088,7 @@
     if(!identity){
       plusAccessCheckedFor=null;
       plusAccessLoadingFor=null;
-      showPlusLocked("Sign in with your NBL account to check NBL Chat Plus access.",{signedOut:true});
+      showPlusLocked("Sign in with your NBL account to check NBL University access.",{signedOut:true});
       return;
     }
     if(currentClerkUserId()!==identity.userId) return;
@@ -1101,7 +1101,7 @@
     plusSignIn.hidden=true;
     plusAccess.hidden=false;
     plusLive.hidden=true;
-    plusAccessCopy.textContent="Checking NBL Chat Plus access…";
+    plusAccessCopy.textContent="Checking NBL University access…";
     try{
       const response=await fetch(NBL_CHAT_PLUS_API,{
         method:"POST",
@@ -1115,14 +1115,14 @@
         plusAccessCheckedFor=null;
         return showPlusLocked("Your NBL session needs to be refreshed. Sign in again to check Plus access.",{signedOut:true});
       }
-      if(!response.ok) throw new Error("NBL Chat Plus access could not be checked right now.");
+      if(!response.ok) throw new Error("NBL University access could not be checked right now.");
       plusAccessCheckedFor=identity.userId;
-      if(payload?.chatPlus?.allowed===true) showPlusReady();
-      else showPlusLocked("Guided Learning requires active course enrollment and Grey access for this account.");
+      if(payload?.university?.allowed===true) showPlusReady();
+      else showPlusLocked("Professor Grey requires active NBL University enrollment for this account.");
     }catch(error){
       if(accessRequestGeneration!==plusAccessRequestGeneration||accountGeneration!==beansAccountGeneration||currentClerkUserId()!==identity.userId) return;
       plusAccessCheckedFor=null;
-      showPlusLocked(error?.message||"NBL Chat Plus access could not be checked right now.");
+      showPlusLocked(error?.message||"NBL University access could not be checked right now.");
     }finally{
       if(accessRequestGeneration===plusAccessRequestGeneration&&plusAccessLoadingFor===identity.userId) plusAccessLoadingFor=null;
     }
@@ -1383,7 +1383,7 @@
         plusAccessLoadingFor=null;
         plusAllowed=false;
         clearBeansTranscript("You are signed out. Sign in to keep your history.");
-        showPlusLocked("Sign in with your NBL account to check NBL Chat Plus access.",{signedOut:true});
+        showPlusLocked("Sign in with your NBL account to check NBL University access.",{signedOut:true});
         startNewBeansConversation();
         setChatDrawerOpen(false);
         return;
@@ -1425,7 +1425,7 @@
       plusAccessLoadingFor=null;
       plusAllowed=false;
       clearBeansTranscript(nextUserId?"Account changed. Saved history is loading…":"You are signed out. Sign in to keep your history.");
-      showPlusLocked(nextUserId?"Checking NBL Chat Plus access…":"Sign in with your NBL account to check NBL Chat Plus access.",{signedOut:!nextUserId});
+      showPlusLocked(nextUserId?"Checking NBL University access…":"Sign in with your NBL account to check NBL University access.",{signedOut:!nextUserId});
       if(beansPanel.hidden) return;
       if(chatDrawer.classList.contains("is-open")){
         void renderChatDrawerHistory();
