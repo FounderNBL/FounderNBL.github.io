@@ -59,6 +59,15 @@ requireText(header,'NBL_CHAT_GATEWAY_API',"Signed-in Beans metering gateway is m
 requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to the backend.");
 requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
 requireText(header,'NBL_ACCOUNT_STORE_API',"Account/history storage endpoint is missing.");
+requireText(header,'const startNblCheckout=async plan=>',"Shared authenticated checkout controller is missing.");
+requireText(header,'const openNblBillingPortal=async()=>',"Shared billing-management controller is missing.");
+requireText(header,'/billing/checkout',"Website billing checkout gateway route is missing.");
+requireText(header,'/billing/portal',"Website billing portal gateway route is missing.");
+requireText(account,'id="membershipCard"',"Account membership/billing card is missing.");
+requireText(account,'data-nbl-checkout-plan="beans"',"Account Beans checkout control is missing.");
+requireText(account,'data-nbl-checkout-plan="chat_plus"',"Account Plus checkout control is missing.");
+requireText(account,'data-nbl-checkout-plan="topup_500"',"Account Get More checkout control is missing.");
+requireText(account,'data-nbl-billing-portal',"Account billing-management control is missing.");
 
 // Preserved University source remains present but is not a Chat Plus door.
 requireText(header,'action:"status"',"Preserved University access check is missing.");
