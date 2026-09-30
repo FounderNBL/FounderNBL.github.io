@@ -54,7 +54,10 @@ requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time']){
   requireText(plans,value,`Canonical locked product value is missing: ${value}`);
 }
-requireText(js,'Files, photos, code analysis, forced web search, and image generation are NBL Chat Plus tools.',"Plus-tool boundary message is missing from the public contract.");
+requireText(js,'NBL Chat Plus is required to send them.',"Attachment Plus-boundary status is missing.");
+requireText(js,'Live web selected · NBL Chat Plus.',"Web-tool Plus-boundary status is missing.");
+requireText(js,'Code / data analysis selected · NBL Chat Plus.',"Code-tool Plus-boundary status is missing.");
+requireText(js,'Image creation selected · NBL Chat Plus.',"Image-tool Plus-boundary status is missing.");
 requireText(css,'.nbl-chat-modes',"Chat mode styling is missing.");
 requireText(css,'.nbl-plus-access',"Plus access styling is missing.");
 requireText(css,'.nbl-chat-drawer',"NBL Chat drawer styling is missing.");
