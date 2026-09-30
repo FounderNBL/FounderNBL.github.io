@@ -589,6 +589,12 @@ body.nbl-beans-open{overflow:hidden!important}
 }
 .nbl-chat-drawer-plans strong{display:block;color:var(--nbl-world-gold2);font-size:.77rem}
 .nbl-chat-drawer-plans span{display:block;margin-top:3px;color:#b9aa92;font-size:.66rem;line-height:1.4}
+.nbl-chat-drawer-plans article button,.nbl-chat-plan-manage{
+  width:100%;min-height:36px;margin-top:8px;padding:7px 10px;border:1px solid rgba(240,197,111,.38);
+  border-radius:9px;background:#071421;color:var(--nbl-world-gold2);font-weight:900;cursor:pointer;
+}
+.nbl-chat-drawer-plans article button:hover,.nbl-chat-plan-manage:hover{border-color:var(--nbl-world-gold2)}
+.nbl-chat-drawer-plans article button:disabled,.nbl-chat-plan-manage:disabled{opacity:.55;cursor:not-allowed}
 .nbl-chat-drawer-foot{padding:12px;border-top:1px solid rgba(214,161,75,.24)}
 .nbl-chat-drawer-account{
   width:100%;min-height:44px;border:1px solid rgba(240,197,111,.44);border-radius:12px;
