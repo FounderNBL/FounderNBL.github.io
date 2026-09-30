@@ -56,6 +56,9 @@ requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing."
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
 requireText(header,'NBL_CHAT_GATEWAY_API',"Signed-in Beans metering gateway is missing.");
+requireText(header,'meter:requestNblMeter',"Website membership meter bridge is missing.");
+requireText(account,'id="membershipCard"',"Account membership status card is missing.");
+requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout action is missing.");
 requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to the backend.");
 requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
 requireText(header,'NBL_ACCOUNT_STORE_API',"Account/history storage endpoint is missing.");
