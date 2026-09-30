@@ -71,8 +71,8 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator("body")).toContainText("Foundation Program");
     await expect(page.locator("body")).toContainText(/enrollment/i);
     if (!checkingLive) {
-      await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toBeVisible();
-      await expect(page.locator('[data-nbl-university-checkout="full_foundation"]')).toBeVisible();
+      await expect(page.locator('[data-nbl-university-checkout="foundation"]').first()).toBeVisible();
+      await expect(page.locator('[data-nbl-university-checkout="full_foundation"]').first()).toBeVisible();
       await expect(page.locator("body")).not.toContainText("Account connection is optional.");
     }
   });
