@@ -1,0 +1,48 @@
+name: NBL live production watch
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "playwright.config.mjs"
+      - "tests/browser/**"
+      - ".github/workflows/nbl-live-production-watch.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  live-browser-watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Playwright test runner
+        run: npm install --no-save @playwright/test@latest
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Check the live NBL web app
+        env:
+          NBL_BASE_URL: https://newbeansland.org
+        run: npx playwright test --project=chromium
+
+      - name: Upload failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nbl-live-watch-failure
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
