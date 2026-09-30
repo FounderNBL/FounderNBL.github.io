@@ -116,10 +116,54 @@
     }
   };
 
+  const nblBillingRequest=async(action,payload={})=>{
+    const token=await getNblBeansAuthToken();
+    if(!token){
+      location.href=accountPortalUrl("/sign-in");
+      return null;
+    }
+    const route=action==="portal"?"/billing/portal":"/billing/checkout";
+    const response=await fetch(NBL_CHAT_GATEWAY_API+route,{
+      method:"POST",
+      headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
+      body:JSON.stringify(action==="portal"?{}:payload),
+      cache:"no-store"
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data?.message||"NBL billing is temporarily unavailable.");
+    return data;
+  };
+  const startNblCheckout=async plan=>{
+    const data=await nblBillingRequest("checkout",{plan});
+    if(!data)return;
+    const target=data.checkoutUrl||data.portalUrl;
+    if(!target)throw new Error(data.message||"Checkout is not available for this plan.");
+    location.href=target;
+  };
+  const openNblBillingPortal=async()=>{
+    const data=await nblBillingRequest("portal");
+    if(data?.portalUrl)location.href=data.portalUrl;
+    else if(data)throw new Error("Billing management is temporarily unavailable.");
+  };
+  const getNblChatMeter=async()=>{
+    const token=await getNblBeansAuthToken();
+    if(!token)return null;
+    const response=await fetch(NBL_CHAT_GATEWAY_API+"/chat/meter",{
+      headers:{Accept:"application/json",Authorization:`Bearer ${token}`},
+      cache:"no-store"
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data?.message||"NBL membership status is temporarily unavailable.");
+    return data?.meter||null;
+  };
+
   window.NBLAccountBridge={
     getClerk:getNblClerk,
     getToken:getNblBeansAuthToken,
-    api:NBL_ACCOUNT_STORE_API
+    api:NBL_ACCOUNT_STORE_API,
+    billingCheckout:startNblCheckout,
+    billingPortal:openNblBillingPortal,
+    meter:getNblChatMeter
   };
 
   const getUniversityPanel=()=>{
@@ -135,12 +179,12 @@
       <div class="nbl-connected-account-inner">
         <p class="nbl-connected-account-kicker">Optional connected account</p>
         <h2 id="nbl-connected-account-title">Use the same NBL account here and in NBL Chat.</h2>
-        <p>Browsing the website, reading about the University, and using the normal checkout do not require an account. Sign in only if you want your University access to follow the same identity into NBL Chat.</p>
+        <p>Browsing the website and reading about the University do not require an account. Enrollment checkout requires the same NBL account the student will use in the campus so LOCKE can attach the purchase to the correct student record.</p>
         <div class="nbl-connected-account-actions">
           <button type="button" data-nbl-panel-signin>Sign in / Create account</button>
         </div>
         <p class="nbl-connected-account-status" data-nbl-panel-status>Account connection is optional.</p>
-        <small>LOCKE checks Guided Learning access server-side. Checkout and enrollment stay separate from this account-status check.</small>
+        <small>LOCKE checks University access server-side. Stripe handles payment; the verified purchase is attached to this signed-in NBL identity before University doors open.</small>
       </div>`;
     const hero=main.querySelector(".hero");
     if(hero) hero.insertAdjacentElement("afterend",panel);
@@ -436,9 +480,10 @@
             <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
-            <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span></article>
-            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. University / Professor Grey access is separate.</span></article>
-            <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span></article>
+            <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button type="button" data-nbl-checkout-plan="beans">Choose Beans</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. University / Professor Grey access is separate.</span><button type="button" data-nbl-checkout-plan="chat_plus">Choose Plus</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button type="button" data-nbl-checkout-plan="topup_500">Get 500 more</button></article>
+            <button class="nbl-chat-plan-manage" type="button" data-nbl-billing-portal>Manage billing</button>
           </div>
 
           <a class="nbl-chat-drawer-item" href="/university.html">
@@ -1368,6 +1413,20 @@
     chatDrawerPlanCard.hidden=!chatDrawerPlanCard.hidden;
     chatDrawerPlans.setAttribute("aria-expanded",chatDrawerPlanCard.hidden?"false":"true");
   });
+  chatDrawerPlanCard.addEventListener("click",async event=>{
+    const buy=event.target.closest("[data-nbl-checkout-plan]");
+    const manage=event.target.closest("[data-nbl-billing-portal]");
+    if(!buy&&!manage)return;
+    const button=buy||manage;
+    button.disabled=true;
+    try{
+      if(buy)await startNblCheckout(buy.dataset.nblCheckoutPlan);
+      else await openNblBillingPortal();
+    }catch(error){
+      beansStatus.textContent=error?.message||"NBL billing is temporarily unavailable.";
+      button.disabled=false;
+    }
+  });
   chatDrawerAccountAction.addEventListener("click",async()=>{
     try{
       const clerk=await getNblClerk();
@@ -1435,6 +1494,22 @@
       else void loadSignedInBeansHistory();
     });
   }).catch(()=>{});
+
+  document.addEventListener("click",async event=>{
+    const checkout=event.target.closest?.("[data-nbl-checkout-plan]");
+    const portal=event.target.closest?.("[data-nbl-billing-portal]");
+    if((!checkout&&!portal)||chatDrawerPlanCard.contains(event.target))return;
+    event.preventDefault();
+    const button=checkout||portal;
+    if("disabled" in button)button.disabled=true;
+    try{
+      if(checkout)await startNblCheckout(checkout.dataset.nblCheckoutPlan);
+      else await openNblBillingPortal();
+    }catch(error){
+      if("disabled" in button)button.disabled=false;
+      alert(error?.message||"NBL billing is temporarily unavailable.");
+    }
+  });
 
   beansToggle.addEventListener("click",openBeans);
   beansClose.addEventListener("click",closeBeans);
