@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const checkingLive = Boolean(process.env.NBL_BASE_URL);
+const checkingLive = Boolean(process.env.NBL_BASE_URL); // Live watch checks deployed baseline; PR run checks unreleased release-candidate UI.
 
 async function open(path, page) {
   await page.goto(path, { waitUntil: "domcontentloaded" });
