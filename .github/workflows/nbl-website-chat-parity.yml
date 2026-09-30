@@ -13,6 +13,8 @@ on:
       - "scripts/check-website-chat-plus.mjs"
       - "scripts/check-website-chat-parity.mjs"
       - "scripts/check-website-repair.mjs"
+      - "playwright.config.mjs"
+      - "tests/browser/**"
       - ".github/workflows/nbl-website-chat-parity.yml"
   pull_request:
     paths:
@@ -25,6 +27,8 @@ on:
       - "scripts/check-website-chat-plus.mjs"
       - "scripts/check-website-chat-parity.mjs"
       - "scripts/check-website-repair.mjs"
+      - "playwright.config.mjs"
+      - "tests/browser/**"
       - ".github/workflows/nbl-website-chat-parity.yml"
 
 jobs:
@@ -43,3 +47,18 @@ jobs:
         run: node scripts/check-website-chat-parity.mjs
       - name: Check website-only repair regressions
         run: node scripts/check-website-repair.mjs
+      - name: Install Playwright test runner
+        run: npm install --no-save @playwright/test@latest
+      - name: Install Chromium for browser checks
+        run: npx playwright install --with-deps chromium
+      - name: Run real browser smoke checks
+        run: npx playwright test --project=chromium --project=mobile-chromium
+      - name: Upload Playwright failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nbl-playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
