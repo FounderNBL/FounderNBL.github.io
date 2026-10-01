@@ -276,7 +276,26 @@
             if(response.ok&&username) accountButton.textContent=username;
           }catch{}
         })();
-        void (async()=>{\n          try{\n            const token=await getNblBeansAuthToken();\n            if(!token) return;\n            const response=await fetch(NBL_FULFILLMENT_API,{\n              method:"POST",\n              headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},\n              body:JSON.stringify({operation:"founder_pending_count"}),\n              cache:"no-store"\n            });\n            if(!response.ok) return;\n            const payload=await response.json().catch(()=>({}));\n            const pending=Number(payload?.pending||0);\n            if(pending>0){\n              addAuxButton(`LOCKE ${pending}`,()=>{location.href="/account.html#founder-actions"});\n            }\n          }catch{}\n        })();\n        if(panelSignIn) panelSignIn.hidden=true;\n        void readUniversityAccess(clerk);
+        void (async()=>{
+          try{
+            const token=await getNblBeansAuthToken();
+            if(!token) return;
+            const response=await fetch(NBL_FULFILLMENT_API,{
+              method:"POST",
+              headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
+              body:JSON.stringify({operation:"founder_pending_count"}),
+              cache:"no-store"
+            });
+            if(!response.ok) return;
+            const payload=await response.json().catch(()=>({}));
+            const pending=Number(payload?.pending||0);
+            if(pending>0){
+              addAuxButton(`LOCKE ${pending}`,()=>{location.href="/account.html#founder-actions"});
+            }
+          }catch{}
+        })();
+        if(panelSignIn) panelSignIn.hidden=true;
+        void readUniversityAccess(clerk);
       }else{
         accountButton.textContent="Sign in";
         accountButton.title="Sign in to your NBL account";
