@@ -120,10 +120,10 @@ requireText(header,"window.history.pushState({...window.history.state,nblChatOve
 requireText(header,"const shouldConsumeHistory=!fromPopState","Closing Chat does not distinguish UI-close from browser Back.");
 requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Chat leaves a duplicate same-page history entry behind.");
 
-for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time']){
+for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time','$149.99 one-time','$14.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
-const planFields=["beans.price","beans.replies","chatPlus.price","chatPlus.replies","getMore.price","getMore.replies","foundationProgram.price","fullFoundation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
+const planFields=["beans.price","beans.replies","chatPlus.price","chatPlus.replies","getMore.price","getMore.replies","foundationProgram.price","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
 const planContext={window:{},document:{querySelectorAll:()=>planFields}};
 vm.runInNewContext(plans,planContext);
 for(const field of planFields){
@@ -136,13 +136,16 @@ for(const field of planFields){
 requireText(header,"NBL_PRODUCT_PLANS.getMore.expiry","Drawer does not use the canonical non-expiring reply-balance wording.");
 requireText(header,"NBL_PRODUCT_PLANS.foundationProgram.price","Public search does not use the canonical Foundation Program price.");
 requireText(terms,'data-nbl-plan-value="foundationProgram.price"',"Terms do not use the canonical Foundation Program price.");
-requireText(terms,'data-nbl-plan-value="fullFoundation.price"',"Terms do not use the canonical Full Foundation price.");
-requireText(university,'data-nbl-plan-value="foundationProgram.price"',"Foundation Program display does not use the canonical price.");
-requireText(university,'data-nbl-university-checkout="foundation"',"Foundation enrollment is not routed through the authenticated billing rail.");
-requireText(university,'data-nbl-university-checkout="full_foundation"',"Full Foundation enrollment is not routed through the authenticated billing rail.");
-requireText(universityCheckout,"window.NBLBillingBridge","University checkout does not use the shared authenticated billing bridge.");
-requireText(universityCheckout,'["foundation","full_foundation"]',"University checkout accepts an unexpected package set.");
-forbidText(university,"https://buy.stripe.com/9B68wR2Fk3vW06n0cL4ko04","University page still bypasses the authenticated LOCKE checkout rail.");
+requireText(terms,'data-nbl-plan-value="guidedFoundation.price"',"Terms do not use the canonical Guided Foundation price.");
+requireText(terms,'data-nbl-plan-value="fullNblu.price"',"Terms do not use the canonical Full NBLU price.");
+requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not use the canonical Full NBLU owner continuation price.");
+requireText(terms,"University checkout is handled on NBLWorld.com.","Terms do not preserve the Chat / University commerce split.");
+requireText(university,'https://nblworld.com/university.html#enroll',"Public University handoff does not point to NBL World enrollment.");
+requireText(university,"regular Beans / NBL Chat","Public University handoff does not preserve regular Chat on NewBeansland.org.");
+requireText(university,"Professor Grey, University enrollment","Public University handoff does not move Grey / University to NBL World.");
+forbidText(university,'data-nbl-university-checkout',"Public New Beansland University page still contains University checkout controls.");
+forbidText(university,'nbl-university-checkout.js',"Public New Beansland University page still loads the retired University checkout bridge.");
+forbidText(university,"https://buy.stripe.com/","Public New Beansland University page contains a raw Stripe checkout.");
 requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridge is missing.");
 requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership card is missing.");
@@ -196,4 +199,4 @@ for(const forbidden of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_
 }
 
 if(failed) process.exitCode=1;
-else console.log("[website-repair] PASS: history races, search routing, authenticated billing, University enrollment identity, naming, legal copy, drawer accessibility/navigation, locked catalog, and public-secret boundaries.");
+else console.log("[website-repair] PASS: regular Beans/Chat remains on NewBeansland.org, University/Grey commerce hands off to NBL World, Chat billing stays authenticated, and existing history/accessibility/security boundaries remain intact.");
