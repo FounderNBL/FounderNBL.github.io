@@ -941,11 +941,15 @@ body.nbl-world-menu-open{overflow:hidden!important}
   font-size:.74rem;
   font-weight:800;
 }
-.nbl-beans-tool-state[hidden],.nbl-beans-attachments[hidden]{display:none!important}
+.nbl-beans-tool-state[hidden],.nbl-beans-attachments[hidden],.nbl-beans-knowledge[hidden]{display:none!important}
 .nbl-beans-tool-state button,.nbl-beans-attachment-chip button{
   border:0;background:transparent;color:inherit;cursor:pointer;font:inherit
 }
-.nbl-beans-attachments{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 8px}
+.nbl-beans-attachments,.nbl-beans-knowledge{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 8px}
+.nbl-beans-knowledge{
+  padding:8px;border:1px solid rgba(214,161,75,.2);border-radius:12px;background:rgba(214,161,75,.035)
+}
+.nbl-beans-knowledge-head{flex:1 0 100%;font-size:.72rem;font-weight:800;letter-spacing:.02em;opacity:.92}
 .nbl-beans-attachment-chip{
   display:inline-flex;align-items:center;gap:7px;max-width:100%;
   padding:7px 9px;border:1px solid rgba(255,255,255,.14);border-radius:10px;

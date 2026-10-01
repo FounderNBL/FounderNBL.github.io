@@ -500,7 +500,7 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-tools>
             <span class="nbl-chat-drawer-fallback" aria-hidden="true">+</span>
-            <span><strong>Beans tools</strong><small>Photos, files, web, code/data, and image creation</small></span>
+            <span><strong>Beans tools</strong><small>Photos, saved knowledge, web, code/data, images, and voice</small></span>
           </button>
 
           <a class="nbl-chat-drawer-item" href="/account.html">
@@ -534,17 +534,22 @@
             <button type="button" data-nbl-tool-reset aria-label="Clear selected Beans tool">×</button>
           </div>
           <div class="nbl-beans-attachments" data-nbl-beans-attachments hidden></div>
+          <div class="nbl-beans-knowledge" data-nbl-beans-knowledge hidden></div>
           <div class="nbl-beans-composer">
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
                 <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · Plus</span></button>
+                <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · Plus</span></button>
+                <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · Plus</span></button>
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · Plus</span></button>
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · Plus</span></button>
                 <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · Plus</span></button>
-                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>Use your browser's speech voice</span></button>
+                <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · Plus</span></button>
+                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice on Plus; browser voice otherwise</span></button>
               </div>
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
+              <input data-nbl-beans-knowledge-file type="file" accept=".pdf,.txt,.md,.json,.html,.css,.js,.ts,.py,.doc,.docx,.pptx,.c,.cpp,.cs,.go,.java,.php,.rb,.sh,.tex,application/pdf,application/json,text/plain,text/markdown,text/html" hidden>
             </div>
             <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
             <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans">🎙</button>
@@ -611,7 +616,9 @@
   const beansToolsToggle=beansPanel.querySelector("[data-nbl-tools-toggle]");
   const beansToolsMenu=beansPanel.querySelector("[data-nbl-tools-menu]");
   const beansFileInput=beansPanel.querySelector("[data-nbl-beans-file]");
+  const beansKnowledgeFileInput=beansPanel.querySelector("[data-nbl-beans-knowledge-file]");
   const beansAttachmentsEl=beansPanel.querySelector("[data-nbl-beans-attachments]");
+  const beansKnowledgeEl=beansPanel.querySelector("[data-nbl-beans-knowledge]");
   const beansToolState=beansPanel.querySelector("[data-nbl-tool-state]");
   const beansToolModeLabel=beansPanel.querySelector("[data-nbl-tool-mode-label]");
   const beansToolReset=beansPanel.querySelector("[data-nbl-tool-reset]");
@@ -652,6 +659,12 @@
   let drawerHistoryRequestGeneration=0;
   let beansToolMode="auto";
   let beansAttachments=[];
+  let beansKnowledgeState=null;
+  let beansVoiceMode=false;
+  let beansVoiceRecorder=null;
+  let beansVoiceStream=null;
+  let beansVoiceChunks=[];
+  let beansVoicePlayer=null;
 
   const modalInertState=new Map();
   const setModalIsolation=(panel,open)=>{
@@ -710,6 +723,31 @@
     beansLog.scrollTop=beansLog.scrollHeight;
   };
 
+  const appendBeansFileSources=sources=>{
+    const list=Array.isArray(sources)?sources.filter(item=>item&&typeof item.filename==="string").slice(0,8):[];
+    if(!list.length) return;
+    const box=document.createElement("div");
+    box.setAttribute("aria-label","Beans saved knowledge sources");
+    box.style.margin="8px 0 14px";
+    box.style.padding="10px 12px";
+    box.style.border="1px solid rgba(255,255,255,.12)";
+    box.style.borderRadius="12px";
+    box.style.background="rgba(255,255,255,.035)";
+    const label=document.createElement("strong");
+    label.textContent="Saved knowledge";
+    label.style.display="block";
+    label.style.marginBottom="6px";
+    box.appendChild(label);
+    for(const item of list){
+      const row=document.createElement("div");
+      row.textContent=String(item.filename||"Saved file").slice(0,180);
+      row.style.margin="4px 0";
+      box.appendChild(row);
+    }
+    beansLog.appendChild(box);
+    beansLog.scrollTop=beansLog.scrollHeight;
+  };
+
   const appendBeansImages=images=>{
     const list=Array.isArray(images)?images.filter(src=>typeof src==="string"&&src.startsWith("data:image/")).slice(0,2):[];
     for(const src of list){
@@ -731,7 +769,7 @@
   };
 
   const renderBeansToolState=()=>{
-    const labels={web:"Live web",code:"Code / data",image:"Create image",auto:"Auto"};
+    const labels={web:"Live web",code:"Code / data",image:"Create image",knowledge:"Saved knowledge",auto:"Auto"};
     const hasSpecial=beansToolMode!=="auto";
     beansToolModeLabel.textContent=labels[beansToolMode]||"Auto";
     beansToolState.hidden=!hasSpecial;
@@ -792,9 +830,89 @@
     beansStatus.textContent=`${beansAttachments.length} attachment${beansAttachments.length===1?"":"s"} ready. NBL Chat Plus is required to send them.`;
   };
 
-  const lastBeansReply=()=>[...beansHistory].reverse().find(item=>item.role==="assistant"&&String(item.content||"").trim())?.content||"";
+  const callBeansUtility=async(route,body={})=>{
+    const token=await getNblBeansAuthToken();
+    if(!token) throw new Error("Sign in with your NBL account first.");
+    const response=await fetch(`${NBL_CHAT_GATEWAY_API}${route}`,{
+      method:"POST",
+      headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
+      body:JSON.stringify(body),
+      cache:"no-store"
+    });
+    const payload=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(payload?.message||"That Beans tool is temporarily unavailable.");
+    return payload;
+  };
 
-  const startBeansDictation=()=>{
+  const renderBeansKnowledge=state=>{
+    beansKnowledgeState=state&&typeof state==="object"?state:null;
+    const files=Array.isArray(beansKnowledgeState?.files)?beansKnowledgeState.files:[];
+    beansKnowledgeEl.replaceChildren();
+    if(!beansKnowledgeState){
+      beansKnowledgeEl.hidden=true;
+      return;
+    }
+    const head=document.createElement("div");
+    head.className="nbl-beans-knowledge-head";
+    const usedMb=(Number(beansKnowledgeState?.totalBytes||0)/(1024*1024)).toFixed(1);
+    head.textContent=`Saved knowledge · ${files.length}/20 files · ${usedMb}/50 MB`;
+    beansKnowledgeEl.appendChild(head);
+    if(!files.length){
+      const empty=document.createElement("span");
+      empty.className="nbl-beans-attachment-chip";
+      empty.textContent="No saved knowledge files yet.";
+      beansKnowledgeEl.appendChild(empty);
+    }
+    for(const item of files){
+      const chip=document.createElement("span");
+      chip.className="nbl-beans-attachment-chip";
+      const label=document.createElement("span");
+      const status=item?.status==="completed"?"ready":item?.status==="failed"?"failed":"processing";
+      label.textContent=`${String(item?.filename||"Saved file").slice(0,140)} · ${status}`;
+      const remove=document.createElement("button");
+      remove.type="button";
+      remove.setAttribute("aria-label",`Remove ${String(item?.filename||"saved file")}`);
+      remove.textContent="×";
+      remove.addEventListener("click",async()=>{
+        remove.disabled=true;
+        try{
+          beansStatus.textContent="Removing saved knowledge…";
+          const payload=await callBeansUtility("/knowledge/delete",{fileId:String(item?.id||"")});
+          renderBeansKnowledge(payload?.knowledge);
+          beansStatus.textContent="Saved knowledge file removed.";
+        }catch(error){
+          beansStatus.textContent=error?.message||"That saved file could not be removed.";
+          remove.disabled=false;
+        }
+      });
+      chip.append(label,remove);
+      beansKnowledgeEl.appendChild(chip);
+    }
+    beansKnowledgeEl.hidden=false;
+  };
+
+  const loadBeansKnowledge=async()=>{
+    beansStatus.textContent="Checking saved knowledge…";
+    const payload=await callBeansUtility("/knowledge/status");
+    renderBeansKnowledge(payload?.knowledge);
+    beansStatus.textContent="Saved knowledge is ready.";
+    return payload?.knowledge||null;
+  };
+
+  const uploadBeansKnowledgeFile=async file=>{
+    if(!file) return;
+    beansStatus.textContent="Saving file to Beans knowledge…";
+    const item=await fileToBeansAttachment(file);
+    const payload=await callBeansUtility("/knowledge/upload",{
+      file:{name:item.name,mime:item.mime,data:item.data}
+    });
+    renderBeansKnowledge(payload?.knowledge);
+    beansStatus.textContent=payload?.uploaded?.status==="completed"
+      ?"Saved knowledge file is ready."
+      :"Saved knowledge file is processing. Beans will search it when ready.";
+  };
+
+  const browserBeansDictation=()=>{
     const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
     if(!SpeechRecognition){
       beansStatus.textContent="Voice dictation is not available in this browser.";
@@ -818,6 +936,115 @@
     };
     recognition.start();
   };
+
+  const plusVoiceEligible=async()=>{
+    try{
+      const result=await requestNblMeter();
+      const meter=result?.meter||null;
+      return Boolean(!result?.signInRequired&&(meter?.privileged||meter?.planKey==="chat_plus"));
+    }catch{return false;}
+  };
+
+  const blobToBase64=blob=>new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error("That recording could not be prepared."));
+    reader.onload=()=>{
+      const value=String(reader.result||"");
+      const comma=value.indexOf(",");
+      resolve(comma>=0?value.slice(comma+1):"");
+    };
+    reader.readAsDataURL(blob);
+  });
+
+  const stopBeansVoiceTracks=()=>{
+    try{beansVoiceStream?.getTracks?.().forEach(track=>track.stop());}catch{}
+    beansVoiceStream=null;
+  };
+
+  const toggleBeansVoiceRecording=async()=>{
+    if(beansVoiceRecorder?.state==="recording"){
+      beansVoiceRecorder.stop();
+      return;
+    }
+    if(!(await plusVoiceEligible())){
+      browserBeansDictation();
+      return;
+    }
+    if(!navigator.mediaDevices?.getUserMedia||!("MediaRecorder" in window)){
+      browserBeansDictation();
+      return;
+    }
+    try{
+      beansVoiceStream=await navigator.mediaDevices.getUserMedia({audio:true});
+      const preferred=MediaRecorder.isTypeSupported?.("audio/webm;codecs=opus")
+        ?"audio/webm;codecs=opus"
+        :MediaRecorder.isTypeSupported?.("audio/webm")
+          ?"audio/webm"
+          :MediaRecorder.isTypeSupported?.("audio/mp4")
+            ?"audio/mp4"
+            :"";
+      beansVoiceChunks=[];
+      beansVoiceRecorder=preferred?new MediaRecorder(beansVoiceStream,{mimeType:preferred}):new MediaRecorder(beansVoiceStream);
+      beansVoiceRecorder.addEventListener("dataavailable",event=>{if(event.data?.size) beansVoiceChunks.push(event.data);});
+      beansVoiceRecorder.addEventListener("stop",async()=>{
+        const recorder=beansVoiceRecorder;
+        beansVoiceRecorder=null;
+        stopBeansVoiceTracks();
+        beansMic.disabled=true;
+        beansStatus.textContent="Beans is transcribing…";
+        try{
+          const mime=String(recorder?.mimeType||"audio/webm").split(";")[0]||"audio/webm";
+          const blob=new Blob(beansVoiceChunks,{type:mime});
+          beansVoiceChunks=[];
+          const data=await blobToBase64(blob);
+          const ext=mime==="audio/mp4"?"m4a":mime==="audio/wav"?"wav":"webm";
+          const payload=await callBeansUtility("/voice/transcribe",{audio:{name:`beans-voice.${ext}`,mime,data}});
+          const text=String(payload?.text||"").trim();
+          if(text) beansInput.value=(beansInput.value.trim()?beansInput.value.trim()+" ":"")+text;
+          beansStatus.textContent=text?"OpenAI voice transcription added. Send when ready.":"I couldn't hear that clearly.";
+        }catch(error){
+          beansStatus.textContent=error?.message||"Beans could not transcribe that recording.";
+        }finally{
+          beansMic.disabled=false;
+          beansInput.focus();
+        }
+      },{once:true});
+      beansVoiceRecorder.start();
+      beansStatus.textContent="Listening with OpenAI voice… tap the mic again to stop.";
+    }catch{
+      stopBeansVoiceTracks();
+      browserBeansDictation();
+    }
+  };
+
+  const browserSpeakBeans=text=>{
+    if(!("speechSynthesis" in window)) throw new Error("Read aloud is not available in this browser.");
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+  };
+
+  const speakBeansReply=async(text,{forceOpenAi=false}={})=>{
+    const value=String(text||"").trim();
+    if(!value) return;
+    if(forceOpenAi||await plusVoiceEligible()){
+      try{
+        const payload=await callBeansUtility("/voice/speak",{text:value});
+        if(typeof payload?.audio==="string"&&payload.audio.startsWith("data:audio/")){
+          try{beansVoicePlayer?.pause?.();}catch{}
+          beansVoicePlayer=new Audio(payload.audio);
+          await beansVoicePlayer.play();
+          return;
+        }
+      }catch(error){
+        if(forceOpenAi) beansStatus.textContent=error?.message||"OpenAI voice is temporarily unavailable.";
+      }
+    }
+    try{browserSpeakBeans(value);}catch(error){beansStatus.textContent=error?.message||"Read aloud is not available.";}
+  };
+
+  const lastBeansReply=()=>[...beansHistory].reverse().find(item=>item.role==="assistant"&&String(item.content||"").trim())?.content||"";
+
+  const startBeansDictation=()=>{ void toggleBeansVoiceRecording(); };
 
   const getSignedInNblIdentity=async()=>{
     try{
@@ -1274,6 +1501,7 @@
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply);
       appendBeansSources(payload?.sources);
+      appendBeansFileSources(payload?.fileSources);
       appendBeansImages(payload?.generatedImages);
       const used=Array.isArray(payload?.toolsUsed)?payload.toolsUsed:[];
       beansStatus.textContent=payload?.webSearchUsed
@@ -1282,9 +1510,12 @@
           ?"Beans used the code/data tool."
           :used.includes("image")
             ?"Beans created an image."
-            :payload?.authenticated
-              ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
-              :"Beans replied.";
+            :used.includes("file")&&Array.isArray(payload?.fileSources)&&payload.fileSources.length
+              ?"Beans searched your saved knowledge."
+              :payload?.authenticated
+                ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
+                :"Beans replied.";
+      if(beansVoiceMode) void speakBeansReply(reply,{forceOpenAi:true});
       clearBeansTools();
     }catch(error){
       if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
@@ -1303,8 +1534,13 @@
   beansFileInput.addEventListener("change",async()=>{
     try{await addBeansFiles(beansFileInput.files);}catch(error){beansStatus.textContent=error?.message||"That upload could not be added.";}
   });
+  beansKnowledgeFileInput.addEventListener("change",async()=>{
+    const file=beansKnowledgeFileInput.files?.[0]||null;
+    beansKnowledgeFileInput.value="";
+    try{await uploadBeansKnowledgeFile(file);}catch(error){beansStatus.textContent=error?.message||"That file could not be saved to Beans knowledge.";}
+  });
   beansMic.addEventListener("click",startBeansDictation);
-  beansToolsMenu.addEventListener("click",event=>{
+  beansToolsMenu.addEventListener("click",async event=>{
     const button=event.target.closest("[data-nbl-tool]");
     if(!button) return;
     const tool=button.dataset.nblTool;
@@ -1313,14 +1549,44 @@
       beansFileInput.click();
       return;
     }
+    if(tool==="knowledge-upload"){
+      setBeansToolMenu(false);
+      beansKnowledgeFileInput.click();
+      return;
+    }
+    if(tool==="knowledge"){
+      setBeansToolMenu(false);
+      try{
+        const state=await loadBeansKnowledge();
+        if(!Number(state?.fileCount||0)){
+          beansStatus.textContent="Save a knowledge file first.";
+          return;
+        }
+        beansToolMode="knowledge";
+        renderBeansToolState();
+        beansStatus.textContent="Saved knowledge selected · ask Beans about your files.";
+        beansInput.focus();
+      }catch(error){beansStatus.textContent=error?.message||"Saved knowledge is temporarily unavailable.";}
+      return;
+    }
+    if(tool==="voice-mode"){
+      setBeansToolMenu(false);
+      if(!(await plusVoiceEligible())){
+        beansStatus.textContent="OpenAI voice mode requires NBL Chat Plus. The mic still supports browser dictation.";
+        return;
+      }
+      beansVoiceMode=!beansVoiceMode;
+      beansStatus.textContent=beansVoiceMode
+        ?"OpenAI voice mode is on. Tap the mic to talk; Beans will speak replies."
+        :"OpenAI voice mode is off.";
+      return;
+    }
     if(tool==="read"){
       setBeansToolMenu(false);
       const reply=lastBeansReply();
       if(!reply){beansStatus.textContent="Beans has not replied yet.";return;}
-      if(!("speechSynthesis" in window)){beansStatus.textContent="Read aloud is not available in this browser.";return;}
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(reply));
       beansStatus.textContent="Reading Beans' last reply aloud.";
+      void speakBeansReply(reply);
       return;
     }
     if(["web","code","image"].includes(tool)){
