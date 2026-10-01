@@ -61,6 +61,17 @@ requireText(account,'id="membershipCard"',"Account membership status card is mis
 requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout action is missing.");
 requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to the backend.");
 requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
+requireText(header,'data-nbl-tool="knowledge-upload"',"Beans saved-knowledge upload control is missing.");
+requireText(header,'data-nbl-tool="knowledge"',"Beans saved-knowledge search control is missing.");
+requireText(header,'"/knowledge/upload"',"Beans saved-knowledge upload API route is missing.");
+requireText(header,'"/knowledge/status"',"Beans saved-knowledge status API route is missing.");
+requireText(header,'"/knowledge/delete"',"Beans saved-knowledge delete API route is missing.");
+requireText(header,'data-nbl-tool="voice-mode"',"Beans OpenAI voice-mode control is missing.");
+requireText(header,'"/voice/transcribe"',"Beans OpenAI transcription route is missing.");
+requireText(header,'"/voice/speak"',"Beans OpenAI speech route is missing.");
+requireText(header,'appendBeansFileSources(payload?.fileSources)',"Saved-file citations are not rendered.");
+requireText(header,'MediaRecorder',"OpenAI voice recording does not use browser audio capture.");
+requireText(header,'browserBeansDictation',"Browser dictation fallback is missing.");
 requireText(header,'NBL_ACCOUNT_STORE_API',"Account/history storage endpoint is missing.");
 
 // Preserved University source remains present but is not a Chat Plus door.
@@ -95,6 +106,6 @@ for(const forbidden of [
 if(failed){
   process.exitCode=1;
 }else{
-  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, metered Beans continuity, premium tool controls, hidden/preserved University source, world routes, deletion controls, and secret guards are present.");
+  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, metered Beans continuity, premium tool controls including saved knowledge and voice, hidden/preserved University source, world routes, deletion controls, and secret guards are present.");
   console.log("[website-chat-parity] EXTERNAL LIVE CHECK: Clerk-hosted account flows and responsive browser behavior still require a real browser pass after this source audit.");
 }
