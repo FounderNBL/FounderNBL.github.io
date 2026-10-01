@@ -142,7 +142,7 @@ requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not u
 requireText(terms,"University checkout is handled on NBLWorld.com.","Terms do not preserve the Chat / University commerce split.");
 requireText(university,'https://nblworld.com/university.html#enroll',"Public University handoff does not point to NBL World enrollment.");
 requireText(university,"regular Beans / NBL Chat™","Public University handoff does not preserve regular Chat on NewBeansland.org.");
-requireText(university,"Professor Grey™, University enrollment","Public University handoff does not move Grey / University to NBL World.");
+requireText(university,"NBL CHAT PLUS™ includes Professor Grey™ / Virgo System™ general reasoning","Public University handoff does not preserve the new Chat Plus Grey/Virgo boundary.");
 forbidText(university,'data-nbl-university-checkout',"Public New Beansland University page still contains University checkout controls.");
 forbidText(university,'nbl-university-checkout.js',"Public New Beansland University page still loads the retired University checkout bridge.");
 forbidText(university,"https://buy.stripe.com/","Public New Beansland University page contains a raw Stripe checkout.");
@@ -201,4 +201,4 @@ for(const forbidden of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_
 }
 
 if(failed) process.exitCode=1;
-else console.log("[website-repair] PASS: regular Beans/Chat remains on NewBeansland.org, University/Grey commerce hands off to NBL World, Chat billing stays authenticated, and existing history/accessibility/security boundaries remain intact.");
+else console.log("[website-repair] PASS: NBL Chat™ and Chat Plus Grey/Virgo remain on NewBeansland.org, protected University commerce hands off to NBL World, Chat billing stays authenticated, and existing history/accessibility/security boundaries remain intact.");
