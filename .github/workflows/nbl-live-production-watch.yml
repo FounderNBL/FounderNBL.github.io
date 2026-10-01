@@ -2,9 +2,9 @@ name: NBL live production watch
 
 on:
   schedule:
-    # Twice weekly: Monday and Thursday. This keeps the live browser watch
-    # roughly 3–4 days apart without wasting hourly CI runs.
-    - cron: "17 14 * * 1,4"
+    # Daily production smoke check using the existing public-repo CI instead of
+    # adding another paid monitoring service.
+    - cron: "17 14 * * *"
   workflow_dispatch:
 
 permissions:
@@ -29,17 +29,18 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Check the live NBL web app
-        # NBL_BASE_URL intentionally tells the shared smoke suite that this is
-        # production, so branch-only release-candidate assertions stay on the
-        # local PR browser run until the Founder actually publishes them.
+      - name: Check key live routes over HTTPS
+        run: |
+          set -euo pipefail
+          for url in             https://newbeansland.org/             https://newbeansland.org/books.html             https://newbeansland.org/stories.html             https://newbeansland.org/founder-office.html             https://newbeansland.org/studio/             https://newbeansland.org/account.html             https://newbeansland.org/university.html; do
+            curl --fail --silent --show-error --location --max-time 20 --output /dev/null "$url"
+          done
+
+      - name: Check the live NBL web app on desktop and mobile
         env:
           NBL_BASE_URL: https://newbeansland.org
-          # Pull requests still point at the currently deployed site, so do not
-          # expect unreleased billing UI there. Scheduled/manual runs on main
-          # happen after publication and must verify the billing release UI.
-          NBL_EXPECT_BILLING_LIVE: ${{ github.event_name == 'pull_request' && '0' || '1' }}
-        run: npx playwright test --project=chromium
+          NBL_EXPECT_BILLING_LIVE: "1"
+        run: npx playwright test --project=chromium --project=mobile-chromium
 
       - name: Upload failure evidence
         if: failure()
@@ -50,3 +51,4 @@ jobs:
             playwright-report/
             test-results/
           if-no-files-found: ignore
+          retention-days: 7
