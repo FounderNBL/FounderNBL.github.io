@@ -93,7 +93,7 @@
         <p class="status">NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™, powered by OpenAI, and unlocks premium Beans tools. Professor Grey™ / Virgo System™ general reasoning is included. Protected course teaching remains tied to eligible NBL University entitlement.</p>
       </section>
 
-      <section class="card hidden" id="founderActionsCard">
+      <section class="card hidden" id="founder-actions">
         <h2>LOCKE needs Founder approval</h2>
         <p id="founderActionsStatus" class="status">Checking the Founder queue…</p>
         <div id="founderActions" class="fulfillment-list"></div>
@@ -154,7 +154,7 @@
     const replyRemaining=document.getElementById("replyRemaining");
     const topUpRemaining=document.getElementById("topUpRemaining");
     const membershipButtons=[...document.querySelectorAll("[data-account-billing-plan]")];
-    const founderActionsCard=document.getElementById("founderActionsCard");
+    const founderActionsCard=document.getElementById("founder-actions");
     const founderActionsStatus=document.getElementById("founderActionsStatus");
     const founderActions=document.getElementById("founderActions");
     const deliveryCard=document.getElementById("deliveryCard");
@@ -350,8 +350,8 @@
           return;
         }
         founderActionsCard.classList.remove("hidden");
-        founderActionsCard.id="founder-actions";
         founderActionsStatus.textContent=pending+" Founder action"+(pending===1?" is":"s are")+" waiting. LOCKE will not release them without you.";
+        if(location.hash==="#founder-actions") founderActionsCard.scrollIntoView({behavior:"smooth",block:"start"});
         const payload=await fulfillmentFetch({operation:"founder_list",status:"pending_founder_approval",limit:100});
         for(const item of payload?.requests||[]){
           const card=document.createElement("article");card.className="fulfillment-item";
