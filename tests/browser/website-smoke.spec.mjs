@@ -19,19 +19,19 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator('.world-card[href="founder-office.html"]')).toBeVisible();
   });
 
-  test("NBL Chat opens in a real browser", async ({ page }) => {
+  test("NBL Chat™ opens in a real browser", async ({ page }) => {
     await open("/", page);
 
-    const launcher = page.getByRole("button", { name: "Open NBL Chat" });
+    const launcher = page.getByRole("button", { name: "Open NBL Chat™" });
     await expect(launcher).toBeVisible();
     await launcher.click();
 
     await expect(page.locator("#nbl-beans-panel")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "NBL Chat" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "NBL Chat™" })).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect(page.getByRole("tab", { name: "Beans" })).toBeVisible();
-    await expect(page.getByRole("tab", { name: /NBL University Professor Grey/i })).toBeHidden();
+    await expect(page.getByRole("tab", { name: /NBL University Professor Grey™/i })).toBeHidden();
     await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
     await page.getByRole("button", { name: "Open Beans tools" }).click();
     await expect(page.getByRole("button", { name: /Photo \/ file/i })).toBeVisible();
@@ -39,10 +39,10 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.getByRole("button", { name: /Code \/ data analysis/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Create an image/i })).toBeVisible();
     if (expectBillingReleaseUi) {
-      await page.getByRole("button", { name: /Open NBL Chat menu/i }).click();
+      await page.getByRole("button", { name: /Open NBL Chat™ menu/i }).click();
       await page.getByRole("button", { name: /Membership & plans/i }).click();
       await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
-      await expect(page.getByRole("button", { name: "Choose Chat Plus" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Choose NBL CHAT PLUS™" })).toBeVisible();
       await expect(page.getByRole("button", { name: /Get \+500 replies/i })).toBeVisible();
     }
   });
@@ -70,7 +70,7 @@ test.describe("New Beansland web app browser smoke", () => {
 
     await expect(page).toHaveTitle(/New Beansland University/i);
     await expect(page.locator("body")).toContainText("NBL University lives in NBL World.");
-    await expect(page.locator("body")).toContainText("regular Beans / NBL Chat");
+    await expect(page.locator("body")).toContainText("regular Beans / NBL Chat™");
     await expect(page.getByRole("link", { name: /Enter New Beansland University in NBL World/i })).toHaveAttribute(
       "href",
       "https://nblworld.com/university.html#enroll",
