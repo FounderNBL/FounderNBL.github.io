@@ -65,17 +65,17 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
   });
 
-  test("University remains an enrollment door, not a public classroom", async ({ page }) => {
+  test("University enrollment hands off to NBL World while Chat stays here", async ({ page }) => {
     await open("/university.html", page);
 
     await expect(page).toHaveTitle(/New Beansland University/i);
-    await expect(page.locator("body")).toContainText("Foundation Program");
-    await expect(page.locator("body")).toContainText(/enrollment/i);
-    if (expectBillingReleaseUi) {
-      await expect(page.locator('[data-nbl-university-checkout="foundation"]').first()).toBeVisible();
-      await expect(page.locator('[data-nbl-university-checkout="full_foundation"]').first()).toBeVisible();
-      await expect(page.locator("body")).not.toContainText("Account connection is optional.");
-    }
+    await expect(page.locator("body")).toContainText("NBL University lives in NBL World.");
+    await expect(page.locator("body")).toContainText("regular Beans / NBL Chat");
+    await expect(page.getByRole("link", { name: /Enter New Beansland University in NBL World/i })).toHaveAttribute(
+      "href",
+      "https://nblworld.com/university.html#enroll",
+    );
+    await expect(page.locator('[data-nbl-university-checkout]')).toHaveCount(0);
   });
 
   test("account recovery remains reachable", async ({ page }) => {
