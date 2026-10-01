@@ -102,6 +102,7 @@ requireText(header,"Beans includes limited free replies. Sign in to keep your hi
 requireText(header,"future NBL Chat™ features and upcoming testing opportunities","Homepage still describes Chat as unreleased.");
 
 requireText(header,'chatDrawer.querySelector("[data-nbl-chat-drawer-close]")?.focus()',"Opening the drawer does not move focus inside it.");
+requireText(header,'if(opening)setBeansToolMenu(false);',"Opening the Chat drawer does not close the Beans tool menu.");
 requireText(drawerOpen,'chatDrawer.inert=false',"The drawer is not available to keyboard focus when opened.");
 requireText(drawerOpen,'chatDrawer.inert=true',"The drawer is not removed from focus when closed.");
 requireText(header,'if(event.shiftKey&&(document.activeElement===first||!chatDrawer.contains(document.activeElement)))',"Drawer focus is not trapped on Shift+Tab.");
