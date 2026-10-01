@@ -42,10 +42,15 @@ forbidText(header,'nbl-chat.replit.app',"Website still depends on the old Replit
 forbidText(header,'NBL_ACCOUNT_API',"Legacy Replit account API constant is still present.");
 forbidText(header,'exam-prep/access',"Legacy Replit University access route is still present.");
 requireText(header,'fetch(NBL_CHAT_PLUS_API',"University account status is not using the canonical NBL Foundation runtime.");
-requireText(header,'NBL University and Professor Grey are separate.',"Public Chat header does not state the University separation.");
+requireText(header,'NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™ — powered by OpenAI.',"Public Chat header does not state the trademarked Plus brand line.");
 
 // Website-standard Chat shell and Beans continuity.
-requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat drawer is missing.");
+requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat™ drawer is missing.");
+requireText(header,'NBL Chat™',"NBL Chat™ trademark display is missing.");
+requireText(header,'NBL CHAT PLUS™',"NBL CHAT PLUS™ trademark display is missing.");
+requireText(header,'Professor Grey™',"Professor Grey™ trademark display is missing.");
+requireText(header,'Virgo System™',"Virgo System™ trademark display is missing.");
+requireText(header,'powered by OpenAI',"OpenAI provider brand line is missing.");
 requireText(header,'data-nbl-drawer-new',"Website-standard New Chat action is missing.");
 requireText(header,'?action=conversations',"Website-standard recent Chat history is missing.");
 requireText(header,'data-nbl-drawer-grey hidden',"Preserved Professor Grey entry must stay hidden from public Chat.");
