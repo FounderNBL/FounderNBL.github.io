@@ -500,7 +500,7 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-tools>
             <span class="nbl-chat-drawer-fallback" aria-hidden="true">+</span>
-            <span><strong>Beans tools</strong><small>Photos, files, web, code/data, and image creation</small></span>
+            <span><strong>Beans tools</strong><small>Photos, saved knowledge, web, code/data, images, and voice</small></span>
           </button>
 
           <a class="nbl-chat-drawer-item" href="/account.html">
@@ -534,17 +534,22 @@
             <button type="button" data-nbl-tool-reset aria-label="Clear selected Beans tool">×</button>
           </div>
           <div class="nbl-beans-attachments" data-nbl-beans-attachments hidden></div>
+          <div class="nbl-beans-knowledge" data-nbl-beans-knowledge hidden></div>
           <div class="nbl-beans-composer">
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
                 <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · Plus</span></button>
+                <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · Plus</span></button>
+                <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · Plus</span></button>
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · Plus</span></button>
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · Plus</span></button>
                 <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · Plus</span></button>
-                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>Use your browser's speech voice</span></button>
+                <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Talk to Beans and hear replies · Plus</span></button>
+                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice on Plus; browser voice otherwise</span></button>
               </div>
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
+              <input data-nbl-beans-knowledge-file type="file" accept=".pdf,.txt,.md,.json,.html,.css,.js,.ts,.py,.doc,.docx,.pptx,.c,.cpp,.cs,.go,.java,.php,.rb,.sh,.tex,application/pdf,application/json,text/plain,text/markdown,text/html" hidden>
             </div>
             <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
             <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans">🎙</button>
@@ -611,7 +616,9 @@
   const beansToolsToggle=beansPanel.querySelector("[data-nbl-tools-toggle]");
   const beansToolsMenu=beansPanel.querySelector("[data-nbl-tools-menu]");
   const beansFileInput=beansPanel.querySelector("[data-nbl-beans-file]");
+  const beansKnowledgeFileInput=beansPanel.querySelector("[data-nbl-beans-knowledge-file]");
   const beansAttachmentsEl=beansPanel.querySelector("[data-nbl-beans-attachments]");
+  const beansKnowledgeEl=beansPanel.querySelector("[data-nbl-beans-knowledge]");
   const beansToolState=beansPanel.querySelector("[data-nbl-tool-state]");
   const beansToolModeLabel=beansPanel.querySelector("[data-nbl-tool-mode-label]");
   const beansToolReset=beansPanel.querySelector("[data-nbl-tool-reset]");
@@ -652,6 +659,12 @@
   let drawerHistoryRequestGeneration=0;
   let beansToolMode="auto";
   let beansAttachments=[];
+  let beansKnowledgeState=null;
+  let beansVoiceMode=false;
+  let beansVoiceRecorder=null;
+  let beansVoiceStream=null;
+  let beansVoiceChunks=[];
+  let beansVoicePlayer=null;
 
   const modalInertState=new Map();
   const setModalIsolation=(panel,open)=>{
