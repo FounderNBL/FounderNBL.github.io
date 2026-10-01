@@ -48,7 +48,7 @@ requireText(js,'data-nbl-drawer-new',"New Chat drawer action is missing.");
 requireText(js,'data-nbl-drawer-grey hidden',"Preserved Grey drawer entry is not hidden from public Chat.");
 requireText(js,'data-nbl-drawer-plans',"Membership & plans drawer action is missing.");
 requireText(js,'?action=conversations',"Recent saved conversations are not loaded into the NBL drawer.");
-requireText(js,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More',"Drawer prices are not sourced from the canonical catalog.");
+requireText(js,'${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · Get More',"Drawer prices are not sourced from the canonical catalog.");
 requireText(js,'${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}',"NBL CHAT PLUS™ drawer price is missing.");
 requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}',"Get More drawer price is missing.");
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time']){
