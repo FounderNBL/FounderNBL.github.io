@@ -68,6 +68,8 @@ requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to
 requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
 requireText(header,'data-nbl-tool="knowledge-upload"',"Beans saved-knowledge upload control is missing.");
 requireText(header,'data-nbl-tool="knowledge"',"Beans saved-knowledge search control is missing.");
+requireText(header,'data-nbl-tool="grey"',"NBL CHAT PLUS™ Professor Grey™ tool is missing.");
+requireText(header,'mode:beansToolMode==="grey"?"grey_chat":"beans"',"Professor Grey™ / Virgo System™ Plus mode is not sent to the backend.");
 requireText(header,'"/knowledge/upload"',"Beans saved-knowledge upload API route is missing.");
 requireText(header,'"/knowledge/status"',"Beans saved-knowledge status API route is missing.");
 requireText(header,'"/knowledge/delete"',"Beans saved-knowledge delete API route is missing.");
@@ -79,7 +81,7 @@ requireText(header,'MediaRecorder',"OpenAI voice recording does not use browser 
 requireText(header,'browserBeansDictation',"Browser dictation fallback is missing.");
 requireText(header,'NBL_ACCOUNT_STORE_API',"Account/history storage endpoint is missing.");
 
-// Preserved University source remains present but is not a Chat Plus door.
+// Protected University source remains present and separate from the Chat Plus general Grey/Virgo door.
 requireText(header,'action:"status"',"Preserved University access check is missing.");
 requireText(header,'action:"chat"',"Unified Foundation request route is missing.");
 requireText(header,'APSK 101',"APSK 101 is missing.");
@@ -111,6 +113,6 @@ for(const forbidden of [
 if(failed){
   process.exitCode=1;
 }else{
-  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, metered Beans continuity, premium tool controls including saved knowledge and voice, hidden/preserved University source, world routes, deletion controls, and secret guards are present.");
+  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, metered Beans continuity, premium tool controls including Grey/Virgo, saved knowledge and voice, protected University source, world routes, deletion controls, and secret guards are present.");
   console.log("[website-chat-parity] EXTERNAL LIVE CHECK: Clerk-hosted account flows and responsive browser behavior still require a real browser pass after this source audit.");
 }
