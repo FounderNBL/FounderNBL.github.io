@@ -545,7 +545,7 @@
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · Plus</span></button>
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · Plus</span></button>
                 <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · Plus</span></button>
-                <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Talk to Beans and hear replies · Plus</span></button>
+                <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · Plus</span></button>
                 <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice on Plus; browser voice otherwise</span></button>
               </div>
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
