@@ -167,6 +167,8 @@ requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout contro
 requireText(header,'/billing/checkout',"Chat checkout is not routed through the server gateway.");
 requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
 requireText(support,'data-nbl-plan-value="chatPlus.price"',"Support does not use the canonical Chat Plus price.");
+requireText(support,'https://nblworld.com/university.html#enroll',"Support does not route University enrollment to NBL World.");
+forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
 requireText(support,"Signed-in website checkout is available from Membership & plans in NBL Chat.","Support does not document signed-in Chat checkout.");
 requireText(terms,"Signed-in website checkout is available through NBL Chat.","Terms do not document authenticated website checkout.");
 requireText(privacy,"signed-in website checkout is handed off to Stripe","Privacy does not document Stripe checkout handling.");
