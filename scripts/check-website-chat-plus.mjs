@@ -21,8 +21,8 @@ requireText(js,'NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API',"Signed-out Beans is not us
 requireText(js,'NBL_CHAT_GATEWAY_API',"Signed-in Beans gateway endpoint is missing.");
 requireText(js,'const endpoint=accountToken?\`\${NBL_CHAT_GATEWAY_API}/chat\`:NBL_BEANS_WEB_API',"Signed-in Beans is not routed through the metered gateway.");
 requireText(js,'data-nbl-chat-mode="beans"',"Beans mode is missing.");
-requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
-requireText(js,'NBL_CHAT_PLUS_API',"NBL Chat Plus runtime endpoint is missing.");
+requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
+requireText(js,'NBL_CHAT_PLUS_API',"NBL CHAT PLUS™ runtime endpoint is missing.");
 requireText(js,'functions/v1/nbl-foundation-runtime',"Canonical NBL Foundation runtime endpoint is missing.");
 requireText(js,'action:"status"',"Plus access is not checked server-side.");
 requireText(js,'action:"chat"',"Unified Chat mode controller is missing.");
@@ -33,7 +33,7 @@ requireText(js,'ANSY 110',"ANSY 110 is missing.");
 requireText(js,'EBPR 120',"EBPR 120 is missing.");
 requireText(js,'beansHistoryLoadedFor',"Signed-in Beans history is not tracked per account.");
 requireText(js,'clerk.addListener',"Account state changes do not retrigger Beans/Plus continuity.");
-requireText(js,'University / Professor Grey access is separate.',"Plus catalog does not separate University/Grey.");
+requireText(js,'NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™ — powered by OpenAI.',"NBL CHAT PLUS™ brand line is missing.");
 requireText(js,'data-nbl-drawer-tools',"Beans tools drawer entry is missing.");
 requireText(js,'data-nbl-tools-toggle',"Beans + tool button is missing.");
 requireText(js,'data-nbl-tool="attach"',"Photo/file tool is missing.");
@@ -42,22 +42,22 @@ requireText(js,'data-nbl-tool="code"',"Code/data tool is missing.");
 requireText(js,'data-nbl-tool="image"',"Image creation tool is missing.");
 requireText(js,'data-nbl-beans-mic',"Browser dictation control is missing.");
 requireText(js,'appendBeansImages',"Generated-image rendering is missing.");
-requireText(js,'<h2 id="nbl-beans-title">NBL Chat</h2>',"Overall website Chat title must be NBL Chat, not the Plus tier.");
-requireText(js,'data-nbl-chat-drawer',"NBL Chat side drawer is missing.");
+requireText(js,'<h2 id="nbl-beans-title">NBL Chat™</h2>',"Overall website Chat title must be NBL Chat™, not the Plus tier.");
+requireText(js,'data-nbl-chat-drawer',"NBL Chat™ side drawer is missing.");
 requireText(js,'data-nbl-drawer-new',"New Chat drawer action is missing.");
 requireText(js,'data-nbl-drawer-grey hidden',"Preserved Grey drawer entry is not hidden from public Chat.");
 requireText(js,'data-nbl-drawer-plans',"Membership & plans drawer action is missing.");
 requireText(js,'?action=conversations',"Recent saved conversations are not loaded into the NBL drawer.");
-requireText(js,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More',"Drawer prices are not sourced from the canonical catalog.");
-requireText(js,'${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}',"NBL Chat Plus drawer price is missing.");
+requireText(js,'${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · Get More',"Drawer prices are not sourced from the canonical catalog.");
+requireText(js,'${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}',"NBL CHAT PLUS™ drawer price is missing.");
 requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}',"Get More drawer price is missing.");
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time']){
   requireText(plans,value,`Canonical locked product value is missing: ${value}`);
 }
-requireText(js,'NBL Chat Plus is required to send them.',"Attachment Plus-boundary status is missing.");
-requireText(js,'Live web selected · NBL Chat Plus.',"Web-tool Plus-boundary status is missing.");
-requireText(js,'Code / data analysis selected · NBL Chat Plus.',"Code-tool Plus-boundary status is missing.");
-requireText(js,'Image creation selected · NBL Chat Plus.',"Image-tool Plus-boundary status is missing.");
+requireText(js,'NBL CHAT PLUS™ is required to send them.',"Attachment Plus-boundary status is missing.");
+requireText(js,'Live web selected · NBL CHAT PLUS™.',"Web-tool Plus-boundary status is missing.");
+requireText(js,'Code / data analysis selected · NBL CHAT PLUS™.',"Code-tool Plus-boundary status is missing.");
+requireText(js,'Image creation selected · NBL CHAT PLUS™.',"Image-tool Plus-boundary status is missing.");
 requireText(css,'.nbl-chat-modes',"Chat mode styling is missing.");
 requireText(css,'.nbl-plus-access',"Plus access styling is missing.");
 requireText(css,'.nbl-chat-drawer',"NBL Chat drawer styling is missing.");
@@ -75,4 +75,4 @@ if(beansListener!==1){
   process.exitCode=1;
 }
 
-if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat keeps Beans public, routes signed-in use through metering, exposes the + tool rail, keeps Grey/University hidden and separate from Plus, preserves history, and contains no public secrets.");
+if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat™ keeps Beans public, routes signed-in use through metering, exposes the + tool rail, keeps Grey/University hidden and separate from Plus, preserves history, and contains no public secrets.");

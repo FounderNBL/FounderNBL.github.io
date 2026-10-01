@@ -14,7 +14,7 @@
     if(/\/about\.html$/.test(path)||/\/jamel-hawkins\.html$/.test(path)) return {label:"About NBL",key:"about"};
     if(/\/account\.html$/.test(path)) return {label:"My NBL Account",key:"account"};
     if(/\/search\.html$/.test(path)) return {label:"Search New Beansland",key:"search"};
-    if(/\/privacy\.html$/.test(path)||/\/terms\.html$/.test(path)||/\/account-deletion\.html$/.test(path)||/\/nbl-chat-/.test(path)) return {label:"NBL Chat Legal",key:"legal"};
+    if(/\/privacy\.html$/.test(path)||/\/terms\.html$/.test(path)||/\/account-deletion\.html$/.test(path)||/\/nbl-chat-/.test(path)) return {label:"NBL Chat™ Legal",key:"legal"};
     return {label:"Stories · Questions · Worlds",key:""};
   })();
 
@@ -374,9 +374,9 @@
         </span>
       </a>
       <div class="nbl-world-home-actions">
-        <button class="nbl-world-beans-toggle nbl-world-chat-launch" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open NBL Chat">
+        <button class="nbl-world-beans-toggle nbl-world-chat-launch" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open NBL Chat™">
           <img src="data:image/webp;base64,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" alt="" aria-hidden="true">
-          <span>NBL Chat</span>
+          <span>NBL Chat™</span>
         </button>
         <a class="nbl-world-nblworld-link" href="https://nblworld.com/" aria-label="Enter NBL World">NBL World</a>
       </div>
@@ -389,7 +389,7 @@
           <small>${room.label}</small>
         </span>
       </a>
-      <button class="nbl-world-beans-toggle" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open NBL Chat">NBL Chat</button>
+      <button class="nbl-world-beans-toggle" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open NBL Chat™">NBL Chat™</button>
       <button class="nbl-world-account nbl-world-account-primary" type="button">Sign in</button>
       <div class="nbl-world-user" hidden aria-label="NBL account"></div>
       <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland worlds">Worlds</button>
@@ -432,34 +432,34 @@
   beansPanel.className="nbl-beans-panel";
   beansPanel.id="nbl-beans-panel";
   beansPanel.hidden=true;
-  beansPanel.setAttribute("aria-label","NBL Chat");
+  beansPanel.setAttribute("aria-label","NBL Chat™");
   beansPanel.innerHTML=`
     <div class="nbl-beans-card" role="dialog" aria-modal="true" aria-labelledby="nbl-beans-title">
       <div class="nbl-beans-head">
-        <button class="nbl-chat-drawer-toggle" type="button" data-nbl-chat-drawer-toggle aria-expanded="false" aria-controls="nbl-chat-drawer" aria-label="Open NBL Chat menu">
+        <button class="nbl-chat-drawer-toggle" type="button" data-nbl-chat-drawer-toggle aria-expanded="false" aria-controls="nbl-chat-drawer" aria-label="Open NBL Chat™ menu">
           <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
         </button>
         <div class="nbl-beans-title-wrap">
           <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-beans-avatar">
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
-            <h2 id="nbl-beans-title">NBL Chat</h2>
-            <p class="nbl-beans-note">Beans is NBL Chat. Plus opens premium Beans tools; NBL University and Professor Grey are separate.</p>
+            <h2 id="nbl-beans-title">NBL Chat™</h2>
+            <p class="nbl-beans-note">Beans is NBL Chat™. NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™ — powered by OpenAI. Professor Grey™ course access remains protected by LOCKE and eligible NBL University enrollment.</p>
           </div>
         </div>
-        <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close NBL Chat">✕</button>
+        <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close NBL Chat™">✕</button>
       </div>
 
       <div class="nbl-chat-drawer-shade" data-nbl-chat-drawer-shade hidden></div>
-      <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="NBL Chat menu" tabindex="-1" hidden>
+      <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="NBL Chat™ menu" tabindex="-1" hidden>
         <div class="nbl-chat-drawer-head">
           <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-chat-drawer-logo">
           <div>
             <p>New Beansland™</p>
-            <strong>NBL Chat</strong>
+            <strong>NBL Chat™</strong>
             <small>Beans, tools, history, and your NBL account.</small>
           </div>
-          <button type="button" data-nbl-chat-drawer-close aria-label="Close NBL Chat menu">✕</button>
+          <button type="button" data-nbl-chat-drawer-close aria-label="Close NBL Chat™ menu">✕</button>
         </div>
         <div class="nbl-chat-drawer-scroll">
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-new>
@@ -478,16 +478,16 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-grey hidden>
             <img src="/NBL_University.png" alt="" aria-hidden="true">
-            <span><strong>Professor Grey</strong><small>NBL University faculty · University entitlement required</small></span>
+            <span><strong>Professor Grey™</strong><small>Virgo System™ faculty layer · NBL University entitlement required</small></span>
           </button>
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
             <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
-            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} Plus · Get More</small></span>
+            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · Get More</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
             <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. University / Professor Grey access is separate.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus">Choose Chat Plus</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. ${NBL_PRODUCT_PLANS.chatPlus.brandLine}. Professor Grey™ course access remains University-entitlement gated.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus">Choose NBL CHAT PLUS™</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
             <button class="nbl-billing-manage" type="button" data-nbl-billing-portal>Manage billing</button>
             <p class="nbl-billing-status" data-nbl-billing-status role="status">Sign in with your NBL account before checkout so LOCKE can attach the purchase to the right account.</p>
@@ -518,9 +518,9 @@
         </div>
       </aside>
 
-      <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat mode">
+      <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat™ mode">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
-        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey" tabindex="-1" hidden>University</button>
+        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™" tabindex="-1" hidden>University</button>
       </div>
 
       <section id="nbl-chat-panel-beans" role="tabpanel" aria-labelledby="nbl-chat-tab-beans" tabindex="0" data-nbl-beans-regular>
@@ -557,16 +557,16 @@
           </div>
         </form>
         <p class="nbl-beans-note" style="margin-top:10px">
-          Signed-in chats may be stored with your NBL account and processed by service providers to provide NBL Chat. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
+          Signed-in chats may be stored with your NBL account and processed by service providers to provide NBL Chat™. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
         </p>
         <p class="nbl-beans-status" data-nbl-beans-status role="status">Beans includes limited free replies. Sign in to keep your history and use your NBL membership.</p>
       </section>
 
       <section id="nbl-chat-panel-plus" class="nbl-plus-shell" role="tabpanel" aria-labelledby="nbl-chat-tab-plus" tabindex="0" data-nbl-plus hidden>
         <div class="nbl-plus-access" data-nbl-plus-access tabindex="-1">
-          <p class="nbl-beans-kicker">NBL Chat Plus</p>
-          <h3>Beans · Guided Learning on · Professor Grey</h3>
-          <p data-nbl-plus-access-copy>Turn on Guided Learning after LOCKE confirms your course enrollment and Grey access.</p>
+          <p class="nbl-beans-kicker">NBL CHAT PLUS™</p>
+          <h3>Professor Grey™ · Virgo System™ · powered by OpenAI</h3>
+          <p data-nbl-plus-access-copy>Turn on Guided Learning after LOCKE confirms your course enrollment and Professor Grey™ access.</p>
           <button type="button" data-nbl-plus-signin>Sign in to check access</button>
         </div>
 
@@ -580,17 +580,17 @@
             </select>
           </div>
           <div class="nbl-beans-log nbl-plus-log" data-nbl-plus-log aria-live="polite">
-            <div class="nbl-beans-message is-beans"><strong>Professor Grey</strong><p>Choose your course and ask me about the lesson.</p></div>
+            <div class="nbl-beans-message is-beans"><strong>Professor Grey™</strong><p>Choose your course and ask me about the lesson.</p></div>
           </div>
           <form class="nbl-beans-form" data-nbl-plus-form>
-            <label for="nbl-plus-input">Ask Professor Grey</label>
+            <label for="nbl-plus-input">Ask Professor Grey™</label>
             <div class="nbl-beans-row">
               <textarea id="nbl-plus-input" name="message" rows="2" maxlength="3500" placeholder="Ask about your course…" required></textarea>
               <button type="submit">Send</button>
             </div>
           </form>
-          <p class="nbl-beans-note" style="margin-top:10px">Professor Grey is NBL University faculty. Grey can teach and practice for an enrolled course, while test answers, rubrics, grading keys, and future assessment material stay sealed.</p>
-          <p class="nbl-beans-status" data-nbl-plus-status role="status">Professor Grey is ready for the selected course.</p>
+          <p class="nbl-beans-note" style="margin-top:10px">Professor Grey™ is the teaching persona inside the Virgo System™, powered by OpenAI. Course teaching and practice remain available only when LOCKE confirms eligible NBL University access; test answers, rubrics, grading keys, and future assessment material stay sealed.</p>
+          <p class="nbl-beans-status" data-nbl-plus-status role="status">Professor Grey™ is ready for the selected course.</p>
         </div>
       </section>
     </div>`;
@@ -827,7 +827,7 @@
     }
     beansAttachments=next;
     renderBeansToolState();
-    beansStatus.textContent=`${beansAttachments.length} attachment${beansAttachments.length===1?"":"s"} ready. NBL Chat Plus is required to send them.`;
+    beansStatus.textContent=`${beansAttachments.length} attachment${beansAttachments.length===1?"":"s"} ready. NBL CHAT PLUS™ is required to send them.`;
   };
 
   const callBeansUtility=async(route,body={})=>{
@@ -1305,7 +1305,7 @@
     const wrap=document.createElement("div");
     wrap.className=`nbl-beans-message ${role==="assistant"?"is-beans":"is-user"}`;
     const who=document.createElement("strong");
-    who.textContent=role==="assistant"?"Professor Grey":"You";
+    who.textContent=role==="assistant"?"Professor Grey™":"You";
     const p=document.createElement("p");
     p.textContent=content;
     wrap.append(who,p);
@@ -1358,7 +1358,7 @@
     plusAllowed=true;
     plusAccess.hidden=true;
     plusLive.hidden=false;
-    plusStatus.textContent=`Professor Grey is ready · ${plusCourse.value}`;
+    plusStatus.textContent=`Professor Grey™ is ready · ${plusCourse.value}`;
   };
 
   const refreshPlusAccess=async({force=false}={})=>{
@@ -1400,7 +1400,7 @@
       if(!response.ok) throw new Error("NBL University access could not be checked right now.");
       plusAccessCheckedFor=identity.userId;
       if(payload?.university?.allowed===true) showPlusReady();
-      else showPlusLocked("Professor Grey requires active NBL University enrollment for this account.");
+      else showPlusLocked("Professor Grey™ requires active NBL University enrollment for this account.");
     }catch(error){
       if(accessRequestGeneration!==plusAccessRequestGeneration||accountGeneration!==beansAccountGeneration||currentClerkUserId()!==identity.userId) return;
       plusAccessCheckedFor=null;
@@ -1572,7 +1572,7 @@
     if(tool==="voice-mode"){
       setBeansToolMenu(false);
       if(!(await plusVoiceEligible())){
-        beansStatus.textContent="OpenAI voice mode requires NBL Chat Plus. The mic still supports browser dictation.";
+        beansStatus.textContent="OpenAI voice mode requires NBL CHAT PLUS™. The mic still supports browser dictation.";
         return;
       }
       beansVoiceMode=!beansVoiceMode;
@@ -1593,7 +1593,7 @@
       beansToolMode=tool;
       setBeansToolMenu(false);
       renderBeansToolState();
-      beansStatus.textContent=tool==="web"?"Live web selected · NBL Chat Plus.":tool==="code"?"Code / data analysis selected · NBL Chat Plus.":"Image creation selected · NBL Chat Plus.";
+      beansStatus.textContent=tool==="web"?"Live web selected · NBL CHAT PLUS™.":tool==="code"?"Code / data analysis selected · NBL CHAT PLUS™.":"Image creation selected · NBL CHAT PLUS™.";
       beansInput.focus();
     }
   });
@@ -1612,11 +1612,11 @@
     const requestedUserId=currentClerkUserId();
     const identity=await getSignedInNblIdentity();
     if(!identity||accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||!plusAllowed||identity.userId!==requestedUserId){
-      if(accountGeneration===beansAccountGeneration&&!identity) showPlusLocked("Sign in with your NBL account to use NBL Chat Plus.",{signedOut:true});
+      if(accountGeneration===beansAccountGeneration&&!identity) showPlusLocked("Sign in with your NBL account to use NBL CHAT PLUS™.",{signedOut:true});
       return;
     }
     if(currentClerkUserId()!==identity.userId){
-      showPlusLocked("Sign in with your NBL account to use NBL Chat Plus.",{signedOut:true});
+      showPlusLocked("Sign in with your NBL account to use NBL CHAT PLUS™.",{signedOut:true});
       return;
     }
     plusInput.value="";
@@ -1626,7 +1626,7 @@
     plusSubmit.disabled=true;
     plusInput.disabled=true;
     plusCourse.disabled=true;
-    plusStatus.textContent="Professor Grey is thinking…";
+    plusStatus.textContent="Professor Grey™ is thinking…";
     try{
       const response=await fetch(NBL_CHAT_PLUS_API,{
         method:"POST",
@@ -1640,18 +1640,18 @@
         showPlusLocked(response.status===401?"Your NBL session needs to be refreshed.":"Guided Learning requires active course enrollment and Grey access for this account.",{signedOut:response.status===401});
         return;
       }
-      if(!response.ok) throw new Error(payload.message||"Professor Grey could not answer just now.");
+      if(!response.ok) throw new Error(payload.message||"Professor Grey™ could not answer just now.");
       const reply=String(payload.message||"").trim();
-      if(!reply) throw new Error("Professor Grey returned no answer.");
+      if(!reply) throw new Error("Professor Grey™ returned no answer.");
       if(payload?.conversationId) beansConversationId=String(payload.conversationId);
       plusHistory.push({role:"assistant",content:reply});
       beansHistory.push({role:"assistant",content:reply});
       appendPlusMessage("assistant",reply);
       appendPlusSources(payload?.sources);
-      plusStatus.textContent=`Professor Grey · ${plusCourse.value}`;
+      plusStatus.textContent=`Professor Grey™ · ${plusCourse.value}`;
     }catch(error){
       if(accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||currentClerkUserId()!==identity.userId) return;
-      const message=error?.message||"Professor Grey could not answer just now.";
+      const message=error?.message||"Professor Grey™ could not answer just now.";
       appendPlusMessage("assistant",message);
       plusStatus.textContent=message;
     }finally{
@@ -1667,7 +1667,7 @@
     plusHistory.push({role:"assistant",content:"Choose your course and ask me about the lesson."});
     plusLog.replaceChildren();
     appendPlusMessage("assistant","Choose your course and ask me about the lesson.");
-    plusStatus.textContent=`Professor Grey is ready · ${plusCourse.value}`;
+    plusStatus.textContent=`Professor Grey™ is ready · ${plusCourse.value}`;
   });
 
   plusSignIn.addEventListener("click",()=>{
@@ -1997,10 +1997,10 @@
     beta.setAttribute("aria-labelledby","nbl-beta-title");
     beta.innerHTML=`
       <div class="nbl-beta-inner">
-        <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans from NBL Chat">
-        <p class="nbl-beta-kicker">NBL Chat · What’s next</p>
+        <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans from NBL Chat™">
+        <p class="nbl-beta-kicker">NBL Chat™ · What’s next</p>
         <h2 id="nbl-beta-title">Get updates on what Beans is building next.</h2>
-        <p>Join the NBL email list for updates about future NBL Chat features and upcoming testing opportunities.</p>
+        <p>Join the NBL email list for updates about future NBL Chat™ features and upcoming testing opportunities.</p>
         <form class="nbl-beta-form">
           <label for="nbl-beta-email">Email address</label>
           <div class="nbl-beta-row">
@@ -2014,8 +2014,8 @@
       event.preventDefault();
       const email=beta.querySelector("input").value.trim();
       if(!email) return;
-      const subject=encodeURIComponent("NBL Chat Future Features");
-      const body=encodeURIComponent(`Please add ${email} to the NBL Chat future-features update list.`);
+      const subject=encodeURIComponent("NBL Chat™ Future Features");
+      const body=encodeURIComponent(`Please add ${email} to the NBL Chat™ future-features update list.`);
       location.href=`mailto:founder@newbeansland.org?subject=${subject}&body=${body}`;
     });
     document.body.append(beta);
