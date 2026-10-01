@@ -22,7 +22,7 @@ Current website Chat standard includes:
 - NBL-branded side drawer;
 - New Chat and recent signed-in conversation history;
 - Beans as the regular Chat experience;
-- NBL Chat™ is the regular brand; NBL CHAT PLUS™ is the premium brand featuring Professor Grey™ and the Virgo System™, powered by OpenAI; Professor Grey™ / Guided Learning course access remains separately entitlement-gated through NBL University;
+- NBL Chat™ is the regular brand; NBL CHAT PLUS™ is the premium brand featuring Professor Grey™ and the Virgo System™, powered by OpenAI; Professor Grey™ / Virgo System™ general reasoning is included with NBL CHAT PLUS™; protected Guided Learning course access remains separately entitlement-gated through NBL University;
 - locked plan language: $4.99 Beans / 300 replies, $19.99 Plus / 1,050 replies, $9.99 Get More / +500;
 - NBL University and account doors;
 - NBL CHAT PLUS™ file/photo/code/image tools route through the server-side entitlement and metering rail;

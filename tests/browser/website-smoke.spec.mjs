@@ -35,6 +35,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
     await page.getByRole("button", { name: "Open Beans tools" }).click();
     await expect(page.getByRole("button", { name: /Photo \/ file/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Professor Grey™/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Search the live web/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Code \/ data analysis/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Create an image/i })).toBeVisible();

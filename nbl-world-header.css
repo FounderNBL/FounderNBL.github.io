@@ -514,6 +514,7 @@ body.nbl-beans-open{overflow:hidden!important}
 }
 
 .nbl-chat-drawer-toggle{
+  position:relative;z-index:12;
   width:52px;height:52px;padding:4px;border:1px solid rgba(240,197,111,.58);border-radius:15px;
   background:#020a12;cursor:pointer;overflow:hidden;display:grid;place-items:center;flex:0 0 52px;
 }

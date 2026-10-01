@@ -40,6 +40,9 @@ requireText(js,'data-nbl-tool="attach"',"Photo/file tool is missing.");
 requireText(js,'data-nbl-tool="web"',"Web tool is missing.");
 requireText(js,'data-nbl-tool="code"',"Code/data tool is missing.");
 requireText(js,'data-nbl-tool="image"',"Image creation tool is missing.");
+requireText(js,'data-nbl-tool="grey"',"Professor Grey™ / Virgo System™ Chat Plus tool is missing.");
+requireText(js,'mode:beansToolMode==="grey"?"grey_chat":"beans"',"Professor Grey™ tool is not routed through the Chat Plus Grey mode.");
+requireText(js,'payload?.speaker==="Professor Grey™"',"Professor Grey™ replies are not identified in the shared chat.");
 requireText(js,'data-nbl-beans-mic',"Browser dictation control is missing.");
 requireText(js,'appendBeansImages',"Generated-image rendering is missing.");
 requireText(js,'<h2 id="nbl-beans-title">NBL Chat™</h2>',"Overall website Chat title must be NBL Chat™, not the Plus tier.");
@@ -75,4 +78,4 @@ if(beansListener!==1){
   process.exitCode=1;
 }
 
-if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat™ keeps Beans public, routes signed-in use through metering, exposes the + tool rail, keeps Grey/University hidden and separate from Plus, preserves history, and contains no public secrets.");
+if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat™ routes signed-in use through metering, exposes Plus tools including Professor Grey™ / Virgo System™, keeps protected University Guided Learning separate, preserves history, and contains no public secrets.");
