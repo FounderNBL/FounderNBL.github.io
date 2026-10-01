@@ -542,6 +542,7 @@
                 <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · Plus</span></button>
                 <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · Plus</span></button>
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · Plus</span></button>
+                <button type="button" data-nbl-tool="grey"><strong>Professor Grey™</strong><span>Virgo System™ reasoning · NBL CHAT PLUS™</span></button>
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · Plus</span></button>
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · Plus</span></button>
                 <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · Plus</span></button>
@@ -680,11 +681,11 @@
     }
   };
 
-  const appendBeansMessage=(role,content)=>{
+  const appendBeansMessage=(role,content,speaker="Beans")=>{
     const wrap=document.createElement("div");
     wrap.className=`nbl-beans-message ${role==="assistant"?"is-beans":"is-user"}`;
     const who=document.createElement("strong");
-    who.textContent=role==="assistant"?"Beans":"You";
+    who.textContent=role==="assistant"?(speaker||"Beans"):"You";
     const p=document.createElement("p");
     p.textContent=content;
     wrap.append(who,p);
@@ -769,7 +770,7 @@
   };
 
   const renderBeansToolState=()=>{
-    const labels={web:"Live web",code:"Code / data",image:"Create image",knowledge:"Saved knowledge",auto:"Auto"};
+    const labels={web:"Live web",code:"Code / data",image:"Create image",knowledge:"Saved knowledge",grey:"Professor Grey™",auto:"Auto"};
     const hasSpecial=beansToolMode!=="auto";
     beansToolModeLabel.textContent=labels[beansToolMode]||"Auto";
     beansToolState.hidden=!hasSpecial;
@@ -1485,7 +1486,7 @@
       const accountToken=await getNblBeansAuthToken();
       if(accountToken) headers.Authorization=`Bearer ${accountToken}`;
       const requestId=(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-      const requestBody={action:"chat",mode:"beans",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),toolMode:beansToolMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
+      const requestBody={action:"chat",mode:beansToolMode==="grey"?"grey_chat":"beans",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),toolMode:beansToolMode==="grey"?"auto":beansToolMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
       const endpoint=accountToken?`${NBL_CHAT_GATEWAY_API}/chat`:NBL_BEANS_WEB_API;
       const response=await fetch(endpoint,{
         method:"POST",
@@ -1499,14 +1500,16 @@
       if(!reply) throw new Error("Beans returned no text.");
       if(payload?.conversationId) beansConversationId=String(payload.conversationId);
       beansHistory.push({role:"assistant",content:reply});
-      appendBeansMessage("assistant",reply);
+      appendBeansMessage("assistant",reply,String(payload?.speaker||"Beans"));
       appendBeansSources(payload?.sources);
       appendBeansFileSources(payload?.fileSources);
       appendBeansImages(payload?.generatedImages);
       const used=Array.isArray(payload?.toolsUsed)?payload.toolsUsed:[];
-      beansStatus.textContent=payload?.webSearchUsed
-        ?"Beans checked the live web."
-        :used.includes("code")
+      beansStatus.textContent=payload?.speaker==="Professor Grey™"
+        ?"Professor Grey™ answered through the Virgo System™."
+        :payload?.webSearchUsed
+          ?"Beans checked the live web."
+          :used.includes("code")
           ?"Beans used the code/data tool."
           :used.includes("image")
             ?"Beans created an image."
@@ -1567,6 +1570,18 @@
         beansStatus.textContent="Saved knowledge selected · ask Beans about your files.";
         beansInput.focus();
       }catch(error){beansStatus.textContent=error?.message||"Saved knowledge is temporarily unavailable.";}
+      return;
+    }
+    if(tool==="grey"){
+      setBeansToolMenu(false);
+      if(!(await plusVoiceEligible())){
+        beansStatus.textContent="Professor Grey™ / Virgo System™ requires NBL CHAT PLUS™.";
+        return;
+      }
+      beansToolMode="grey";
+      renderBeansToolState();
+      beansStatus.textContent="Professor Grey™ / Virgo System™ selected · powered by OpenAI.";
+      beansInput.focus();
       return;
     }
     if(tool==="voice-mode"){
