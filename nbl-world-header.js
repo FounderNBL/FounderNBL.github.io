@@ -1501,6 +1501,7 @@
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply);
       appendBeansSources(payload?.sources);
+      appendBeansFileSources(payload?.fileSources);
       appendBeansImages(payload?.generatedImages);
       const used=Array.isArray(payload?.toolsUsed)?payload.toolsUsed:[];
       beansStatus.textContent=payload?.webSearchUsed
@@ -1509,9 +1510,12 @@
           ?"Beans used the code/data tool."
           :used.includes("image")
             ?"Beans created an image."
-            :payload?.authenticated
-              ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
-              :"Beans replied.";
+            :used.includes("file")&&Array.isArray(payload?.fileSources)&&payload.fileSources.length
+              ?"Beans searched your saved knowledge."
+              :payload?.authenticated
+                ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
+                :"Beans replied.";
+      if(beansVoiceMode) void speakBeansReply(reply,{forceOpenAi:true});
       clearBeansTools();
     }catch(error){
       if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
@@ -1530,8 +1534,13 @@
   beansFileInput.addEventListener("change",async()=>{
     try{await addBeansFiles(beansFileInput.files);}catch(error){beansStatus.textContent=error?.message||"That upload could not be added.";}
   });
+  beansKnowledgeFileInput.addEventListener("change",async()=>{
+    const file=beansKnowledgeFileInput.files?.[0]||null;
+    beansKnowledgeFileInput.value="";
+    try{await uploadBeansKnowledgeFile(file);}catch(error){beansStatus.textContent=error?.message||"That file could not be saved to Beans knowledge.";}
+  });
   beansMic.addEventListener("click",startBeansDictation);
-  beansToolsMenu.addEventListener("click",event=>{
+  beansToolsMenu.addEventListener("click",async event=>{
     const button=event.target.closest("[data-nbl-tool]");
     if(!button) return;
     const tool=button.dataset.nblTool;
@@ -1540,14 +1549,44 @@
       beansFileInput.click();
       return;
     }
+    if(tool==="knowledge-upload"){
+      setBeansToolMenu(false);
+      beansKnowledgeFileInput.click();
+      return;
+    }
+    if(tool==="knowledge"){
+      setBeansToolMenu(false);
+      try{
+        const state=await loadBeansKnowledge();
+        if(!Number(state?.fileCount||0)){
+          beansStatus.textContent="Save a knowledge file first.";
+          return;
+        }
+        beansToolMode="knowledge";
+        renderBeansToolState();
+        beansStatus.textContent="Saved knowledge selected · ask Beans about your files.";
+        beansInput.focus();
+      }catch(error){beansStatus.textContent=error?.message||"Saved knowledge is temporarily unavailable.";}
+      return;
+    }
+    if(tool==="voice-mode"){
+      setBeansToolMenu(false);
+      if(!(await plusVoiceEligible())){
+        beansStatus.textContent="OpenAI voice mode requires NBL Chat Plus. The mic still supports browser dictation.";
+        return;
+      }
+      beansVoiceMode=!beansVoiceMode;
+      beansStatus.textContent=beansVoiceMode
+        ?"OpenAI voice mode is on. Tap the mic to talk; Beans will speak replies."
+        :"OpenAI voice mode is off.";
+      return;
+    }
     if(tool==="read"){
       setBeansToolMenu(false);
       const reply=lastBeansReply();
       if(!reply){beansStatus.textContent="Beans has not replied yet.";return;}
-      if(!("speechSynthesis" in window)){beansStatus.textContent="Read aloud is not available in this browser.";return;}
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(new SpeechSynthesisUtterance(reply));
       beansStatus.textContent="Reading Beans' last reply aloud.";
+      void speakBeansReply(reply);
       return;
     }
     if(["web","code","image"].includes(tool)){
