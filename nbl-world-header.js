@@ -1689,7 +1689,11 @@
     location.href=accountPortalUrl("/sign-in");
   });
 
-  chatDrawerToggle.addEventListener("click",()=>setChatDrawerOpen(!chatDrawer.classList.contains("is-open")));
+  chatDrawerToggle.addEventListener("click",()=>{
+    const opening=!chatDrawer.classList.contains("is-open");
+    if(opening)setBeansToolMenu(false);
+    setChatDrawerOpen(opening);
+  });
   chatDrawerClose.addEventListener("click",()=>setChatDrawerOpen(false));
   chatDrawerShade.addEventListener("click",()=>setChatDrawerOpen(false));
   chatDrawerNew.addEventListener("click",async()=>{
