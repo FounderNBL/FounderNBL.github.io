@@ -26,6 +26,9 @@
     .message.user{margin-left:8%;background:#11283a}.message strong{display:block;color:var(--gold);font-size:.78rem;margin-bottom:4px}
     .signed-out{display:none}.signed-out.show{display:block}.hidden{display:none!important}
     .danger-zone{border-color:rgba(244,161,161,.3)}.danger-zone p{color:var(--muted)}
+    .fulfillment-list{display:grid;gap:12px;margin-top:14px}.fulfillment-item{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;background:rgba(255,255,255,.025)}
+    .fulfillment-item h3{margin:0 0 6px;font-size:1rem}.fulfillment-meta{color:var(--muted);font-size:.9rem;line-height:1.5}.fulfillment-item input{margin-top:8px}
+    .coupon-code{display:inline-block;margin:.5rem 0;padding:8px 11px;border-radius:10px;background:#06111b;border:1px solid var(--line);color:var(--gold);font:800 .95rem ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em}
     @media(max-width:720px){main{padding-top:96px}.grid{grid-template-columns:1fr}.card{padding:17px}}
   </style>
   <script defer src="/nbl-product-plans.js?v=20260929"></script>
@@ -90,6 +93,18 @@
         <p class="status">NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™, powered by OpenAI, and unlocks premium Beans tools. Professor Grey™ / Virgo System™ general reasoning is included. Protected course teaching remains tied to eligible NBL University entitlement.</p>
       </section>
 
+      <section class="card hidden" id="founder-actions">
+        <h2>LOCKE needs Founder approval</h2>
+        <p id="founderActionsStatus" class="status">Checking the Founder queue…</p>
+        <div id="founderActions" class="fulfillment-list"></div>
+      </section>
+
+      <section class="card hidden" id="deliveryCard">
+        <h2>University deliveries</h2>
+        <p id="deliveryStatus" class="status">Checking your University deliveries…</p>
+        <div id="deliveries" class="fulfillment-list"></div>
+      </section>
+
       <section class="grid" aria-label="Account usage">
         <div class="card metric"><strong id="conversationCount">0</strong><span>saved conversations</span></div>
         <div class="card metric"><strong id="messageCount">0</strong><span>saved messages</span></div>
@@ -139,6 +154,13 @@
     const replyRemaining=document.getElementById("replyRemaining");
     const topUpRemaining=document.getElementById("topUpRemaining");
     const membershipButtons=[...document.querySelectorAll("[data-account-billing-plan]")];
+    const founderActionsCard=document.getElementById("founder-actions");
+    const founderActionsStatus=document.getElementById("founderActionsStatus");
+    const founderActions=document.getElementById("founderActions");
+    const deliveryCard=document.getElementById("deliveryCard");
+    const deliveryStatus=document.getElementById("deliveryStatus");
+    const deliveries=document.getElementById("deliveries");
+    const FULFILLMENT_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/locke-fulfillment";
 
     const waitForBridge=async()=>{
       for(let i=0;i<60;i++){
@@ -191,6 +213,25 @@
       });
       const payload=await response.json().catch(()=>({}));
       if(!response.ok) throw new Error(payload.message||"Account request failed.");
+      return payload;
+    };
+
+    const fulfillmentFetch=async(body)=>{
+      const t=await token();
+      if(!t) throw new Error("Your sign-in session is not available.");
+      const response=await fetch(FULFILLMENT_API,{
+        method:"POST",
+        headers:{Accept:"application/json","Content-Type":"application/json",Authorization:"Bearer "+t},
+        body:JSON.stringify(body),
+        cache:"no-store"
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok){
+        const error=new Error(payload.message||"LOCKE fulfillment request failed.");
+        error.status=response.status;
+        error.payload=payload;
+        throw error;
+      }
       return payload;
     };
 
@@ -248,6 +289,163 @@
       }
     };
     membershipButtons.forEach(button=>button.addEventListener("click",()=>openCheckout(button.dataset.accountBillingPlan||"",button)));
+
+    const renderDeliveries=async()=>{
+      deliveries.replaceChildren();
+      try{
+        const payload=await fulfillmentFetch({operation:"my_deliveries"});
+        const items=Array.isArray(payload?.deliveries)?payload.deliveries:[];
+        if(!items.length){
+          deliveryCard.classList.add("hidden");
+          return;
+        }
+        deliveryCard.classList.remove("hidden");
+        deliveryStatus.textContent="LOCKE shows only deliveries attached to this signed-in account.";
+        for(const item of items){
+          const card=document.createElement("article");card.className="fulfillment-item";
+          const title=document.createElement("h3");
+          title.textContent=item.kind==="payhip_coupon"?"Foundation ebooks · Payhip redemption":String(item.kind||"University delivery").replaceAll("_"," ");
+          const meta=document.createElement("p");meta.className="fulfillment-meta";
+          meta.textContent="Status: "+String(item.status||"pending").replaceAll("_"," ");
+          card.append(title,meta);
+          if(item.kind==="payhip_coupon"){
+            if(item.redemptionReady){
+              const button=document.createElement("button");button.type="button";button.textContent="Reveal my one-use Payhip code";
+              const result=document.createElement("div");
+              button.onclick=async()=>{
+                button.disabled=true;
+                try{
+                  const redemption=await fulfillmentFetch({operation:"redemption",fulfillmentRequestId:item.id});
+                  result.replaceChildren();
+                  const code=document.createElement("div");code.className="coupon-code";code.textContent=redemption.couponCode;
+                  const note=document.createElement("p");note.className="fulfillment-meta";note.textContent="Use this 100% coupon at Payhip. LOCKE records it as a one-use University redemption.";
+                  result.append(code,note);
+                  for(const href of redemption.urls||[]){
+                    const a=document.createElement("a");a.className="button";a.href=href;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open Payhip";
+                    result.append(a);
+                  }
+                }catch(error){result.textContent=error.message}
+                finally{button.disabled=false}
+              };
+              card.append(button,result);
+            }else{
+              const pending=document.createElement("p");pending.className="fulfillment-meta";pending.textContent="LOCKE is waiting for the Founder to create and approve your personal Payhip coupon.";
+              card.append(pending);
+            }
+          }
+          deliveries.append(card);
+        }
+      }catch{
+        deliveryCard.classList.add("hidden");
+      }
+    };
+
+    const renderFounderActions=async()=>{
+      founderActions.replaceChildren();
+      try{
+        const countPayload=await fulfillmentFetch({operation:"founder_pending_count"});
+        const pending=Number(countPayload?.pending||0);
+        if(!pending){
+          founderActionsCard.classList.add("hidden");
+          return;
+        }
+        founderActionsCard.classList.remove("hidden");
+        founderActionsStatus.textContent=pending+" Founder action"+(pending===1?" is":"s are")+" waiting. LOCKE will not release them without you.";
+        if(location.hash==="#founder-actions") founderActionsCard.scrollIntoView({behavior:"smooth",block:"start"});
+        const payload=await fulfillmentFetch({operation:"founder_list",status:"pending_founder_approval",limit:100});
+        for(const item of payload?.requests||[]){
+          const card=document.createElement("article");card.className="fulfillment-item";
+          const title=document.createElement("h3");
+          const buyer=String(item?.metadata?.buyerName||"Student").trim()||"Student";
+          title.textContent=item.fulfillment_kind==="payhip_coupon"
+            ?"Create one-use Payhip coupon for "+buyer
+            :String(item.fulfillment_kind||"Fulfillment").replaceAll("_"," ")+" · "+buyer;
+          const meta=document.createElement("p");meta.className="fulfillment-meta";
+          const email=String(item.recipient_email||"").trim();
+          const studentNumber=String(item?.metadata?.studentNumber||"").trim();
+          meta.textContent=[email,studentNumber&&("Student "+studentNumber)].filter(Boolean).join(" · ")||"Recipient details pending.";
+          card.append(title,meta);
+
+          if(item.fulfillment_kind==="payhip_coupon"){
+            const rule=document.createElement("p");rule.className="fulfillment-meta";
+            rule.textContent="Make a 100% Payhip coupon with usage limit 1. Then enter the exact code and the product/collection link below.";
+            const code=document.createElement("input");code.type="text";code.maxLength=80;code.placeholder="Payhip coupon code";code.value=String(item?.metadata?.suggestedCode||"");
+            const url1=document.createElement("input");url1.type="url";url1.placeholder="Payhip product or collection link";
+            const url2=document.createElement("input");url2.type="url";url2.placeholder="Second Payhip link (optional)";
+            const approve=document.createElement("button");approve.type="button";approve.textContent="Coupon made — confirm & approve";
+            const hold=document.createElement("button");hold.type="button";hold.className="danger";hold.textContent="Hold";
+            const status=document.createElement("p");status.className="status";
+            approve.onclick=async()=>{
+              approve.disabled=true;status.textContent="Recording Founder approval…";
+              try{
+                const urls=[url1.value.trim(),url2.value.trim()].filter(Boolean);
+                await fulfillmentFetch({
+                  operation:"founder_approve",
+                  fulfillmentRequestId:item.id,
+                  confirmRecipient:true,
+                  recipientEmail:email,
+                  redemptionCode:code.value.trim(),
+                  redemptionUrls:urls,
+                  redemptionNote:"Foundation ebooks · 100% Payhip coupon · usage limit 1"
+                });
+                status.textContent="Approved. LOCKE can now reveal the one-use Payhip code to this student.";
+                await Promise.all([renderFounderActions(),renderDeliveries()]);
+              }catch(error){status.textContent=error.message}
+              finally{approve.disabled=false}
+            };
+            hold.onclick=async()=>{
+              hold.disabled=true;
+              try{await fulfillmentFetch({operation:"founder_hold",fulfillmentRequestId:item.id,reason:"Held by Founder."});await renderFounderActions()}
+              catch(error){status.textContent=error.message}
+              finally{hold.disabled=false}
+            };
+            const row=document.createElement("div");row.className="row";row.style.marginTop="10px";row.append(approve,hold);
+            card.append(rule,code,url1,url2,row,status);
+          }else{
+            const details=document.createElement("p");details.className="fulfillment-meta";
+            if(item.delivery_channel==="physical_mail"&&item.shipping_address){
+              const a=item.shipping_address;
+              details.textContent="Ship to: "+[a.name,a.line1,a.line2,a.city,a.state,a.postal_code||a.postalCode,a.country].filter(Boolean).join(", ");
+            }else{
+              details.textContent="Confirm this recipient before release.";
+            }
+            const approve=document.createElement("button");approve.type="button";approve.textContent="Confirm & approve";
+            const hold=document.createElement("button");hold.type="button";hold.className="danger";hold.textContent="Hold";
+            const status=document.createElement("p");status.className="status";
+            approve.disabled=item.delivery_channel==="physical_mail"&&!item.shipping_address;
+            approve.onclick=async()=>{
+              approve.disabled=true;
+              try{
+                await fulfillmentFetch({
+                  operation:"founder_approve",
+                  fulfillmentRequestId:item.id,
+                  confirmRecipient:true,
+                  recipientEmail:email,
+                  shippingAddress:item.shipping_address||undefined
+                });
+                await renderFounderActions();
+              }catch(error){status.textContent=error.message}
+              finally{approve.disabled=false}
+            };
+            hold.onclick=async()=>{
+              hold.disabled=true;
+              try{await fulfillmentFetch({operation:"founder_hold",fulfillmentRequestId:item.id,reason:"Held by Founder."});await renderFounderActions()}
+              catch(error){status.textContent=error.message}
+              finally{hold.disabled=false}
+            };
+            const row=document.createElement("div");row.className="row";row.append(approve,hold);
+            card.append(details,row,status);
+          }
+          founderActions.append(card);
+        }
+      }catch(error){
+        if(error.status===403) founderActionsCard.classList.add("hidden");
+        else{
+          founderActionsCard.classList.remove("hidden");
+          founderActionsStatus.textContent=error.message;
+        }
+      }
+    };
 
     const renderHistory=async()=>{
       viewer.replaceChildren();
@@ -330,7 +528,7 @@
     };
 
     try{
-      await Promise.all([renderSummary(),renderHistory(),renderMembership()]);
+      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderFounderActions()]);
       if(checkoutParams.get("checkout")==="success"){
         for(let attempt=0;attempt<3;attempt++){
           await new Promise(resolve=>setTimeout(resolve,1500));

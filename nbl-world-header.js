@@ -34,6 +34,7 @@
   const NBL_CHAT_PLUS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
   const NBL_CHAT_GATEWAY_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-chat-gateway";
   const NBL_ACCOUNT_STORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
+  const NBL_FULFILLMENT_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/locke-fulfillment";
   const NBL_SEARCH_API=NBL_PUBLIC_BEANS_API;
   const NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API;
   const NBL_PRODUCT_PLANS=window.NBL_PRODUCT_PLANS;
@@ -273,6 +274,24 @@
             const payload=await response.json().catch(()=>({}));
             const username=String(payload?.profile?.username||"").trim();
             if(response.ok&&username) accountButton.textContent=username;
+          }catch{}
+        })();
+        void (async()=>{
+          try{
+            const token=await getNblBeansAuthToken();
+            if(!token) return;
+            const response=await fetch(NBL_FULFILLMENT_API,{
+              method:"POST",
+              headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
+              body:JSON.stringify({operation:"founder_pending_count"}),
+              cache:"no-store"
+            });
+            if(!response.ok) return;
+            const payload=await response.json().catch(()=>({}));
+            const pending=Number(payload?.pending||0);
+            if(pending>0){
+              addAuxButton(`LOCKE ${pending}`,()=>{location.href="/account.html#founder-actions"});
+            }
           }catch{}
         })();
         if(panelSignIn) panelSignIn.hidden=true;
