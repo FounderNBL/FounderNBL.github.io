@@ -56,8 +56,11 @@ requireText(header,'?action=conversations',"Website-standard recent Chat history
 requireText(header,'data-nbl-drawer-grey hidden',"Preserved Professor Grey entry must stay hidden from public Chat.");
 requireText(header,'data-nbl-drawer-tools',"Website-standard Beans tools entry is missing.");
 requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans entry is missing.");
-requireText(header,'${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · Get More',"Website-standard plan labels do not use the canonical catalog.");
+requireText(header,'${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More',"Website-standard plan labels do not use the canonical catalog.");
 requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
+requireText(plans,'price:"$14.99/month"',"Canonical Chat Plus price is missing.");
+requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + University tier is missing.");
+requireText(account,'data-account-billing-plan="chat_plus_university"',"Account Plus + University checkout action is missing.");
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
 requireText(header,'NBL_CHAT_GATEWAY_API',"Signed-in Beans metering gateway is missing.");
