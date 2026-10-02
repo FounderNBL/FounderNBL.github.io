@@ -15,7 +15,7 @@ jobs:
   contact-sheet:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Build contact sheet
         run: |
           python -m pip install --quiet pillow
