@@ -77,7 +77,7 @@ jobs:
           title="[Health Inspector] Live route failure"
           existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] Live route failure") | .number' | head -n 1)"
 
-          body="$(printf 'The Website Health Inspector found one or more production routes unhealthy.\n\nRun: %s/%s/actions/runs/%s\n\nResults:\n~~~text\n%s\n~~~' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$(cat health-route-results.txt 2>/dev/null)")"
+          body="$(printf 'The Website Health Inspector found one or more production routes unhealthy.\n\n**Fixer handoff:** assign this issue to Copilot and select the custom agent **The Fixer**. The Fixer must identify the root cause, the escape point, add regression protection, and return a PR.\n\nRun: %s/%s/actions/runs/%s\n\nResults:\n~~~text\n%s\n~~~' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$(cat health-route-results.txt 2>/dev/null)")"
 
           if [ -n "$existing" ]; then
             gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
@@ -142,7 +142,7 @@ jobs:
         run: |
           title="[Health Inspector] Live browser failure"
           existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] Live browser failure") | .number' | head -n 1)"
-          body="The Website Health Inspector found a desktop/mobile production browser failure. Failure evidence is attached to the workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          body="The Website Health Inspector found a desktop/mobile production browser failure. **Fixer handoff:** assign this issue to Copilot and select the custom agent **The Fixer**. The Fixer must identify the root cause, the escape point, add regression protection, and return a PR. Failure evidence is attached to the workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
           if [ -n "$existing" ]; then
             gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
