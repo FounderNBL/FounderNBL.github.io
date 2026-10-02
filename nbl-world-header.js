@@ -502,11 +502,12 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
             <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
-            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · Get More</small></span>
+            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
             <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. ${NBL_PRODUCT_PLANS.chatPlus.brandLine}. Professor Grey™ course access remains University-entitlement gated.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus">Choose NBL CHAT PLUS™</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. ${NBL_PRODUCT_PLANS.chatPlus.brandLine}. No University course teaching.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus">Choose NBL CHAT PLUS™</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.chatPlusUniversity.name} · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlusUniversity.replies}. ${NBL_PRODUCT_PLANS.chatPlusUniversity.brandLine}. Physical books are not included in this monthly tier.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus_university">Choose Plus + University</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
             <button class="nbl-billing-manage" type="button" data-nbl-billing-portal>Manage billing</button>
             <p class="nbl-billing-status" data-nbl-billing-status role="status">Sign in with your NBL account before checkout so LOCKE can attach the purchase to the right account.</p>
@@ -1991,6 +1992,7 @@
         const catalogText=[
           `${NBL_PRODUCT_PLANS.beans.name}: ${NBL_PRODUCT_PLANS.beans.price}, ${NBL_PRODUCT_PLANS.beans.replies}.`,
           `${NBL_PRODUCT_PLANS.chatPlus.name}: ${NBL_PRODUCT_PLANS.chatPlus.price}, ${NBL_PRODUCT_PLANS.chatPlus.replies}.`,
+          `${NBL_PRODUCT_PLANS.chatPlusUniversity.name}: ${NBL_PRODUCT_PLANS.chatPlusUniversity.price}, ${NBL_PRODUCT_PLANS.chatPlusUniversity.replies}; guided course teaching, ebook coupon redemption.`,
           `${NBL_PRODUCT_PLANS.getMore.name}: ${NBL_PRODUCT_PLANS.getMore.price}, ${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}`,
           `${NBL_PRODUCT_PLANS.foundationProgram.name}: ${NBL_PRODUCT_PLANS.foundationProgram.price}.`,
           `${NBL_PRODUCT_PLANS.fullFoundation.name}: ${NBL_PRODUCT_PLANS.fullFoundation.price}.`,
