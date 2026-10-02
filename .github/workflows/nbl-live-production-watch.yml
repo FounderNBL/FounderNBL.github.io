@@ -37,6 +37,7 @@ jobs:
             "https://newbeansland.org/account.html"
             "https://newbeansland.org/university.html"
             "https://nblworld.com/"
+            "https://nblworld.com/university.html"
           )
 
           for url in "${urls[@]}"; do
@@ -120,7 +121,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Inspect the live NBL web app on desktop and mobile
+      - name: Inspect live New Beansland + NBL World on desktop and mobile
         env:
           NBL_BASE_URL: https://newbeansland.org
           NBL_EXPECT_BILLING_LIVE: "1"
@@ -128,7 +129,7 @@ jobs:
 
       - name: Upload browser failure evidence
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: nbl-health-inspector-browser-failure
           path: |
