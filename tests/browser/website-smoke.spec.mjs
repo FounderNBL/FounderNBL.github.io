@@ -83,6 +83,19 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator('[data-nbl-university-checkout]')).toHaveCount(0);
   });
 
+  test("live NBL World campus and enrollment surface are reachable", async ({ page }) => {
+    test.skip(!process.env.NBL_BASE_URL, "Live cross-site check only runs against deployed production.");
+
+    await page.goto("https://nblworld.com/university.html#enroll", { waitUntil: "domcontentloaded" });
+
+    await expect(page).toHaveTitle(/NBL University Campus/i);
+    await expect(page.getByRole("heading", { name: "Student Campus" })).toBeVisible();
+    await expect(page.locator('[data-nblu-checkout="foundation"]')).toBeVisible();
+    await expect(page.locator('[data-nblu-checkout="full_foundation"]')).toBeVisible();
+    await expect(page.locator('[data-nblu-checkout="full_nblu"]')).toBeVisible();
+    await expect(page.locator("[data-campus-gate]")).toBeVisible();
+  });
+
   test("account recovery remains reachable", async ({ page }) => {
     await open("/account.html", page);
 
