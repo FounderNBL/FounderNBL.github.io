@@ -463,7 +463,7 @@
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">NBL Chat™</h2>
-            <p class="nbl-beans-note">Beans is NBL Chat™. NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™ — powered by OpenAI. Professor Grey™ course access remains protected by LOCKE and eligible NBL University enrollment.</p>
+            <p class="nbl-beans-note">Beans is NBL Chat™. NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI. Protected course teaching remains controlled by LOCKE and the account’s University entitlement.</p>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close NBL Chat™">✕</button>
