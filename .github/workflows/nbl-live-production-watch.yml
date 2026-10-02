@@ -1,6 +1,9 @@
 name: NBL Website Health Inspector
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     # Lightweight production route inspection every hour.
     - cron: "17 * * * *"

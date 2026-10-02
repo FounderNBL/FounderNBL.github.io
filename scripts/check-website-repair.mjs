@@ -109,7 +109,7 @@ forbidText(header,'data:image/webp;base64,',"Inline Base64 Chat artwork returned
 requireText(header,'<h2 id="nbl-beans-title">NBL Chat™</h2>',"The Chat dialog title is not NBL Chat.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
-requireText(header,'NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™ — powered by OpenAI.',"Public Chat does not carry the canonical Plus brand line.");
+requireText(header,'NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"Public Chat does not carry the current Plus / Plus + University brand boundary.");
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
 }
@@ -158,7 +158,7 @@ requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not u
 requireText(terms,"University checkout is handled on NBLWorld.com.","Terms do not preserve the Chat / University commerce split.");
 requireText(university,'https://nblworld.com/university.html#enroll',"Public University handoff does not point to NBL World enrollment.");
 requireText(university,"regular Beans / NBL Chat™","Public University handoff does not preserve regular Chat on NewBeansland.org.");
-requireText(university,"NBL CHAT PLUS™ includes Professor Grey™ / Virgo System™ general reasoning","Public University handoff does not preserve the new Chat Plus Grey/Virgo boundary.");
+requireText(university,"NBL CHAT PLUS™ provides upgraded Beans tools on NewBeansland.org. NBL CHAT PLUS™ + University adds Professor Grey™ / Virgo System™ guided course teaching","Public University handoff does not preserve the current Plus / Plus + University boundary.");
 forbidText(university,'data-nbl-university-checkout',"Public New Beansland University page still contains University checkout controls.");
 forbidText(university,'nbl-university-checkout.js',"Public New Beansland University page still loads the retired University checkout bridge.");
 forbidText(university,"https://buy.stripe.com/","Public New Beansland University page contains a raw Stripe checkout.");
