@@ -43,11 +43,11 @@ jobs:
           Path("inspection").mkdir(exist_ok=True)
           sheet.save("inspection/clothing-contact-sheet.jpg", quality=90)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: clothing-contact-sheet
           path: inspection/clothing-contact-sheet.jpg
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: clothing-target-originals
           path: |
