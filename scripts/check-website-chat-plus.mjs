@@ -55,6 +55,7 @@ requireText(js,'${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PL
 requireText(js,'${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}',"NBL CHAT PLUS™ drawer price is missing.");
 requireText(js,'data-nbl-billing-plan="chat_plus_university"',"NBL CHAT PLUS™ + University checkout action is missing.");
 requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + University tier is missing.");
+for(const plan of ['foundation','full_foundation','full_nblu','nblu_continuation']) requireText(js,`data-nbl-billing-plan="${plan}"`,`Pricing drawer action missing: ${plan}`);
 requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}',"Get More drawer price is missing.");
 for(const value of ['$4.99/month','300 successful replies','$14.99/month','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$49.99 one-time','$149.99 one-time']){
   requireText(plans,value,`Canonical locked product value is missing: ${value}`);
