@@ -51,7 +51,7 @@ requireText(js,'data-nbl-drawer-new',"New Chat drawer action is missing.");
 requireText(js,'data-nbl-drawer-grey hidden',"Preserved Grey drawer entry is not hidden from public Chat.");
 requireText(js,'data-nbl-drawer-plans',"Membership & plans drawer action is missing.");
 requireText(js,'?action=conversations',"Recent saved conversations are not loaded into the NBL drawer.");
-requireText(js,'${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · Get More',"Drawer prices are not sourced from the canonical catalog.");
+requireText(js,'${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More',"Drawer prices are not sourced from the canonical catalog.");
 requireText(js,'${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}',"NBL CHAT PLUS™ drawer price is missing.");
 requireText(js,'data-nbl-billing-plan="chat_plus_university"',"NBL CHAT PLUS™ + University checkout action is missing.");
 requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + University tier is missing.");
