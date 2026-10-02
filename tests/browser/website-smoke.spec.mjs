@@ -24,12 +24,16 @@ test.describe("New Beansland web app browser smoke", () => {
 
     const launcher = page.getByRole("button", { name: "Open NBL Chat™" });
     await expect(launcher).toBeVisible();
+    const launcherImage = launcher.locator("img");
+    await expect(launcherImage).toHaveAttribute("src", "/NBLChat_Beans.png");
+    await expect.poll(async () => launcherImage.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
     await launcher.click();
 
     await expect(page.locator("#nbl-beans-panel")).toBeVisible();
     await expect(page.getByRole("heading", { name: "NBL Chat™" })).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
+    await expect.poll(async () => page.locator(".nbl-beans-avatar").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
     await expect(page.getByRole("tab", { name: "Beans" })).toBeVisible();
     await expect(page.getByRole("tab", { name: /NBL University Professor Grey™/i })).toBeHidden();
     await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
