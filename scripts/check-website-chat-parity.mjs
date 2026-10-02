@@ -42,7 +42,7 @@ forbidText(header,'nbl-chat.replit.app',"Website still depends on the old Replit
 forbidText(header,'NBL_ACCOUNT_API',"Legacy Replit account API constant is still present.");
 forbidText(header,'exam-prep/access',"Legacy Replit University access route is still present.");
 requireText(header,'fetch(NBL_CHAT_PLUS_API',"University account status is not using the canonical NBL Foundation runtime.");
-requireText(header,'NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™ — powered by OpenAI.',"Public Chat header does not state the trademarked Plus brand line.");
+requireText(header,'NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"Public Chat header does not state the trademarked Plus brand line.");
 
 // Website-standard Chat shell and Beans continuity.
 requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat™ drawer is missing.");

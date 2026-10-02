@@ -33,7 +33,7 @@ requireText(js,'ANSY 110',"ANSY 110 is missing.");
 requireText(js,'EBPR 120',"EBPR 120 is missing.");
 requireText(js,'beansHistoryLoadedFor',"Signed-in Beans history is not tracked per account.");
 requireText(js,'clerk.addListener',"Account state changes do not retrigger Beans/Plus continuity.");
-requireText(js,'NBL CHAT PLUS™ features Professor Grey™ and the Virgo System™ — powered by OpenAI.',"NBL CHAT PLUS™ brand line is missing.");
+requireText(js,'NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"NBL CHAT PLUS™ brand line is missing.");
 requireText(js,'data-nbl-drawer-tools',"Beans tools drawer entry is missing.");
 requireText(js,'data-nbl-tools-toggle',"Beans + tool button is missing.");
 requireText(js,'data-nbl-tool="attach"',"Photo/file tool is missing.");
