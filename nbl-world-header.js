@@ -685,6 +685,16 @@
   let beansVoiceStream=null;
   let beansVoiceChunks=[];
   let beansVoicePlayer=null;
+  let activeBeansChatController=null;
+
+  const cancelActiveBeansChat=()=>{
+    if(activeBeansChatController){
+      activeBeansChatController.abort();
+      activeBeansChatController=null;
+    }
+    beansForm.removeAttribute("aria-busy");
+    beansSubmit.disabled=false;
+  };
 
   const modalInertState=new Map();
   const setModalIsolation=(panel,open)=>{
@@ -710,6 +720,7 @@
     wrap.append(who,p);
     beansLog.appendChild(wrap);
     beansLog.scrollTop=beansLog.scrollHeight;
+    return wrap;
   };
 
   const appendBeansSources=sources=>{
@@ -1178,8 +1189,10 @@
   };
 
   const startNewBeansConversation=()=>{
+    cancelActiveBeansChat();
     invalidateBeansHistoryLoad();
     beansConversationGeneration++;
+    beansInput.value="";
     const userId=currentClerkUserId();
     clearPlusTranscript();
     replaceBeansConversation(
@@ -1194,6 +1207,7 @@
   };
 
   const loadDrawerConversation=async(id)=>{
+    cancelActiveBeansChat();
     invalidateBeansHistoryLoad();
     const requestGeneration=beansHistoryRequestGeneration;
     const accountGeneration=beansAccountGeneration;
@@ -1485,16 +1499,31 @@
   beansForm.addEventListener("submit",async event=>{
     event.preventDefault();
     const text=beansInput.value.trim();
-    if(!text) return;
+    if(!text||beansSubmit.disabled) return;
+
+    const preflightAccountGeneration=beansAccountGeneration;
+    const preflightConversationGeneration=beansConversationGeneration;
+    const preflightUserId=currentClerkUserId();
+    beansSubmit.disabled=true;
+    beansForm.setAttribute("aria-busy","true");
+    beansStatus.textContent="Beans is getting ready…";
+
     await loadSignedInBeansHistory();
+    if(preflightAccountGeneration!==beansAccountGeneration||preflightConversationGeneration!==beansConversationGeneration||currentClerkUserId()!==preflightUserId){
+      beansForm.removeAttribute("aria-busy");
+      beansSubmit.disabled=false;
+      return;
+    }
+
     const accountGeneration=beansAccountGeneration;
     const conversationGeneration=beansConversationGeneration;
     const requestedUserId=currentClerkUserId();
+    const controller=new AbortController();
+    activeBeansChatController?.abort();
+    activeBeansChatController=controller;
     beansInput.value="";
-    appendBeansMessage("user",text);
+    const userMessageEl=appendBeansMessage("user",text);
     beansHistory.push({role:"user",content:text});
-    beansSubmit.disabled=true;
-    beansInput.disabled=true;
     beansStatus.textContent="Beans is thinking…";
 
     try{
@@ -1510,7 +1539,9 @@
       const response=await fetch(endpoint,{
         method:"POST",
         headers,
-        body:JSON.stringify(requestBody)
+        body:JSON.stringify(requestBody),
+        signal:controller.signal,
+        cache:"no-store"
       });
       const payload=await response.json().catch(()=>({}));
       if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
@@ -1540,15 +1571,29 @@
       if(beansVoiceMode) void speakBeansReply(reply,{forceOpenAi:true});
       clearBeansTools();
     }catch(error){
-      if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId) return;
+      if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId||error?.name==="AbortError") return;
+      const last=beansHistory.at(-1);
+      if(last?.role==="user"&&last?.content===text) beansHistory.pop();
+      userMessageEl?.remove();
+      if(!beansInput.value.trim()) beansInput.value=text;
       const message=error?.message||"Beans could not answer just now.";
-      appendBeansMessage("assistant",message);
-      beansStatus.textContent=message;
+      beansStatus.textContent=`${message} Your message is still here so you can try again.`;
     }finally{
+      if(activeBeansChatController===controller) activeBeansChatController=null;
+      beansForm.removeAttribute("aria-busy");
       beansSubmit.disabled=false;
-      beansInput.disabled=false;
       beansInput.focus();
     }
+  });
+
+  beansInput.addEventListener("keydown",event=>{
+    if(event.key!=="Enter"||event.shiftKey||event.isComposing) return;
+    event.preventDefault();
+    if(beansSubmit.disabled){
+      beansStatus.textContent="Beans is still working on the last message. You can keep typing while it finishes.";
+      return;
+    }
+    beansForm.requestSubmit(beansSubmit);
   });
 
   beansToolsToggle.addEventListener("click",()=>setBeansToolMenu(beansToolsMenu.hidden));
@@ -1763,6 +1808,7 @@
       const clerk=await getNblClerk();
       if(clerk?.isSignedIn){
         await clerk.signOut();
+        cancelActiveBeansChat();
         beansAccountGeneration++;
         invalidateBeansHistoryLoad();
         plusAccessRequestGeneration++;
@@ -1806,6 +1852,7 @@
         return;
       }
       beansIdentityUserId=nextUserId;
+      cancelActiveBeansChat();
       beansAccountGeneration++;
       invalidateBeansHistoryLoad();
       drawerHistoryRequestGeneration++;

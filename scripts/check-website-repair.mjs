@@ -64,6 +64,19 @@ requireText(plusChat,"currentClerkUserId()!==identity.userId","Professor Grey re
 requireText(beansChat,"accountGeneration!==beansAccountGeneration","Beans responses are not guarded against account changes.");
 requireText(beansChat,"conversationGeneration!==beansConversationGeneration","Beans responses are not guarded against New Chat or conversation switches.");
 requireText(beansChat,"currentClerkUserId()!==requestedUserId","Beans responses do not verify the active signed-in account.");
+requireText(header,"let activeBeansChatController=null;","Website Chat has no cancellable active request state.");
+requireText(newConversation,"cancelActiveBeansChat();","New Chat does not cancel the previous Beans request.");
+requireText(oldConversation,"cancelActiveBeansChat();","Opening saved history does not cancel the previous Beans request.");
+requireText(signOut,"cancelActiveBeansChat();","Sign-out leaves the previous Beans request running.");
+requireText(accountListener,"cancelActiveBeansChat();","Account switching leaves the previous Beans request running.");
+requireText(beansChat,'if(!text||beansSubmit.disabled) return;',"Website Chat can double-submit while a send is already starting.");
+requireText(beansChat,"signal:controller.signal","Website Chat requests are not cancellable.");
+requireText(beansChat,"cache:\"no-store\"","Website Chat requests are missing explicit no-store behavior.");
+requireText(beansChat,"userMessageEl?.remove();","Failed sends leave a false successful user turn in the transcript.");
+requireText(beansChat,"beansHistory.pop();","Failed sends leave the unsent user turn in conversation context.");
+requireText(beansChat,"Your message is still here so you can try again.","Failed sends do not preserve the user's message for retry.");
+requireText(header,'event.key!=="Enter"||event.shiftKey||event.isComposing',"Website composer is missing Enter-to-send / Shift+Enter newline behavior.");
+requireText(header,"beansForm.requestSubmit(beansSubmit);","Enter-to-send is not routed through the real Chat form.");
 
 requireText(header,'["search","Search","#nbl-search",false]',"Search navigation still targets a missing page.");
 requireText(header,'data-nbl-open-search',"Search links do not open the existing modal.");
