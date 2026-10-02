@@ -91,6 +91,8 @@ for(const filename of findHtml(rootPath)){
 }
 
 requireText(header,'aria-label="Open NBL Chat™"',"The Chat launcher is not named NBL Chat.");
+requireText(header,'<img src="/NBLChat_Beans.png" alt="" aria-hidden="true">',"Homepage Chat launcher is not using the stable NBL Chat artwork.");
+forbidText(header,'data:image/webp;base64,',"Inline Base64 Chat artwork returned; use the stable repository asset.");
 requireText(header,'<h2 id="nbl-beans-title">NBL Chat™</h2>',"The Chat dialog title is not NBL Chat.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
