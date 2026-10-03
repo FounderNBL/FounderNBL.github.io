@@ -44,16 +44,32 @@
   let nblClerkPromise=null;
   let nblClerk=null;
 
-  const safeReturnUrl=()=>{
-    const url=new URL(location.href);
+  const safeReturnUrl=(href=location.href)=>{
+    let url;
+    try{
+      url=new URL(href,location.href);
+    }catch{
+      url=new URL("/",location.origin);
+    }
+    if(!["http:","https:"].includes(url.protocol)||url.origin!==location.origin){
+      url=new URL("/",location.origin);
+    }
+    url.username="";
+    url.password="";
     url.hash="";
+    for(const key of ["__clerk_synced","__clerk_status","session_id"]){
+      url.searchParams.delete(key);
+    }
     return url.href;
   };
 
-  const accountPortalUrl=(page="/sign-in")=>{
-    const redirectUrl=encodeURIComponent(safeReturnUrl());
-    return `${NBL_ACCOUNT_PORTAL}${page}?redirect_url=${redirectUrl}`;
+  const accountPortalUrl=(page="/sign-in",href=location.href)=>{
+    const portalPage=page==="/user"?"/user":"/sign-in";
+    const redirectUrl=encodeURIComponent(safeReturnUrl(href));
+    return `${NBL_ACCOUNT_PORTAL}${portalPage}?redirect_url=${redirectUrl}`;
   };
+
+  window.NBLAuthFlow=Object.freeze({safeReturnUrl,accountPortalUrl});
 
   const loadExternalScript=(src,attributes={})=>new Promise((resolve,reject)=>{
     const existing=[...document.scripts].find(script=>script.src===src);
