@@ -71,11 +71,12 @@ requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to
 requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
 requireText(header,'data-nbl-tool="knowledge-upload"',"Beans saved-knowledge upload control is missing.");
 requireText(header,'data-nbl-tool="knowledge"',"Beans saved-knowledge search control is missing.");
-requireText(header,'data-nbl-tool="grey"',"NBL CHAT PLUS™ Professor Grey™ tool is missing.");
-requireText(header,'mode:beansToolMode==="grey"?"grey_chat":"beans"',"Professor Grey™ / Virgo System™ Plus mode is not sent to the backend.");
 requireText(header,'"/knowledge/upload"',"Beans saved-knowledge upload API route is missing.");
 requireText(header,'"/knowledge/status"',"Beans saved-knowledge status API route is missing.");
 requireText(header,'"/knowledge/delete"',"Beans saved-knowledge delete API route is missing.");
+forbidText(header,'data-nbl-tool="grey"',"Website Beans must not expose Professor Grey™ as an ordinary Chat Plus tool.");
+forbidText(header,'mode:beansToolMode==="grey"?"grey_chat":"beans"',"Website Beans must not route ordinary Plus through grey_chat.");
+requireText(header,'mode:"beans"',"Website Beans must use the canonical Beans mode.");
 requireText(header,'data-nbl-tool="voice-mode"',"Beans OpenAI voice-mode control is missing.");
 requireText(header,'"/voice/transcribe"',"Beans OpenAI transcription route is missing.");
 requireText(header,'"/voice/speak"',"Beans OpenAI speech route is missing.");
@@ -116,6 +117,6 @@ for(const forbidden of [
 if(failed){
   process.exitCode=1;
 }else{
-  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, metered Beans continuity, premium tool controls including Grey/Virgo, saved knowledge and voice, protected University source, world routes, deletion controls, and secret guards are present.");
+  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, metered Beans continuity, premium Beans tools, saved knowledge and voice, University-separated Grey/Virgo source, world routes, deletion controls, and secret guards are present.");
   console.log("[website-chat-parity] EXTERNAL LIVE CHECK: Clerk-hosted account flows and responsive browser behavior still require a real browser pass after this source audit.");
 }

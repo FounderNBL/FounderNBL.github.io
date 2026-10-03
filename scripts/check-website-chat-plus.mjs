@@ -21,7 +21,7 @@ requireText(js,'NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API',"Signed-out Beans is not us
 requireText(js,'NBL_CHAT_GATEWAY_API',"Signed-in Beans gateway endpoint is missing.");
 requireText(js,'const endpoint=accountToken?\`\${NBL_CHAT_GATEWAY_API}/chat\`:NBL_BEANS_WEB_API',"Signed-in Beans is not routed through the metered gateway.");
 requireText(js,'data-nbl-chat-mode="beans"',"Beans mode is missing.");
-requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
+requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
 requireText(js,'NBL_CHAT_PLUS_API',"NBL CHAT PLUS™ runtime endpoint is missing.");
 requireText(js,'functions/v1/nbl-foundation-runtime',"Canonical NBL Foundation runtime endpoint is missing.");
 requireText(js,'action:"status"',"Plus access is not checked server-side.");
@@ -40,9 +40,6 @@ requireText(js,'data-nbl-tool="attach"',"Photo/file tool is missing.");
 requireText(js,'data-nbl-tool="web"',"Web tool is missing.");
 requireText(js,'data-nbl-tool="code"',"Code/data tool is missing.");
 requireText(js,'data-nbl-tool="image"',"Image creation tool is missing.");
-requireText(js,'data-nbl-tool="grey"',"Professor Grey™ / Virgo System™ Chat Plus tool is missing.");
-requireText(js,'mode:beansToolMode==="grey"?"grey_chat":"beans"',"Professor Grey™ tool is not routed through the Chat Plus Grey mode.");
-requireText(js,'payload?.speaker==="Professor Grey™"',"Professor Grey™ replies are not identified in the shared chat.");
 requireText(js,'data-nbl-beans-mic',"Browser dictation control is missing.");
 requireText(js,'appendBeansImages',"Generated-image rendering is missing.");
 requireText(js,'<h2 id="nbl-beans-title">NBL Chat™</h2>',"Overall website Chat title must be NBL Chat™, not the Plus tier.");
@@ -61,6 +58,9 @@ for(const value of ['$4.99/month','300 successful replies','$14.99/month','$19.9
   requireText(plans,value,`Canonical locked product value is missing: ${value}`);
 }
 requireText(js,'NBL CHAT PLUS™ is required to send them.',"Attachment Plus-boundary status is missing.");
+forbidText(js,'data-nbl-tool="grey"',"Professor Grey™ must not appear as a public Beans / ordinary Chat Plus tool.");
+forbidText(js,'mode:beansToolMode==="grey"?"grey_chat":"beans"',"Public Beans must not route ordinary Chat Plus into Grey mode.");
+requireText(js,'mode:"beans"',"Public Beans request must stay on the Beans rail.");
 requireText(js,'Live web selected · NBL CHAT PLUS™.',"Web-tool Plus-boundary status is missing.");
 requireText(js,'Code / data analysis selected · NBL CHAT PLUS™.',"Code-tool Plus-boundary status is missing.");
 requireText(js,'Image creation selected · NBL CHAT PLUS™.',"Image-tool Plus-boundary status is missing.");
@@ -81,4 +81,4 @@ if(beansListener!==1){
   process.exitCode=1;
 }
 
-if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat™ routes signed-in use through metering, exposes Plus tools including Professor Grey™ / Virgo System™, keeps protected University Guided Learning separate, preserves history, and contains no public secrets.");
+if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat™ routes signed-in use through metering, exposes premium Beans tools, keeps Professor Grey™ / Virgo System™ behind University entitlement, preserves history, and contains no public secrets.");

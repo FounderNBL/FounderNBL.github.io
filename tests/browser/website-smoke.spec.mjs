@@ -39,7 +39,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
     await page.getByRole("button", { name: "Open Beans tools" }).click();
     await expect(page.getByRole("button", { name: /Photo \/ file/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /Professor Grey™/i })).toBeVisible();
+    await expect(page.locator('[data-nbl-tool="grey"]')).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Search the live web/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Code \/ data analysis/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Create an image/i })).toBeVisible();
@@ -48,6 +48,7 @@ test.describe("New Beansland web app browser smoke", () => {
       await page.getByRole("button", { name: /Membership & plans/i }).click();
       await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Choose NBL CHAT PLUS™" })).toBeVisible();
+      await expect(page.getByRole("button", { name: /Choose Plus \+ University/i })).toBeVisible();
       await expect(page.getByRole("button", { name: /Get \+500 replies/i })).toBeVisible();
     }
   });

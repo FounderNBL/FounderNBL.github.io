@@ -108,7 +108,7 @@ requireText(header,'<img src="/NBLChat_Beans.png" alt="" aria-hidden="true">',"H
 forbidText(header,'data:image/webp;base64,',"Inline Base64 Chat artwork returned; use the stable repository asset.");
 requireText(header,'<h2 id="nbl-beans-title">NBL Chat™</h2>',"The Chat dialog title is not NBL Chat.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
-requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
+requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
 requireText(header,'NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"Public Chat does not carry the current Plus / Plus + University brand boundary.");
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
@@ -217,4 +217,4 @@ for(const forbidden of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_
 }
 
 if(failed) process.exitCode=1;
-else console.log("[website-repair] PASS: NBL Chat™ and Chat Plus Grey/Virgo remain on NewBeansland.org, protected University commerce hands off to NBL World, Chat billing stays authenticated, and existing history/accessibility/security boundaries remain intact.");
+else console.log("[website-repair] PASS: NBL Chat™ stays Beans-first on NewBeansland.org, preserved Grey/Virgo source remains hidden and University-gated, University commerce hands off to NBL World, Chat billing stays authenticated, and existing history/accessibility/security boundaries remain intact.");
