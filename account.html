@@ -32,7 +32,7 @@
     @media(max-width:720px){main{padding-top:96px}.grid{grid-template-columns:1fr}.card{padding:17px}}
   </style>
   <script defer src="/nbl-product-plans.js?v=20260929"></script>
-  <script defer src="/nbl-world-header.js?v=20261003-beans-parity"></script>
+  <script defer src="/nbl-world-header.js?v=20261003-auth-recovery"></script>
 </head>
 <body>
   <main>
@@ -51,7 +51,7 @@
       <h2>Sign in first</h2>
       <p>This page only shows data for the account that is currently signed in. Use the secure NBL account portal to sign in, create an account, or reset a forgotten password.</p>
       <div class="row">
-        <button id="signInButton" type="button">Sign in / Account access</button>
+        <button id="signInButton" type="button">Sign in / recover account</button>
         <a class="button" id="passwordHelpButton" href="https://accounts.newbeansland.org/sign-in">Forgot password?</a>
       </div>
       <p class="status">After changing your password, return to NBL Chat™ and sign in with the new password.</p>
@@ -167,6 +167,24 @@
     const deliveries=document.getElementById("deliveries");
     const FULFILLMENT_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/locke-fulfillment";
 
+    let authNavigationInProgress=false;
+    const accountPortalUrl=(page="/sign-in")=>{
+      if(window.NBLAuthFlow?.accountPortalUrl){
+        return window.NBLAuthFlow.accountPortalUrl(page,location.href);
+      }
+      const safeReturn=new URL(location.href);
+      safeReturn.hash="";
+      safeReturn.searchParams.delete("session_id");
+      const portalPage=page==="/user"?"/user":"/sign-in";
+      return "https://accounts.newbeansland.org"+portalPage+"?redirect_url="+encodeURIComponent(safeReturn.href);
+    };
+    const signInPortal=accountPortalUrl("/sign-in");
+    signInButton.onclick=()=>{
+      authNavigationInProgress=true;
+      location.assign(signInPortal);
+    };
+    if(passwordHelpButton) passwordHelpButton.href=signInPortal;
+
     const waitForBridge=async()=>{
       for(let i=0;i<60;i++){
         if(window.NBLAccountBridge) return window.NBLAccountBridge;
@@ -183,12 +201,16 @@
     if(!bridge) return;
 
     const clerk=await bridge.getClerk().catch(()=>null);
-    if(!clerk?.isSignedIn||!clerk.session){
+    const signedInAtLoad=Boolean(clerk?.isSignedIn&&clerk.session);
+    clerk?.addListener?.(()=>{
+      const signedInNow=Boolean(clerk?.isSignedIn&&clerk.session);
+      if(!authNavigationInProgress&&signedInNow!==signedInAtLoad){
+        location.reload();
+      }
+    });
+    if(!signedInAtLoad){
       signedOut.classList.add("show");
       accountBody.classList.add("hidden");
-      const portal="https://accounts.newbeansland.org/sign-in?redirect_url="+encodeURIComponent(location.href);
-      signInButton.onclick=()=>{location.href=portal};
-      if(passwordHelpButton) passwordHelpButton.href=portal;
       return;
     }
 
@@ -497,7 +519,10 @@
       }catch(error){profileStatus.textContent=error.message}
     });
 
-    securityButton.onclick=()=>{location.href="https://accounts.newbeansland.org/user?redirect_url="+encodeURIComponent(location.href)};
+    securityButton.onclick=()=>{
+      authNavigationInProgress=true;
+      location.assign(accountPortalUrl("/user"));
+    };
     billingButton.onclick=async()=>{
       billingButton.disabled=true;profileStatus.textContent="Opening secure billing…";
       try{
@@ -508,7 +533,11 @@
       }catch(error){profileStatus.textContent=error?.message||"Secure billing is temporarily unavailable."}
       finally{billingButton.disabled=false}
     };
-    signOutButton.onclick=async()=>{await clerk.signOut();location.href="/"};
+    signOutButton.onclick=async()=>{
+      authNavigationInProgress=true;
+      await clerk.signOut();
+      location.href="/";
+    };
 
     deleteDataButton.onclick=async()=>{
       if(!confirm("Delete your saved NBL username and all saved Beans conversations? This cannot be undone.")) return;
