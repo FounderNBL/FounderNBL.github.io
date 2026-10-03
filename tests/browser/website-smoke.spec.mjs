@@ -98,7 +98,7 @@ test.describe("New Beansland web app browser smoke", () => {
   });
 
   test("account recovery uses the Clerk portal with a safe return URL", async ({ page }) => {
-    await open("/account.html?source=smoke#account");
+    await open("/account.html?source=smoke#account", page);
 
     const forgot = page.getByRole("link", { name: "Forgot password?" });
     const signIn = page.getByRole("button", { name: "Sign in / recover account" });
@@ -126,7 +126,7 @@ test.describe("New Beansland web app browser smoke", () => {
   test("account sign-in remains usable when the Clerk bridge fails", async ({ page }) => {
     await page.route("**/*clerk.browser.js*", (route) => route.abort());
     await page.route("https://accounts.newbeansland.org/**", (route) => route.abort());
-    await open("/account.html?source=bridge-failure#account");
+    await open("/account.html?source=bridge-failure#account", page);
 
     const signIn = page.getByRole("button", { name: "Sign in / recover account" });
     const forgot = page.getByRole("link", { name: "Forgot password?" });
