@@ -85,17 +85,60 @@
     const card=document.createElement("article");
     card.className="product nbl-current-card";
     card.id=id;
-    card.innerHTML=`<div class="product-media"><img src="${image}" alt="${title}" loading="eager" decoding="async"></div><div class="product-copy"><h3>${title}</h3><p>${copy}</p><div class="actions"><span class="nbl-price">${price}</span><a class="request-btn" href="mailto:founder@newbeansland.org?subject=${encodeURIComponent(subject)}">Submit your request</a></div></div>`;
+    const priceMarkup=price?`<span class="nbl-price">${price}</span>`:"";
+    card.innerHTML=`<div class="product-media"><img src="${image}" alt="${title}" loading="eager" decoding="async"></div><div class="product-copy"><h3>${title}</h3><p>${copy}</p><div class="actions">${priceMarkup}<a class="request-btn" href="mailto:founder@newbeansland.org?subject=${encodeURIComponent(subject)}">Submit your request</a></div></div>`;
     const img=card.querySelector("img");
     if(img) img.onerror=()=>{img.closest(".product-media")?.remove();};
     grid.appendChild(card);
   };
 
-  const ice=setProductImage("Ice Out","/NBL-Ice-Out-outfit.png?v=1d0ca520","NBL Ice Out T-shirt display");
+  const ice=setProductImage("Ice Out","/NBL_Iced_Out_T.png?v=34968ac6","NBL Ice Out T-shirt display");
   setPrice(ice,"$29.99");
-  const identity=setProductImage("Identity","/NBL_Identity_T.png?v=d9cc1bb7","NBL Identity T-shirt display");
+  const identity=setProductImage("Identity","/NBL_Identity_T.png?v=0c614ebe","NBL Identity T-shirt display");
   setPrice(identity,"$39.99");
   setProductImage("Black Is Not A Crime","/NBL-Being-Black.png?v=11fc099e","Black Is Not A Crime NBL statement T-shirt");
+
+  const statementGrid=document.querySelector("#statements .catalog-grid");
+  addProduct(statementGrid,{
+    id:"nbl-american-tee",
+    title:"NBL American Tee",
+    copy:"NBL Clothing Co. statement tee.",
+    image:"/NBL_American_T.png?v=fcba7fd6",
+    price:"",
+    subject:"NBL Request - American Tee"
+  });
+  addProduct(statementGrid,{
+    id:"nbl-get-the-point-tee",
+    title:"Get The Point",
+    copy:"NBL Clothing Co. statement tee.",
+    image:"/NBL_Get_The_Point_T.png?v=fc597e3c",
+    price:"",
+    subject:"NBL Request - Get The Point Tee"
+  });
+  addProduct(statementGrid,{
+    id:"nbl-identity-tee-alt",
+    title:"NBL Identity Tee - Alternate",
+    copy:"Alternate NBL Identity Tee presentation.",
+    image:"/NBL_Identity_T_alt.png?v=e3c18bd0",
+    price:"",
+    subject:"NBL Request - Identity Tee Alternate"
+  });
+  addProduct(statementGrid,{
+    id:"nbl-trans-lives-tee",
+    title:"Trans Lives",
+    copy:"NBL Clothing Co. statement tee.",
+    image:"/NBL_Trans_Lives_T.png?v=5d01287c",
+    price:"",
+    subject:"NBL Request - Trans Lives Tee"
+  });
+  addProduct(statementGrid,{
+    id:"nbl-we-are-one-tee",
+    title:"We Are One",
+    copy:"NBL Clothing Co. statement tee.",
+    image:"/NBL_We_Are_One_T.png?v=f1c61fe3",
+    price:"",
+    subject:"NBL Request - We Are One Tee"
+  });
 
   document.querySelectorAll(".status").forEach(status=>{
     if(/made to order|coming soon/i.test(status.textContent||"")) status.remove();
