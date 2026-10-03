@@ -1,11 +1,9 @@
 name: NBL Website Health Inspector
 
 on:
-  workflow_run:
-    workflows:
-      - pages build and deployment
-    types:
-      - completed
+  push:
+    branches:
+      - main
   schedule:
     # Lightweight production route inspection every hour.
     - cron: "17 * * * *"
@@ -105,7 +103,7 @@ jobs:
 
   deep-browser-inspection:
     name: Health Inspector · desktop + mobile
-    if: ${{ (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') || github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -116,6 +114,28 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: "22"
+
+      - name: Wait for the deployed Chat asset to match this release
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(sha256sum nbl-world-header.js | awk '{print $1}')"
+          for attempt in $(seq 1 30); do
+            live="$RUNNER_TEMP/nbl-world-header-live.js"
+            rm -f "$live"
+            if curl --fail --silent --show-error --location --max-time 20               -H "Cache-Control: no-cache"               "https://newbeansland.org/nbl-world-header.js?health=$GITHUB_SHA-$attempt"               --output "$live"; then
+              actual="$(sha256sum "$live" | awk '{print $1}')"
+              if [ "$actual" = "$expected" ]; then
+                echo "Live Chat asset matches this release."
+                exit 0
+              fi
+            fi
+            echo "Waiting for Pages deployment to catch up ($attempt/30)…"
+            sleep 10
+          done
+          echo "Live Chat asset did not match the release source within 5 minutes."
+          exit 1
 
       - name: Install Playwright test runner
         run: npm install --no-save @playwright/test@latest
