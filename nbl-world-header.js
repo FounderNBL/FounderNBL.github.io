@@ -545,7 +545,7 @@
 
       <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat™ mode">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
-        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™" tabindex="-1" hidden>University</button>
+        <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden>University</button>
       </div>
 
       <section id="nbl-chat-panel-beans" role="tabpanel" aria-labelledby="nbl-chat-tab-beans" tabindex="0" data-nbl-beans-regular>
@@ -589,7 +589,7 @@
 
       <section id="nbl-chat-panel-plus" class="nbl-plus-shell" role="tabpanel" aria-labelledby="nbl-chat-tab-plus" tabindex="0" data-nbl-plus hidden>
         <div class="nbl-plus-access" data-nbl-plus-access tabindex="-1">
-          <p class="nbl-beans-kicker">NBL CHAT PLUS™</p>
+          <p class="nbl-beans-kicker">NBL CHAT PLUS™ + University</p>
           <h3>Professor Grey™ · Virgo System™ · powered by OpenAI</h3>
           <p data-nbl-plus-access-copy>Turn on Guided Learning after LOCKE confirms your course enrollment and Professor Grey™ access.</p>
           <button type="button" data-nbl-plus-signin>Sign in to check access</button>
@@ -1434,7 +1434,7 @@
       if(accessRequestGeneration!==plusAccessRequestGeneration||accountGeneration!==beansAccountGeneration||currentClerkUserId()!==identity.userId) return;
       if(response.status===401){
         plusAccessCheckedFor=null;
-        return showPlusLocked("Your NBL session needs to be refreshed. Sign in again to check Plus access.",{signedOut:true});
+        return showPlusLocked("Your NBL session needs to be refreshed. Sign in again to check University access.",{signedOut:true});
       }
       if(!response.ok) throw new Error("NBL University access could not be checked right now.");
       plusAccessCheckedFor=identity.userId;
@@ -1684,11 +1684,11 @@
     const requestedUserId=currentClerkUserId();
     const identity=await getSignedInNblIdentity();
     if(!identity||accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||!plusAllowed||identity.userId!==requestedUserId){
-      if(accountGeneration===beansAccountGeneration&&!identity) showPlusLocked("Sign in with your NBL account to use NBL CHAT PLUS™.",{signedOut:true});
+      if(accountGeneration===beansAccountGeneration&&!identity) showPlusLocked("Sign in with your NBL account to use NBL University.",{signedOut:true});
       return;
     }
     if(currentClerkUserId()!==identity.userId){
-      showPlusLocked("Sign in with your NBL account to use NBL CHAT PLUS™.",{signedOut:true});
+      showPlusLocked("Sign in with your NBL account to use NBL University.",{signedOut:true});
       return;
     }
     plusInput.value="";
