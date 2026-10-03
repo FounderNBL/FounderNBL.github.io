@@ -97,13 +97,48 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator("[data-campus-gate]")).toBeVisible();
   });
 
-  test("account recovery remains reachable", async ({ page }) => {
-    await open("/account.html", page);
+  test("account recovery uses the Clerk portal with a safe return URL", async ({ page }) => {
+    await open("/account.html?source=smoke#account");
 
-    await expect(page.getByRole("link", { name: "Forgot password?" })).toBeVisible();
-    await expect(page.locator("#signInButton")).toBeVisible();
+    const forgot = page.getByRole("link", { name: "Forgot password?" });
+    const signIn = page.getByRole("button", { name: "Sign in / recover account" });
+    await expect(forgot).toBeVisible();
+    await expect(signIn).toBeVisible();
+
+    const href = await forgot.getAttribute("href");
+    expect(href).toBeTruthy();
+    const portal = new URL(href);
+    expect(portal.origin).toBe("https://accounts.newbeansland.org");
+    expect(portal.pathname).toBe("/sign-in");
+
+    const redirect = new URL(portal.searchParams.get("redirect_url"));
+    const current = new URL(page.url());
+    expect(redirect.origin).toBe(current.origin);
+    expect(redirect.pathname).toBe("/account.html");
+    expect(redirect.searchParams.get("source")).toBe("smoke");
+    expect(redirect.hash).toBe("");
+
     if (expectBillingReleaseUi) {
       await expect(page.locator("#membershipCard")).toBeAttached();
     }
+  });
+
+  test("account sign-in remains usable when the Clerk bridge fails", async ({ page }) => {
+    await page.route("**/*clerk.browser.js*", (route) => route.abort());
+    await page.route("https://accounts.newbeansland.org/**", (route) => route.abort());
+    await open("/account.html?source=bridge-failure#account");
+
+    const signIn = page.getByRole("button", { name: "Sign in / recover account" });
+    const forgot = page.getByRole("link", { name: "Forgot password?" });
+    await expect(signIn).toBeVisible();
+    await expect(forgot).toBeVisible();
+    expect(await signIn.evaluate((button) => typeof button.onclick)).toBe("function");
+
+    const href = new URL(await forgot.getAttribute("href"));
+    expect(href.origin).toBe("https://accounts.newbeansland.org");
+    expect(href.pathname).toBe("/sign-in");
+    const redirect = new URL(href.searchParams.get("redirect_url"));
+    expect(redirect.pathname).toBe("/account.html");
+    expect(redirect.hash).toBe("");
   });
 });
