@@ -24,7 +24,20 @@ requireText(header,'accountPortalUrl("/sign-in")',"Website sign-in is not routed
 requireText(header,'redirect_url=',"Sign-in does not preserve a safe return URL.");
 requireText(header,'clerk.addListener?.(render)',"Header account state can go stale after sign-in/sign-out.");
 requireText(header,'clerk.addListener(()=>{',"Beans/Plus state is not refreshed when Clerk account state changes.");
-requireText(account,'id="passwordHelpButton"',"Forgot-password entry point is missing.");
+requireText(account,'id="passwordHelpButton"', "Forgot-password entry point is missing.");
+requireText(account,'Sign in / recover account', "Visible account recovery entry point is missing.");
+requireText(header,'window.NBLAuthFlow=Object.freeze({safeReturnUrl,accountPortalUrl})', "Shared website auth-flow helper is not exposed.");
+requireText(header,'url.origin!==location.origin', "Return URLs are not constrained to the active New Beansland origin.");
+requireText(header,'url.searchParams.delete(key)', "Transient auth/payment parameters are not removed from return URLs.");
+requireText(account,'const signInPortal=accountPortalUrl("/sign-in")', "Account sign-in does not use the shared portal builder.");
+requireText(account,'location.assign(signInPortal)', "Sign-in control is not wired before Clerk account loading.");
+requireText(account,'passwordHelpButton.href=signInPortal', "Forgot-password control does not share the tested sign-in/recovery destination.");
+requireText(account,'clerk?.addListener?.(()=>{', "Account page does not respond to Clerk session-state changes.");
+requireText(account,'location.assign(accountPortalUrl("/user"))', "Security management does not use the shared safe return URL.");
+if(account.indexOf('const signInPortal=accountPortalUrl("/sign-in")')>account.indexOf("const waitForBridge=async()=>{")){
+  console.error("[website-chat-parity] FAIL: account sign-in/recovery is wired only after the Clerk bridge.");
+  failed=true;
+}
 requireText(account,'Manage sign-in & security',"Security/account controls are missing.");
 requireText(account,'id="signOutButton"',"Sign-out control is missing.");
 requireText(account,'id="username"',"NBL username control is missing.");
