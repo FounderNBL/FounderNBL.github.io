@@ -21,7 +21,7 @@ requireText(js,'NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API',"Signed-out Beans is not us
 requireText(js,'NBL_CHAT_GATEWAY_API',"Signed-in Beans gateway endpoint is missing.");
 requireText(js,'const endpoint=accountToken?\`\${NBL_CHAT_GATEWAY_API}/chat\`:NBL_BEANS_WEB_API',"Signed-in Beans is not routed through the metered gateway.");
 requireText(js,'data-nbl-chat-mode="beans"',"Beans mode is missing.");
-requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
+requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
 requireText(js,'NBL_CHAT_PLUS_API',"NBL CHAT PLUS™ runtime endpoint is missing.");
 requireText(js,'functions/v1/nbl-foundation-runtime',"Canonical NBL Foundation runtime endpoint is missing.");
 requireText(js,'action:"status"',"Plus access is not checked server-side.");
