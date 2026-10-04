@@ -27,6 +27,8 @@ requireText(header,'clerk.addListener(()=>{',"Beans/Plus state is not refreshed 
 requireText(account,'id="passwordHelpButton"', "Forgot-password entry point is missing.");
 requireText(account,'Sign in / recover account', "Visible account recovery entry point is missing.");
 requireText(header,'window.NBLAuthFlow=Object.freeze({safeReturnUrl,accountPortalUrl})', "Shared website auth-flow helper is not exposed.");
+requireText(header,'existing.dataset.nblFailed==="true"', "Clerk loader does not remember a failed existing script.");
+requireText(header,'script.dataset.nblFailed="true"', "Clerk loader does not mark failed script loads for recovery callers.");
 requireText(header,'url.origin!==location.origin', "Return URLs are not constrained to the active New Beansland origin.");
 requireText(header,'url.searchParams.delete(key)', "Transient auth/payment parameters are not removed from return URLs.");
 requireText(account,'const signInPortal=accountPortalUrl("/sign-in")', "Account sign-in does not use the shared portal builder.");
