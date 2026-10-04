@@ -31,11 +31,11 @@ const mainShirts=[
   "NBL-Being-Black.png",
   "NBL_Iced_Out_T.png",
   "NBL_Identity_T.png",
-  "NBL_Get_The_Point_T.png",
   "NBL_Identity_T_alt.png"
 ];
 const prideShirts=[
   "NBL_American_T.png",
+  "NBL_Get_The_Point_T.png",
   "NBL_Trans_Lives_T.png",
   "NBL_We_Are_One_T.png"
 ];
@@ -56,8 +56,8 @@ requireText(kids,'id="shop-kids"',"NBL Kids shop section is missing");
 requireText(kids,'href="#shop-kids"',"NBL Kids internal shop door is not routed to its own section");
 
 const prideCards=(clothing.match(/class="product nbl-pride-card/g)||[]).length;
-if(prideCards!==3){
-  console.error("[clothing-catalog] FAIL: expected exactly 3 Pride feature cards, found",prideCards);
+if(prideCards!==4){
+  console.error("[clothing-catalog] FAIL: expected exactly 4 Pride feature cards, found",prideCards);
   failed=true;
 }
 
@@ -75,4 +75,4 @@ requireText(sync,'if(status.closest("#pride")) return;',"runtime does not preser
 requireText(sync,'if(!card.closest("#pride")) applyBuyArtOverlay(card);',"runtime can still stamp Buy Now artwork over Pride feature cards");
 
 if(failed) process.exitCode=1;
-else console.log("[clothing-catalog] PASS: current adult shirts, 3-shirt Pride feature, dedicated NBL Kids catalog, asset existence and stale-reference guards are clean.");
+else console.log("[clothing-catalog] PASS: current adult shirts, 4-card Pride feature, dedicated NBL Kids catalog, asset existence and stale-reference guards are clean.");
