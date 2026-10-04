@@ -594,6 +594,7 @@
             </div>
             <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
             <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans">🎙</button>
+            <button class="nbl-beans-stop" type="button" data-nbl-beans-stop aria-label="Stop Beans response" hidden>Stop</button>
             <button class="nbl-beans-send" type="submit">Send</button>
           </div>
         </form>
@@ -664,6 +665,7 @@
   const beansToolModeLabel=beansPanel.querySelector("[data-nbl-tool-mode-label]");
   const beansToolReset=beansPanel.querySelector("[data-nbl-tool-reset]");
   const beansMic=beansPanel.querySelector("[data-nbl-beans-mic]");
+  const beansStop=beansPanel.querySelector("[data-nbl-beans-stop]");
   const chatDrawerTools=beansPanel.querySelector("[data-nbl-drawer-tools]");
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
   const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
@@ -708,13 +710,19 @@
   let beansVoicePlayer=null;
   let activeBeansChatController=null;
 
-  const cancelActiveBeansChat=()=>{
+  const setBeansBusy=busy=>{
+    beansForm.toggleAttribute("aria-busy",Boolean(busy));
+    beansSubmit.disabled=Boolean(busy);
+    beansStop.hidden=!busy;
+  };
+
+  const cancelActiveBeansChat=({announce=false}={})=>{
     if(activeBeansChatController){
       activeBeansChatController.abort();
       activeBeansChatController=null;
     }
-    beansForm.removeAttribute("aria-busy");
-    beansSubmit.disabled=false;
+    setBeansBusy(false);
+    if(announce) beansStatus.textContent="Stopped. Your message stays in this conversation.";
   };
 
   const modalInertState=new Map();
@@ -731,14 +739,165 @@
     }
   };
 
+  const copyBeansText=async value=>{
+    const text=String(value||"");
+    if(!text) return false;
+    try{
+      await navigator.clipboard.writeText(text);
+      return true;
+    }catch{
+      const area=document.createElement("textarea");
+      area.value=text;
+      area.setAttribute("readonly","");
+      area.style.position="fixed";
+      area.style.opacity="0";
+      document.body.appendChild(area);
+      area.select();
+      let copied=false;
+      try{copied=document.execCommand("copy");}catch{}
+      area.remove();
+      return copied;
+    }
+  };
+
+  const appendBeansInline=(host,value)=>{
+    const text=String(value||"");
+    const pattern=/(`[^`\n]+`|https?:\/\/[^\s<]+)/g;
+    let cursor=0;
+    for(const match of text.matchAll(pattern)){
+      const index=match.index??0;
+      if(index>cursor) host.append(document.createTextNode(text.slice(cursor,index)));
+      const token=match[0];
+      if(token.startsWith("`")&&token.endsWith("`")){
+        const code=document.createElement("code");
+        code.textContent=token.slice(1,-1);
+        host.append(code);
+      }else{
+        try{
+          const url=new URL(token);
+          if(url.protocol==="http:"||url.protocol==="https:"){
+            const link=document.createElement("a");
+            link.href=url.href;
+            link.target="_blank";
+            link.rel="noopener noreferrer";
+            link.textContent=token;
+            host.append(link);
+          }else host.append(document.createTextNode(token));
+        }catch{host.append(document.createTextNode(token));}
+      }
+      cursor=index+token.length;
+    }
+    if(cursor<text.length) host.append(document.createTextNode(text.slice(cursor)));
+  };
+
+  const renderBeansContent=(host,value)=>{
+    host.replaceChildren();
+    const text=String(value||"").replace(/\r\n/g,"\n");
+    const segments=text.split("```");
+    for(let index=0;index<segments.length;index++){
+      const segment=segments[index];
+      if(!segment) continue;
+      if(index%2===1){
+        const newline=segment.indexOf("\n");
+        const maybeLanguage=newline>=0?segment.slice(0,newline).trim():"";
+        const codeText=(newline>=0&&/^[a-z0-9_+#.-]{1,24}$/i.test(maybeLanguage)?segment.slice(newline+1):segment).replace(/\n$/,"");
+        const block=document.createElement("div");
+        block.className="nbl-beans-code";
+        const toolbar=document.createElement("div");
+        toolbar.className="nbl-beans-code-head";
+        const label=document.createElement("span");
+        label.textContent=(newline>=0&&/^[a-z0-9_+#.-]{1,24}$/i.test(maybeLanguage)?maybeLanguage:"code");
+        const copy=document.createElement("button");
+        copy.type="button";
+        copy.textContent="Copy";
+        copy.addEventListener("click",async()=>{
+          const ok=await copyBeansText(codeText);
+          copy.textContent=ok?"Copied":"Copy";
+          window.setTimeout(()=>{copy.textContent="Copy";},1200);
+        });
+        toolbar.append(label,copy);
+        const pre=document.createElement("pre");
+        const code=document.createElement("code");
+        code.textContent=codeText;
+        pre.append(code);
+        block.append(toolbar,pre);
+        host.append(block);
+        continue;
+      }
+
+      let list=null;
+      let listType="";
+      for(const rawLine of segment.split("\n")){
+        const line=rawLine.trimEnd();
+        if(!line.trim()){
+          list=null;
+          listType="";
+          continue;
+        }
+        const bullet=line.match(/^\s*[-*]\s+(.+)$/);
+        const numbered=line.match(/^\s*\d+[.)]\s+(.+)$/);
+        const heading=line.match(/^\s*#{1,3}\s+(.+)$/);
+        if(bullet||numbered){
+          const type=bullet?"ul":"ol";
+          if(!list||listType!==type){
+            list=document.createElement(type);
+            listType=type;
+            host.append(list);
+          }
+          const item=document.createElement("li");
+          appendBeansInline(item,(bullet||numbered)[1]);
+          list.append(item);
+          continue;
+        }
+        list=null;
+        listType="";
+        if(heading){
+          const h=document.createElement("h4");
+          appendBeansInline(h,heading[1]);
+          host.append(h);
+          continue;
+        }
+        const p=document.createElement("p");
+        appendBeansInline(p,line);
+        host.append(p);
+      }
+    }
+  };
+
   const appendBeansMessage=(role,content,speaker="Beans")=>{
     const wrap=document.createElement("div");
     wrap.className=`nbl-beans-message ${role==="assistant"?"is-beans":"is-user"}`;
     const who=document.createElement("strong");
     who.textContent=role==="assistant"?(speaker||"Beans"):"You";
-    const p=document.createElement("p");
-    p.textContent=content;
-    wrap.append(who,p);
+    const body=document.createElement("div");
+    body.className="nbl-beans-message-body";
+    if(role==="assistant") renderBeansContent(body,content);
+    else{
+      const p=document.createElement("p");
+      p.textContent=content;
+      body.append(p);
+    }
+    wrap.append(who,body);
+    if(role==="assistant"){
+      const actions=document.createElement("div");
+      actions.className="nbl-beans-message-actions";
+      const copy=document.createElement("button");
+      copy.type="button";
+      copy.textContent="Copy";
+      copy.setAttribute("aria-label","Copy Beans reply");
+      copy.addEventListener("click",async()=>{
+        const ok=await copyBeansText(content);
+        copy.textContent=ok?"Copied":"Copy";
+        window.setTimeout(()=>{copy.textContent="Copy";},1200);
+      });
+      const read=document.createElement("button");
+      read.type="button";
+      read.textContent="Read";
+      read.setAttribute("aria-label","Read Beans reply aloud");
+      read.addEventListener("click",()=>{void speakBeansReply(content);});
+      actions.append(copy,read);
+      wrap.append(actions);
+    }
     beansLog.appendChild(wrap);
     beansLog.scrollTop=beansLog.scrollHeight;
     return wrap;
@@ -1525,14 +1684,12 @@
     const preflightAccountGeneration=beansAccountGeneration;
     const preflightConversationGeneration=beansConversationGeneration;
     const preflightUserId=currentClerkUserId();
-    beansSubmit.disabled=true;
-    beansForm.setAttribute("aria-busy","true");
+    setBeansBusy(true);
     beansStatus.textContent="Beans is getting ready…";
 
     await loadSignedInBeansHistory();
     if(preflightAccountGeneration!==beansAccountGeneration||preflightConversationGeneration!==beansConversationGeneration||currentClerkUserId()!==preflightUserId){
-      beansForm.removeAttribute("aria-busy");
-      beansSubmit.disabled=false;
+      setBeansBusy(false);
       return;
     }
 
@@ -1543,6 +1700,7 @@
     activeBeansChatController?.abort();
     activeBeansChatController=controller;
     beansInput.value="";
+    beansInput.style.height="";
     const userMessageEl=appendBeansMessage("user",text);
     beansHistory.push({role:"user",content:text});
     beansStatus.textContent="Beans is thinking…";
@@ -1601,11 +1759,18 @@
       beansStatus.textContent=`${message} Your message is still here so you can try again.`;
     }finally{
       if(activeBeansChatController===controller) activeBeansChatController=null;
-      beansForm.removeAttribute("aria-busy");
-      beansSubmit.disabled=false;
+      setBeansBusy(false);
       beansInput.focus();
     }
   });
+
+  beansStop.addEventListener("click",()=>cancelActiveBeansChat({announce:true}));
+
+  const resizeBeansComposer=()=>{
+    beansInput.style.height="auto";
+    beansInput.style.height=`${Math.min(180,Math.max(54,beansInput.scrollHeight))}px`;
+  };
+  beansInput.addEventListener("input",resizeBeansComposer);
 
   beansInput.addEventListener("keydown",event=>{
     if(event.key!=="Enter"||event.shiftKey||event.isComposing) return;
