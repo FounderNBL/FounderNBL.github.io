@@ -76,7 +76,8 @@ requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + Universit
 requireText(account,'data-account-billing-plan="chat_plus_university"',"Account Plus + University checkout action is missing.");
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
-requireText(header,'NBL_CHAT_GATEWAY_API',"Signed-in Beans metering gateway is missing.");
+requireText(header,'NBL_CORE_API',"NBL Core website ingress is missing.");
+requireText(header,'NBL_CHAT_GATEWAY_API=NBL_CORE_API',"Signed-in Beans metering/billing traffic is not routed through NBL Core.");
 requireText(header,'meter:requestNblMeter',"Website membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership status card is missing.");
 requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout action is missing.");

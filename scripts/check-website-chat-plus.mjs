@@ -18,7 +18,9 @@ function forbidText(source,text,message){
 }
 
 requireText(js,'NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API',"Signed-out Beans is not using the NBL Foundation runtime.");
-requireText(js,'NBL_CHAT_GATEWAY_API',"Signed-in Beans gateway endpoint is missing.");
+requireText(js,'const NBL_CORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core"',"NBL Core 1.0 website ingress is missing.");
+requireText(js,'NBL_CHAT_GATEWAY_API=NBL_CORE_API',"Signed-in Beans and Chat billing are not routed through NBL Core.");
+forbidText(js,'const NBL_CHAT_GATEWAY_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-chat-gateway"',"Website still hardcodes the pre-Core signed-in gateway.");
 requireText(js,'const endpoint=accountToken?\`\${NBL_CHAT_GATEWAY_API}/chat\`:NBL_BEANS_WEB_API',"Signed-in Beans is not routed through the metered gateway.");
 requireText(js,'data-nbl-chat-mode="beans"',"Beans mode is missing.");
 requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
