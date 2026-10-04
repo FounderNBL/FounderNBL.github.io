@@ -76,6 +76,7 @@
     const existing=[...document.scripts].find(script=>script.src===src);
     if(existing){
       if(existing.dataset.nblLoaded==="true") return resolve();
+      if(existing.dataset.nblFailed==="true") return reject(new Error("Authentication service failed to load."));
       existing.addEventListener("load",()=>resolve(),{once:true});
       existing.addEventListener("error",()=>reject(new Error("Authentication service failed to load.")),{once:true});
       return;
@@ -88,7 +89,10 @@
       script.dataset.nblLoaded="true";
       resolve();
     },{once:true});
-    script.addEventListener("error",()=>reject(new Error("Authentication service failed to load.")),{once:true});
+    script.addEventListener("error",()=>{
+      script.dataset.nblFailed="true";
+      reject(new Error("Authentication service failed to load."));
+    },{once:true});
     document.head.appendChild(script);
   });
 
