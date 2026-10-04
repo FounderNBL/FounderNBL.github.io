@@ -90,6 +90,13 @@ requireText(header,'"/knowledge/delete"',"Beans saved-knowledge delete API route
 forbidText(header,'data-nbl-tool="grey"',"Website Beans must not expose Professor Grey™ as an ordinary Chat Plus tool.");
 forbidText(header,'mode:beansToolMode==="grey"?"grey_chat":"beans"',"Website Beans must not route ordinary Plus through grey_chat.");
 requireText(header,'mode:"beans"',"Website Beans must use the canonical Beans mode.");
+requireText(header,'data-nbl-beans-stop', "Website Beans visible Stop control is missing.");
+requireText(header,'cancelActiveBeansChat({announce:true})', "Website Beans Stop control is not wired to cancel the active request.");
+requireText(header,'renderBeansContent', "Website Beans rich reply renderer is missing.");
+requireText(header,'nbl-beans-message-actions', "Website Beans per-reply actions are missing.");
+requireText(header,'Copy Beans reply', "Website Beans reply copy action is missing.");
+requireText(header,'Read Beans reply aloud', "Website Beans per-reply read-aloud action is missing.");
+requireText(header,'resizeBeansComposer', "Website Beans composer auto-grow behavior is missing.");
 requireText(header,'data-nbl-tool="voice-mode"',"Beans OpenAI voice-mode control is missing.");
 requireText(header,'"/voice/transcribe"',"Beans OpenAI transcription route is missing.");
 requireText(header,'"/voice/speak"',"Beans OpenAI speech route is missing.");

@@ -75,6 +75,11 @@ requireText(beansChat,"cache:\"no-store\"","Website Chat requests are missing ex
 requireText(beansChat,"userMessageEl?.remove();","Failed sends leave a false successful user turn in the transcript.");
 requireText(beansChat,"beansHistory.pop();","Failed sends leave the unsent user turn in conversation context.");
 requireText(beansChat,"Your message is still here so you can try again.","Failed sends do not preserve the user's message for retry.");
+requireText(header,'data-nbl-beans-stop',"Website Chat is missing a visible Stop control.");
+requireText(header,'cancelActiveBeansChat({announce:true})',"Website Stop control is not wired to cancel the active request.");
+requireText(header,'renderBeansContent',"Website Chat is missing safe rich reply rendering.");
+requireText(header,'Copy Beans reply',"Website Chat is missing per-reply copy.");
+requireText(header,'Read Beans reply aloud',"Website Chat is missing per-reply read aloud.");
 requireText(header,'event.key!=="Enter"||event.shiftKey||event.isComposing',"Website composer is missing Enter-to-send / Shift+Enter newline behavior.");
 requireText(header,"beansForm.requestSubmit(beansSubmit);","Enter-to-send is not routed through the real Chat form.");
 
