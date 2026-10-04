@@ -98,49 +98,8 @@
   setPrice(identity,"$39.99");
   setProductImage("Black Is Not A Crime","/NBL-Being-Black.png?v=11fc099e","Black Is Not A Crime NBL statement T-shirt");
 
-  const statementGrid=document.querySelector("#statements .catalog-grid");
-  addProduct(statementGrid,{
-    id:"nbl-american-tee",
-    title:"NBL American Tee",
-    copy:"NBL Clothing Co. statement tee.",
-    image:"/NBL_American_T.png?v=fcba7fd6",
-    price:"",
-    subject:"NBL Request - American Tee"
-  });
-  addProduct(statementGrid,{
-    id:"nbl-get-the-point-tee",
-    title:"Get The Point",
-    copy:"NBL Clothing Co. statement tee.",
-    image:"/NBL_Get_The_Point_T.png?v=fc597e3c",
-    price:"",
-    subject:"NBL Request - Get The Point Tee"
-  });
-  addProduct(statementGrid,{
-    id:"nbl-identity-tee-alt",
-    title:"NBL Identity Tee - Alternate",
-    copy:"Alternate NBL Identity Tee presentation.",
-    image:"/NBL_Identity_T_alt.png?v=e3c18bd0",
-    price:"",
-    subject:"NBL Request - Identity Tee Alternate"
-  });
-  addProduct(statementGrid,{
-    id:"nbl-trans-lives-tee",
-    title:"Trans Lives",
-    copy:"NBL Clothing Co. statement tee.",
-    image:"/NBL_Trans_Lives_T.png?v=5d01287c",
-    price:"",
-    subject:"NBL Request - Trans Lives Tee"
-  });
-  addProduct(statementGrid,{
-    id:"nbl-we-are-one-tee",
-    title:"We Are One",
-    copy:"NBL Clothing Co. statement tee.",
-    image:"/NBL_We_Are_One_T.png?v=f1c61fe3",
-    price:"",
-    subject:"NBL Request - We Are One Tee"
-  });
-
   document.querySelectorAll(".status").forEach(status=>{
+    if(status.closest("#pride")) return;
     if(/made to order|coming soon/i.test(status.textContent||"")) status.remove();
   });
 
@@ -158,57 +117,14 @@
     subject:"NBL Request - Signature Trucker Hat"
   });
 
-  const kidsGrid=document.querySelector("#kids .catalog-grid");
-  addProduct(kidsGrid,{
-    id:"nbl-kids-real-dad",
-    title:"I Know My Real Dad",
-    copy:"NBL Kids statement T-shirt. Kids sizes XS through XL. Shirt color and word-color choices can be specified with the request.",
-    image:"/NBL_Kids_I_Know.png?v=c998a57c",
-    price:"$27.99",
-    subject:"NBL Kids Request - I Know My Real Dad"
-  });
-  addProduct(kidsGrid,{
-    id:"nbl-kids-my-dad",
-    title:"My Dad Collection",
-    copy:"NBL Kids statement T-shirt. Kids sizes XS through XL. Shirt color and word-color choices can be specified with the request.",
-    image:"/NBL_Kids_My_Dad.png?v=839fd54f",
-    price:"$27.99",
-    subject:"NBL Kids Request - My Dad Collection"
-  });
-
-  const kidsHeading=document.querySelector("#kids .section-head");
-  if(kidsHeading&&!kidsHeading.querySelector(".nbl-kids-size-note")){
-    const note=document.createElement("p");
-    note.className="nbl-kids-size-note";
-    note.textContent="Kids sizes: XS, S, M, L, XL · Multiple shirt colors and word colors available.";
-    kidsHeading.appendChild(note);
-  }
-
-  if(!document.getElementById("pride")){
-    const pride=document.createElement("section");
-    pride.className="section";
-    pride.id="pride";
-    pride.innerHTML=`<div class="shell"><div class="section-head"><p class="kicker">NBL Pride Collection</p><h2>Wear your truth. Belong anyway.</h2><p>The NBL Pride Collection is still being prepared.</p></div><div class="nbl-pride-shell"><span class="status">Coming Soon</span><h3>NBL Pride Collection</h3><p>The Pride collection is part of the NBL Clothing Co. world, but it is not open for sale yet. Final product display art is used only from Founder-approved assets.</p></div></div>`;
-    const footwear=document.getElementById("footwear");
-    (footwear||document.querySelector("#request")||document.querySelector("main")).before(pride);
-    const subnav=document.querySelector(".subnav-inner");
-    if(subnav&&!subnav.querySelector('a[href="#pride"]')){
-      const chip=document.createElement("a");
-      chip.className="chip";
-      chip.href="#pride";
-      chip.textContent="NBL Pride";
-      subnav.insertBefore(chip,subnav.querySelector('a[href="#footwear"]')||null);
-    }
-  }
-
-  document.querySelectorAll(".product").forEach(applyBuyArtOverlay);
+  document.querySelectorAll(".product").forEach(card=>{ if(!card.closest("#pride")) applyBuyArtOverlay(card); });
 
   const metaDescription=document.querySelector('meta[name="description"]');
-  if(metaDescription) metaDescription.content="Explore NBL Clothing Co. from New Beansland™ — adult streetwear, statement pieces, NBL Kids, hats and footwear. Not So Small™ and NBL Pride are Coming Soon.";
+  if(metaDescription) metaDescription.content="Explore NBL Clothing Co. from New Beansland™ — adult streetwear, statement shirts, the NBL Pride feature, hats and footwear. NBL Kids has its own dedicated department.";
 
   const heroCopy=document.querySelector("main .hero .hero-inner > p:not(.kicker)");
-  if(heroCopy) heroCopy.textContent="New Beansland™ isn’t just a brand. It’s a world. Adult streetwear, statement pieces, current NBL Kids clothing, hats and footwear are available now. Not So Small™ and NBL Pride are Coming Soon.";
+  if(heroCopy) heroCopy.textContent="New Beansland™ isn’t just a brand. It’s a world. The adult collection, full shirt lineup, Pride feature, hats and footwear live here. NBL Kids now has its own dedicated department.";
 
   const firstSectionCopy=document.querySelector("main > .section .section-head p:last-child");
-  if(firstSectionCopy) firstSectionCopy.textContent="Current NBL clothing and footwear are ready to buy. Not So Small™ and NBL Pride remain Coming Soon.";
+  if(firstSectionCopy) firstSectionCopy.textContent="The current NBL Clothing Co.™ collection is gathered here so the full lineup is visible instead of split across old product art and runtime replacements.";
 })();
