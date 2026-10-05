@@ -76,6 +76,11 @@ requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing."
 requireText(plans,'price:"$14.99/month"',"Canonical Chat Plus price is missing.");
 requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + University tier is missing.");
 requireText(account,'data-account-billing-plan="chat_plus_university"',"Account Plus + University checkout action is missing.");
+requireText(account,'data-account-billing-plan="chat_plus_university" disabled',"University-granting monthly checkout must stay held pending proof.");
+requireText(account,'data-account-billing-plan="foundation" disabled',"Foundation checkout must stay held pending proof.");
+requireText(account,'data-account-billing-plan="full_foundation" disabled',"Guided Foundation checkout must stay held pending proof.");
+requireText(account,'data-account-billing-plan="full_nblu" disabled',"Full NBLU checkout must stay held pending proof.");
+requireText(account,'data-account-billing-plan="nblu_continuation" disabled',"Owner continuation must stay held pending proof.");
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
 requireText(header,'NBL_CORE_API',"NBL Core website ingress is missing.");
