@@ -80,6 +80,10 @@ requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isola
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
 requireText(header,'NBL_CORE_API',"NBL Core website ingress is missing.");
 requireText(header,'NBL_CHAT_GATEWAY_API=NBL_CORE_API',"Signed-in Beans metering/billing traffic is not routed through NBL Core.");
+requireText(header,'NBL_BEANS_WEB_API=`\${NBL_CORE_API}/chat`',"Website Beans Chat is not using the canonical NBL Core ingress.");
+requireText(header,'NBL_SEARCH_API=`\${NBL_CORE_API}/search`',"Website public search is not using the canonical NBL Core ingress.");
+requireText(header,'const endpoint=NBL_BEANS_WEB_API',"Website Beans still chooses different client-side backends instead of letting Core route by authentication state.");
+forbidText(header,'functions/v1/beans-public',"Website client still hardcodes the internal public Beans runtime.");
 requireText(header,'meter:requestNblMeter',"Website membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership status card is missing.");
 requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout action is missing.");
@@ -140,6 +144,6 @@ for(const forbidden of [
 if(failed){
   process.exitCode=1;
 }else{
-  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, metered Beans continuity, premium Beans tools, saved knowledge and voice, University-separated Grey/Virgo source, world routes, deletion controls, and secret guards are present.");
+  console.log("[website-chat-parity] PASS: website-standard drawer/navigation, website-owned auth/session, single-ingress NBL Core Chat/search, metered Beans continuity, premium Beans tools, saved knowledge and voice, University-separated Grey/Virgo source, world routes, deletion controls, and secret guards are present.");
   console.log("[website-chat-parity] EXTERNAL LIVE CHECK: Clerk-hosted account flows and responsive browser behavior still require a real browser pass after this source audit.");
 }
