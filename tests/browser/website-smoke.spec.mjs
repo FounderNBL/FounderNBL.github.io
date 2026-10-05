@@ -42,7 +42,9 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator('[data-nbl-tool="grey"]')).toHaveCount(0);
     await expect(page.getByRole("button", { name: /Search the live web/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Code \/ data analysis/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Create a PDF \/ file/i })).toBeVisible();
     await expect(page.getByRole("button", { name: /Create an image/i })).toBeVisible();
+    await expect(page.locator("[data-nbl-university-pdf-form]")).toHaveCount(1);
     if (expectBillingReleaseUi) {
       await page.getByRole("button", { name: /Open NBL Chat™ menu/i }).click();
       await page.getByRole("button", { name: /Membership & plans/i }).click();
