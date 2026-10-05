@@ -17,11 +17,13 @@ function forbidText(source,text,message){
   }
 }
 
-requireText(js,'NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API',"Signed-out Beans is not using the NBL Foundation runtime.");
+requireText(js,'NBL_BEANS_WEB_API=`\${NBL_CORE_API}/chat`',"Website Beans is not using the single NBL Core chat ingress.");
+requireText(js,'NBL_SEARCH_API=`\${NBL_CORE_API}/search`',"Website search is not using NBL Core.");
+forbidText(js,'functions/v1/beans-public',"Website still hardcodes the internal public Beans runtime.");
 requireText(js,'const NBL_CORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core"',"NBL Core 1.0 website ingress is missing.");
 requireText(js,'NBL_CHAT_GATEWAY_API=NBL_CORE_API',"Signed-in Beans and Chat billing are not routed through NBL Core.");
 forbidText(js,'const NBL_CHAT_GATEWAY_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-chat-gateway"',"Website still hardcodes the pre-Core signed-in gateway.");
-requireText(js,'const endpoint=accountToken?\`\${NBL_CHAT_GATEWAY_API}/chat\`:NBL_BEANS_WEB_API',"Signed-in Beans is not routed through the metered gateway.");
+requireText(js,'const endpoint=NBL_BEANS_WEB_API',"Website Beans does not use one Core chat endpoint for guest and signed-in traffic.");
 requireText(js,'data-nbl-chat-mode="beans"',"Beans mode is missing.");
 requireText(js,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved University/Grey panel is not hidden from public Chat.");
 requireText(js,'NBL_CHAT_PLUS_API',"NBL CHAT PLUS™ runtime endpoint is missing.");
@@ -83,4 +85,4 @@ if(beansListener!==1){
   process.exitCode=1;
 }
 
-if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat™ routes signed-in use through metering, exposes premium Beans tools, keeps Professor Grey™ / Virgo System™ behind University entitlement, preserves history, and contains no public secrets.");
+if(!process.exitCode) console.log("[website-chat-plus] PASS: website NBL Chat™ uses one NBL Core ingress for guest/signed-in Chat and search, routes authenticated use through metering, exposes premium Beans tools, keeps Professor Grey™ / Virgo System™ behind University entitlement, preserves history, and contains no public secrets.");
