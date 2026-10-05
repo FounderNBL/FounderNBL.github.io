@@ -209,7 +209,7 @@
 
     const kicker=document.createElement('p');
     kicker.className='kicker';
-    kicker.textContent='NBL Books';
+    kicker.textContent='Buy Direct';
 
     const heading=document.createElement('h3');
     heading.style.margin='6px 0 10px';
@@ -220,12 +220,12 @@
     note.style.margin='0 0 16px';
     note.style.color='var(--muted,#cfc3ad)';
     note.style.font='0.92rem/1.5 Arial,sans-serif';
-    note.textContent='Browse the current New Beansland™ book catalog here. The books.newbeansland.org Payhip host is not public until its HTTPS 403 is resolved.';
+    note.textContent='Shop New Beansland™ Books and choose the edition you want.';
 
     const button=document.createElement('a');
     button.className='request-btn';
-    button.href='/books.html';
-    button.textContent='Browse NBL Books';
+    button.href='https://books.newbeansland.org/';
+    button.textContent='Shop NBL Books';
 
     direct.append(kicker,heading,note,button);
     bookGrid.before(direct);
