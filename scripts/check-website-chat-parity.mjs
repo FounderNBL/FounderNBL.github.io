@@ -89,6 +89,8 @@ requireText(account,'id="membershipCard"',"Account membership status card is mis
 requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout action is missing.");
 requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to the backend.");
 requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
+requireText(header,'data-nbl-tool="artifact"',"Beans downloadable file/PDF creation control is missing.");
+requireText(header,'appendBeansArtifacts(payload?.artifacts)',"Beans downloadable artifacts are not rendered.");
 requireText(header,'data-nbl-tool="knowledge-upload"',"Beans saved-knowledge upload control is missing.");
 requireText(header,'data-nbl-tool="knowledge"',"Beans saved-knowledge search control is missing.");
 requireText(header,'"/knowledge/upload"',"Beans saved-knowledge upload API route is missing.");
@@ -122,6 +124,8 @@ requireText(header,'plusHistory.length=0',"Changing courses does not clear prior
 requireText(header,'label.textContent="Sources"',"Grey source display is missing.");
 requireText(header,'/^https?:\\/\\//i.test(item.url)',"Grey web citations are not URL-validated.");
 requireText(header,'link.rel="noopener noreferrer"',"Grey external source links lack opener protection.");
+requireText(header,'data-nbl-university-pdf-form',"Student PDF intake form is missing from the University panel.");
+requireText(header,'action:"university_submit_pdf"',"Student PDF intake is not routed to the University TEST/Registrar backend.");
 
 // Core world doors used by the Android pocket version must remain available on web.
 for(const route of ["/","/books.html","/stories.html","/founder-office.html","/studio/","/university.html"]){
