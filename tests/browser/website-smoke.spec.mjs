@@ -79,7 +79,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page).toHaveTitle(/New Beansland University/i);
     await expect(page.locator("body")).toContainText("NBL University lives in NBL World.");
     await expect(page.locator("body")).toContainText("regular Beans / NBL Chat™");
-    await expect(page.getByRole("link", { name: /Enter New Beansland University in NBL World/i })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: /View New Beansland University enrollment information/i })).toHaveAttribute(
       "href",
       "https://nblworld.com/university.html#enroll",
     );
