@@ -141,6 +141,10 @@ requireText(header,"window.history.pushState({...window.history.state,nblChatOve
 requireText(header,"const shouldConsumeHistory=!fromPopState","Closing Chat does not distinguish UI-close from browser Back.");
 requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Chat leaves a duplicate same-page history entry behind.");
 
+requireText(home,"Enrollment Display · Verification Pending","Homepage overstates University enrollment readiness.");
+forbidText(portal,"https://books.newbeansland.org/","Broken Payhip books host is still published.");
+requireText(portal,"button.href='/books.html'","Books portal does not stay on the working public catalog while Payhip host is held.");
+
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$34.99 one-time','$54.99 one-time','$184.99 one-time','$14.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
