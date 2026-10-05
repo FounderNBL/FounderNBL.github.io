@@ -52,6 +52,10 @@ for(const asset of kidsShirts) requireText(kids,`/${asset}`,`NBL Kids is missing
 requireText(clothing,'id="statements"',"main shirt collection section is missing");
 requireText(clothing,'id="pride"',"Pride feature section is missing");
 requireText(clothing,'href="/nbl-kids.html"',"adult clothing page does not route NBL Kids to its dedicated department");
+requireText(clothing,'href="https://new-beansland.myshopify.com"',"clothing page does not expose the live Shopify storefront");
+requireText(sync,'const SHOPIFY_URL="https://new-beansland.myshopify.com"',"clothing runtime does not use the live Shopify storefront");
+requireText(sync,'button.href=SHOPIFY_URL',"product Buy/Shop buttons are not forced to the live Shopify storefront");
+forbidText(sync,'mailto:founder@newbeansland.org?subject=',"runtime-generated clothing purchases still route to email instead of Shopify");
 requireText(kids,'id="shop-kids"',"NBL Kids shop section is missing");
 requireText(kids,'href="#shop-kids"',"NBL Kids internal shop door is not routed to its own section");
 

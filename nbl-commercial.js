@@ -69,9 +69,11 @@
     const card=document.createElement('a');
     card.id='nbl-clothing-card';
     card.className='world-card nbl-clothing-card';
-    card.href='clothing.html';
-    card.setAttribute('aria-label','Enter the NBL Clothing Co. catalog');
-    card.innerHTML=`<div class="media"><img src="${asset.clothing}" alt="NBL Clothing Co. collection" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Open</span><h3>NBL Clothing Co.</h3><p>Catalog, commercial, statement pieces, kids clothing, footwear, and current New Beansland releases.</p><span class="enter">Enter the Catalog →</span></div>`;
+    card.href='https://new-beansland.myshopify.com';
+    card.target='_blank';
+    card.rel='noopener noreferrer';
+    card.setAttribute('aria-label','Shop NBL Clothing Co. on Shopify');
+    card.innerHTML=`<div class="media"><img src="${asset.clothing}" alt="NBL Clothing Co. collection" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Open</span><h3>NBL Clothing Co.</h3><p>Catalog, commercial, statement pieces, kids clothing, footwear, and current New Beansland releases.</p><span class="enter">Shop NBL Clothing →</span></div>`;
     grid.appendChild(card);
   }
 

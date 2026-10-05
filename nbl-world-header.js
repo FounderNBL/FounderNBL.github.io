@@ -22,7 +22,7 @@
     ["home","Home","/",false],
     ["university","University","/university.html",false],
     ["books","Books","/books.html",false],
-    ["clothing","Clothing","/clothing.html",false],
+    ["clothing","Clothing","https://new-beansland.myshopify.com",true],
     ["shop","Shop","https://new-beansland.myshopify.com",true],
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],

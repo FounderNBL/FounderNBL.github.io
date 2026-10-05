@@ -1,6 +1,7 @@
 (()=>{
   "use strict";
   if(!/\/clothing(?:\.html)?$/.test(location.pathname||"")) return;
+  const SHOPIFY_URL="https://new-beansland.myshopify.com";
 
   const style=document.createElement("style");
   style.textContent=`
@@ -86,7 +87,7 @@
     card.className="product nbl-current-card";
     card.id=id;
     const priceMarkup=price?`<span class="nbl-price">${price}</span>`:"";
-    card.innerHTML=`<div class="product-media"><img src="${image}" alt="${title}" loading="eager" decoding="async"></div><div class="product-copy"><h3>${title}</h3><p>${copy}</p><div class="actions">${priceMarkup}<a class="request-btn" href="mailto:founder@newbeansland.org?subject=${encodeURIComponent(subject)}">Submit your request</a></div></div>`;
+    card.innerHTML=`<div class="product-media"><img src="${image}" alt="${title}" loading="eager" decoding="async"></div><div class="product-copy"><h3>${title}</h3><p>${copy}</p><div class="actions">${priceMarkup}<a class="request-btn" href="${SHOPIFY_URL}" target="_blank" rel="noopener noreferrer">Shop on Shopify →</a></div></div>`;
     const img=card.querySelector("img");
     if(img) img.onerror=()=>{img.closest(".product-media")?.remove();};
     grid.appendChild(card);
@@ -104,7 +105,10 @@
   });
 
   document.querySelectorAll(".product .request-btn").forEach(button=>{
-    button.textContent="Buy Now";
+    button.textContent="Shop on Shopify →";
+    button.href=SHOPIFY_URL;
+    button.target="_blank";
+    button.rel="noopener noreferrer";
   });
 
   const adultGrid=document.querySelector("#adult .catalog-grid")||document.querySelector("#statements .catalog-grid");
