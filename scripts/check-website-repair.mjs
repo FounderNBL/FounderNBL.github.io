@@ -147,6 +147,8 @@ requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Ch
 requireText(home,"Enrollment Display · Verification Pending","Homepage overstates University enrollment readiness.");
 requireText(portal,"https://books.newbeansland.org/","Connected NBL Books custom domain is missing from the public portal.");
 requireText(books,'data-key="jIEUZ"',"Doctor/Rocketship Standard Edition Payhip embed is missing.");
+requireText(books,"https://books.newbeansland.org/b/HUf3o","Payhip People Zoo / Doctor bundle link is missing.");
+requireText(books,'data-nbl-payhip-bundle="doctor-people-zoo"',"Payhip bundle marker is missing.");
 requireText(books,'https://payhip.com/embed-page.js?v=24u68985',"Payhip embed loader is missing from Books.");
 
 
