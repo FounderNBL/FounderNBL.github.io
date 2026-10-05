@@ -16,6 +16,8 @@ const deletion=read("account-deletion.html");
 const university=read("university.html");
 const account=read("account.html");
 const universityCheckout=read("nbl-university-checkout.js");
+const portal=read("nbl-portal.js");
+const home=read("index.html");
 let failed=false;
 
 function requireText(source,text,message){
