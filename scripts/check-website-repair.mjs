@@ -18,6 +18,7 @@ const account=read("account.html");
 const universityCheckout=read("nbl-university-checkout.js");
 const portal=read("nbl-portal.js");
 const home=read("index.html");
+const books=read("books.html");
 let failed=false;
 
 function requireText(source,text,message){
@@ -145,6 +146,9 @@ requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Ch
 
 requireText(home,"Enrollment Display · Verification Pending","Homepage overstates University enrollment readiness.");
 requireText(portal,"https://books.newbeansland.org/","Connected NBL Books custom domain is missing from the public portal.");
+requireText(books,'data-key="jIEUZ"',"Doctor/Rocketship Standard Edition Payhip embed is missing.");
+requireText(books,'https://payhip.com/embed-page.js?v=24u68985',"Payhip embed loader is missing from Books.");
+
 
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$34.99 one-time','$54.99 one-time','$184.99 one-time','$14.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
