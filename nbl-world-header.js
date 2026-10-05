@@ -545,7 +545,7 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-tools>
             <span class="nbl-chat-drawer-fallback" aria-hidden="true">+</span>
-            <span><strong>Beans tools</strong><small>Photos, saved knowledge, web, code/data, images, and voice</small></span>
+            <span><strong>Beans tools</strong><small>Photos, saved knowledge, web, code/data, downloadable files, images, and voice</small></span>
           </button>
 
           <a class="nbl-chat-drawer-item" href="/account.html">
@@ -589,6 +589,7 @@
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · Plus</span></button>
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · Plus</span></button>
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · Plus</span></button>
+                <button type="button" data-nbl-tool="artifact"><strong>Create a PDF / file</strong><span>Build a downloadable PDF, document, spreadsheet, CSV, or presentation · Plus</span></button>
                 <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · Plus</span></button>
                 <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · Plus</span></button>
                 <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice on Plus; browser voice otherwise</span></button>
@@ -635,6 +636,20 @@
               <button type="submit">Send</button>
             </div>
           </form>
+          <form class="nbl-beans-form nbl-university-pdf-form" data-nbl-university-pdf-form>
+            <label for="nbl-university-pdf-file">Submit coursework PDF to TEST</label>
+            <div class="nbl-beans-row">
+              <select data-nbl-university-pdf-type aria-label="PDF submission type">
+                <option value="workbook">Workbook</option>
+                <option value="practice">Practice</option>
+                <option value="reflection">Reflection</option>
+                <option value="project">Project</option>
+              </select>
+              <input id="nbl-university-pdf-file" data-nbl-university-pdf-file type="file" accept="application/pdf,.pdf">
+              <button type="submit">Submit PDF</button>
+            </div>
+          </form>
+          <p class="nbl-beans-status" data-nbl-university-pdf-status role="status">TEST reads the PDF for intake and adds the student work to the Registrar record.</p>
           <p class="nbl-beans-note" style="margin-top:10px">Professor Grey™ is the teaching persona inside the Virgo System™, powered by OpenAI. Course teaching and practice remain available only when LOCKE confirms eligible NBL University access; test answers, rubrics, grading keys, and future assessment material stay sealed.</p>
           <p class="nbl-beans-status" data-nbl-plus-status role="status">Professor Grey™ is ready for the selected course.</p>
         </div>
@@ -686,6 +701,11 @@
   const plusInput=beansPanel.querySelector("#nbl-plus-input");
   const plusSubmit=plusForm.querySelector('button[type="submit"]');
   const plusStatus=beansPanel.querySelector("[data-nbl-plus-status]");
+  const plusPdfForm=beansPanel.querySelector("[data-nbl-university-pdf-form]");
+  const plusPdfType=beansPanel.querySelector("[data-nbl-university-pdf-type]");
+  const plusPdfFile=beansPanel.querySelector("[data-nbl-university-pdf-file]");
+  const plusPdfSubmit=plusPdfForm?.querySelector('button[type="submit"]');
+  const plusPdfStatus=beansPanel.querySelector("[data-nbl-university-pdf-status]");
   const beansHistory=[{role:"assistant",content:"I'm Beans. What's up?"}];
   const plusHistory=[{role:"assistant",content:"Choose your course and ask me about the lesson."}];
   let beansConversationId=null;
@@ -713,6 +733,11 @@
   let beansVoiceChunks=[];
   let beansVoicePlayer=null;
   let activeBeansChatController=null;
+  const beansArtifactUrls=new Set();
+  window.addEventListener("pagehide",()=>{
+    for(const url of beansArtifactUrls) URL.revokeObjectURL(url);
+    beansArtifactUrls.clear();
+  },{once:true});
 
   const setBeansBusy=busy=>{
     beansForm.toggleAttribute("aria-busy",Boolean(busy));
@@ -978,13 +1003,62 @@
     if(list.length) beansLog.scrollTop=beansLog.scrollHeight;
   };
 
+  const appendBeansArtifacts=artifacts=>{
+    const list=Array.isArray(artifacts)?artifacts.filter(item=>item&&typeof item.data==="string"&&item.data.length>0).slice(0,3):[];
+    if(!list.length) return;
+    const box=document.createElement("div");
+    box.setAttribute("aria-label","Files created by Beans");
+    box.style.margin="8px 0 14px";
+    box.style.padding="10px 12px";
+    box.style.border="1px solid rgba(255,255,255,.12)";
+    box.style.borderRadius="12px";
+    box.style.background="rgba(255,255,255,.035)";
+    const label=document.createElement("strong");
+    label.textContent="Files from Beans";
+    label.style.display="block";
+    label.style.marginBottom="6px";
+    box.appendChild(label);
+    for(const item of list){
+      try{
+        const raw=atob(String(item.data||""));
+        const bytes=new Uint8Array(raw.length);
+        for(let i=0;i<raw.length;i++)bytes[i]=raw.charCodeAt(i);
+        const mime=String(item.mime||"application/octet-stream").slice(0,160);
+        const filename=String(item.filename||"Beans-file").replace(/[\\/:*?"<>|]+/g,"-").slice(0,180)||"Beans-file";
+        const blob=new Blob([bytes],{type:mime});
+        const url=URL.createObjectURL(blob);
+        beansArtifactUrls.add(url);
+        const row=document.createElement("div");
+        row.style.margin="6px 0";
+        const link=document.createElement("a");
+        link.href=url;
+        link.download=filename;
+        link.textContent=`Download ${filename}`;
+        link.style.color="inherit";
+        link.style.textDecoration="underline";
+        row.appendChild(link);
+        const size=Number(item.sizeBytes||bytes.byteLength);
+        if(Number.isFinite(size)&&size>0){
+          const meta=document.createElement("small");
+          meta.textContent=` · ${(size/(1024*1024)).toFixed(size>=1024*1024?1:2)} MB`;
+          row.appendChild(meta);
+        }
+        box.appendChild(row);
+      }catch{}
+    }
+    if(box.children.length>1){
+      beansLog.appendChild(box);
+      beansLog.scrollTop=beansLog.scrollHeight;
+    }
+  };
+
   const setBeansToolMenu=open=>{
     beansToolsMenu.hidden=!open;
     beansToolsToggle.setAttribute("aria-expanded",open?"true":"false");
   };
 
   const renderBeansToolState=()=>{
-    const labels={web:"Live web",code:"Code / data",image:"Create image",knowledge:"Saved knowledge",grey:"Professor Grey™",auto:"Auto"};
+    const labels={web:"Live web",code:"Code / data",artifact:"Create file",image:"Create image",knowledge:"Saved knowledge",grey:"Professor Grey™",auto:"Auto"};
     const hasSpecial=beansToolMode!=="auto";
     beansToolModeLabel.textContent=labels[beansToolMode]||"Auto";
     beansToolState.hidden=!hasSpecial;
@@ -1737,11 +1811,14 @@
       appendBeansSources(payload?.sources);
       appendBeansFileSources(payload?.fileSources);
       appendBeansImages(payload?.generatedImages);
+      appendBeansArtifacts(payload?.artifacts);
       const used=Array.isArray(payload?.toolsUsed)?payload.toolsUsed:[];
       beansStatus.textContent=payload?.speaker==="Professor Grey™"
         ?"Professor Grey™ answered through the Virgo System™."
         :payload?.webSearchUsed
           ?"Beans checked the live web."
+          :used.includes("artifact")
+          ?"Beans created a downloadable file."
           :used.includes("code")
           ?"Beans used the code/data tool."
           :used.includes("image")
@@ -1846,11 +1923,17 @@
       void speakBeansReply(reply);
       return;
     }
-    if(["web","code","image"].includes(tool)){
+    if(["web","code","artifact","image"].includes(tool)){
       beansToolMode=tool;
       setBeansToolMenu(false);
       renderBeansToolState();
-      beansStatus.textContent=tool==="web"?"Live web selected · NBL CHAT PLUS™.":tool==="code"?"Code / data analysis selected · NBL CHAT PLUS™.":"Image creation selected · NBL CHAT PLUS™.";
+      beansStatus.textContent=tool==="web"
+        ?"Live web selected · NBL CHAT PLUS™."
+        :tool==="code"
+          ?"Code / data analysis selected · NBL CHAT PLUS™."
+          :tool==="artifact"
+            ?"PDF / file creation selected · NBL CHAT PLUS™."
+            :"Image creation selected · NBL CHAT PLUS™.";
       beansInput.focus();
     }
   });
@@ -1916,6 +1999,73 @@
       plusInput.disabled=false;
       plusCourse.disabled=false;
       if(plusAllowed) plusInput.focus();
+    }
+  });
+
+  plusPdfForm?.addEventListener("submit",async event=>{
+    event.preventDefault();
+    if(!plusAllowed) return;
+    const file=plusPdfFile?.files?.[0]||null;
+    if(!file){
+      plusPdfStatus.textContent="Choose a PDF first.";
+      return;
+    }
+    if(file.type&&file.type!=="application/pdf"){
+      plusPdfStatus.textContent="TEST only accepts PDF coursework here.";
+      return;
+    }
+    if(file.size>4*1024*1024){
+      plusPdfStatus.textContent="University PDF submissions are limited to 4 MB.";
+      return;
+    }
+    const accountGeneration=beansAccountGeneration;
+    const accessRequestGeneration=plusAccessRequestGeneration;
+    const requestedUserId=currentClerkUserId();
+    const identity=await getSignedInNblIdentity();
+    if(!identity||accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||!plusAllowed||identity.userId!==requestedUserId){
+      if(accountGeneration===beansAccountGeneration&&!identity) showPlusLocked("Sign in with your NBL account to use NBL University.",{signedOut:true});
+      return;
+    }
+    plusPdfSubmit.disabled=true;
+    plusPdfFile.disabled=true;
+    plusPdfType.disabled=true;
+    plusPdfStatus.textContent="TEST is reading your PDF…";
+    try{
+      const item=await fileToBeansAttachment(file);
+      const response=await fetch(NBL_CHAT_PLUS_API,{
+        method:"POST",
+        headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${identity.token}`},
+        body:JSON.stringify({
+          action:"university_submit_pdf",
+          courseCode:plusCourse.value,
+          submissionType:plusPdfType.value,
+          title:file.name,
+          clientSubmissionKey:(globalThis.crypto?.randomUUID?.()||`pdf-${Date.now()}-${Math.random().toString(36).slice(2)}`),
+          file:{name:item.name,mime:"application/pdf",data:item.data}
+        }),
+        cache:"no-store"
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||currentClerkUserId()!==identity.userId) return;
+      if(response.status===401){
+        plusAccessCheckedFor=null;
+        showPlusLocked("Your NBL session needs to be refreshed.",{signedOut:true});
+        return;
+      }
+      if(!response.ok) throw new Error(payload?.message||"TEST could not accept that PDF.");
+      const submission=payload?.submission||{};
+      const attachment=submission?.attachment||{};
+      const feedback=String(submission?.safe_feedback||attachment?.note||"TEST read the PDF and added the student work to your Registrar record.");
+      const warnings=Array.isArray(attachment?.warnings)?attachment.warnings.filter(Boolean).slice(0,4):[];
+      plusPdfStatus.textContent=warnings.length?`${feedback} ${warnings.join(" ")}`:feedback;
+      plusPdfFile.value="";
+    }catch(error){
+      if(accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||currentClerkUserId()!==identity.userId) return;
+      plusPdfStatus.textContent=error?.message||"TEST could not accept that PDF.";
+    }finally{
+      plusPdfSubmit.disabled=false;
+      plusPdfFile.disabled=false;
+      plusPdfType.disabled=false;
     }
   });
 
