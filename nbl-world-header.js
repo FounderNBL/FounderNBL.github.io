@@ -31,14 +31,13 @@
     ["search","Search","#nbl-search",false]
   ];
 
-  const NBL_PUBLIC_BEANS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/beans-public";
   const NBL_CHAT_PLUS_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
   const NBL_CORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core";
   const NBL_CHAT_GATEWAY_API=NBL_CORE_API;
   const NBL_ACCOUNT_STORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
   const NBL_FULFILLMENT_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/locke-fulfillment";
-  const NBL_SEARCH_API=NBL_PUBLIC_BEANS_API;
-  const NBL_BEANS_WEB_API=NBL_CHAT_PLUS_API;
+  const NBL_SEARCH_API=`${NBL_CORE_API}/search`;
+  const NBL_BEANS_WEB_API=`${NBL_CORE_API}/chat`;
   const NBL_PRODUCT_PLANS=window.NBL_PRODUCT_PLANS;
   const NBL_CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
   const NBL_ACCOUNT_PORTAL="https://accounts.newbeansland.org";
@@ -1719,7 +1718,7 @@
       if(accountToken) headers.Authorization=`Bearer ${accountToken}`;
       const requestId=(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`);
       const requestBody={action:"chat",mode:"beans",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),toolMode:beansToolMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
-      const endpoint=accountToken?`${NBL_CHAT_GATEWAY_API}/chat`:NBL_BEANS_WEB_API;
+      const endpoint=NBL_BEANS_WEB_API;
       const response=await fetch(endpoint,{
         method:"POST",
         headers,
