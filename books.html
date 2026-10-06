@@ -4,73 +4,118 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NBL Books | New Beansland Bookstore</title>
-<meta name="description" content="Shop New Beansland books, children’s stories, color paperbacks, hardcovers, premium editions, ebooks, and bundles.">
+<meta name="description" content="Shop New Beansland digital books on Payhip and physical editions on Lulu.">
 <link rel="stylesheet" href="nbl-store.css">
 <style>
-.store-hero{text-align:center;padding:70px 0 38px}.store-hero h1{margin:10px auto 14px}.versions{display:grid;gap:8px;margin:16px 0}.version{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(214,161,74,.18);font:800 .84rem Arial,sans-serif}.version b{color:var(--gold-light);text-align:right}.payment-badges{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.payment-badge{padding:9px 12px;border:1px solid var(--line);border-radius:999px;font:900 .76rem Arial,sans-serif}.order-box{margin-top:28px;padding:24px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,rgba(11,27,43,.96),rgba(3,11,19,.98))}.order-box h2{margin:0 0 10px;color:var(--gold-light)}.order-box p{color:var(--muted);font:.96rem/1.55 Arial,sans-serif}.checkout-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;margin-top:18px}.checkout-card{padding:18px;border:1px solid var(--line);border-radius:14px;background:#06111d}.checkout-card label{display:block;margin:0 0 7px;color:var(--gold-light);font:800 .78rem Arial,sans-serif}.checkout-card select,.checkout-card input,.checkout-card textarea{width:100%;margin:0 0 14px;padding:12px 13px;border:1px solid rgba(214,161,74,.34);border-radius:9px;background:#02070d;color:#f5ead5;font:inherit}.checkout-card textarea{min-height:88px;resize:vertical}.order-summary{display:grid;gap:9px;margin:12px 0 16px;padding:15px;border:1px solid rgba(214,161,74,.26);border-radius:10px;background:#02070d}.order-summary-row{display:flex;justify-content:space-between;gap:12px;font:800 .87rem Arial,sans-serif}.order-summary-row span:last-child{color:var(--gold-light);text-align:right}.order-code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--gold-light);word-break:break-word}.status{min-height:1.3em;margin-top:11px;color:var(--gold-light);font:800 .82rem/1.4 Arial,sans-serif}.paid-panel{display:none;margin-top:16px;padding:16px;border:1px solid rgba(214,161,74,.32);border-radius:10px;background:#02070d}.paid-panel.show{display:block}.direct-actions{display:flex;gap:10px;flex-wrap:wrap}.direct-actions .btn{flex:1 1 180px}.small-note{margin-top:10px!important;font-size:.82rem!important}.select-order{margin-top:12px;width:100%}.quote-warning{display:none;margin:14px 0;padding:13px;border:1px solid rgba(214,161,74,.4);border-radius:10px;background:#171105;color:#f3d79e;font:800 .84rem/1.5 Arial,sans-serif}.quote-warning.show{display:block}.format-note{display:block;margin:5px 0 14px;color:var(--muted);font-size:.78rem;line-height:1.45}.perk{margin-top:8px;padding:10px 12px;border:1px solid rgba(214,161,74,.22);border-radius:9px;background:#071522;color:#e8d4ad;font:800 .8rem/1.45 Arial,sans-serif}.premium-note{margin:18px 0 0;padding:16px;border:1px solid rgba(214,161,74,.34);border-radius:12px;background:#071522;color:#ead6ac;font:800 .88rem/1.55 Arial,sans-serif}.compact-store-link{margin-top:16px}.compact-store-link .btn{width:100%;text-align:center}@media(max-width:800px){.checkout-grid{grid-template-columns:1fr}}
+.store-hero{text-align:center;padding:70px 0 38px}.store-hero h1{margin:10px auto 14px}.versions{display:grid;gap:8px;margin:16px 0}.version{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(214,161,74,.18);font:800 .84rem Arial,sans-serif}.version b{color:var(--gold-light);text-align:right}.payment-badges{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}.payment-badge{padding:9px 12px;border:1px solid var(--line);border-radius:999px;font:900 .76rem Arial,sans-serif}.perk{margin-top:8px;padding:10px 12px;border:1px solid rgba(214,161,74,.22);border-radius:9px;background:#071522;color:#e8d4ad;font:800 .8rem/1.45 Arial,sans-serif}.premium-note{margin:18px 0 0;padding:16px;border:1px solid rgba(214,161,74,.34);border-radius:12px;background:#071522;color:#ead6ac;font:800 .88rem/1.55 Arial,sans-serif}.route-note{margin:0 0 24px;padding:15px;border:1px solid rgba(214,161,74,.3);border-radius:12px;background:#06111d;color:#dfd2bc;font:800 .9rem/1.55 Arial,sans-serif}.route-note strong{color:var(--gold-light)}.actions .btn{min-width:180px}.status-pill{display:inline-flex;align-items:center;min-height:44px;padding:10px 14px;border:1px solid rgba(214,161,74,.34);border-radius:999px;color:#dbc79f;font:900 .74rem Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase}
 </style>
-  <script defer src="/nbl-portal.js"></script>
-  <link rel="stylesheet" href="/nbl-world-header.css?v=20260930-billing-rc1">
-  <script defer src="/nbl-product-plans.js?v=20260929"></script>
-  <script defer src="/nbl-world-header.js?v=20261004-shopify"></script>
+<script defer src="/nbl-portal.js"></script>
+<link rel="stylesheet" href="/nbl-world-header.css?v=20260930-billing-rc1">
+<script defer src="/nbl-product-plans.js?v=20260929"></script>
+<script defer src="/nbl-world-header.js?v=20261004-shopify"></script>
 </head>
 <body>
 <header class="site-header"><div class="container header-inner"><a class="brand" href="/"><span><span class="brand-name">NBL Books</span><span class="brand-tag">A New Beansland Imprint</span></span></a><nav class="nav"><a class="nav-main" href="/">New Beansland</a><a aria-current="page" href="/books.html">Books</a></nav></div></header>
 <main>
-<section class="store-hero container"><p class="kicker">Stories · Questions · Worlds</p><h1>The New Beansland Bookstore</h1><p class="tagline">Color paperbacks, standard-color hardcovers, Founder’s Deluxe premium-color hardcovers, and digital editions. Every physical Doctor/Rocketship book includes free eBook redemption.</p><div class="payment-badges" style="justify-content:center"><span class="payment-badge">Cash App · $FounderNBL</span><span class="payment-badge">Credit / Debit</span><span class="payment-badge">New Beansland Fulfillment</span><span class="payment-badge">Free eBook With Physical Book</span></div></section>
-<section class="section container"><h2 class="section-title">Available Books</h2><p class="section-copy">Choose the exact edition and print quality you want. Digital and physical editions use secure Stripe checkout. Listed physical-book prices include U.S. shipping, and New Beansland handles fulfillment. Standard-color Doctor/Rocketship physical books include a redemption code for the matching eBook. Founder’s Deluxe Edition premium-color hardcovers include three eBooks.</p>
-<div class="book-grid">
-<article class="book-card"><div class="store-cover"><div><strong>The Doctor/Rocketship Test</strong><span>Standard Edition</span></div></div><div class="book-body"><p class="book-label">Standard Edition</p><h3 class="book-title">The Doctor/Rocketship Test</h3><p class="book-copy">The core category-audit edition, available in affordable standard color as a softcover or hardcover, plus the Founder’s Deluxe Edition premium-color hardcover.</p><div class="versions"><div class="version"><span>Illustrated eBook</span><b>$3.00</b></div><div class="version"><span>Standard Color · Paperback / Softcover</span><b>$19.99 · U.S. shipping included</b></div><div class="version"><span>Standard Color · Hardcover</span><b>$29.99 · U.S. shipping included</b></div><div class="version"><span>Founder’s Deluxe Edition · Premium Color Hardcover</span><b>$59.99 · U.S. shipping included</b></div></div><div class="perk">Softcover and standard-color hardcover include a redemption code for the Standard Edition eBook. The Founder’s Deluxe Edition includes the Standard Edition eBook, Islamic Dilemma Edition eBook, and The People Zoo eBook.</div><div class="actions"><a class="btn primary" href="https://buy.stripe.com/aFaaEZ1Bg3vW9GXgbJ4ko01" target="_blank" rel="noopener noreferrer">$3 — Buy Illustrated eBook</a><a class="btn" href="https://buy.stripe.com/dRmeVf1Bg5E4cT90cL4ko05" target="_blank" rel="noopener noreferrer">$19.99 — Buy Softcover</a><a class="btn" href="https://buy.stripe.com/aFabJ3fs63vW3iz3oX4ko06" target="_blank" rel="noopener noreferrer">$29.99 — Buy Hardcover</a><a class="btn primary" href="https://buy.stripe.com/7sY8wR4Ns0jK5qH0cL4ko07" target="_blank" rel="noopener noreferrer">$59.99 — Founder’s Deluxe Edition</a></div><div class="payhip-direct compact-store-link" data-nbl-payhip-product="doctor-rocketship-standard"><p class="book-label">Payhip · Standard Edition</p><a class="btn" href="https://books.newbeansland.org/b/jIEUZ" target="_blank" rel="noopener noreferrer">Buy Standard eBook on Payhip</a></div></div></article>
-<article class="book-card"><div class="store-cover"><div><strong>The Doctor/Rocketship Test</strong><span>Islamic Dilemma Edition</span></div></div><div class="book-body"><p class="book-label">Islamic Dilemma Edition</p><h3 class="book-title">The Doctor/Rocketship Test</h3><p class="book-copy">The Islamic Dilemma Edition is available in standard color as a softcover or hardcover, with the Founder’s Deluxe Edition premium-color hardcover for the full deluxe treatment.</p><div class="versions"><div class="version"><span>Illustrated eBook</span><b>$3.00</b></div><div class="version"><span>Standard Color · Paperback / Softcover</span><b>$19.99 · U.S. shipping included</b></div><div class="version"><span>Standard Color · Hardcover</span><b>$29.99 · U.S. shipping included</b></div><div class="version"><span>Founder’s Deluxe Edition · Premium Color Hardcover</span><b>$59.99 · U.S. shipping included</b></div></div><div class="perk">Softcover and standard-color hardcover include a redemption code for the Islamic Dilemma Edition eBook. The $59.99 Founder’s Deluxe Edition includes 3 FREE eBooks: Islamic Dilemma Edition, Standard Edition, and The People Zoo.</div><div class="actions"><a class="btn primary" href="https://buy.stripe.com/14AdRb1Bg1nOg5l0cL4ko02" target="_blank" rel="noopener noreferrer">$3 — Buy Illustrated eBook</a><a class="btn" href="https://buy.stripe.com/dRm4gB93I3vW2evbVt4ko08" target="_blank" rel="noopener noreferrer">$19.99 — Buy Softcover</a><a class="btn" href="https://buy.stripe.com/00wbJ393Ic2s9GX9Nl4ko09" target="_blank" rel="noopener noreferrer">$29.99 — Buy Hardcover</a><a class="btn primary" href="https://buy.stripe.com/dRm00ldjY8Qgf1h3oX4ko0a" target="_blank" rel="noopener noreferrer">$59.99 — Founder’s Deluxe Edition</a></div></div></article>
-<article class="book-card"><div class="store-cover"><div><strong>The People Zoo</strong><span>New Beansland</span></div></div><div class="book-body"><p class="book-label">New Beansland</p><h3 class="book-title">The People Zoo</h3><p class="book-copy">A New Beansland book about curated environments, hidden control, and what happens when the cage does not look like a cage.</p><div class="versions"><div class="version"><span>Digital Edition · eBook</span><b>$5.00</b></div><div class="version"><span>Physical Edition · Hardcover</span><b>$27.99 · U.S. shipping included</b></div><div class="version"><span>Doctor/Rocketship + People Zoo Bundle</span><b>$6.00</b></div></div><div class="perk"><strong>Digital and physical pricing are separate.</strong> The $5.00 eBook is the New Beansland digital edition. The $27.99 physical hardcover includes U.S. shipping and is fulfilled by New Beansland after secure Stripe checkout. The $6.00 digital bundle saves $2.00 versus buying the two titles separately.</div><div class="actions"><a class="btn primary" href="https://buy.stripe.com/8x28wR3Jo6I89GXf7F4ko03" target="_blank" rel="noopener noreferrer">$5 — Buy Digital eBook</a><a class="btn" href="https://buy.stripe.com/bJeaEZ1Bg7Mcg5lcZx4ko0b" target="_blank" rel="noopener noreferrer">$27.99 — Buy Physical Hardcover</a><a class="btn primary" href="https://buy.stripe.com/3cIfZj7ZEd6wg5l4t14ko00" target="_blank" rel="noopener noreferrer">$6 — Buy Digital Bundle</a></div><div class="payhip-direct" data-nbl-payhip-bundle="doctor-people-zoo"><p class="book-label">Payhip · Founders Bundle</p><p class="book-copy">People Zoo + Doctor/Rocketship Test bundle on the NBL Books Payhip store. Payhip lists this as an $8 Founders Bundle and the direct checkout is active.</p><div class="actions"><a class="btn primary" href="https://books.newbeansland.org/order?link=HUf3o&amp;pricing_plan=yZGjlqkvzN" target="_blank" rel="noopener noreferrer">Buy $8 Founders Bundle</a></div></div></div></article>
-<article class="book-card"><div class="store-cover"><div><strong>The Tree That Grew</strong><span>A New Beansland Story</span></div></div><div class="book-body"><p class="book-label">New Beansland Children’s Story</p><h3 class="book-title">The Tree That Grew</h3><p class="book-copy">A short, heartfelt story made for children to read to their parents. A little tree grows, changes, and reaches important milestones while its busy parents keep looking the other way. The story reminds families to slow down, listen, and notice the little moments before they grow.</p><div class="perk">A New Beansland family story designed to turn story time into family time.</div><div class="compact-store-link"><a class="btn primary" href="https://svc.lulu.com/?items=dc35ccd4-bdc1-497d-ba69-fa4316fc16a6" target="_blank" rel="noopener noreferrer">Buy The Tree That Grew on Lulu</a></div></div></article>
-</div>
-<div class="premium-note"><strong>Physical book eBook benefit:</strong> Every Doctor/Rocketship physical book includes a free redemption code for the matching eBook edition. Founder’s Deluxe Edition premium-color hardcovers include three redemption codes: Standard Edition, Islamic Dilemma Edition, and The People Zoo.</div>
-<section class="order-box" id="direct-order"><p class="kicker">Direct from New Beansland</p><h2>Manual / Physical Order Backup</h2><p>All Buy buttons above now open secure Stripe checkout. This section remains available as a Cash App backup. Listed physical-book prices include U.S. shipping.</p>
-<div class="checkout-grid">
-<div class="checkout-card"><label for="productSelect">Book / edition / format</label><select id="productSelect"><option value="drt-standard-ebook">Doctor/Rocketship Test — Standard Illustrated eBook — $3.00</option><option value="drt-standard-color-pb">Standard Edition — Standard Color Softcover — $19.99 · U.S. shipping included</option><option value="drt-standard-color-hc">Standard Edition — Standard Color Hardcover — $29.99 · U.S. shipping included</option><option value="drt-standard-premium-hc">Standard Edition — Founder’s Deluxe Edition Premium Color Hardcover — $59.99 · U.S. shipping included</option><option value="drt-islamic-ebook">Doctor/Rocketship Test — Islamic Dilemma Illustrated eBook — $3.00</option><option value="drt-islamic-color-pb">Islamic Dilemma Edition — Standard Color Softcover — $19.99 · U.S. shipping included</option><option value="drt-islamic-color-hc">Islamic Dilemma Edition — Standard Color Hardcover — $29.99 · U.S. shipping included</option><option value="drt-islamic-premium-hc">Islamic Dilemma Edition — Founder’s Deluxe Edition Premium Color Hardcover — $59.99 · U.S. shipping included</option><option value="people-zoo-ebook">The People Zoo eBook — $5.00</option><option value="people-zoo-hardcover">The People Zoo — Physical Hardcover — $27.99 · U.S. shipping included</option><option value="bundle-digital">Doctor/Rocketship + People Zoo Bundle — $6.00</option></select><span class="format-note" id="formatNote"></span><label for="buyerName">Your name</label><input id="buyerName" autocomplete="name" placeholder="Name used for the order"><label for="buyerEmail">Delivery email</label><input id="buyerEmail" type="email" autocomplete="email" placeholder="Where the ebook or redemption information should be sent"><label for="buyerNotes">Notes / mailing address for physical orders</label><textarea id="buyerNotes" placeholder="Optional for ebooks. Physical orders: add your mailing address here."></textarea><div class="quote-warning" id="quoteWarning">U.S. shipping is included in the listed physical-book price.</div><button class="btn primary" type="button" id="makeOrder">Create Order / Quote Reference</button><div class="status" id="orderStatus" aria-live="polite"></div></div>
-<div class="checkout-card"><div class="order-summary"><div class="order-summary-row"><span>Item</span><span id="summaryItem">Doctor/Rocketship Test — Standard Illustrated eBook</span></div><div class="order-summary-row"><span>Amount</span><span id="summaryAmount">$3.00</span></div><div class="order-summary-row"><span>Included</span><span id="summaryBenefit">Digital delivery</span></div><div class="order-summary-row"><span>Order reference</span><span class="order-code" id="summaryCode">Create order first</span></div></div><div id="paymentBlock"><p><strong>Cash App</strong><br>Pay <b>$FounderNBL</b> and put the order reference in the payment note.</p><div class="direct-actions"><a class="btn primary" id="cashAppButton" href="https://cash.app/$FounderNBL" target="_blank" rel="noopener noreferrer">Open Cash App</a></div><p class="small-note">Secure Stripe checkout is available from all Buy buttons above. Cash App remains available here as a manual backup.</p></div><div class="paid-panel" id="paidPanel"><strong>Paid?</strong><p>After you pay, send the order reference and payment name so fulfillment can match the payment, physical edition, and eBook redemption benefit.</p><button class="btn primary" type="button" id="confirmPaid">I Paid — Prepare Confirmation</button><div class="status" id="paidStatus" aria-live="polite"></div></div></div>
-</div>
-<div class="notice"><strong>How physical orders work</strong><br>Listed physical-book prices include U.S. shipping. Stripe securely collects payment and the U.S. shipping address, then New Beansland handles fulfillment. Doctor/Rocketship physical buyers receive the matching eBook redemption code. Founder’s Deluxe Edition buyers receive redemption for all three eBooks: Standard Edition, Islamic Dilemma Edition, and The People Zoo.</div></section></section>
+<section class="store-hero container">
+  <p class="kicker">Stories · Questions · Worlds</p>
+  <h1>The New Beansland Bookstore</h1>
+  <p class="tagline">Digital books are sold through Payhip. Physical books are printed and fulfilled through Lulu.</p>
+  <div class="payment-badges" style="justify-content:center">
+    <span class="payment-badge">Digital · Payhip</span>
+    <span class="payment-badge">Physical · Lulu</span>
+    <span class="payment-badge">Secure Checkout</span>
+    <span class="payment-badge">Doctor/Rocketship Physical Includes eBook Benefit</span>
+  </div>
+</section>
+
+<section class="section container">
+  <h2 class="section-title">Available Books</h2>
+  <p class="section-copy">Choose digital or physical without bouncing through duplicate checkout systems. Payhip handles digital editions and bundles. Lulu handles verified physical editions, printing, checkout, and shipping.</p>
+  <div class="route-note"><strong>Simple rule:</strong> eBook / digital bundle → Payhip. Paperback / hardcover → Lulu.</div>
+
+  <div class="book-grid">
+    <article class="book-card">
+      <div class="store-cover"><div><strong>The Doctor/Rocketship Test</strong><span>Standard Edition</span></div></div>
+      <div class="book-body">
+        <p class="book-label">Standard Edition</p>
+        <h3 class="book-title">The Doctor/Rocketship Test</h3>
+        <p class="book-copy">The core category-audit edition, available digitally through Payhip and physically through Lulu in standard-color and Founder’s Deluxe formats.</p>
+        <div class="versions">
+          <div class="version"><span>Illustrated eBook</span><b>$3.00</b></div>
+          <div class="version"><span>Standard Color · Paperback / Softcover</span><b>$19.99</b></div>
+          <div class="version"><span>Standard Color · Hardcover</span><b>$29.99</b></div>
+          <div class="version"><span>Founder’s Deluxe Edition · Premium Color Hardcover</span><b>$59.99</b></div>
+        </div>
+        <div class="perk">Softcover and standard-color hardcover include the matching Standard Edition eBook redemption benefit. Founder’s Deluxe includes the Standard Edition, Islamic Dilemma Edition, and The People Zoo eBooks.</div>
+        <div class="actions">
+          <a class="btn primary" href="https://books.newbeansland.org/b/jIEUZ" target="_blank" rel="noopener noreferrer">$3 — Digital on Payhip</a>
+          <a class="btn" href="https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-test/paperback/product-v82z82q.html?page=1&amp;pageSize=4" target="_blank" rel="noopener noreferrer">$19.99 — Softcover on Lulu</a>
+          <a class="btn" href="https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-test/hardcover/product-454pmjj.html?page=1&amp;pageSize=4" target="_blank" rel="noopener noreferrer">$29.99 — Hardcover on Lulu</a>
+          <a class="btn primary" href="https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-test/hardcover/product-454pvdd.html?page=1&amp;pageSize=4" target="_blank" rel="noopener noreferrer">$59.99 — Deluxe on Lulu</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="book-card">
+      <div class="store-cover"><div><strong>The Doctor/Rocketship Test</strong><span>Islamic Dilemma Edition</span></div></div>
+      <div class="book-body">
+        <p class="book-label">Islamic Dilemma Edition</p>
+        <h3 class="book-title">The Doctor/Rocketship Test</h3>
+        <p class="book-copy">The Islamic Dilemma Edition follows the same clean split: digital through the NBL Books Payhip store and physical through Lulu.</p>
+        <div class="versions">
+          <div class="version"><span>Illustrated eBook</span><b>$3.00</b></div>
+          <div class="version"><span>Standard Color · Paperback / Softcover</span><b>$19.99</b></div>
+          <div class="version"><span>Standard Color · Hardcover</span><b>$29.99</b></div>
+          <div class="version"><span>Founder’s Deluxe Edition · Premium Color Hardcover</span><b>$59.99</b></div>
+        </div>
+        <div class="perk">Standard-color physical editions include the matching Islamic Dilemma Edition eBook redemption benefit. Founder’s Deluxe includes all three current eBooks.</div>
+        <div class="actions">
+          <a class="btn primary" href="https://books.newbeansland.org/" target="_blank" rel="noopener noreferrer">$3 — Find Digital on Payhip</a>
+          <a class="btn" href="https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-test/paperback/product-nvn4p7p.html?page=1&amp;pageSize=4" target="_blank" rel="noopener noreferrer">$19.99 — Softcover on Lulu</a>
+          <a class="btn" href="https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-test/hardcover/product-m2e82gq.html?page=1&amp;pageSize=4" target="_blank" rel="noopener noreferrer">$29.99 — Hardcover on Lulu</a>
+          <a class="btn primary" href="https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-test/hardcover/product-q6qv49m.html?page=1&amp;pageSize=4" target="_blank" rel="noopener noreferrer">$59.99 — Deluxe on Lulu</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="book-card">
+      <div class="store-cover"><div><strong>The People Zoo</strong><span>New Beansland</span></div></div>
+      <div class="book-body">
+        <p class="book-label">New Beansland</p>
+        <h3 class="book-title">The People Zoo</h3>
+        <p class="book-copy">A New Beansland book about curated environments, hidden control, and what happens when the cage does not look like a cage.</p>
+        <div class="versions">
+          <div class="version"><span>Digital Edition · eBook</span><b>$5.00</b></div>
+          <div class="version"><span>Physical Edition · Hardcover</span><b>$27.99</b></div>
+          <div class="version"><span>Doctor/Rocketship + People Zoo Founders Bundle</span><b>$8.00</b></div>
+        </div>
+        <div class="perk">Digital purchases belong on Payhip. The existing physical-hardcover record is preserved, but its exact Lulu purchase URL has not been verified in the current source, so NBL will not invent a checkout link.</div>
+        <div class="actions">
+          <a class="btn primary" href="https://books.newbeansland.org/" target="_blank" rel="noopener noreferrer">$5 — Find eBook on Payhip</a>
+          <a class="btn primary" href="https://books.newbeansland.org/order?link=HUf3o&amp;pricing_plan=yZGjlqkvzN" target="_blank" rel="noopener noreferrer">$8 — Founders Bundle on Payhip</a>
+          <span class="status-pill">Physical · Lulu link pending verification</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="book-card">
+      <div class="store-cover"><div><strong>The Tree That Grew</strong><span>A New Beansland Story</span></div></div>
+      <div class="book-body">
+        <p class="book-label">New Beansland Children’s Story</p>
+        <h3 class="book-title">The Tree That Grew</h3>
+        <p class="book-copy">A short, heartfelt family story about noticing the little moments before they grow.</p>
+        <div class="perk">Physical purchase and fulfillment are handled through Lulu.</div>
+        <div class="actions">
+          <a class="btn primary" href="https://svc.lulu.com/?items=dc35ccd4-bdc1-497d-ba69-fa4316fc16a6" target="_blank" rel="noopener noreferrer">Buy Physical on Lulu</a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="premium-note"><strong>Current bookstore routing:</strong> Payhip = digital. Lulu = physical. NBL’s own automatic digital-delivery system is a future idea only and is not represented here as a live feature.</div>
+</section>
 </main>
 <footer class="footer"><div class="container"><strong>NBL Books</strong> · A New Beansland Imprint · Still Walking Together.</div></footer>
-<script>
-(()=>{'use strict';
-const products={
-'drt-standard-ebook':{name:'Doctor/Rocketship Test — Standard Illustrated eBook',amount:'$3.00',code:'DRT-STD-E',format:'Digital illustrated Standard Edition',benefit:'Digital delivery'},
-'drt-standard-color-pb':{name:'Doctor/Rocketship Test — Standard Edition Standard Color Softcover',amount:'$19.99 · U.S. shipping included',code:'DRT-STD-COLOR-PB',projectId:'v82z82q',physical:true,quoteRequired:false,format:'Standard color · paperback / softcover',benefit:'Includes Standard Edition eBook redemption code'},
-'drt-standard-color-hc':{name:'Doctor/Rocketship Test — Standard Edition Standard Color Hardcover',amount:'$29.99 · U.S. shipping included',code:'DRT-STD-COLOR-HC',projectId:'454pmjj',physical:true,quoteRequired:false,format:'Standard color · hardcover',benefit:'Includes Standard Edition eBook redemption code'},
-'drt-standard-premium-hc':{name:'Doctor/Rocketship Test — Standard Edition Founder’s Deluxe Edition Premium Color Hardcover',amount:'$59.99 · U.S. shipping included',code:'DRT-STD-PREMIUM-HC',projectId:'454pvdd',physical:true,quoteRequired:false,format:'Founder’s Deluxe Edition · premium color · hardcover case wrap · glossy cover',benefit:'Includes Standard Edition, Islamic Dilemma Edition, and The People Zoo eBooks'},
-'drt-islamic-ebook':{name:'Doctor/Rocketship Test — Islamic Dilemma Illustrated eBook',amount:'$3.00',code:'DRT-IDE-E',format:'Digital illustrated Islamic Dilemma Edition',benefit:'Digital delivery'},
-'drt-islamic-color-pb':{name:'Doctor/Rocketship Test — Islamic Dilemma Edition Standard Color Softcover',amount:'$19.99 · U.S. shipping included',code:'DRT-IDE-COLOR-PB',projectId:'nvn4p7p',physical:true,quoteRequired:false,format:'Standard color · paperback / softcover',benefit:'Includes Islamic Dilemma Edition eBook redemption code'},
-'drt-islamic-color-hc':{name:'Doctor/Rocketship Test — Islamic Dilemma Edition Standard Color Hardcover',amount:'$29.99 · U.S. shipping included',code:'DRT-IDE-COLOR-HC',projectId:'m2e82gq',physical:true,quoteRequired:false,format:'Standard color · hardcover',benefit:'Includes Islamic Dilemma Edition eBook redemption code'},
-'drt-islamic-premium-hc':{name:'Doctor/Rocketship Test — Islamic Dilemma Edition Founder’s Deluxe Edition Premium Color Hardcover',amount:'$59.99 · U.S. shipping included',code:'DRT-IDE-PREMIUM-HC',projectId:'q6qv49m',physical:true,quoteRequired:false,format:'Founder’s Deluxe Edition · premium color · hardcover case wrap · glossy cover',benefit:'Includes Islamic Dilemma Edition, Standard Edition, and The People Zoo eBooks'},
-'people-zoo-ebook':{name:'The People Zoo eBook',amount:'$5.00',code:'PZ-E',format:'Digital edition',benefit:'Digital delivery'},
-'people-zoo-hardcover':{name:'The People Zoo Physical Hardcover',amount:'$27.99 · U.S. shipping included',code:'PZ-HC',projectId:'yvepnm7',physical:true,quoteRequired:false,format:'Physical hardcover',benefit:'New Beansland fulfillment'},
-'bundle-digital':{name:'Doctor/Rocketship + People Zoo Bundle',amount:'$6.00',code:'BUNDLE',format:'Digital bundle',benefit:'Two-title digital bundle delivery'}
-};
-const select=document.getElementById('productSelect'),nameInput=document.getElementById('buyerName'),emailInput=document.getElementById('buyerEmail'),notesInput=document.getElementById('buyerNotes'),summaryItem=document.getElementById('summaryItem'),summaryAmount=document.getElementById('summaryAmount'),summaryBenefit=document.getElementById('summaryBenefit'),summaryCode=document.getElementById('summaryCode'),status=document.getElementById('orderStatus'),paidPanel=document.getElementById('paidPanel'),paidStatus=document.getElementById('paidStatus'),quoteWarning=document.getElementById('quoteWarning'),formatNote=document.getElementById('formatNote'),paymentBlock=document.getElementById('paymentBlock');let currentCode='';
-function sync(){const p=products[select.value];summaryItem.textContent=p.name;summaryAmount.textContent=p.amount;summaryBenefit.textContent=p.benefit;formatNote.textContent=`${p.format} · ${p.benefit}`+(p.projectId?` · Lulu project ${p.projectId}`:'');currentCode='';summaryCode.textContent='Create order first';paidPanel.classList.remove('show');paidStatus.textContent='';quoteWarning.classList.toggle('show',Boolean(p.quoteRequired));paymentBlock.style.display=p.quoteRequired?'none':'block';}
-function makeCode(prefix){const d=new Date(),stamp=`${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`,rand=Math.random().toString(36).slice(2,7).toUpperCase();return `NBL-${prefix}-${stamp}-${rand}`;}
-select.addEventListener('change',sync);
-document.querySelectorAll('[data-product]').forEach(btn=>btn.addEventListener('click',()=>{select.value=btn.dataset.product;sync();document.getElementById('direct-order').scrollIntoView({behavior:'smooth',block:'start'});}));
-document.getElementById('makeOrder').addEventListener('click',()=>{const buyer=nameInput.value.trim(),email=emailInput.value.trim();if(!buyer){status.textContent='Add your name first.';nameInput.focus();return;}if(!email||!emailInput.checkValidity()){status.textContent='Add a valid delivery email first.';emailInput.focus();return;}const p=products[select.value];currentCode=makeCode(p.code);summaryCode.textContent=currentCode;if(p.quoteRequired){status.textContent=`Order reference ${currentCode} is ready. Do not pay yet. New Beansland needs to confirm the final shipping total first.`;paidPanel.classList.remove('show');}else{status.textContent=`Order ${currentCode} is ready. Use this reference with your payment.`;paidPanel.classList.add('show');}});
-document.getElementById('confirmPaid').addEventListener('click',()=>{if(!currentCode){paidStatus.textContent='Create an order reference first.';return;}const p=products[select.value],subject=`New Beansland payment confirmation — ${currentCode}`,body=`NEW BEANSLAND PAYMENT CONFIRMATION\\
-\\
-Order reference: ${currentCode}\\
-Customer: ${nameInput.value.trim()}\\
-Delivery email: ${emailInput.value.trim()}\\
-Item: ${p.name}\\
-Lulu project: ${p.projectId||'To be assigned / not applicable'}\\
-Format: ${p.format}\\
-Listed amount: ${p.amount}\\
-Included benefit: ${p.benefit}\\
-Payment method: Cash App\\
-Payment name or handle: PLEASE ADD\\
-Notes / mailing address: ${notesInput.value.trim()||'None'}\\
-\\
-Payment has been sent. Please verify payment and fulfill the correct physical/digital item and redemption benefit.`;window.location.href=`mailto:founder@newbeansland.org?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;paidStatus.textContent='Your email app should open with the confirmation ready to send.';});
-sync();})();
-</script>
 </body>
 </html>
