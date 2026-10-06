@@ -146,11 +146,14 @@ requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Ch
 
 requireText(home,"Enrollment Display · Verification Pending","Homepage overstates University enrollment readiness.");
 requireText(portal,"https://books.newbeansland.org/","Connected NBL Books custom domain is missing from the public portal.");
-requireText(books,'data-key="jIEUZ"',"Doctor/Rocketship Standard Edition Payhip embed is missing.");
+requireText(books,"https://books.newbeansland.org/b/jIEUZ","Doctor/Rocketship Standard Edition compact Payhip link is missing.");
 requireText(books,"https://books.newbeansland.org/order?link=HUf3o&amp;pricing_plan=yZGjlqkvzN","Active Payhip Founders Bundle checkout is missing.");
 requireText(books,'data-nbl-payhip-bundle="doctor-people-zoo"',"Payhip bundle marker is missing.");
 requireText(books,"Buy $8 Founders Bundle","Live Payhip bundle CTA is missing.");
-requireText(books,'https://payhip.com/embed-page.js?v=24u68985',"Payhip embed loader is missing from Books.");
+forbidText(books,'payhip-embed-page',"Oversized Payhip product embed returned to Books.");
+forbidText(books,"https://payhip.com/embed-page.js","Payhip embed loader returned to Books.");
+forbidText(books,"<lulu-buy-button","Oversized Lulu product showcase returned to Books.");
+requireText(books,"https://svc.lulu.com/?items=dc35ccd4-bdc1-497d-ba69-fa4316fc16a6","Compact Lulu purchase button is missing from Books.");
 
 
 for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$34.99 one-time','$54.99 one-time','$184.99 one-time','$14.99/month']){
