@@ -516,8 +516,8 @@
       transform:rotate(-3deg);
     }
 
-    /* Real GLB office artifacts load only when their matching object is opened. */
-    .office-artifact-model {
+    /* Lightweight living-museum artifact presentation. No GLBs are loaded in production. */
+    .office-artifact-image {
       width: min(100%, 620px);
       margin: 0 auto 22px;
       padding: 10px;
@@ -526,16 +526,17 @@
       background: radial-gradient(circle at 50% 35%, rgba(255, 226, 153, .10), transparent 48%), #07101d;
       box-shadow: inset 0 0 30px rgba(0, 0, 0, .38);
     }
-    .office-artifact-model model-viewer {
+
+    .office-artifact-image img {
       display: block;
       width: 100%;
-      height: clamp(260px, 48vh, 520px);
+      max-height: min(52vh, 520px);
+      object-fit: contain;
+      border-radius: 9px;
       background: transparent;
-      --poster-color: transparent;
-      --progress-bar-color: var(--gold);
-      touch-action: pan-y;
     }
-    .office-artifact-model p {
+
+    .office-artifact-image p {
       margin: 8px 0 0;
       color: #cdbf9f;
       text-align: center;
@@ -543,98 +544,76 @@
       letter-spacing: .04em;
     }
 
-    /* 3D Beanie Bean desk toy: rotate the model, or drag the hand to pick it up.
-       Releasing it always returns it to its exact desk position. */
-    .desk-bean {
-      --bean-dx: 0px;
-      --bean-dy: 0px;
+    /* Beans and the two NBL display toys live on the floor/rug.
+       All three use the same lightweight pick-up / drag / snap-home interaction. */
+    .floor-figure {
+      --figure-dx: 0px;
+      --figure-dy: 0px;
+      --figure-tilt: 0deg;
       position: absolute;
       z-index: 8;
-      left: 47.4%;
-      top: 53.8%;
-      width: 12.2%;
-      height: 21.5%;
-      min-width: 78px;
-      min-height: 96px;
-      transform: translate3d(var(--bean-dx), var(--bean-dy), 0);
-      transform-origin: 50% 85%;
+      left: var(--figure-x);
+      top: var(--figure-y);
+      width: var(--figure-w);
+      height: var(--figure-h);
+      min-width: 54px;
+      min-height: 76px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      transform: translate3d(var(--figure-dx), var(--figure-dy), 0) rotate(var(--figure-tilt));
+      transform-origin: 50% 90%;
       transition:
         transform 560ms cubic-bezier(.2,.82,.2,1),
         filter 180ms ease;
-      filter: drop-shadow(0 10px 9px rgba(0, 0, 0, .48));
-      pointer-events: auto;
+      filter: drop-shadow(0 10px 9px rgba(0, 0, 0, .50));
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .desk-bean.is-held {
+    .floor-figure img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .floor-figure.is-held {
       z-index: 26;
       transition:
         transform 30ms linear,
         filter 120ms ease;
       filter:
         drop-shadow(0 18px 14px rgba(0, 0, 0, .68))
-        drop-shadow(0 0 10px rgba(255, 220, 133, .18));
-    }
-
-    .desk-bean model-viewer {
-      width: 100%;
-      height: 100%;
-      display: block;
-      background: transparent;
-      --poster-color: transparent;
-      --progress-bar-color: var(--gold);
-      cursor: grab;
-    }
-
-    .desk-bean model-viewer:active {
+        drop-shadow(0 0 13px rgba(255, 220, 133, .30));
       cursor: grabbing;
     }
 
-    .bean-grab {
-      position: absolute;
-      z-index: 4;
-      left: 50%;
-      bottom: -12px;
-      transform: translateX(-50%);
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      padding: 0;
-      border: 1px solid rgba(255, 227, 154, .72);
-      border-radius: 50%;
-      color: #fff0bf;
-      background: rgba(3, 9, 17, .90);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, .55);
-      cursor: grab;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    .bean-grab:active,
-    .desk-bean.is-held .bean-grab {
-      cursor: grabbing;
-      border-color: var(--gold-bright);
-      background: rgba(38, 27, 8, .94);
-    }
-
-    .bean-grab:focus-visible {
+    .floor-figure:focus-visible {
       outline: 2px solid var(--gold-bright);
       outline-offset: 3px;
+      border-radius: 12px;
     }
 
-    .bean-tip {
+    .floor-figure-tip {
       position: absolute;
       left: 50%;
-      bottom: -40px;
+      bottom: -25px;
       transform: translateX(-50%);
       width: max-content;
-      max-width: 180px;
+      max-width: 150px;
       padding: 5px 8px;
       border: 1px solid rgba(215, 180, 90, .38);
       border-radius: 999px;
       color: #fff0c4;
-      background: rgba(3, 9, 17, .86);
+      background: rgba(3, 9, 17, .88);
       font: 700 10px/1.1 Arial, sans-serif;
       letter-spacing: .02em;
       white-space: nowrap;
@@ -643,10 +622,14 @@
       transition: opacity 160ms ease;
     }
 
-    .desk-bean:hover .bean-tip,
-    .desk-bean:focus-within .bean-tip,
-    .desk-bean.is-held .bean-tip {
+    .floor-figure:hover .floor-figure-tip,
+    .floor-figure:focus-visible .floor-figure-tip,
+    .floor-figure.is-held .floor-figure-tip {
       opacity: 1;
+    }
+
+    .floor-toy-right img {
+      transform: scaleX(-1);
     }
 
     @media (max-width: 620px) {
@@ -676,7 +659,6 @@
   <link rel="stylesheet" href="/nbl-world-header.css?v=20260930-billing-rc1">
   <script defer src="/nbl-product-plans.js?v=20260929"></script>
   <script defer src="/nbl-world-header.js?v=20261004-shopify"></script>
-  <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.3.1/dist/model-viewer.min.js"></script>
 </head>
 
 <body>
@@ -711,28 +693,44 @@
         decoding="async"
       >
 
-      <div id="deskBean" class="desk-bean" aria-label="Interactive Beanie Bean figure on the Founder desk">
-        <model-viewer
-          id="deskBeanModel"
-          src="/Beanie%20Bean_Meshy_AI_2026-09-20_19b948-optimized.glb"
-          alt="3D Beanie Bean figure"
-          camera-controls
-          interaction-prompt="none"
-          shadow-intensity="0.9"
-          exposure="1.05"
-          tone-mapping="neutral"
-          camera-orbit="25deg 72deg 105%"
-          touch-action="pan-y"
-        ></model-viewer>
-        <button
-          id="beanGrab"
-          class="bean-grab"
-          type="button"
-          aria-label="Pick up Beanie Bean. Drag this hand and release to return him to the desk."
-          title="Pick up Beanie Bean"
-        >✋</button>
-        <span class="bean-tip" aria-hidden="true">Drag model to spin · drag ✋ to move</span>
-      </div>
+      <button
+        id="nblToyLeft"
+        class="floor-figure floor-toy-left"
+        type="button"
+        data-floor-figure
+        style="--figure-x: 25.0%; --figure-y: 73.0%; --figure-w: 9.5%; --figure-h: 22.0%;"
+        aria-label="Pick up the left NBL display toy"
+        title="NBL Toy · pick up"
+      >
+        <img src="/NBL-Model-Front.png" alt="" aria-hidden="true" draggable="false">
+        <span class="floor-figure-tip" aria-hidden="true">NBL Toy · drag & release</span>
+      </button>
+
+      <button
+        id="floorBean"
+        class="floor-figure floor-bean"
+        type="button"
+        data-floor-figure
+        style="--figure-x: 45.5%; --figure-y: 72.0%; --figure-w: 9.0%; --figure-h: 23.0%;"
+        aria-label="Pick up Beans from the rug"
+        title="Beans · pick up"
+      >
+        <img src="/Beans.png" alt="" aria-hidden="true" draggable="false">
+        <span class="floor-figure-tip" aria-hidden="true">Beans · drag & release</span>
+      </button>
+
+      <button
+        id="nblToyRight"
+        class="floor-figure floor-toy-right"
+        type="button"
+        data-floor-figure
+        style="--figure-x: 65.5%; --figure-y: 73.0%; --figure-w: 9.5%; --figure-h: 22.0%;"
+        aria-label="Pick up the right NBL display toy"
+        title="NBL Toy 2 · pick up"
+      >
+        <img src="/NBL-Model-Front.png" alt="" aria-hidden="true" draggable="false">
+        <span class="floor-figure-tip" aria-hidden="true">NBL Toy 2 · drag & release</span>
+      </button>
 
       <!-- WALL -->
       <button
@@ -844,8 +842,8 @@
 
       const roomPanels = {
         founder: {
-          model: "/Founder_Plaque.glb",
-          modelLabel: "Founder plaque · drag to rotate",
+          image: "/founder-nameplate.png",
+          imageLabel: "Founder nameplate",
           kicker: "Founder",
           title: "Jamel Hawkins",
           subtitle: "Still walking. Still building.",
@@ -879,6 +877,8 @@
         },
 
         doctorate: {
+          image: "/founder-doctorate-degree.png",
+          imageLabel: "Founder doctorate degree",
           kicker: "Founder Academic Record",
           title: "Doctor of Narrative Architecture",
           subtitle: "New Beansland Institute of Evidence-Based Practice",
@@ -898,8 +898,8 @@
         },
 
         masters: {
-          model: "/Master_Of_Applied_Skepticism_Certificate-optimized.glb",
-          modelLabel: "Master of Applied Skepticism certificate · drag to rotate",
+          image: "/founder-masters-degree.png",
+          imageLabel: "Founder master’s degree",
           kicker: "Founder Academic Record",
           title: "Master of Applied Skepticism",
           subtitle: "Analogical Systems · Inquiry · Evidence",
@@ -919,6 +919,8 @@
         },
 
         graduation: {
+          image: "/founder-graduation-remarks.png",
+          imageLabel: "Founder Graduation Remarks",
           kicker: "Framed Record",
           title: "Graduation Remarks",
           subtitle: "A speech about the work behind the walk.",
@@ -931,8 +933,8 @@
         },
 
         yolanda: {
-          model: "/For%20You,%20Mom%20Keepsake%20Necklace_Meshy_AI_2026-08-04_bb6999.glb",
-          modelLabel: "For You, Mom keepsake · drag to rotate",
+          image: "/yolanda-family-keepsake.png",
+          imageLabel: "Yolanda family keepsake",
           kicker: "Family Keepsake",
           title: "For You, Mom",
           subtitle: "Yolanda · The one-room light",
@@ -946,6 +948,8 @@
         },
 
         family: {
+          image: "/new-beansland-family-photo.png",
+          imageLabel: "New Beansland family photograph",
           kicker: "New Beansland Family",
           title: "Who Walks With Me",
           subtitle: "The family was not assembled. It accumulated.",
@@ -958,8 +962,8 @@
         },
 
         chair: {
-          model: "/New_Beansland_University_Crest-optimized.glb",
-          modelLabel: "New Beansland crest · drag to rotate",
+          image: "/official-nbl-emblem.png",
+          imageLabel: "Official New Beansland emblem",
           kicker: "Still Walking",
           title: "The Chair Is Empty",
           subtitle: "The Founder is not absent.",
@@ -971,8 +975,6 @@
         },
 
         clue: {
-          model: "/Use_A_Light_.glb",
-          modelLabel: "Use a Light clue · drag to rotate",
           kicker: "Clue",
           title: "If it’s too dark, use a light.",
           subtitle: "The room is telling you what to touch.",
@@ -989,6 +991,7 @@
       };
 
       const modal = document.getElementById("modal");
+      const modalCard = modal.querySelector(".modal-card");
       const modalClose = document.getElementById("modalClose");
       const modalKicker = document.getElementById("modalKicker");
       const modalTitle = document.getElementById("modalTitle");
@@ -998,8 +1001,6 @@
       const lampHotspot = document.getElementById("lampHotspot");
       const chairHotspot = document.querySelector('[data-panel="chair"]');
       const roomStage = document.querySelector(".room-stage");
-      const deskBean = document.getElementById("deskBean");
-      const beanGrab = document.getElementById("beanGrab");
       let lastFocused = null;
       let lampState = 0;
       let toastTimer = null;
@@ -1022,26 +1023,23 @@
         modalTitle.textContent = panel.title;
         modalSubtitle.textContent = panel.subtitle;
         modalBody.innerHTML = panel.body;
+        modalCard.classList.toggle("artifact-card", artifactPanels.has(panelName));
 
-        if (panel.model) {
-          const modelWrap = document.createElement("div");
-          modelWrap.className = "office-artifact-model";
+        if (panel.image) {
+          const imageWrap = document.createElement("div");
+          imageWrap.className = "office-artifact-image";
 
-          const viewer = document.createElement("model-viewer");
-          viewer.setAttribute("src", panel.model);
-          viewer.setAttribute("alt", panel.modelLabel || panel.title);
-          viewer.setAttribute("camera-controls", "");
-          viewer.setAttribute("interaction-prompt", "none");
-          viewer.setAttribute("shadow-intensity", "1");
-          viewer.setAttribute("exposure", "1.05");
-          viewer.setAttribute("tone-mapping", "neutral");
-          viewer.setAttribute("loading", "lazy");
+          const preview = document.createElement("img");
+          preview.src = panel.image;
+          preview.alt = panel.imageLabel || panel.title;
+          preview.loading = "eager";
+          preview.decoding = "async";
 
-          const modelHelp = document.createElement("p");
-          modelHelp.textContent = panel.modelLabel || "Drag to rotate · pinch or scroll to zoom";
+          const imageHelp = document.createElement("p");
+          imageHelp.textContent = panel.imageLabel || panel.title;
 
-          modelWrap.append(viewer, modelHelp);
-          modalBody.prepend(modelWrap);
+          imageWrap.append(preview, imageHelp);
+          modalBody.prepend(imageWrap);
         }
 
         modal.hidden = false;
@@ -1088,98 +1086,112 @@
       }
 
       /*
-        Beanie Bean has two independent phone interactions:
-        - Drag directly on the 3D model to rotate/spin it.
-        - Drag the hand control to pick up and move the whole figure.
-        Wherever it is released, CSS eases it back to its home position on the desk.
+        Beans and both NBL display toys share one interaction:
+        pick up / drag anywhere inside the room, release, and the figure eases back home.
+        A quick tap gives the same lightweight lift/glow without loading a 3D model.
       */
-      if (roomStage && deskBean && beanGrab) {
-        let beanPointerId = null;
-        let beanStartX = 0;
-        let beanStartY = 0;
-        let beanBaseRect = null;
-        let beanStageRect = null;
-        let beanMoved = false;
+      const floorFigures = [...document.querySelectorAll("[data-floor-figure]")];
 
-        const setBeanOffset = (x, y) => {
-          deskBean.style.setProperty("--bean-dx", `${x}px`);
-          deskBean.style.setProperty("--bean-dy", `${y}px`);
+      function setupFloorFigure(figure) {
+        let pointerId = null;
+        let startX = 0;
+        let startY = 0;
+        let baseRect = null;
+        let stageRect = null;
+        let moved = false;
+
+        const setFigureOffset = (x, y, tilt = 0) => {
+          figure.style.setProperty("--figure-dx", `${x}px`);
+          figure.style.setProperty("--figure-dy", `${y}px`);
+          figure.style.setProperty("--figure-tilt", `${tilt}deg`);
         };
 
-        const returnBeanHome = () => {
-          beanPointerId = null;
-          deskBean.classList.remove("is-held");
-          setBeanOffset(0, 0);
+        const returnFigureHome = () => {
+          pointerId = null;
+          figure.classList.remove("is-held");
+          setFigureOffset(0, 0, 0);
         };
 
-        beanGrab.addEventListener("pointerdown", (event) => {
-          if (beanPointerId !== null) return;
-          beanPointerId = event.pointerId;
-          beanStartX = event.clientX;
-          beanStartY = event.clientY;
-          beanBaseRect = deskBean.getBoundingClientRect();
-          beanStageRect = roomStage.getBoundingClientRect();
-          beanMoved = false;
-          deskBean.classList.add("is-held");
-          beanGrab.setPointerCapture(event.pointerId);
+        const liftFigure = () => {
+          figure.classList.add("is-held");
+          setFigureOffset(0, -14, 0);
+          window.setTimeout(returnFigureHome, 220);
+        };
+
+        figure.addEventListener("pointerdown", (event) => {
+          if (pointerId !== null || !roomStage) return;
+          pointerId = event.pointerId;
+          startX = event.clientX;
+          startY = event.clientY;
+          baseRect = figure.getBoundingClientRect();
+          stageRect = roomStage.getBoundingClientRect();
+          moved = false;
+          figure.classList.add("is-held");
+          figure.setPointerCapture(event.pointerId);
           event.preventDefault();
           event.stopPropagation();
         });
 
-        beanGrab.addEventListener("pointermove", (event) => {
-          if (event.pointerId !== beanPointerId || !beanBaseRect || !beanStageRect) return;
+        figure.addEventListener("pointermove", (event) => {
+          if (event.pointerId !== pointerId || !baseRect || !stageRect) return;
 
-          const rawX = event.clientX - beanStartX;
-          const rawY = event.clientY - beanStartY;
-          if (Math.abs(rawX) > 3 || Math.abs(rawY) > 3) beanMoved = true;
+          const rawX = event.clientX - startX;
+          const rawY = event.clientY - startY;
+          if (Math.abs(rawX) > 3 || Math.abs(rawY) > 3) moved = true;
 
           const margin = 6;
-          const minX = beanStageRect.left + margin - beanBaseRect.left;
-          const maxX = beanStageRect.right - margin - beanBaseRect.right;
-          const minY = beanStageRect.top + margin - beanBaseRect.top;
-          const maxY = beanStageRect.bottom - margin - beanBaseRect.bottom;
+          const minX = stageRect.left + margin - baseRect.left;
+          const maxX = stageRect.right - margin - baseRect.right;
+          const minY = stageRect.top + margin - baseRect.top;
+          const maxY = stageRect.bottom - margin - baseRect.bottom;
 
           const nextX = Math.max(minX, Math.min(maxX, rawX));
           const nextY = Math.max(minY, Math.min(maxY, rawY));
-          setBeanOffset(nextX, nextY);
+          const tilt = Math.max(-8, Math.min(8, nextX / 24));
+          setFigureOffset(nextX, nextY, tilt);
 
           event.preventDefault();
           event.stopPropagation();
         });
 
-        const finishBeanDrag = (event) => {
-          if (event.pointerId !== beanPointerId) return;
+        const finishFigureDrag = (event) => {
+          if (event.pointerId !== pointerId) return;
           try {
-            if (beanGrab.hasPointerCapture(event.pointerId)) {
-              beanGrab.releasePointerCapture(event.pointerId);
+            if (figure.hasPointerCapture(event.pointerId)) {
+              figure.releasePointerCapture(event.pointerId);
             }
           } catch {
-            // The pointer may already have been released by the browser.
+            // The browser may already have released the pointer.
           }
-          returnBeanHome();
+          returnFigureHome();
           event.preventDefault();
           event.stopPropagation();
         };
 
-        beanGrab.addEventListener("pointerup", finishBeanDrag);
-        beanGrab.addEventListener("pointercancel", finishBeanDrag);
-        beanGrab.addEventListener("lostpointercapture", () => {
-          if (beanPointerId !== null) returnBeanHome();
+        figure.addEventListener("pointerup", finishFigureDrag);
+        figure.addEventListener("pointercancel", finishFigureDrag);
+        figure.addEventListener("lostpointercapture", () => {
+          if (pointerId !== null) returnFigureHome();
         });
 
-        beanGrab.addEventListener("click", (event) => {
+        figure.addEventListener("click", (event) => {
           event.preventDefault();
           event.stopPropagation();
-          if (beanMoved) return;
+          if (moved) {
+            moved = false;
+            return;
+          }
+          liftFigure();
+        });
 
-          deskBean.classList.add("is-held");
-          setBeanOffset(0, -14);
-          window.setTimeout(() => {
-            deskBean.classList.remove("is-held");
-            setBeanOffset(0, 0);
-          }, 220);
+        figure.addEventListener("keydown", (event) => {
+          if (!["Enter", " "].includes(event.key)) return;
+          event.preventDefault();
+          liftFigure();
         });
       }
+
+      floorFigures.forEach(setupFloorFigure);
 
       document.querySelectorAll(".hotspot").forEach((hotspot) => {
         hotspot.addEventListener("click", () => {
