@@ -12,27 +12,42 @@ const forbidText = (source, text, reason) => {
   if (source.includes(text)) errors.push(reason);
 };
 
-// Current approved office: fixed room view + hotspots + object inspection.
-// Do not force the retired first-person walking/joystick build back into production.
+// Approved office: fixed living-museum room image + hotspots + lightweight 2D object interactions.
+// Keep the old walking/GLB experiments as history, but do not load them in the production office.
 requireText(html, 'class="room-stage"', "Founder Office room stage is missing.");
 requireText(html, 'class="room-image"', "Founder Office room image is missing.");
 requireText(html, 'src="founder-office-room.png"', "Founder Office master room image is missing.");
-requireText(html, '@google/model-viewer', "3D artifact viewer dependency is missing.");
 
 for (const key of ["graduation","banner","doctorate","masters","family","founder","chair","yolanda","clue"]) {
   requireText(html, `data-panel="${key}"`, `hotspot '${key}' is missing.`);
 }
+
 requireText(html, 'data-action="lamp"', "lamp hotspot is missing.");
 requireText(html, 'setLampState((lampState + 1) % 3)', "three-touch lamp sequence is missing.");
 requireText(html, 'panel === "chair" && lampState !== 2', "chair light gate is missing.");
 requireText(html, 'panel === "clue"', "clue-to-lamp behavior is missing.");
-requireText(html, 'id="deskBean"', "interactive Beanie Bean is missing.");
-requireText(html, 'id="beanGrab"', "Beanie Bean pick-up control is missing.");
-requireText(html, 'returnBeanHome', "Beanie Bean return-home behavior is missing.");
 
-forbidText(html, 'id="officeCanvas"', "Retired walking-game canvas returned to the approved static office.");
-forbidText(html, 'id="moveZone"', "Retired BODY joystick returned to the approved static office.");
-forbidText(html, 'id="lookZone"', "Retired HEAD joystick returned to the approved static office.");
+requireText(html, 'id="floorBean"', "Beans is not grounded on the office floor/rug.");
+requireText(html, 'id="nblToyLeft"', "left NBL display toy is missing.");
+requireText(html, 'id="nblToyRight"', "right NBL display toy is missing.");
+requireText(html, 'data-floor-figure', "shared floor-figure interaction markers are missing.");
+requireText(html, 'function setupFloorFigure(figure)', "shared Beans/toy interaction is missing.");
+requireText(html, 'floorFigures.forEach(setupFloorFigure)', "not all floor figures use the shared interaction.");
+requireText(html, 'returnFigureHome', "floor figures do not snap back home.");
+
+requireText(html, 'src="/Beans.png"', "Beans lightweight image asset is missing from the room.");
+requireText(html, 'src="/NBL-Model-Front.png"', "NBL toy lightweight image asset is missing from the room.");
+requireText(html, 'className = "office-artifact-image"', "museum artifact image preview is missing.");
+
+forbidText(html, 'model-viewer', "Heavy model-viewer dependency returned to the active Founder Office.");
+forbidText(html, '.glb', "A GLB reference returned to the active Founder Office.");
+forbidText(html, 'id="officeCanvas"', "Retired walking-game canvas returned to the approved museum office.");
+forbidText(html, 'id="moveZone"', "Retired BODY joystick returned to the approved museum office.");
+forbidText(html, 'id="lookZone"', "Retired HEAD joystick returned to the approved museum office.");
+
+// The Office must stay on the shared website shell so current Beans remains available here too.
+requireText(html, '<script defer src="/nbl-portal.js"></script>', "NBL portal shell is not wired on Founder Office.");
+requireText(html, '<script defer src="/nbl-world-header.js?v=20261004-shopify"></script>', "shared NBL world/Beans header is not wired on Founder Office.");
 
 // Catch accidental literal escape corruption and other inline JavaScript parse failures.
 const inlineScripts = html
@@ -59,12 +74,14 @@ for (const source of inlineScripts) {
 const requiredAssets = [
   "founder-office-room.png",
   "official-nbl-emblem.png",
-  "Beanie Bean_Meshy_AI_2026-09-20_19b948-optimized.glb",
-  "Founder_Plaque.glb",
-  "Master_Of_Applied_Skepticism_Certificate-optimized.glb",
-  "For You, Mom Keepsake Necklace_Meshy_AI_2026-08-04_bb6999.glb",
-  "New_Beansland_University_Crest-optimized.glb",
-  "Use_A_Light_.glb"
+  "Beans.png",
+  "NBL-Model-Front.png",
+  "founder-nameplate.png",
+  "founder-doctorate-degree.png",
+  "founder-masters-degree.png",
+  "founder-graduation-remarks.png",
+  "yolanda-family-keepsake.png",
+  "new-beansland-family-photo.png"
 ];
 
 for (const path of requiredAssets) {
@@ -82,4 +99,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log("Founder’s Office approved static/hotspot experience, lamp puzzle, Beanie interaction, syntax, and required assets passed.");
+console.log("Founder’s Office living museum, lamp puzzle, Beans + two shared toy interactions, lightweight assets, Beans shell wiring, and syntax passed.");
