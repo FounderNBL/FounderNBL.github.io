@@ -187,3 +187,123 @@ jobs:
             gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Health Inspector recovery check passed on desktop and mobile. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
             gh issue close "$existing" --repo "$GITHUB_REPOSITORY"
           fi
+
+  browserstack-real-device-inspection:
+    name: Health Inspector · BrowserStack real device
+    needs: deep-browser-inspection
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+    steps:
+      - name: Check BrowserStack credentials
+        id: browserstack
+        shell: bash
+        run: |
+          if [ -n "$BROWSERSTACK_USERNAME" ] && [ -n "$BROWSERSTACK_ACCESS_KEY" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "## BrowserStack real-device inspection"
+              echo
+              echo "SKIP — add BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY as GitHub Actions secrets to enable this gate."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Check out repository
+        if: steps.browserstack.outputs.configured == 'true'
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        if: steps.browserstack.outputs.configured == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Install Playwright and BrowserStack SDK
+        if: steps.browserstack.outputs.configured == 'true'
+        run: npm install --no-save @playwright/test@latest browserstack-node-sdk@latest
+
+      - name: Create ephemeral BrowserStack release-gate config
+        if: steps.browserstack.outputs.configured == 'true'
+        shell: bash
+        run: |
+          cat > browserstack.yml <<EOF
+          userName: "$BROWSERSTACK_USERNAME"
+          accessKey: "$BROWSERSTACK_ACCESS_KEY"
+          framework: playwright
+          projectName: NBL Website Health Inspector
+          buildName: NBL BrowserStack Release Gate
+          platforms:
+            - os: Windows
+              osVersion: 11
+              browserName: chrome
+              browserVersion: latest
+              playwrightConfigOptions:
+                name: windows-chrome
+                use:
+                  baseURL: https://newbeansland.org
+            - deviceName: Samsung Galaxy S25 Ultra
+              osVersion: 15.0
+              browserName: chrome
+              playwrightConfigOptions:
+                name: samsung-android
+                use:
+                  baseURL: https://newbeansland.org
+          parallelsPerPlatform: 1
+          browserstackLocal: false
+          debug: true
+          networkLogs: true
+          consoleLogs: info
+          selfHeal: false
+          EOF
+
+      - name: Run BrowserStack release gate
+        if: steps.browserstack.outputs.configured == 'true'
+        env:
+          NBL_BASE_URL: https://newbeansland.org
+          NBL_EXPECT_BILLING_LIVE: "1"
+        run: npx browserstack-node-sdk playwright test --config=playwright.config.mjs
+
+      - name: Upload BrowserStack failure evidence
+        if: failure() && steps.browserstack.outputs.configured == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: nbl-browserstack-real-device-failure
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Open or update BrowserStack incident
+        if: failure() && steps.browserstack.outputs.configured == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          title="[Health Inspector] BrowserStack real-device failure"
+          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] BrowserStack real-device failure") | .number' | head -n 1)"
+          body="The BrowserStack release gate failed on a real desktop/mobile target. Self-healing is OFF for this gate so a broken locator or critical journey cannot silently become PASS. **Fixer handoff:** identify the root cause, add regression protection, and return a repair PR. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
+          fi
+
+      - name: Confirm BrowserStack recovery
+        if: success() && steps.browserstack.outputs.configured == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] BrowserStack real-device failure") | .number' | head -n 1)"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "BrowserStack real-device recovery check passed. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            gh issue close "$existing" --repo "$GITHUB_REPOSITORY"
+          fi
+

@@ -1,0 +1,95 @@
+name: NBL BrowserStack Self-Heal Diagnostic
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostic:
+    name: BrowserStack self-heal diagnostic
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+    steps:
+      - name: Require BrowserStack credentials
+        shell: bash
+        run: |
+          if [ -z "$BROWSERSTACK_USERNAME" ] || [ -z "$BROWSERSTACK_ACCESS_KEY" ]; then
+            echo "BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY must be configured as GitHub Actions secrets."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Install Playwright and BrowserStack SDK
+        run: npm install --no-save @playwright/test@latest browserstack-node-sdk@latest
+
+      - name: Create ephemeral BrowserStack diagnostic config
+        shell: bash
+        run: |
+          cat > browserstack.yml <<EOF
+          userName: "$BROWSERSTACK_USERNAME"
+          accessKey: "$BROWSERSTACK_ACCESS_KEY"
+          framework: playwright
+          projectName: NBL Website Health Inspector
+          buildName: NBL BrowserStack Self-Heal Diagnostic
+          platforms:
+            - os: Windows
+              osVersion: 11
+              browserName: chrome
+              browserVersion: latest
+              playwrightConfigOptions:
+                name: windows-chrome
+                use:
+                  baseURL: https://newbeansland.org
+            - deviceName: Samsung Galaxy S25 Ultra
+              osVersion: 15.0
+              browserName: chrome
+              playwrightConfigOptions:
+                name: samsung-android
+                use:
+                  baseURL: https://newbeansland.org
+          parallelsPerPlatform: 1
+          browserstackLocal: false
+          debug: true
+          networkLogs: true
+          consoleLogs: info
+          selfHeal: true
+          EOF
+
+      - name: Run diagnostic with self-healing enabled
+        env:
+          NBL_BASE_URL: https://newbeansland.org
+          NBL_EXPECT_BILLING_LIVE: "1"
+        run: npx browserstack-node-sdk playwright test --config=playwright.config.mjs
+
+      - name: Explain evidence status
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## BrowserStack self-heal diagnostic"
+            echo
+            echo "This workflow is diagnostic only and is not release-gate evidence."
+            echo "Self-healing is enabled here so BrowserStack can expose healed locators for repair."
+            echo "The production BrowserStack release gate keeps self-healing OFF."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nbl-browserstack-self-heal-diagnostic
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
