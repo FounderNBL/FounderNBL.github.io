@@ -54,7 +54,7 @@
         <button id="signInButton" type="button">Sign in / recover account</button>
         <a class="button" id="passwordHelpButton" href="https://accounts.newbeansland.org/sign-in">Forgot password?</a>
       </div>
-      <p class="status">After changing your password, return to NBL Chat™ and sign in with the new password.</p>
+      <p class="status">After changing your password, return to Beans and sign in with the new password.</p>
     </section>
 
     <div id="accountBody" class="hidden">
@@ -82,20 +82,19 @@
         <p id="membershipStatus" class="status">Checking your Beans membership…</p>
         <div class="grid" aria-label="Membership usage">
           <div class="card metric"><strong id="membershipPlan">—</strong><span>current plan</span></div>
-          <div class="card metric"><strong id="replyRemaining">—</strong><span>successful replies remaining</span></div>
-          <div class="card metric"><strong id="topUpRemaining">—</strong><span>Get More replies remaining</span></div>
+          <div class="card metric"><strong id="replyRemaining">—</strong><span>NBL Usage credits available</span></div>
+          <div class="card metric"><strong id="topUpRemaining">—</strong><span>purchased + earned credits</span></div>
         </div>
         <div class="row">
-          <button type="button" data-account-billing-plan="beans">Beans · $4.99/month</button>
-          <button type="button" data-account-billing-plan="chat_plus">NBL CHAT PLUS™ · $14.99/month</button>
-          <button type="button" data-account-billing-plan="chat_plus_university" disabled aria-disabled="true" title="University checkout verification pending">NBL CHAT PLUS™ + University · $19.99/month</button>
-          <button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button>
-          <button type="button" data-account-billing-plan="foundation" disabled aria-disabled="true" title="University checkout verification pending">Foundation · $34.99 one-time</button>
-          <button type="button" data-account-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation · $54.99 one-time</button>
-          <button type="button" data-account-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Experience · $184.99 one-time</button>
+          <a class="btn" href="/plans.html">Beans · free to start</a>
+          <button type="button" data-account-billing-plan="chat_plus">NBL Plus · $4.99 first month, then $29.99/month</button>
+          <button type="button" data-account-billing-plan="chat_plus_university" disabled aria-disabled="true" title="University checkout verification pending">NBL University (includes Plus) · $39.99/month</button>
+          <button type="button" data-account-billing-plan="topup_500">NBL Usage · 500 credits for $7</button>
+          <button type="button" data-account-billing-plan="foundation" disabled aria-disabled="true" title="University checkout verification pending">Foundation · $29.99 one-time</button>
+          <button type="button" data-account-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Experience · $449.99 one-time</button>
           <button type="button" data-account-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Owner Continuation · $14.99/month</button>
         </div>
-        <p class="status">University-granting checkout is temporarily held while New Beansland completes one controlled real checkout and a second-account student-record isolation test. Current University prices are display information until those gates pass. Regular Beans, NBL CHAT PLUS™, and Get More remain separate.</p>
+        <p class="status">University-granting checkout is temporarily held while New Beansland completes one controlled real checkout and a second-account student-record isolation test. Current University prices are display information until those gates pass. Beans, NBL Plus, human NBL Chat, and NBL Usage are separate products.</p>
       </section>
 
       <section class="card hidden" id="founder-actions">
@@ -285,14 +284,16 @@
       const planKey=String(meter.planKey||"").toLowerCase();
       const plan=meter.privileged
         ?"Founder"
-        :planKey==="chat_plus"
-          ?"NBL CHAT PLUS™"
-          :planKey==="beans"
-            ?"Beans"
-            :"Free";
+        :planKey.includes("full_nblu")
+          ?"Full NBLU"
+          :planKey.includes("plus_university")||planKey.includes("university")
+            ?"NBL University"
+            :planKey.includes("plus")
+              ?"NBL Plus"
+              :"Beans · free";
       membershipPlan.textContent=plan;
-      replyRemaining.textContent=String(meter.totalReplyRemaining??meter.paidRemaining??meter.freeRemaining??0);
-      topUpRemaining.textContent=String(meter.topUpRemaining??0);
+      replyRemaining.textContent=String(meter.nblUsageBalance??meter.freeRemaining??0);
+      topUpRemaining.textContent=String(meter.persistentUsageRemaining??0);
       const end=meter.paidPeriodEnd?new Date(meter.paidPeriodEnd):null;
       const endText=end&&!Number.isNaN(end.getTime())?" · current period through "+end.toLocaleDateString():"";
       membershipStatus.textContent=(meter.privileged?"Founder reserve":String(meter.membershipStatus||"free").replaceAll("_"," "))+endText;
