@@ -1,3 +1,14 @@
+## Founder public-site boundary — October 8, 2026
+
+**NewBeansland.org is for visitors to look, touch, explore and READ.** It is not the long-term functional Beans, human-chat or University application.
+
+Link visitors to **[NBL World](https://nblworld.com/)** when they need to DO something: use Beans, talk with other members, attend University, manage student accounts/credits or transact. Do not build duplicate chat/University product engines on the two public sites. Existing public pages and assets remain undisturbed until a separate intentional functional handoff.
+
+Desk owns paper planning, review and dispatch; NBL-Chat holds chat-related implementation; Playground protects private NBL intellectual property (NOT API keys). Runtime integration credentials and access checks remain private on authorized servers/CI.
+
+Historical README descriptions presenting NewBeansland.org as the canonical customer Beans platform and listing old prices are superseded by the [current Founder Desk plan](https://github.com/FounderNBL/nbl-desk/blob/main/NBL_FOUNDER_REPO_ROUTING_PAPER_PLAN_2026-10-08.md). No Office/game/video/E2E work and no live routes, billing or content changes in this **paper** pass.
+
+---
 # New Beansland
 
 Official public production repository for **New Beansland**.
