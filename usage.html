@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My NBL Usage · New Beansland</title>
+<meta name="description" content="See your New Beansland NBL Usage balance and history.">
+<link rel="stylesheet" href="/nbl-world-header.css?v=20261008-usage1">
+<script defer src="/nbl-product-plans.js?v=20261008-usage1"></script>
+<script defer src="/nbl-world-header.js?v=20261008-usage1"></script>
+<style>
+:root{--panel:#071421;--gold:#d6a14b;--gold2:#f0c56f;--cream:#f4ead8;--soft:#cfc3ad;--line:rgba(214,161,75,.32)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#153047,#07131f 42%,#02060b);color:var(--cream);font:16px/1.55 Arial,sans-serif}main{width:min(1050px,94%);margin:auto;padding:112px 0 72px}.eyebrow{color:var(--gold2);font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:.76rem}h1,h2{font-family:Georgia,serif}h1{font-size:clamp(2.3rem,7vw,4.6rem);margin:.15em 0}.lead,.muted{color:var(--soft)}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:25px 0}.card{padding:20px;border:1px solid var(--line);border-radius:18px;background:rgba(7,20,33,.94)}.metric strong{display:block;color:var(--gold2);font-size:2rem}.metric span{color:var(--soft);font-size:.88rem}.row{display:flex;gap:10px;flex-wrap:wrap}.button,button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border:1px solid var(--gold);border-radius:999px;padding:9px 15px;background:#10283b;color:#fff;font-weight:900;text-decoration:none;cursor:pointer}.primary{background:var(--gold2);color:#07131f}.history{display:grid;gap:8px;margin-top:14px}.entry{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px;border:1px solid rgba(255,255,255,.08);border-radius:12px;background:rgba(255,255,255,.025)}.entry strong{color:var(--cream)}.entry small{display:block;color:var(--soft)}.delta{font-weight:900}.positive{color:#bce5c8}.negative{color:#ffc4c4}.signedout{display:none}.signedout.show{display:block}@media(max-width:720px){.summary{grid-template-columns:1fr}.entry{grid-template-columns:1fr}}
+</style></head><body><main>
+<p class="eyebrow">New Beansland · Account</p><h1>NBL Usage</h1>
+<p class="lead">One balance for eligible AI-powered New Beansland features. Monthly included credits are used first. Purchased and earned credits remain in your persistent balance and do not expire.</p>
+<section class="card signedout" data-signedout><h2>Sign in to see your balance.</h2><button data-signin>Sign in</button></section>
+<div data-body hidden>
+<section class="summary">
+<div class="card metric"><strong data-total>—</strong><span>NBL Usage available</span></div>
+<div class="card metric"><strong data-included>—</strong><span>monthly included remaining</span></div>
+<div class="card metric"><strong data-persistent>—</strong><span>purchased + earned remaining</span></div>
+</section>
+<section class="card">
+<h2>Your NBL Usage</h2><p class="muted" data-period>Checking your current included period…</p>
+<div class="row"><button class="primary" data-buy>Add 500 credits · $7</button><a class="button" href="/plans.html">See plans</a><a class="button" href="/account.html">My account</a></div>
+<p class="muted">Purchased NBL Usage does not expire. Human NBL Chat messages use 0 NBL Usage. Required NBL University grading and official academic processing are included with University access rather than debited here.</p>
+</section>
+<section class="card" style="margin-top:14px"><h2>Usage history</h2><div class="history" data-history><p class="muted">Loading…</p></div></section>
+<p class="muted" data-status></p>
+</div>
+</main>
+<script>
+addEventListener("DOMContentLoaded",async()=>{
+ const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-studios";
+ const signedout=document.querySelector("[data-signedout]"),body=document.querySelector("[data-body]"),status=document.querySelector("[data-status]");
+ const wait=async()=>{for(let i=0;i<60;i++){if(window.NBLAccountBridge)return window.NBLAccountBridge;await new Promise(r=>setTimeout(r,100))}throw new Error("NBL account connection did not load.")};
+ let bridge;try{bridge=await wait()}catch(e){signedout.classList.add("show");return}
+ const clerk=await bridge.getClerk().catch(()=>null);
+ if(!clerk?.isSignedIn||!clerk.session){signedout.classList.add("show");document.querySelector("[data-signin]").onclick=()=>location.href="https://accounts.newbeansland.org/sign-in?redirect_url="+encodeURIComponent(location.href);return}
+ body.hidden=false;
+ const token=async()=>await bridge.getToken();
+ const call=async(action,extra={})=>{
+   const t=await token();const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body:JSON.stringify({action,...extra}),cache:"no-store"});
+   const p=await r.json().catch(()=>({}));if(!r.ok)throw new Error(p?.message||p?.reason||"NBL Usage is temporarily unavailable.");return p;
+ };
+ try{
+   const [walletPayload,historyPayload]=await Promise.all([call("wallet"),call("usage_history",{limit:80})]);
+   const w=walletPayload.wallet||{};
+   document.querySelector("[data-total]").textContent=String(w.balanceCredits??0);
+   document.querySelector("[data-included]").textContent=String(w.includedCredits??0);
+   document.querySelector("[data-persistent]").textContent=String(w.persistentCredits??0);
+   const end=w.includedPeriodEnd?new Date(w.includedPeriodEnd):null;
+   document.querySelector("[data-period]").textContent=end&&!Number.isNaN(end.getTime())?"Current included NBL Usage period ends "+end.toLocaleDateString()+".":"No monthly included NBL Usage period is active right now.";
+   const host=document.querySelector("[data-history]");host.replaceChildren();
+   const entries=historyPayload?.history?.entries||[];
+   if(!entries.length){const p=document.createElement("p");p.className="muted";p.textContent="No NBL Usage activity yet.";host.appendChild(p)}
+   for(const e of entries){
+     const row=document.createElement("div");row.className="entry";
+     const left=document.createElement("div"),title=document.createElement("strong"),small=document.createElement("small"),delta=document.createElement("div");
+     title.textContent=e.label||"NBL Usage";small.textContent=(e.feature?e.feature+" · ":"")+(e.createdAt?new Date(e.createdAt).toLocaleString():"");
+     left.append(title,small);delta.className="delta "+(Number(e.credits)>=0?"positive":"negative");delta.textContent=(Number(e.credits)>0?"+":"")+String(e.credits)+" credits";
+     row.append(left,delta);host.appendChild(row);
+   }
+ }catch(e){status.textContent=e?.message||"NBL Usage could not be loaded."}
+ document.querySelector("[data-buy]").addEventListener("click",async()=>{
+   status.textContent="Preparing secure checkout…";
+   try{const r=await window.NBLBillingBridge.checkout("nbl_usage");if(r?.destination)location.href=r.destination;else status.textContent=r?.payload?.message||"Checkout is unavailable."}catch(e){status.textContent=e?.message||"Checkout is unavailable."}
+ });
+});
+</script></body></html>
