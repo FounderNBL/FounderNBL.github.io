@@ -37,7 +37,7 @@ requireText(js,'ANSY 110',"ANSY 110 is missing.");
 requireText(js,'EBPR 120',"EBPR 120 is missing.");
 requireText(js,'beansHistoryLoadedFor',"Signed-in Beans history is not tracked per account.");
 requireText(js,'clerk.addListener',"Account state changes do not retrigger Beans/Plus continuity.");
-requireText(js,'NBL Plus adds premium Beans tools. NBL University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"NBL Plus brand line is missing.");
+requireText(js,'Beans is your NBL AI assistant. NBL Chat is for people talking to people. NBL Plus adds premium Beans tools. NBL University adds Professor Grey™ and the Virgo System™ for guided learning, with enrollment controlled by LOCKE.',"NBL Plus brand line is missing.");
 requireText(js,'data-nbl-drawer-tools',"Beans tools drawer entry is missing.");
 requireText(js,'data-nbl-tools-toggle',"Beans + tool button is missing.");
 requireText(js,'data-nbl-tool="attach"',"Photo/file tool is missing.");
