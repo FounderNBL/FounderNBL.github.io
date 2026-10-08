@@ -57,24 +57,29 @@ forbidText(header,'nbl-chat.replit.app',"Website still depends on the old Replit
 forbidText(header,'NBL_ACCOUNT_API',"Legacy Replit account API constant is still present.");
 forbidText(header,'exam-prep/access',"Legacy Replit University access route is still present.");
 requireText(header,'fetch(NBL_CHAT_PLUS_API',"University account status is not using the canonical NBL Foundation runtime.");
-requireText(header,'NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"Public Chat header does not state the trademarked Plus brand line.");
+requireText(header,'Beans is your NBL AI assistant. NBL Chat is for people talking to people. NBL Plus adds premium Beans tools. NBL University adds Professor Grey™ and the Virgo System™ for guided learning, with enrollment controlled by LOCKE.',"Header must clearly distinguish Beans AI, human Chat and paid learning.");
 
 // Website-standard Chat shell and Beans continuity.
-requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat™ drawer is missing.");
-requireText(header,'NBL Chat™',"NBL Chat™ trademark display is missing.");
-requireText(header,'NBL CHAT PLUS™',"NBL CHAT PLUS™ trademark display is missing.");
+requireText(header,'data-nbl-chat-drawer',"Website-standard Beans drawer is missing.");
+requireText(header,'NBL Chat is for people talking to people',"Human Chat/Beans distinction is missing.");
+requireText(header,'NBL Plus',"NBL Plus display identity is missing.");
 requireText(header,'Professor Grey™',"Professor Grey™ trademark display is missing.");
 requireText(header,'Virgo System™',"Virgo System™ trademark display is missing.");
-requireText(header,'powered by OpenAI',"OpenAI provider brand line is missing.");
+requireText(header,'NBL Plus adds premium Beans tools',"NBL Plus tool boundary is missing.");
 requireText(header,'data-nbl-drawer-new',"Website-standard New Chat action is missing.");
 requireText(header,'?action=conversations',"Website-standard recent Chat history is missing.");
 requireText(header,'data-nbl-drawer-grey hidden',"Preserved Professor Grey entry must stay hidden from public Chat.");
 requireText(header,'data-nbl-drawer-tools',"Website-standard Beans tools entry is missing.");
 requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans entry is missing.");
-requireText(header,'${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More',"Website-standard plan labels do not use the canonical catalog.");
-requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
-requireText(plans,'price:"$14.99/month"',"Canonical Chat Plus price is missing.");
-requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + University tier is missing.");
+requireText(header,'Beans: ${NBL_PRODUCT_PLANS.beans.price} · NBL Plus: ${NBL_PRODUCT_PLANS.chatPlus.price} · University: ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} · NBL Usage: ${NBL_PRODUCT_PLANS.getMore.price}',"Website drawer does not use the current canonical plan catalog.");
+requireText(plans,'price:"Free to start"',"Canonical free Beans identity is missing.");
+requireText(plans,'introPrice:"$4.99 first month"',"NBL Plus intro amount missing.");
+requireText(plans,'renewalPrice:"$29.99/month"',"NBL Plus renewal amount missing.");
+requireText(plans,'price:"$39.99/month"',"NBL University amount missing.");
+requireText(plans,'price:"$7 one-time"',"NBL Usage top-up amount missing.");
+requireText(plans,'price:"$449.99 one-time"',"Full NBLU amount missing.");
+requireText(plans,'chatPlusUniversity:Object.freeze',"University compatibility catalog is missing.");
+requireText(plans,'monthlyUsage:"2,500 NBL Usage credits/month"',"University usage allocation missing.");
 requireText(account,'data-account-billing-plan="chat_plus_university"',"Account Plus + University checkout action is missing.");
 requireText(account,'data-account-billing-plan="chat_plus_university" disabled',"University-granting monthly checkout must stay held pending proof.");
 requireText(account,'data-account-billing-plan="foundation" disabled',"Foundation checkout must stay held pending proof.");
