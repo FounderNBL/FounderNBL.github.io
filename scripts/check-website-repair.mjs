@@ -169,7 +169,7 @@ forbidText(books,"<lulu-buy-button","Oversized Lulu product showcase returned to
 for(const value of ['Free to start','10 free successful Beans replies','$4.99 first month','$29.99/month','$39.99/month','$7 one-time','500 NBL Usage credits','$29.99 one-time','$449.99 one-time','$14.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
-const planFields=["beans.price","beans.replies","chatPlus.price","chatPlus.replies","getMore.price","getMore.replies","foundationProgram.price","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
+const planFields=["beans.price","beans.replies","chatPlus.price","chatPlus.monthlyUsage","getMore.price","getMore.replies","foundationProgram.price","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
 const planContext={window:{},document:{querySelectorAll:()=>planFields}};
 vm.runInNewContext(plans,planContext);
 for(const field of planFields){
@@ -218,7 +218,7 @@ forbidText(support,"and Full Foundation at","Chat support still markets the reti
 requireText(support,"Beans is the AI assistant.","Support does not identify Beans accurately.");
 requireText(terms,"Website purchases use authenticated Stripe checkout when enabled","Terms do not describe authenticated billing.");
 requireText(privacy,"signed-in website checkout is handed off to Stripe","Privacy does not document Stripe checkout handling.");
-requireText(deletion,"Deleting NBL application data does not by itself cancel an active Stripe subscription","Account deletion does not explain active subscription cancellation.");
+requireText(deletion,"Deleting New Beansland account data does not automatically cancel a Stripe or Google Play subscription.","Account deletion does not explain active Stripe/Play subscription cancellation.");
 for(const staleBillingCopy of ["website checkout/payment rails for the Chat plans are not currently available","website checkout/payment rails for these plans are not currently available","The public Chat-plan catalog is not a website checkout"]){
   forbidText(support,staleBillingCopy,"Support still says checkout is unavailable.");
   forbidText(terms,staleBillingCopy,"Terms still say checkout is unavailable.");
