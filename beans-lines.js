@@ -14,34 +14,61 @@
       'Most people turn the light out before they leave.',
       'He’ll still be here when you come back.',
       'The door doesn’t lock behind you.',
-      'You can leave the light on if you want. He doesn’t mind.'
+      'You can leave the light on if you want. He doesn’t mind.',
+      'You found the way out. That’s more than I can say for some people.',
+      'Go ahead. The Founder’s got a whole town waiting outside.',
+      'You leaving already? I just got comfortable.',
+      'Don’t worry. I’m not charging rent for the chair.'
     ],
 
     enterFoundersOffice: [
       'He keeps coming back. That’s usually how it starts.',
       'The chair is still warm.',
-      'Take your time. The room doesn’t rush.'
+      'Take your time. The room doesn’t rush.',
+      'Welcome in. Mind the history; it’s everywhere.',
+      'Look around. Somebody put a lot of work into this room.',
+      'That chair has heard more plans than most boardrooms.',
+      'If you touch something, at least pretend you know what it does.',
+      'The Founder built this place. I just make comments from the sidelines.'
     ],
 
     enterBooks: [
       'You don’t have to buy it to know if it belongs to you.',
       'Some of these were finished before the rooms had names.',
-      'The covers are just the first thing that looks back.'
+      'The covers are just the first thing that looks back.',
+      'Careful. One book turns into six around here.',
+      'The Founder wrote the books. I’m still trying to find shelf space.',
+      'Somebody said they were just browsing. Three chapters later…',
+      'Take a look. The stories don’t bite. Usually.',
+      'You came for one title? That’s how it starts.'
     ],
 
     leaveBooks: [
       'You can always come back for the rest.',
-      'They’ll still be here.'
+      'They’ll still be here.',
+      'Leaving with questions? Good. The books are doing their job.',
+      'You can come back. I’m not counting how many times.',
+      'You looked at the covers. Next time try the pages.'
     ],
 
     stayTooLong: [
       'You can stay. Just don’t pretend you’re not staying.',
-      'The porch light is still on.'
+      'The porch light is still on.',
+      'You still here? Good. I was about to start charging for porch space.',
+      'Take your time. The Founder didn’t build this in a weekend.',
+      'You looking for a secret, or did you forget why you came in?',
+      'I respect a visitor who knows how to wander.',
+      'Still walking. Apparently you are too.'
     ],
 
     general: [
       'The door still works either way.',
-      'Most people only notice the quiet after they leave.'
+      'Most people only notice the quiet after they leave.',
+      'You found another corner of the town. There’s always another one.',
+      'Don’t ask me where every door goes. I’m still learning the place.',
+      'The Founder keeps building. I keep finding new rooms.',
+      'That’s one way to do it. I’ve seen worse.',
+      'I saw that. I’m not saying anything. Yet.'
     ]
   };
 
