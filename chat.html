@@ -1,0 +1,136 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NBL Chat · New Beansland</title>
+<meta name="description" content="NBL Chat is New Beansland people talking to people: DMs, Study Hall, class rooms and official messages.">
+<link rel="stylesheet" href="/nbl-world-header.css?v=20261008-social1">
+<script defer src="/nbl-product-plans.js?v=20261008-usage1"></script>
+<script defer src="/nbl-world-header.js?v=20261008-social1"></script>
+<style>
+:root{--panel:#071421;--panel2:#0b1d2d;--gold:#d6a14b;--gold2:#f0c56f;--cream:#f4ead8;--soft:#cfc3ad;--line:rgba(214,161,75,.32);--good:#bce5c8}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#153047,#07131f 42%,#02060b);color:var(--cream);font:15px/1.5 Arial,sans-serif}main{width:min(1250px,96%);margin:auto;padding:105px 0 70px}.eyebrow{color:var(--gold2);font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:.72rem}h1,h2,h3{font-family:Georgia,serif}h1{font-size:clamp(2.2rem,6vw,4.5rem);margin:.1em 0}.lead,.muted,.status{color:var(--soft)}.shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;margin-top:22px}.panel{border:1px solid var(--line);border-radius:18px;background:rgba(7,20,33,.95);padding:15px}.sidebar{display:grid;grid-template-rows:auto auto minmax(240px,1fr);gap:12px}.identity{padding:12px;border-radius:12px;background:rgba(214,161,75,.06)}.identity strong{color:var(--gold2);font-size:1.05rem}.dm{display:grid;gap:7px}.dmrow{display:grid;grid-template-columns:1fr auto;gap:6px}input,textarea{width:100%;border:1px solid rgba(255,255,255,.15);border-radius:10px;background:#03101a;color:var(--cream);padding:10px;font:inherit}button,.button{border:1px solid var(--gold);border-radius:999px;background:#10283b;color:#fff;font-weight:900;padding:9px 12px;cursor:pointer;text-decoration:none}.primary{background:var(--gold2);color:#07131f}.rooms{display:grid;gap:7px;overflow:auto;max-height:540px}.room{width:100%;text-align:left;border-radius:12px;padding:10px;background:#06131f;border:1px solid rgba(255,255,255,.08);color:var(--cream)}.room.active{border-color:var(--gold2);background:rgba(214,161,75,.08)}.room strong,.room small{display:block}.room small{color:var(--soft);margin-top:3px}.conversation{display:grid;grid-template-rows:auto minmax(350px,1fr) auto auto;min-height:650px}.head{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:10px}.head h2{margin:0}.messages{overflow:auto;padding:12px 2px;max-height:560px}.message{max-width:82%;margin:0 0 10px;padding:10px 12px;border:1px solid rgba(255,255,255,.08);border-radius:13px;background:#06131f}.message.me{margin-left:auto;background:#10283b}.message.official{border-color:var(--gold2)}.message .mh{display:flex;justify-content:space-between;gap:12px}.message strong{color:var(--gold2);font-size:.78rem}.message time{color:#8f8578;font-size:.68rem}.message p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0}.msgactions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.msgactions button{font-size:.68rem;padding:5px 8px}.composer{display:grid;grid-template-columns:1fr auto;gap:8px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}.composer textarea{min-height:70px;resize:vertical}.studybar,.founderbar{display:flex;gap:7px;flex-wrap:wrap;padding:8px 0}.studybar button,.founderbar button{font-size:.72rem}.helper{margin-top:14px}.helper-list{display:grid;gap:7px}.helper-row{display:flex;justify-content:space-between;gap:10px;padding:9px;border:1px solid rgba(255,255,255,.08);border-radius:10px}.helper-row span{color:var(--soft)}.signin{display:none}.signin.show{display:block}.lock{color:var(--gold2);font-weight:900}
+@media(max-width:850px){.shell{grid-template-columns:1fr}.conversation{min-height:560px}.rooms{max-height:270px}.message{max-width:95%}}
+</style></head><body><main>
+<section><p class="eyebrow">New Beansland · People talking to people</p><h1>NBL Chat</h1><p class="lead">This is human Chat. Beans is the AI assistant. Search an NBL handle, send a direct message, talk in class rooms, use Study Hall, or receive official messages from @foundernbl.</p></section>
+<section class="panel signin" data-signin-box><h2>Sign in to NBL Chat</h2><p class="muted">Human messaging belongs to your NBL account.</p><button class="primary" data-signin>Sign in / Create account</button></section>
+<div data-app hidden>
+<div class="shell">
+<aside class="panel sidebar">
+<div class="identity"><strong data-handle>@nblmember</strong><p class="muted" data-role>Member</p><p class="muted" data-helper>Helper Mode locked</p></div>
+<form class="dm" data-dm><label for="handle"><strong>Direct message</strong></label><div class="dmrow"><input id="handle" data-handle-input placeholder="@usernameNBLU" autocomplete="off"><button type="submit">Message</button></div><div data-search-results></div></form>
+<div><div class="studybar"><button data-study="APSK 101">APSK Study Hall</button><button data-study="ANSY 110">ANSY Study Hall</button><button data-study="EBPR 120">EBPR Study Hall</button></div><div class="rooms" data-rooms><p class="muted">Loading conversations…</p></div></div>
+</aside>
+<section class="panel conversation">
+<div class="head"><div><p class="eyebrow" data-thread-type>NBL Chat</p><h2 data-thread-title>Choose a conversation</h2></div><button data-refresh>Refresh</button></div>
+<div class="messages" data-messages><p class="muted">Choose a conversation or start a direct message.</p></div>
+<div class="founderbar" data-founder hidden><input data-broadcast-title placeholder="Official message title"><button data-broadcast-students>Message all students</button><button data-broadcast-all>Message all NBL</button></div>
+<form class="composer" data-composer><textarea data-message placeholder="Write a human message…" maxlength="8000"></textarea><button class="primary" type="submit">Send</button></form>
+<p class="status" data-status>Human messages use 0 NBL Usage.</p>
+</section>
+</div>
+<section class="panel helper"><div class="head"><div><p class="eyebrow">Study Hall</p><h2>Helper Board</h2></div><a class="button" href="https://nblworld.com/university.html">University</a></div><p class="muted">When a student marks a Study Hall answer as the solution, the helper earns points. Helping different students unlocks Helper Mode and NBL Usage rewards.</p><div class="helper-list" data-helper-board><p class="muted">Open to enrolled NBLU students.</p></div></section>
+</div>
+</main>
+<script>
+addEventListener("DOMContentLoaded",async()=>{
+ const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
+ const app=document.querySelector("[data-app]"),signinBox=document.querySelector("[data-signin-box]"),status=document.querySelector("[data-status]");
+ const roomsHost=document.querySelector("[data-rooms]"),msgHost=document.querySelector("[data-messages]");
+ let bridge=null,me=null,threads=[],current=null,messages=[],helpCases=[],timer=null;
+ const wait=async()=>{for(let i=0;i<60;i++){if(window.NBLAccountBridge)return window.NBLAccountBridge;await new Promise(r=>setTimeout(r,100))}throw new Error("NBL account connection did not load.")};
+ try{bridge=await wait()}catch{signinBox.classList.add("show");return}
+ const clerk=await bridge.getClerk().catch(()=>null);
+ if(!clerk?.isSignedIn||!clerk.session){signinBox.classList.add("show");document.querySelector("[data-signin]").onclick=()=>location.href="https://accounts.newbeansland.org/sign-in?redirect_url="+encodeURIComponent(location.href);return}
+ app.hidden=false;
+ const token=async()=>await bridge.getToken();
+ const call=async(action,extra={})=>{
+   const t=await token();const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body:JSON.stringify({action,...extra}),cache:"no-store"});
+   const p=await r.json().catch(()=>({}));if(!r.ok)throw new Error(p?.message||p?.reason||"NBL Chat is temporarily unavailable.");return p;
+ };
+ const at=h=>h?("@"+String(h).replace(/^@/,"")):"@nblmember";
+ const loadMe=async()=>{
+   const p=await call("me");me=p.me||{};
+   document.querySelector("[data-handle]").textContent=at(me.handle);
+   document.querySelector("[data-role]").textContent=me.university?"NBL University student":(me.role==="founder"?"Founder":"NBL member");
+   document.querySelector("[data-helper]").textContent=me.helperMode?("Helper Mode · "+(me.helperLevel||"Unlocked")):"Helper Mode locked";
+   document.querySelector("[data-founder]").hidden=me.role!=="founder";
+   if(me.assessmentHelpLocked)status.innerHTML='<span class="lock">Study Hall help is locked during your official assessment.</span>';
+ };
+ const label=t=>t.thread_type==="direct"?at(t.peer?.handle):(t.title||t.course_code||String(t.thread_type).replaceAll("_"," "));
+ const renderThreads=()=>{
+   roomsHost.replaceChildren();
+   if(!threads.length){const p=document.createElement("p");p.className="muted";p.textContent="No conversations yet.";roomsHost.append(p);return}
+   threads.forEach(t=>{
+     const b=document.createElement("button");b.className="room"+(current?.id===t.id?" active":"");b.type="button";
+     const s=document.createElement("strong");s.textContent=label(t);const sm=document.createElement("small");sm.textContent=String(t.thread_type).replaceAll("_"," ");
+     b.append(s,sm);b.onclick=()=>openThread(t);roomsHost.append(b);
+   });
+ };
+ const loadThreads=async()=>{const p=await call("list_threads");threads=p.threads||[];renderThreads()};
+ const loadHelpCases=async()=>{
+   helpCases=[];if(current?.thread_type!=="study_hall")return;
+   try{const p=await call("list_help_cases",{threadId:current.id});helpCases=p.cases||[]}catch{}
+ };
+ const renderMessages=()=>{
+   msgHost.replaceChildren();
+   if(!messages.length){const p=document.createElement("p");p.className="muted";p.textContent="No messages yet.";msgHost.append(p);return}
+   const openMine=helpCases.find(x=>x.isYours&&x.status==="open");
+   messages.forEach(m=>{
+     const a=document.createElement("article");a.className="message"+(m.sender?.handle===me?.handle?" me":"")+(m.officialRole?" official":"");
+     const h=document.createElement("div");h.className="mh";const who=document.createElement("strong");who.textContent=at(m.sender?.handle||m.officialRole||"nblmember");const time=document.createElement("time");time.textContent=m.createdAt?new Date(m.createdAt).toLocaleString():"";h.append(who,time);
+     const p=document.createElement("p");p.textContent=m.body||"";a.append(h,p);
+     const actions=document.createElement("div");actions.className="msgactions";
+     if(current?.thread_type==="study_hall"&&openMine&&m.id!==openMine.questionMessageId&&m.sender?.handle!==me?.handle&&!m.deleted){
+       const solved=document.createElement("button");solved.textContent="This solved it";solved.onclick=async()=>{try{await call("solve_help",{caseId:openMine.id,messageId:m.id});status.textContent="Solution recorded. Helper points/rewards updated.";await Promise.all([refreshMessages(),loadHelperBoard(),loadMe()])}catch(e){status.textContent=e.message}};actions.append(solved);
+     }
+     if(m.sender?.handle!==me?.handle&&!m.deleted){
+       const report=document.createElement("button");report.textContent="Report";report.onclick=async()=>{const reason=prompt("Reason for reporting this message?");if(!reason)return;try{await call("report",{messageId:m.id,reason});status.textContent="Message reported."}catch(e){status.textContent=e.message}};actions.append(report);
+     }
+     if(actions.childElementCount)a.append(actions);msgHost.append(a);
+   });msgHost.scrollTop=msgHost.scrollHeight;
+ };
+ const refreshMessages=async()=>{
+   if(!current)return;const p=await call("list_messages",{threadId:current.id,limit:100});messages=p.messages||[];await loadHelpCases();renderMessages();
+ };
+ const openThread=async(t)=>{
+   current=t;renderThreads();document.querySelector("[data-thread-title]").textContent=label(t);document.querySelector("[data-thread-type]").textContent=String(t.thread_type).replaceAll("_"," ");
+   status.textContent=t.thread_type==="study_hall"?"Study Hall is peer help. Ask Grey only when the room cannot solve it.":"Human messages use 0 NBL Usage.";
+   await refreshMessages();if(timer)clearInterval(timer);timer=setInterval(()=>refreshMessages().catch(()=>{}),8000);
+ };
+ document.querySelector("[data-dm]").onsubmit=async e=>{
+   e.preventDefault();const input=document.querySelector("[data-handle-input]"),handle=input.value.trim();if(!handle)return;
+   try{const p=await call("direct",{handle});input.value="";await loadThreads();const t=threads.find(x=>x.id===p.threadId);if(t)await openThread(t)}catch(err){status.textContent=err.message}
+ };
+ document.querySelector("[data-handle-input]").oninput=async e=>{
+   const host=document.querySelector("[data-search-results]"),q=e.target.value.trim();host.replaceChildren();if(q.replace(/^@/,"").length<2)return;
+   try{const p=await call("find_users",{q});(p.users||[]).slice(0,5).forEach(u=>{const b=document.createElement("button");b.type="button";b.textContent=at(u.handle)+(u.verified?" ✓":"");b.onclick=()=>{e.target.value=at(u.handle);host.replaceChildren()};host.append(b)})}catch{}
+ };
+ document.querySelectorAll("[data-study]").forEach(b=>b.onclick=async()=>{
+   try{const p=await call("room",{type:"study_hall",courseCode:b.dataset.study,title:b.dataset.study+" Study Hall"});await loadThreads();const t=threads.find(x=>x.id===p.threadId);if(t)await openThread(t)}catch(e){status.textContent=e.message}
+ });
+ document.querySelector("[data-composer]").onsubmit=async e=>{
+   e.preventDefault();if(!current){status.textContent="Choose a conversation first.";return}
+   const input=document.querySelector("[data-message]"),text=input.value.trim();if(!text)return;
+   try{
+     if(current.thread_type==="study_hall"){const p=await call("ask_help",{threadId:current.id,question:text});status.textContent="Study Hall question opened. Classmates can solve it; Grey is available if the room cannot."}
+     else await call("send",{threadId:current.id,message:text});
+     input.value="";await refreshMessages();await loadThreads();
+   }catch(err){status.textContent=err.message}
+ };
+ document.querySelector("[data-refresh]").onclick=()=>Promise.all([loadThreads(),refreshMessages(),loadHelperBoard()]).catch(e=>status.textContent=e.message);
+ const loadHelperBoard=async()=>{
+   const host=document.querySelector("[data-helper-board]");
+   try{const p=await call("helper_board",{limit:15});const rows=p?.board?.helpers||[];host.replaceChildren();if(!rows.length){host.innerHTML='<p class="muted">No verified Study Hall solutions yet.</p>';return}
+     rows.forEach(x=>{const d=document.createElement("div");d.className="helper-row";const a=document.createElement("strong");a.textContent="#"+x.rank+" @"+x.username+(x.helperMode?" · "+(x.helperLevel||"Helper Mode"):"");const s=document.createElement("span");s.textContent=x.uniqueStudentsHelped+" students helped · "+x.helperPoints+" pts";d.append(a,s);host.append(d)})
+   }catch{host.innerHTML='<p class="muted">Helper Board is available to NBLU students.</p>'}
+ };
+ const broadcast=async scope=>{
+   const title=document.querySelector("[data-broadcast-title]").value.trim()||"Official NBL Message";
+   const message=prompt(scope==="students"?"Message all NBLU students:":"Message all NBL members:");if(!message)return;
+   try{const p=await call("broadcast",{scope,title,message});status.textContent="Official @foundernbl message sent to "+String(p.recipients||0)+" recipient(s).";await loadThreads()}catch(e){status.textContent=e.message}
+ };
+ document.querySelector("[data-broadcast-students]").onclick=()=>broadcast("students");
+ document.querySelector("[data-broadcast-all]").onclick=()=>broadcast("all_nbl");
+ await loadMe();await Promise.all([loadThreads(),loadHelperBoard()]);
+ if(threads[0])await openThread(threads[0]);
+});
+</script></body></html>
