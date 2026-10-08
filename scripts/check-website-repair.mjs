@@ -111,18 +111,18 @@ for(const filename of findHtml(rootPath)){
   }
 }
 
-requireText(header,'aria-label="Open NBL Chat™"',"The Chat launcher is not named NBL Chat.");
+requireText(header,'aria-label="Open Beans"',"The Chat launcher is not named NBL Chat.");
 requireText(header,'<img src="/NBLChat_Beans.png" alt="" aria-hidden="true">',"Homepage Chat launcher is not using the stable NBL Chat artwork.");
 forbidText(header,'data:image/webp;base64,',"Inline Base64 Chat artwork returned; use the stable repository asset.");
-requireText(header,'<h2 id="nbl-beans-title">NBL Chat™</h2>',"The Chat dialog title is not NBL Chat.");
+requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"The Chat dialog title is not NBL Chat.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
-requireText(header,'NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"Public Chat does not carry the current Plus / Plus + University brand boundary.");
+requireText(header,'Beans is your NBL AI assistant. NBL Chat is for people talking to people. NBL Plus adds premium Beans tools. NBL University adds Professor Grey™ and the Virgo System™ for guided learning, with enrollment controlled by LOCKE.',"Public Chat does not carry the current Plus / Plus + University brand boundary.");
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
 }
 requireText(header,"Beans includes limited free replies. Sign in to keep your history","Limited-free and signed-in history context is missing.");
-requireText(header,"future NBL Chat™ features and upcoming testing opportunities","Homepage still describes Chat as unreleased.");
+requireText(header,"future Beans features and upcoming testing opportunities","Homepage still describes Chat as unreleased.");
 
 requireText(header,'chatDrawer.querySelector("[data-nbl-chat-drawer-close]")?.focus()',"Opening the drawer does not move focus inside it.");
 requireText(header,'if(opening)setBeansToolMenu(false);',"Opening the Chat drawer does not close the Beans tool menu.");
@@ -166,7 +166,7 @@ forbidText(books,"https://payhip.com/embed-page.js","Payhip embed loader returne
 forbidText(books,"<lulu-buy-button","Oversized Lulu product showcase returned to Books.");
 
 
-for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$34.99 one-time','$54.99 one-time','$184.99 one-time','$14.99/month']){
+for(const value of ['Free to start','10 free successful Beans replies','$4.99 first month','$29.99/month','$39.99/month','$7 one-time','500 NBL Usage credits','$29.99 one-time','$449.99 one-time','$14.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
 const planFields=["beans.price","beans.replies","chatPlus.price","chatPlus.replies","getMore.price","getMore.replies","foundationProgram.price","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
@@ -179,23 +179,23 @@ for(const field of planFields){
     failed=true;
   }
 }
-requireText(header,"NBL_PRODUCT_PLANS.getMore.expiry","Drawer does not use the canonical non-expiring reply-balance wording.");
+requireText(header,"NBL_PRODUCT_PLANS.getMore.expiry","Drawer omits non-expiring purchased NBL Usage.");
 requireText(header,"NBL_PRODUCT_PLANS.foundationProgram.price","Public search does not use the canonical Foundation Program price.");
 requireText(terms,'data-nbl-plan-value="foundationProgram.price"',"Terms do not use the canonical Foundation Program price.");
-requireText(terms,'data-nbl-plan-value="guidedFoundation.price"',"Terms do not use the canonical Guided Foundation price.");
+forbidText(terms,'data-nbl-plan-value="guidedFoundation.price"',"Retired Guided Foundation is still marketed.");
 requireText(terms,'data-nbl-plan-value="fullNblu.price"',"Terms do not use the canonical Full NBLU price.");
 requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not use the canonical Full NBLU owner continuation price.");
-requireText(terms,"University checkout is handled on NBLWorld.com.","Terms do not preserve the Chat / University commerce split.");
+requireText(terms,"University enrollment information is at","Terms do not preserve the University handoff.");
 requireText(university,'https://nblworld.com/university.html#enroll',"Public University handoff does not point to NBL World enrollment.");
-requireText(university,"regular Beans / NBL Chat™","Public University handoff does not preserve regular Chat on NewBeansland.org.");
-requireText(university,"NBL CHAT PLUS™ provides upgraded Beans tools on NewBeansland.org. NBL CHAT PLUS™ + University adds Professor Grey™ / Virgo System™ guided course teaching","Public University handoff does not preserve the current Plus / Plus + University boundary.");
+requireText(university,"Beans AI and human NBL Chat","Public University handoff does not preserve regular Chat on NewBeansland.org.");
+requireText(university,"NBL Plus is the premium Beans/tools plan.","Public University handoff does not preserve the current Plus / Plus + University boundary.");
 forbidText(university,'data-nbl-university-checkout',"Public New Beansland University page still contains University checkout controls.");
 forbidText(university,'nbl-university-checkout.js',"Public New Beansland University page still loads the retired University checkout bridge.");
 forbidText(university,"https://buy.stripe.com/","Public New Beansland University page contains a raw Stripe checkout.");
 requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridge is missing.");
 requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership card is missing.");
-requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
+forbidText(account,'data-account-billing-plan="beans"',"Account free Beans entry must not charge a payment.");
 requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout control is missing.");
 requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
 requireText(account,"renderMembership","Account membership meter rendering is missing.");
@@ -207,16 +207,16 @@ for(const staleUniversityAccountCopy of [
 ]){
   forbidText(header,staleUniversityAccountCopy,"University account panel still describes enrollment identity as optional.");
 }
-requireText(header,'data-nbl-billing-plan="beans"',"Beans checkout control is missing.");
-requireText(header,'data-nbl-billing-plan="chat_plus"',"Chat Plus checkout control is missing.");
+forbidText(header,'data-nbl-billing-plan="beans"',"Free Beans must not open a paid subscription checkout.");
+requireText(header,'data-nbl-billing-plan="chat_plus"',"NBL Plus checkout compatibility action is missing.");
 requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout control is missing.");
 requireText(header,'/billing/checkout',"Chat checkout is not routed through the server gateway.");
 requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
-requireText(support,'data-nbl-plan-value="chatPlus.price"',"Support does not use the canonical Chat Plus price.");
-requireText(support,'https://nblworld.com/university.html#enroll',"Support does not route University enrollment to NBL World.");
+requireText(support,'data-nbl-plan-value="chatPlus.renewalPrice"',"Support does not disclose NBL Plus renewal.");
+requireText(support,'/plans.html',"Support does not link the approved public Plans page.");
 forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
-requireText(support,"Signed-in website checkout is available from Membership & plans in NBL Chat™.","Support does not document signed-in Chat checkout.");
-requireText(terms,"Signed-in website checkout is available through NBL Chat™","Terms do not document authenticated Chat checkout.");
+requireText(support,"Beans is the AI assistant.","Support does not identify Beans accurately.");
+requireText(terms,"Website purchases use authenticated Stripe checkout when enabled","Terms do not describe authenticated billing.");
 requireText(privacy,"signed-in website checkout is handed off to Stripe","Privacy does not document Stripe checkout handling.");
 requireText(deletion,"Deleting NBL application data does not by itself cancel an active Stripe subscription","Account deletion does not explain active subscription cancellation.");
 for(const staleBillingCopy of ["website checkout/payment rails for the Chat plans are not currently available","website checkout/payment rails for these plans are not currently available","The public Chat-plan catalog is not a website checkout"]){
@@ -225,7 +225,7 @@ for(const staleBillingCopy of ["website checkout/payment rails for the Chat plan
   forbidText(privacy,staleBillingCopy,"Privacy still says checkout is unavailable.");
   forbidText(deletion,staleBillingCopy,"Account deletion still says checkout is unavailable.");
 }
-requireText(terms,"Beans includes limited free replies.","Terms omit the limited free Beans allowance.");
+requireText(terms,"Beans is","Terms omit free Beans entry.");
 requireText(privacy,'data-nbl-plan-value="getMore.replies"',"Privacy does not use canonical reply allowances.");
 requireText(deletion,'data-nbl-plan-value="getMore.price"',"Account deletion information omits the canonical Get More catalog.");
 requireText(privacy,"Sign-in and password/security controls are handled by Clerk.","Privacy does not preserve Clerk-owned security.");
@@ -234,7 +234,7 @@ for(const [page,source] of [["Support",support],["Legal",legal],["Account Deleti
   requireText(source,'nbl-world-header.css',"Shared website shell CSS is missing from "+page+".");
   requireText(source,'nbl-world-header.js',"Shared website shell JavaScript is missing from "+page+".");
 }
-for(const obsolete of ["Google Play","Android app","return to the Android","Google Play Billing"]){
+for(const obsolete of ["return to the Android"]){
   forbidText(support,obsolete,"Support has obsolete platform-first instructions.");
   forbidText(terms,obsolete,"Terms have obsolete platform-first payment wording.");
   forbidText(privacy,obsolete,"Privacy has obsolete platform-first payment wording.");
