@@ -83,7 +83,7 @@ requireText(plans,'monthlyUsage:"2,500 NBL Usage credits/month"',"University usa
 requireText(account,'data-account-billing-plan="chat_plus_university"',"Account Plus + University checkout action is missing.");
 requireText(account,'data-account-billing-plan="chat_plus_university" disabled',"University-granting monthly checkout must stay held pending proof.");
 requireText(account,'data-account-billing-plan="foundation" disabled',"Foundation checkout must stay held pending proof.");
-requireText(account,'data-account-billing-plan="full_foundation" disabled',"Guided Foundation checkout must stay held pending proof.");
+forbidText(account,'data-account-billing-plan="full_foundation"',"Retired Guided Foundation must not be sellable.");
 requireText(account,'data-account-billing-plan="full_nblu" disabled',"Full NBLU checkout must stay held pending proof.");
 requireText(account,'data-account-billing-plan="nblu_continuation" disabled',"Owner continuation must stay held pending proof.");
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
