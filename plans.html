@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plans & Pricing · New Beansland</title>
+<meta name="description" content="New Beansland plans and NBL Usage.">
+<link rel="stylesheet" href="/nbl-world-header.css?v=20261008-usage1">
+<script defer src="/nbl-product-plans.js?v=20261008-usage1"></script>
+<script defer src="/nbl-world-header.js?v=20261008-usage1"></script>
+<style>
+:root{--bg:#02060b;--panel:#071421;--gold:#d6a14b;--gold2:#f0c56f;--cream:#f4ead8;--soft:#cfc3ad;--line:rgba(214,161,75,.32)}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#153047,#07131f 42%,#02060b);color:var(--cream);font:16px/1.55 Arial,sans-serif}main{width:min(1180px,94%);margin:auto;padding:112px 0 72px}.hero{text-align:center;max-width:860px;margin:auto auto 28px}.eyebrow{color:var(--gold2);font-weight:900;letter-spacing:.14em;text-transform:uppercase;font-size:.76rem}h1,h2{font-family:Georgia,serif}h1{font-size:clamp(2.4rem,7vw,5rem);line-height:1;margin:.2em 0}.lead,.sub,.note{color:var(--soft)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.card{display:flex;flex-direction:column;min-height:410px;padding:24px;border:1px solid var(--line);border-radius:20px;background:rgba(7,20,33,.94)}.card.featured{border-color:var(--gold2)}.card h2{color:var(--gold2);font-size:1.65rem}.price{font-size:1.55rem;font-weight:900}.features{padding-left:20px}.features li{margin:.55rem 0}.actions{margin-top:auto;display:grid;gap:8px}button,.button{display:flex;justify-content:center;align-items:center;min-height:46px;border:1px solid var(--gold);border-radius:999px;padding:10px 14px;background:#10283b;color:#fff;text-decoration:none;font-weight:900;cursor:pointer}.primary{background:var(--gold2);color:#07131f}.more{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:16px}.status{text-align:center;color:var(--soft);margin-top:20px}@media(max-width:900px){.grid,.more{grid-template-columns:1fr}}
+</style></head><body><main>
+<section class="hero"><p class="eyebrow">New Beansland · Plans</p><h1>Pick the door you need.</h1><p class="lead">Beans is the AI assistant. NBL Chat is people talking to people. NBL Plus adds premium Beans tools. NBL University adds Professor Grey™, Virgo, courses and academic records. NBL Usage powers AI-heavy features.</p></section>
+<section class="grid">
+<article class="card"><p class="eyebrow">Start</p><h2>Beans</h2><p class="price">Free to start</p><p class="sub">10 successful Beans replies.</p><ul class="features"><li>Everyday AI help</li><li>NBL knowledge</li><li>Signed-in history</li><li>Human NBL Chat is separate</li></ul><div class="actions"><button class="primary" data-open-beans>Ask Beans</button><a class="button" href="/chat.html">Open NBL Chat</a></div></article>
+<article class="card featured"><p class="eyebrow">Membership</p><h2>NBL Plus</h2><p class="price">$4.99 first month</p><p class="sub">Then $29.99/month until canceled. 350 NBL Usage credits in the intro month; 1,800 each regular paid month.</p><ul class="features"><li>Premium Beans tools</li><li>Files, web, voice and images</li><li>Code/data and downloadable files</li><li>1,800 monthly NBL Usage credits after intro</li></ul><div class="actions"><button class="primary" data-plan="nbl_plus">Start NBL Plus</button><a class="button" href="/usage.html">See NBL Usage</a></div></article>
+<article class="card"><p class="eyebrow">University</p><h2>NBL University</h2><p class="price">$39.99/month</p><p class="sub">Includes NBL Plus and 2,500 NBL Usage credits/month.</p><ul class="features"><li>Professor Grey™ + Virgo</li><li>Courses, checkpoints and progress</li><li>Study Hall and peer help</li><li>Grades, records, assessments and certificates</li><li>Required academic processing included</li></ul><div class="actions"><button class="primary" data-plan="university">Join NBL University</button><a class="button" href="https://nblworld.com/university.html">Visit campus</a></div></article>
+</section>
+<section class="more">
+<article class="card"><h2>Foundation Program</h2><p class="price">$29.99 one time</p><p class="sub">Self-directed Foundation path.</p><div class="actions"><button class="primary" data-plan="foundation">Choose Foundation</button></div></article>
+<article class="card"><h2>Full NBLU Experience</h2><p class="price">$449.99 one time</p><p class="sub">Six months of NBL University, staged physical course books and workbooks, free digital editions, and 4,300 Bonus NBL Usage credits (about $60 of NBL Usage value).</p><div class="actions"><button class="primary" data-plan="full_nblu">Choose Full NBLU</button></div></article>
+<article class="card"><h2>NBL Usage</h2><p class="price">$7 one time</p><p class="sub">500 NBL Usage credits. Purchased credits do not expire. Human NBL Chat uses 0 NBL Usage.</p><div class="actions"><button class="primary" data-plan="nbl_usage">Add 500 NBL Usage</button><a class="button" href="/usage.html">My Usage</a></div></article>
+<article class="card"><h2>NBL Student Access Fund</h2><p class="price">Optional $1+</p><p class="sub">Helps NBL cover student access, materials and NBL Usage for students with fewer resources. It does not add personal usage to the supporter’s account.</p><div class="actions"><button class="primary" data-plan="student_access_fund">Support a student</button></div></article>
+</section>
+<p class="status" data-status>Sign in with your NBL account before checkout. Stripe handles payment.</p>
+</main>
+<script>
+addEventListener("DOMContentLoaded",()=>{
+ const status=document.querySelector("[data-status]");
+ document.querySelector("[data-open-beans]")?.addEventListener("click",()=>document.querySelector(".nbl-world-beans-toggle")?.click());
+ document.querySelectorAll("[data-plan]").forEach(b=>b.addEventListener("click",async()=>{
+   b.disabled=true;status.textContent="Preparing secure checkout…";
+   try{
+     const r=await window.NBLBillingBridge.checkout(b.dataset.plan);
+     if(r?.signInRequired){location.href=r.signInUrl;return;}
+     if(r?.destination){location.href=r.destination;return;}
+     status.textContent=r?.payload?.message||"Checkout is not open yet.";
+   }catch(e){status.textContent=e?.message||"Secure checkout is temporarily unavailable."}
+   finally{b.disabled=false}
+ }));
+});
+</script></body></html>
