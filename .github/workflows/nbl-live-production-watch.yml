@@ -223,8 +223,10 @@ jobs:
             {
               echo "## BrowserStack real-device inspection"
               echo
-              echo "SKIP — add BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY as GitHub Actions secrets to enable this gate."
+              echo "HOLD — BROWSERSTACK_USERNAME or BROWSERSTACK_ACCESS_KEY is unavailable. No real-device test ran, so this release gate cannot claim PASS."
             } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::BrowserStack real-device evidence missing (credentials unavailable). Never report a skipped device suite as PASS."
+            exit 1
           fi
 
       - name: Check out repository
