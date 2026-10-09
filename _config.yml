@@ -1,0 +1,3 @@
+# Keep GitHub Pages' existing Jekyll processing, while publishing standards-based /.well-known files.
+include:
+  - ".well-known"
