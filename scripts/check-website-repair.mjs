@@ -122,7 +122,7 @@ for(const stale of ["Talk to Beans","Beans is free to use. No account required."
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
 }
 requireText(header,"Beans includes limited free replies. Sign in to keep your history","Limited-free and signed-in history context is missing.");
-requireText(header,"future NBL Chat™ features and upcoming testing opportunities","Homepage still describes Chat as unreleased.");
+requireText(header,"future Beans features and upcoming testing opportunities","Homepage still describes Chat as unreleased.");
 
 requireText(header,'chatDrawer.querySelector("[data-nbl-chat-drawer-close]")?.focus()',"Opening the drawer does not move focus inside it.");
 requireText(header,'if(opening)setBeansToolMenu(false);',"Opening the Chat drawer does not close the Beans tool menu.");
@@ -187,7 +187,8 @@ requireText(terms,'data-nbl-plan-value="fullNblu.price"',"Terms do not use the c
 requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not use the canonical Full NBLU owner continuation price.");
 requireText(terms,"University checkout is handled on NBLWorld.com.","Terms do not preserve the Chat / University commerce split.");
 requireText(university,'https://nblworld.com/university.html#enroll',"Public University handoff does not point to NBL World enrollment.");
-requireText(university,"regular Beans / NBL Chat™","Public University handoff does not preserve regular Chat on NewBeansland.org.");
+requireText(university,"Beans, the AI assistant","Public University handoff must identify Beans as the AI assistant.");
+requireText(university,"NBL Chat is for human messages on NBL World.","Public University handoff must separate human NBL Chat from Beans.");
 requireText(university,"NBL CHAT PLUS™ provides upgraded Beans tools on NewBeansland.org. NBL CHAT PLUS™ + University adds Professor Grey™ / Virgo System™ guided course teaching","Public University handoff does not preserve the current Plus / Plus + University boundary.");
 forbidText(university,'data-nbl-university-checkout',"Public New Beansland University page still contains University checkout controls.");
 forbidText(university,'nbl-university-checkout.js',"Public New Beansland University page still loads the retired University checkout bridge.");
