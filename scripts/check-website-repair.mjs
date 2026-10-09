@@ -166,7 +166,7 @@ forbidText(books,"https://payhip.com/embed-page.js","Payhip embed loader returne
 forbidText(books,"<lulu-buy-button","Oversized Lulu product showcase returned to Books.");
 
 
-for(const value of ['$4.99/month','300 successful replies','$19.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$34.99 one-time','$54.99 one-time','$184.99 one-time','$14.99/month']){
+for(const value of ['$4.99/month','300 successful replies','$39.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$54.99 one-time','$449.99 one-time','$14.99/month','$29.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
 const planFields=["beans.price","beans.replies","chatPlus.price","chatPlus.replies","getMore.price","getMore.replies","foundationProgram.price","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
@@ -197,6 +197,7 @@ requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridg
 requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership card is missing.");
 requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
+requireText(account,'data-account-billing-plan="chat_plus" disabled',"Unverified $29.99 Plus checkout must remain held.");
 requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout control is missing.");
 requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
 requireText(account,"renderMembership","Account membership meter rendering is missing.");
