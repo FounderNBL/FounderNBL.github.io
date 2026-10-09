@@ -2416,7 +2416,7 @@
         <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans from NBL Chat™">
         <p class="nbl-beta-kicker">NBL Chat™ · What’s next</p>
         <h2 id="nbl-beta-title">Get updates on what Beans is building next.</h2>
-        <p>Join the NBL email list for updates about future NBL Chat™ features and upcoming testing opportunities.</p>
+        <p>Join the NBL email list for updates about future Beans features and upcoming testing opportunities.</p>
         <form class="nbl-beta-form">
           <label for="nbl-beta-email">Email address</label>
           <div class="nbl-beta-row">
