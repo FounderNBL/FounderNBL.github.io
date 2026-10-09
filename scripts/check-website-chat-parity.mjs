@@ -76,7 +76,7 @@ requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans 
 requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More',"Website-standard plan labels do not use the canonical catalog.");
 requireText(plans,'beans:Object.freeze({name:"Beans"',"Beans base-tier display name must be Beans, not human NBL Chat.");
 requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
-requireText(plans,'price:"$14.99/month"',"Canonical Chat Plus price is missing.");
+requireText(plans,'price:"$29.99/month"',"Final approved Chat Plus price is missing.");
 requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + University tier is missing.");
 requireText(account,'data-account-billing-plan="chat_plus_university"',"Account Plus + University checkout action is missing.");
 requireText(account,'data-account-billing-plan="chat_plus_university" disabled',"University-granting monthly checkout must stay held pending proof.");
