@@ -1,0 +1,43 @@
+{
+  "name": "New Beansland",
+  "canonical_url": "https://newbeansland.org/",
+  "description": "An independent creative world featuring books, television and film, music, the Founder's Office, AI-assisted experiences, and New Beansland University.",
+  "language": "en",
+  "publisher": {
+    "name": "New Beansland",
+    "site": "https://newbeansland.org/"
+  },
+  "public_pages": [
+    {
+      "name": "Home",
+      "url": "https://newbeansland.org/"
+    },
+    {
+      "name": "Books",
+      "url": "https://newbeansland.org/books.html"
+    },
+    {
+      "name": "Stories and Film",
+      "url": "https://newbeansland.org/stories.html"
+    },
+    {
+      "name": "New Beansland University entry",
+      "url": "https://newbeansland.org/university.html"
+    },
+    {
+      "name": "Timmy V Studios",
+      "url": "https://newbeansland.org/studio/"
+    },
+    {
+      "name": "Founder's Office",
+      "url": "https://newbeansland.org/founder-office.html"
+    },
+    {
+      "name": "About New Beansland",
+      "url": "https://newbeansland.org/about.html"
+    }
+  ],
+  "public_website_scope": "This document describes public website pages. It does not expose protected course content or internal endpoints.",
+  "agent_commerce": "No public ACP, AP2, UCP, or x402 integration is advertised. Purchases and enrollment follow the existing customer-facing site flows.",
+  "note": "Public navigation guide only; no third-party agent payment or authenticated API access is offered by this document."
+}
