@@ -43,13 +43,22 @@ jobs:
           user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36"
 
           for url in "${urls[@]}"; do
-            code="$(curl --silent --show-error --location --max-time 20 --user-agent "$user_agent" --output /dev/null --write-out "%{http_code}" "$url")"
+            headers="$RUNNER_TEMP/nbl-inspector-response-headers.txt"
+            : > "$headers"
+            code="$(curl --silent --show-error --location --max-time 20 --user-agent "$user_agent" --dump-header "$headers" --output /dev/null --write-out "%{http_code}" "$url")"
             curl_status=$?
             if [ "$curl_status" -ne 0 ]; then
               code="000"
             fi
 
             printf "%s %s\n" "$code" "$url" | tee -a health-route-results.txt
+            if [ "$code" = "403" ]; then
+              # Record only safe Cloudflare diagnostic headers, never cookies/tokens.
+              ray="$(awk 'BEGIN{IGNORECASE=1} tolower($1)=="cf-ray:"{gsub("\\r","",$2);val=$2} END{print val}' "$headers")"
+              mitigated="$(awk 'BEGIN{IGNORECASE=1} tolower($1)=="cf-mitigated:"{gsub("\\r","",$2);val=$2} END{print val}' "$headers")"
+              printf "INSPECTOR_NETWORK_DENIAL url=%s http=403 cf_ray=%s cf_mitigated=%s\n" "$url" "${ray:-unknown}" "${mitigated:-unknown}" | tee -a health-route-results.txt
+              echo "::warning::HTTP 403 from GitHub Actions runner for $url. This is not independent proof of public outage. Investigate Cloudflare WAF/bot evidence by Ray ID."
+            fi
 
             case "$code" in
               2*|3*) ;;
@@ -193,7 +202,10 @@ jobs:
   browserstack-real-device-inspection:
     name: Health Inspector · BrowserStack real device
     needs: deep-browser-inspection
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
+    # The real-device gate is independent evidence, not permission granted by a
+    # GitHub-hosted runner: Cloudflare may challenge one while serving another.
+    # Never let a runner-specific 403 silently SKIP the real-device test.
+    if: ${{ !cancelled() && (github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
