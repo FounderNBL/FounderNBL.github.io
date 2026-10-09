@@ -111,10 +111,10 @@ for(const filename of findHtml(rootPath)){
   }
 }
 
-requireText(header,'aria-label="Open NBL Chat™"',"The Chat launcher is not named NBL Chat.");
+requireText(header,'aria-label="Open Beans"',"The AI launcher must be named Beans.");
 requireText(header,'<img src="/NBLChat_Beans.png" alt="" aria-hidden="true">',"Homepage Chat launcher is not using the stable NBL Chat artwork.");
 forbidText(header,'data:image/webp;base64,',"Inline Base64 Chat artwork returned; use the stable repository asset.");
-requireText(header,'<h2 id="nbl-beans-title">NBL Chat™</h2>',"The Chat dialog title is not NBL Chat.");
+requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"The AI dialog title must be Beans.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
 requireText(header,'NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"Public Chat does not carry the current Plus / Plus + University brand boundary.");
