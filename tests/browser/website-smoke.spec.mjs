@@ -49,8 +49,8 @@ test.describe("New Beansland web app browser smoke", () => {
       await page.getByRole("button", { name: /Open Beans menu/i }).click();
       await page.getByRole("button", { name: /Membership & plans/i }).click();
       await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
-      await expect(page.getByRole("button", { name: "Choose NBL CHAT PLUS™" })).toBeVisible();
-      await expect(page.getByRole("button", { name: /Choose Plus \+ University/i })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Plus checkout pending" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: /Plus \+ University checkout pending/i })).toBeDisabled();
       await expect(page.getByRole("button", { name: /Get \+500 replies/i })).toBeVisible();
     }
   });
