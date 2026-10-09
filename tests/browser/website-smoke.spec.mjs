@@ -99,6 +99,28 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator("[data-campus-gate]")).toBeVisible();
   });
 
+  test("live registered production routes return successful HTTP statuses", async ({ page }) => {
+    test.skip(!process.env.NBL_BASE_URL, "Live route check only runs against deployed production.");
+
+    const routes = [
+      "/",
+      "/books.html",
+      "/stories.html",
+      "/founder-office.html",
+      "/studio/",
+      "/account.html",
+      "/university.html",
+      "https://nblworld.com/",
+      "https://nblworld.com/university.html"
+    ];
+
+    for (const route of routes) {
+      const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+      expect(response, `Expected an HTTP response for ${route}`).not.toBeNull();
+      expect(response.status(), `Expected ${route} to be reachable`).toBeLessThan(400);
+    }
+  });
+
   test("account recovery uses the Clerk portal with a safe return URL", async ({ page }) => {
     await open("/account.html?source=smoke#account", page);
 
