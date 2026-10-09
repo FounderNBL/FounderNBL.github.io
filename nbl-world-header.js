@@ -414,9 +414,9 @@
         </span>
       </a>
       <div class="nbl-world-home-actions">
-        <button class="nbl-world-beans-toggle nbl-world-chat-launch" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open NBL Chat™">
+        <button class="nbl-world-beans-toggle nbl-world-chat-launch" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open Beans">
           <img src="/NBLChat_Beans.png" alt="" aria-hidden="true">
-          <span>NBL Chat™</span>
+          <span>Beans</span>
         </button>
         <a class="nbl-world-nblworld-link" href="https://nblworld.com/" aria-label="Enter NBL World">NBL World</a>
       </div>
@@ -429,7 +429,7 @@
           <small>${room.label}</small>
         </span>
       </a>
-      <button class="nbl-world-beans-toggle" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open NBL Chat™">NBL Chat™</button>
+      <button class="nbl-world-beans-toggle" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open Beans">Beans</button>
       <button class="nbl-world-account nbl-world-account-primary" type="button">Sign in</button>
       <div class="nbl-world-user" hidden aria-label="NBL account"></div>
       <button class="nbl-world-menu" type="button" aria-expanded="false" aria-controls="nbl-world-nav" aria-label="Open New Beansland worlds">Worlds</button>
@@ -472,34 +472,34 @@
   beansPanel.className="nbl-beans-panel";
   beansPanel.id="nbl-beans-panel";
   beansPanel.hidden=true;
-  beansPanel.setAttribute("aria-label","NBL Chat™");
+  beansPanel.setAttribute("aria-label","Beans AI assistant");
   beansPanel.innerHTML=`
     <div class="nbl-beans-card" role="dialog" aria-modal="true" aria-labelledby="nbl-beans-title">
       <div class="nbl-beans-head">
-        <button class="nbl-chat-drawer-toggle" type="button" data-nbl-chat-drawer-toggle aria-expanded="false" aria-controls="nbl-chat-drawer" aria-label="Open NBL Chat™ menu">
+        <button class="nbl-chat-drawer-toggle" type="button" data-nbl-chat-drawer-toggle aria-expanded="false" aria-controls="nbl-chat-drawer" aria-label="Open Beans menu">
           <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
         </button>
         <div class="nbl-beans-title-wrap">
           <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-beans-avatar">
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
-            <h2 id="nbl-beans-title">NBL Chat™</h2>
-            <p class="nbl-beans-note">Beans is NBL Chat™. NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI. Protected course teaching remains controlled by LOCKE and the account’s University entitlement.</p>
+            <h2 id="nbl-beans-title">Beans</h2>
+            <p class="nbl-beans-note">Beans is the New Beansland AI assistant. NBL Chat is where people message people in NBL World. NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI. Protected course teaching remains controlled by LOCKE and the account’s University entitlement. <a href="https://nblworld.com/chat.html">Open NBL Chat for human messages</a>.</p>
           </div>
         </div>
-        <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close NBL Chat™">✕</button>
+        <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close Beans">✕</button>
       </div>
 
       <div class="nbl-chat-drawer-shade" data-nbl-chat-drawer-shade hidden></div>
-      <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="NBL Chat™ menu" tabindex="-1" hidden>
+      <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="Beans menu" tabindex="-1" hidden>
         <div class="nbl-chat-drawer-head">
           <img src="/NBLChat_Beans.png" alt="Beans" class="nbl-chat-drawer-logo">
           <div>
             <p>New Beansland™</p>
-            <strong>NBL Chat™</strong>
+            <strong>Beans</strong>
             <small>Beans, tools, history, and your NBL account.</small>
           </div>
-          <button type="button" data-nbl-chat-drawer-close aria-label="Close NBL Chat™ menu">✕</button>
+          <button type="button" data-nbl-chat-drawer-close aria-label="Close Beans menu">✕</button>
         </div>
         <div class="nbl-chat-drawer-scroll">
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-new>
@@ -523,14 +523,14 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
             <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
-            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} NBL Chat™ · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More</small></span>
+            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
             <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. ${NBL_PRODUCT_PLANS.chatPlus.brandLine}. No University course teaching.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus">Choose NBL CHAT PLUS™</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.chatPlusUniversity.name} · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlusUniversity.replies}. ${NBL_PRODUCT_PLANS.chatPlusUniversity.brandLine}. Physical books are not included in this monthly tier.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus_university">Choose Plus + University</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>2 physical books + 2 ebooks + one month regular NBL Chat™. Self-directed/offline coursework is supported: complete the work, upload the PDF, and use NBL's grading flow. No University month included.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation">Choose Foundation</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>2 physical books + 2 ebooks + one month regular Beans. Self-directed/offline coursework is supported: complete the work, upload the PDF, and use NBL's grading flow. No University month included.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation">Choose Foundation</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.guidedFoundation.name} · ${NBL_PRODUCT_PLANS.guidedFoundation.price}</strong><span>Foundation physical + digital materials plus one month of the full University guided experience with Professor Grey™ / Virgo System™.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_foundation">Choose Guided Foundation</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.fullNblu.name} · ${NBL_PRODUCT_PLANS.fullNblu.price}</strong><span>Six months of the full University experience plus the staged physical-book and ebook entitlement across the planned program as material is completed and released. Shipping may be charged separately for physical stage packs.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu">Choose Full NBLU</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.nbluContinuation.name} · ${NBL_PRODUCT_PLANS.nbluContinuation.price}</strong><span>Owner-only continuation after the included six-month Full NBLU guided period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nblu_continuation">Continue Full NBLU</button></article>
@@ -563,7 +563,7 @@
         </div>
       </aside>
 
-      <div class="nbl-chat-modes" role="tablist" aria-label="NBL Chat™ mode">
+      <div class="nbl-chat-modes" role="tablist" aria-label="Beans mode">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
         <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden>University</button>
       </div>
@@ -604,7 +604,7 @@
           </div>
         </form>
         <p class="nbl-beans-note" style="margin-top:10px">
-          Signed-in chats may be stored with your NBL account and processed by service providers to provide NBL Chat™. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
+          Signed-in chats may be stored with your NBL account and processed by service providers to provide Beans. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
         </p>
         <p class="nbl-beans-status" data-nbl-beans-status role="status">Beans includes limited free replies. Sign in to keep your history and use your NBL membership.</p>
       </section>
@@ -2416,7 +2416,7 @@
         <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans from NBL Chat™">
         <p class="nbl-beta-kicker">NBL Chat™ · What’s next</p>
         <h2 id="nbl-beta-title">Get updates on what Beans is building next.</h2>
-        <p>Join the NBL email list for updates about future NBL Chat™ features and upcoming testing opportunities.</p>
+        <p>Join the NBL email list for updates about future Beans features and upcoming testing opportunities.</p>
         <form class="nbl-beta-form">
           <label for="nbl-beta-email">Email address</label>
           <div class="nbl-beta-row">
