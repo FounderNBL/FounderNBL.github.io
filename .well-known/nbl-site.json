@@ -39,5 +39,5 @@
   ],
   "public_website_scope": "This document describes public website pages. It does not expose protected course content or internal endpoints.",
   "agent_commerce": "No public ACP, AP2, UCP, or x402 integration is advertised. Purchases and enrollment follow the existing customer-facing site flows.",
-  "contact_page": "https://newbeansland.org/about.html"
+  "note": "Public navigation guide only; no third-party agent payment or authenticated API access is offered by this document."
 }
