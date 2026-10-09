@@ -30,7 +30,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await launcher.click();
 
     await expect(page.locator("#nbl-beans-panel")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Beans" })).toBeVisible();
+    await expect(page.locator("#nbl-beans-title")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect.poll(async () => page.locator(".nbl-beans-avatar").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
