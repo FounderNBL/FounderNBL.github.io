@@ -40,8 +40,10 @@ jobs:
             "https://nblworld.com/university.html"
           )
 
+          user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36"
+
           for url in "${urls[@]}"; do
-            code="$(curl --silent --show-error --location --max-time 20 --output /dev/null --write-out "%{http_code}" "$url")"
+            code="$(curl --silent --show-error --location --max-time 20 --user-agent "$user_agent" --output /dev/null --write-out "%{http_code}" "$url")"
             curl_status=$?
             if [ "$curl_status" -ne 0 ]; then
               code="000"
@@ -306,4 +308,3 @@ jobs:
             gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "BrowserStack real-device recovery check passed. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
             gh issue close "$existing" --repo "$GITHUB_REPOSITORY"
           fi
-
