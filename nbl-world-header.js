@@ -523,19 +523,14 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
             <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
-            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More</small></span>
+            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.foundationProgram.price} Foundation · ${NBL_PRODUCT_PLANS.fullNblu.price} Full NBLU</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
-            <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. ${NBL_PRODUCT_PLANS.chatPlus.brandLine}. No University course teaching.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus" disabled aria-disabled="true" title="New price checkout verification pending">Plus checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.chatPlusUniversity.name} · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlusUniversity.replies}. ${NBL_PRODUCT_PLANS.chatPlusUniversity.brandLine}. Physical books are not included in this monthly tier.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus_university" disabled aria-disabled="true" title="University checkout verification pending">Plus + University checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period; each verified paid month adds 100 non-expiring NBL Studios bonus credits (release pending).</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>2 physical books + 2 ebooks + one month regular Beans. Self-directed/offline coursework is supported: complete the work, upload the PDF, and use NBL's grading flow. No University month included.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation" disabled aria-disabled="true" title="University checkout verification pending">Foundation checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.guidedFoundation.name} · ${NBL_PRODUCT_PLANS.guidedFoundation.price}</strong><span>Foundation physical + digital materials plus one month of the full University guided experience with Professor Grey™ / Virgo System™.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_foundation">Choose Guided Foundation</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.fullNblu.name} · ${NBL_PRODUCT_PLANS.fullNblu.price}</strong><span>Six months of the full University experience plus the staged physical-book and ebook entitlement across the planned program as material is completed and released. Shipping may be charged separately for physical stage packs.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.nbluContinuation.name} · ${NBL_PRODUCT_PLANS.nbluContinuation.price}</strong><span>Owner-only continuation after the included six-month Full NBLU guided period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nblu_continuation">Continue Full NBLU</button></article>
             <button class="nbl-billing-manage" type="button" data-nbl-billing-portal>Manage billing</button>
-            <p class="nbl-billing-status" data-nbl-billing-status role="status">Sign in with your NBL account before checkout. New-price Plus and University checkout remain held pending verified payment and LOCKE account binding.</p>
+            <p class="nbl-billing-status" data-nbl-billing-status role="status">Sign in before checkout. The $34.99 Foundation and six-month Full NBLU checkouts are held until verified; promotional credits are not live yet.</p>
           </div>
 
           <a class="nbl-chat-drawer-item" href="/university.html">
@@ -2318,13 +2313,8 @@
       if(/\b(price|pricing|prices|cost|costs|plan|plans|membership|how much)\b/i.test(query)&&["results","not_found"].includes(payload?.status)){
         const catalogText=[
           `${NBL_PRODUCT_PLANS.beans.name}: ${NBL_PRODUCT_PLANS.beans.price}, ${NBL_PRODUCT_PLANS.beans.replies}.`,
-          `${NBL_PRODUCT_PLANS.chatPlus.name}: ${NBL_PRODUCT_PLANS.chatPlus.price}, ${NBL_PRODUCT_PLANS.chatPlus.replies}.`,
-          `${NBL_PRODUCT_PLANS.chatPlusUniversity.name}: ${NBL_PRODUCT_PLANS.chatPlusUniversity.price}, ${NBL_PRODUCT_PLANS.chatPlusUniversity.replies}; guided course teaching, ebook coupon redemption.`,
-          `${NBL_PRODUCT_PLANS.getMore.name}: ${NBL_PRODUCT_PLANS.getMore.price}, ${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}`,
           `${NBL_PRODUCT_PLANS.foundationProgram.name}: ${NBL_PRODUCT_PLANS.foundationProgram.price}.`,
-          `${NBL_PRODUCT_PLANS.fullFoundation.name}: ${NBL_PRODUCT_PLANS.fullFoundation.price}.`,
           `${NBL_PRODUCT_PLANS.fullNblu.name}: ${NBL_PRODUCT_PLANS.fullNblu.price}.`,
-          `${NBL_PRODUCT_PLANS.nbluContinuation.name}: ${NBL_PRODUCT_PLANS.nbluContinuation.price}.`,
           "These catalog prices do not mean website checkout is available."
         ].join(" ");
         payload={...payload,status:"results",results:[{title:"New Beansland public plan catalog",excerpt:catalogText,sourceUrl:"https://newbeansland.org/nbl-chat-support.html"},...(Array.isArray(payload?.results)?payload.results:[])]};
