@@ -166,7 +166,7 @@ forbidText(books,"https://payhip.com/embed-page.js","Payhip embed loader returne
 forbidText(books,"<lulu-buy-button","Oversized Lulu product showcase returned to Books.");
 
 
-for(const value of ['$4.99/month','300 successful replies','$39.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$54.99 one-time','$449.99 one-time','$14.99/month','$29.99/month']){
+for(const value of ['$4.99/month','300 successful replies','$34.99 one-time','$449.99 one-time']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
 const planFields=["beans.price","beans.replies","chatPlus.price","chatPlus.replies","getMore.price","getMore.replies","foundationProgram.price","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
@@ -179,7 +179,7 @@ for(const field of planFields){
     failed=true;
   }
 }
-requireText(header,"NBL_PRODUCT_PLANS.getMore.expiry","Drawer does not use the canonical non-expiring reply-balance wording.");
+requireText(header,"100 non-expiring NBL Studios bonus credits","Drawer does not disclose the Founder-approved rollover bonus.");
 requireText(header,"NBL_PRODUCT_PLANS.foundationProgram.price","Public search does not use the canonical Foundation Program price.");
 requireText(terms,'data-nbl-plan-value="foundationProgram.price"',"Terms do not use the canonical Foundation Program price.");
 requireText(terms,'data-nbl-plan-value="guidedFoundation.price"',"Terms do not use the canonical Guided Foundation price.");
@@ -197,9 +197,9 @@ requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridg
 requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership card is missing.");
 requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
-requireText(account,'data-account-billing-plan="chat_plus" disabled',"Unverified $29.99 Plus checkout must remain held.");
-requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout control is missing.");
-requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
+requireText(account,'data-account-billing-plan="foundation" disabled',"Unverified $34.99 Foundation must remain held.");
+requireText(account,'data-account-billing-plan="full_nblu" disabled',"Full University checkout hold is missing.");
+for(const tier of ["chat_plus","chat_plus_university","topup_500","full_foundation","nblu_continuation"]) forbidText(account,`data-account-billing-plan="${tier}"`,`Retired offer still exposed on account: ${tier}`);
 requireText(account,"renderMembership","Account membership meter rendering is missing.");
 for(const staleUniversityAccountCopy of [
   "Optional connected account",
@@ -210,8 +210,8 @@ for(const staleUniversityAccountCopy of [
   forbidText(header,staleUniversityAccountCopy,"University account panel still describes enrollment identity as optional.");
 }
 requireText(header,'data-nbl-billing-plan="beans"',"Beans checkout control is missing.");
-requireText(header,'data-nbl-billing-plan="chat_plus"',"Chat Plus checkout control is missing.");
-requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout control is missing.");
+requireText(header,'data-nbl-billing-plan="foundation" disabled',"Foundation checkout hold missing from drawer.");
+requireText(header,'data-nbl-billing-plan="full_nblu" disabled',"Full NBLU checkout hold missing from drawer.");
 requireText(header,'/billing/checkout',"Chat checkout is not routed through the server gateway.");
 requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
 requireText(support,'data-nbl-plan-value="chatPlus.price"',"Support does not use the canonical Chat Plus price.");
