@@ -22,10 +22,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Inspect registered production routes
+        id: routes
         shell: bash
         run: |
           set +e
           failed=0
+          unverified=0
+          all_verified=true
           : > health-route-results.txt
 
           urls=(
@@ -61,11 +64,29 @@ jobs:
             fi
 
             case "$code" in
-              2*|3*) ;;
-              *) failed=1 ;;
+              2*|3*)
+                printf "PASS url=%s http=%s (runner reachability only)\n" "$url" "$code" >> health-route-results.txt
+                ;;
+              403|429|000)
+                # Runner denial, rate limiting, or network failure cannot prove customer outage.
+                # Preserve all evidence without inventing either a FAIL or a PASS.
+                unverified=1
+                all_verified=false
+                printf "UNVERIFIED url=%s http=%s (independent browser confirmation required)\n" "$url" "$code" | tee -a health-route-results.txt
+                echo "::warning::Unverified runner response ($code) for $url; no customer-visible outage confirmed."
+                ;;
+              *)
+                failed=1
+                all_verified=false
+                printf "FAIL url=%s http=%s (confirmed response requires review)\n" "$url" "$code" | tee -a health-route-results.txt
+                ;;
             esac
           done
 
+          echo "all_verified=$all_verified" >> "$GITHUB_OUTPUT"
+          if [ "$unverified" -ne 0 ]; then
+            echo "::warning::One or more routes are UNVERIFIED. Workflow success does not mean every route passed."
+          fi
           exit "$failed"
 
       - name: Publish route inspection summary
@@ -100,17 +121,40 @@ jobs:
             gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
           fi
 
-      - name: Confirm route recovery
-        if: success()
+      - name: Reclassify unverified routes without claiming customer outage
+        if: success() && steps.routes.outputs.all_verified == 'false'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] Live route failure") | .number' | head -n 1)"
+          title="[Health Inspector] Live routes unverified"
+          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] Live routes unverified") | .number' | head -n 1)"
+          body="$(printf 'Automated route inspection was inconclusive because the runner was denied or could not reach some URLs. This does NOT prove customers see an outage. Obtain independent browser evidence.\n\nRun: %s/%s/actions/runs/%s\n\nResults:\n~~~text\n%s\n~~~' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$(cat health-route-results.txt 2>/dev/null)")"
           if [ -n "$existing" ]; then
-            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Health Inspector recovery check passed. All registered production routes are responding again. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-            gh issue close "$existing" --repo "$GITHUB_REPOSITORY"
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
           fi
+          old="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] Live route failure") | .number' | head -n 1)"
+          if [ -n "$old" ]; then
+            gh issue comment "$old" --repo "$GITHUB_REPOSITORY" --body "Reclassified: the latest runner evidence is UNVERIFIED rather than a confirmed route failure. See the separate unverified issue; we have NOT proven customer reachability. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            gh issue close "$old" --repo "$GITHUB_REPOSITORY"
+          fi
+
+      - name: Confirm route recovery
+        # Never close a real incident just because Cloudflare challenged the probe.
+        if: success() && steps.routes.outputs.all_verified == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          for title in "[Health Inspector] Live route failure" "[Health Inspector] Live routes unverified"; do
+            existing="$(NBL_ISSUE_TITLE="$title" gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title==env.NBL_ISSUE_TITLE) | .number' | head -n 1)"
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "All monitored routes now respond 2xx/3xx to the Inspector runner; this is NOT a complete real-customer signup or checkout test. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+              gh issue close "$existing" --repo "$GITHUB_REPOSITORY"
+            fi
+          done
 
   deep-browser-inspection:
     name: Health Inspector · desktop + mobile
