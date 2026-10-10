@@ -22,10 +22,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Inspect registered production routes
+        id: routes
         shell: bash
         run: |
           set +e
           failed=0
+          unverified=0
+          all_verified=true
           : > health-route-results.txt
 
           urls=(
@@ -61,11 +64,29 @@ jobs:
             fi
 
             case "$code" in
-              2*|3*) ;;
-              *) failed=1 ;;
+              2*|3*)
+                printf "PASS url=%s http=%s (runner reachability only)\n" "$url" "$code" >> health-route-results.txt
+                ;;
+              403|429|000)
+                # Runner denial, rate limiting, or network failure cannot prove customer outage.
+                # Preserve all evidence without inventing either a FAIL or a PASS.
+                unverified=1
+                all_verified=false
+                printf "UNVERIFIED url=%s http=%s (independent browser confirmation required)\n" "$url" "$code" | tee -a health-route-results.txt
+                echo "::warning::Unverified runner response ($code) for $url; no customer-visible outage confirmed."
+                ;;
+              *)
+                failed=1
+                all_verified=false
+                printf "FAIL url=%s http=%s (confirmed response requires review)\n" "$url" "$code" | tee -a health-route-results.txt
+                ;;
             esac
           done
 
+          echo "all_verified=$all_verified" >> "$GITHUB_OUTPUT"
+          if [ "$unverified" -ne 0 ]; then
+            echo "::warning::One or more routes are UNVERIFIED. Workflow success does not mean every route passed."
+          fi
           exit "$failed"
 
       - name: Publish route inspection summary
@@ -101,7 +122,8 @@ jobs:
           fi
 
       - name: Confirm route recovery
-        if: success()
+        # Never close a real incident just because Cloudflare challenged the probe.
+        if: success() && steps.routes.outputs.all_verified == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
