@@ -1,11 +1,11 @@
 (()=>{
   "use strict";
   const plans=Object.freeze({
-    beans:Object.freeze({name:"Beans",price:"$4.99/month",replies:"300 successful replies"}),
+    beans:Object.freeze({name:"Beans",price:"$4.99/month",replies:"300 successful replies",monthlyBonusStudiosCredits:100,bonusCreditsRollOver:true}),
     chatPlus:Object.freeze({name:"NBL CHAT PLUS™",price:"$29.99/month",replies:"1,050 successful replies total",brandLine:"Premium Beans tools · powered by OpenAI"}),
     chatPlusUniversity:Object.freeze({name:"NBL CHAT PLUS™ + University",price:"$39.99/month",replies:"1,050 successful replies total",brandLine:"Professor Grey™ + Virgo System™ guided course teaching; course ebooks redeem through your account coupon"}),
     getMore:Object.freeze({name:"Get More",price:"$9.99 one-time",replies:"+500 successful replies",expiry:"Purchased reply balance does not expire."}),
-    foundationProgram:Object.freeze({name:"Foundation Program",price:"$29.99 one-time"}),
+    foundationProgram:Object.freeze({name:"Foundation Program",price:"$34.99 one-time",checkoutPending:true}),
     guidedFoundation:Object.freeze({name:"Guided Foundation",price:"$54.99 one-time"}),
     fullFoundation:Object.freeze({name:"Guided Foundation",price:"$54.99 one-time"}),
     fullNblu:Object.freeze({name:"Full NBLU Experience",price:"$449.99 one-time"}),
