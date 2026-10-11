@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#07121d">
+  <title>Create · NBL Studios | New Beansland</title>
+  <meta name="description" content="Create original images and short film clips at NBL Studios using account-bound production credits.">
+  <link rel="stylesheet" href="/nbl-world-header.css">
+  <link rel="stylesheet" href="./creator.css">
+  <script defer src="/nbl-world-header.js"></script>
+  <script defer src="./creator.js"></script>
+</head>
+<body>
+  <main class="studio-creator">
+    <header class="hero">
+      <a class="back" href="/studio/">← Timmy V Studios</a>
+      <p class="eyebrow">NEW BEANSLAND · NBL STUDIOS</p>
+      <h1>Make something of your own.</h1>
+      <p class="intro">Create original images and short movie clips. Choose a model, describe your scene, and review the credit cost before generating.</p>
+      <p class="release-note" role="status">Creator preview. New credit purchases are held until our checkout verification is complete.</p>
+    </header>
+    <div class="columns">
+      <section class="panel" aria-labelledby="create-heading">
+        <div class="section-top">
+          <h2 id="create-heading">Your production desk</h2>
+          <span id="catalogStatus" class="muted" aria-live="polite">Loading the model catalog…</span>
+        </div>
+        <div class="type-toggle" role="group" aria-label="Media type">
+          <button type="button" id="imageTab" class="selected" aria-pressed="true">Still Image</button>
+          <button type="button" id="videoTab" aria-pressed="false">Movie Clip</button>
+        </div>
+        <form id="createForm">
+          <label for="model">Production model</label>
+          <select id="model" required disabled><option value="">Loading models…</option></select>
+          <p id="modelInfo" class="hint">Choose a model to see its NBL Studios Credit cost.</p>
+          <label for="prompt">Describe what you want to create</label>
+          <textarea id="prompt" required maxlength="32000" rows="5" placeholder="A quiet city street at golden hour, cinematic wide shot…"></textarea>
+          <label for="imageUrl">Starting image URL <span class="optional">(optional unless required by model)</span></label>
+          <input type="url" id="imageUrl" inputmode="url" placeholder="https://…">
+          <p class="hint">Use an HTTPS image you own or have permission to use. Some video models require a starting image.</p>
+          <div class="action-line">
+            <p class="quoted-cost">Cost: <strong id="quotedCost">—</strong> NBL Studios Credits</p>
+            <button id="createButton" class="primary" type="submit" disabled>Create</button>
+          </div>
+          <p id="createStatus" class="status" role="status" aria-live="polite">Sign in and choose a model to start.</p>
+        </form>
+      </section>
+      <aside class="sidebar">
+        <section class="panel" aria-labelledby="walletTitle">
+          <h2 id="walletTitle">Your Studio Credits</h2>
+          <p class="balance" id="balance">—</p>
+          <p id="accountStatus" class="hint" aria-live="polite">Checking your account…</p>
+          <div class="actions">
+            <a class="button" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in / Create account</a>
+            <button type="button" id="refreshWallet">Refresh wallet</button>
+          </div>
+          <hr>
+          <p class="package">500 Studio Credits <strong>$7.00 once</strong></p>
+          <p class="hint">Studio Credits are separate from Beans chat replies. Credits do not expire while your account remains active.</p>
+          <button id="buyCredits" type="button">Get 500 credits</button>
+          <p class="hint">Checkout is temporarily held for safety verification. The button will report the current checkout status and won't charge you on this page.</p>
+        </section>
+        <section class="panel" aria-labelledby="resultTitle">
+          <h2 id="resultTitle">Your latest creation</h2>
+          <p id="jobStatus" class="hint">No generation submitted this session.</p>
+          <div id="output" class="output" aria-live="polite"></div>
+          <button type="button" id="refreshJob" hidden>Check status</button>
+          <p class="hint">Generated media may have limited storage availability. Save your completed work promptly.</p>
+        </section>
+      </aside>
+    </div>
+    <footer><a href="/">New Beansland</a> · <a href="/account.html">My Account</a> · <a href="/studio/">NBL Records</a></footer>
+  </main>
+</body>
+</html>
