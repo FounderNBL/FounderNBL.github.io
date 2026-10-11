@@ -64,7 +64,7 @@
 
   function priceFor(model) {
     const base = Number(model?.studio_credit_cost || 0);
-    const extra = els.imageUrl.value.trim() ? Number(model?.metadata?.referenceImageCreditCost || 0) : 0;
+    const extra = els.imageUrl.value.trim() ? Number(model?.reference_image_credit_cost || 0) : 0;
     return base + extra;
   }
 
@@ -75,7 +75,7 @@
   function updateControls() {
     const selected = selectedModel();
     els.cost.textContent = selected ? String(priceFor(selected)) : "—";
-    const needImage = selected?.metadata?.requiresStartImage === true;
+    const needImage = selected?.requires_start_image === true;
     els.imageUrl.required = needImage;
     els.modelInfo.textContent = selected
       ? ((selected.duration_seconds ? selected.duration_seconds + "-second clip · " : "") +
