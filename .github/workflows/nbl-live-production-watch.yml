@@ -157,7 +157,7 @@ jobs:
           done
 
   deep-browser-inspection:
-    name: Health Inspector · desktop + mobile
+    name: Health Inspector · external desktop + mobile
     if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -231,16 +231,17 @@ jobs:
             gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
           fi
 
-      - name: Confirm browser recovery
+      - name: Record external browser improvement without auto-closing incidents
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
+          # Cloudflare-challenged browser routes can be UNVERIFIED/skipped.
+          # Local-source PASS cannot prove a visitor or real-device PASS.
           existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] Live browser failure") | .number' | head -n 1)"
           if [ -n "$existing" ]; then
-            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Health Inspector recovery check passed on desktop and mobile. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-            gh issue close "$existing" --repo "$GITHUB_REPOSITORY"
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Automated external browser checks completed without a test failure. Do not auto-close this incident: a Cloudflare-challenged test may be UNVERIFIED, and independent visitor/device proof is required. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           fi
 
   browserstack-real-device-inspection:

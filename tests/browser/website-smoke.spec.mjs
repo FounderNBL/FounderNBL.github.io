@@ -99,27 +99,27 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator("[data-campus-gate]")).toBeVisible();
   });
 
-  test("live registered production routes return successful HTTP statuses", async ({ page }) => {
-    test.skip(!process.env.NBL_BASE_URL, "Live route check only runs against deployed production.");
-
-    const routes = [
-      "/",
-      "/books.html",
-      "/stories.html",
-      "/founder-office.html",
-      "/studio/",
-      "/account.html",
-      "/university.html",
-      "https://nblworld.com/",
-      "https://nblworld.com/university.html"
-    ];
-
-    for (const route of routes) {
+  // The Inspector tests each route separately. A confirmed Cloudflare browser
+  // challenge to the CI runner is UNVERIFIED, never a PASS or a customer outage.
+  const registeredRoutes = [
+    "/", "/books.html", "/stories.html", "/founder-office.html",
+    "/studio/", "/account.html", "/university.html",
+    "https://nblworld.com/", "https://nblworld.com/university.html"
+  ];
+  for (const route of registeredRoutes) {
+    test("live registered route " + route + " responds without error", async ({ page }) => {
+      test.skip(!process.env.NBL_BASE_URL, "External route only; source tests run locally.");
       const response = await page.goto(route, { waitUntil: "domcontentloaded" });
-      expect(response, `Expected an HTTP response for ${route}`).not.toBeNull();
-      expect(response.status(), `Expected ${route} to be reachable`).toBeLessThan(400);
-    }
-  });
+      expect(response, "Expected a response for " + route).not.toBeNull();
+      const status = response.status();
+      const headers = response.headers();
+      if (status === 403 && String(headers["cf-mitigated"] || "").toLowerCase() === "challenge") {
+        console.log("NBL_EXTERNAL_UNVERIFIED url=" + route + " http=403 cf-mitigated=challenge cf-ray=" + String(headers["cf-ray"] || "unknown"));
+        test.skip(true, "UNVERIFIED: Cloudflare challenged the automated runner; independent human/device proof is still required.");
+      }
+      expect(status, "Expected " + route + " to be reachable; HTTP " + status).toBeLessThan(400);
+    });
+  }
 
   test("account recovery uses the Clerk portal with a safe return URL", async ({ page }) => {
     await open("/account.html?source=smoke#account", page);
