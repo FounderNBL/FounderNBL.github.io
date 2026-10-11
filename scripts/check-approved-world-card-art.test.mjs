@@ -5,12 +5,12 @@ const source=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const approved=[
  ["NBL_Books_New.png","4da94563","books.html"],
  ["NBL_Music_Productions.png","d5b9a023","studio/"],
- ["NBL_Studios.png","e220f7dc","studio/#movie-studio"],
- ["NBL_Clothing_Co.png","f38a1e26","clothing.html"]
+ ["NBL-Studios%20(1).png","ef98576f","studio/#movie-studio"],
+ ["NBL-Clothing%20(1).png","48ce5891","clothing.html"]
 ];
 test("exact uploaded assets survive and browser references are cache refreshed",()=>{
  for(const [name,tag,href] of approved){
-  assert.ok(existsSync(new URL("../"+name,import.meta.url)),name+" source asset missing");
+  assert.ok(existsSync(new URL("../"+decodeURIComponent(name),import.meta.url)),name+" source asset missing");
   assert.ok(source.includes('src="'+name+'?v='+tag+'"'),name+" production reference incorrect");
   assert.ok(source.includes('href="'+href+'"'),href+" was changed");
  }
@@ -23,7 +23,7 @@ test("approved full-image cards use the whole artwork instead of thumbnail and c
  assert.match(source,/\.world-card\.official-art:focus-visible\{/);
 });
 test("older untouched Founder/City/University scenes still exist",()=>{
- for(const sourceName of ["founder-office-room.png","NBL-Films%20(1).png","NBL_University.png"]) assert.ok(source.includes(sourceName));
+ for(const sourceName of ["founder-office-room.png","assets/brand/NBL-Films.png","NBL_University.png"]) assert.ok(source.includes(sourceName));
 });
 
 test("deferred portal and legacy commercial scripts may NOT overwrite official art after HTML load",()=>{
