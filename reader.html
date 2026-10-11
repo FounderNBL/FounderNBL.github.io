@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071321">
+  <title>NBL Reader | My Library • New Beansland Books</title>
+  <meta name="description" content="Read EPUB and PDF books in New Beansland Reader. A free, private, on-device digital library.">
+  <link rel="stylesheet" href="/nbl-store.css">
+  <link rel="stylesheet" href="/nbl-reader.css?v=1">
+  <link rel="stylesheet" href="/nbl-world-header.css?v=20260930-billing-rc1">
+  <script defer src="/nbl-world-header.js?v=20261004-shopify"></script>
+  <!-- Version-pinned, free open-source readers: no API key required. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script defer src="/nbl-reader.js?v=1"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/books.html" aria-label="Back to NBL Books">
+        <span><span class="brand-name">NBL READER</span><span class="brand-tag">A New Beansland Books experience</span></span>
+      </a>
+      <nav class="nav" aria-label="Reader navigation">
+        <a href="/books.html">NBL Books</a>
+        <a aria-current="page" href="/reader.html">My Library</a>
+      </nav>
+    </div>
+  </header>
+  <main class="container nr-main" id="main-content">
+    <section class="nr-hero" aria-labelledby="reader-title">
+      <p class="kicker">NBL Books • Your reading room</p>
+      <h1 id="reader-title">Your Library. Your Stories.</h1>
+      <p>Welcome to <strong>NBL Reader™</strong>. Bring your own EPUB or PDF, turn the pages, and pick up where you left off — all without another subscription.</p>
+      <div class="nr-hero-action">
+        <label class="nr-btn nr-btn-gold nr-file-label" for="book-file">
+          <span aria-hidden="true">＋</span> Add a Book
+        </label>
+        <input id="book-file" type="file" accept=".epub,.pdf,application/epub+zip,application/pdf" aria-label="Choose an EPUB or PDF book">
+        <span class="nr-chip">EPUB + PDF</span><span class="nr-chip">No API key</span>
+      </div>
+      <p class="nr-privacy">Private local library preview: books and bookmarks are saved in <strong>this browser on this device</strong>, not uploaded to NBL. On a shared device, other people using this browser may access them. Clearing browser data removes them. This does not yet sync purchases, University entitlements, or other devices.</p>
+    </section>
+
+    <div id="reader-status" class="nr-status" role="status" aria-live="polite">Ready to read.</div>
+
+    <section id="library-section" class="nr-section" aria-labelledby="library-heading">
+      <div class="nr-section-heading">
+        <div><p class="kicker">The bookshelf</p><h2 id="library-heading">My Library</h2></div>
+        <span class="nr-muted" id="library-count">0 books</span>
+      </div>
+      <div id="library-grid" class="nr-shelf" aria-live="polite"></div>
+      <div id="library-empty" class="nr-empty">
+        <div class="nr-empty-icon" aria-hidden="true">📖</div>
+        <h3>Your first book belongs here.</h3>
+        <p>Tap <strong>Add a Book</strong> to import an EPUB or PDF you own or have permission to read. You can also download a book from your Payhip library and import it here.</p>
+        <p class="nr-muted">No sample books are auto-unlocked or charged.</p>
+      </div>
+    </section>
+
+    <section id="reader-section" class="nr-reader-wrap" aria-label="Book reading area" hidden>
+      <div class="nr-reader-heading">
+        <div>
+          <p class="kicker">Now reading</p>
+          <h2 id="current-book-title">Your Book</h2>
+          <p class="nr-muted" id="current-book-details"></p>
+        </div>
+        <button type="button" class="nr-btn" id="close-reader">← Library</button>
+      </div>
+      <div class="nr-toolbar" role="toolbar" aria-label="Reading controls">
+        <button type="button" class="nr-btn" id="prev-page" aria-label="Previous page">← Previous</button>
+        <span class="nr-page-label" id="page-label" aria-live="polite">Ready</span>
+        <button type="button" class="nr-btn" id="next-page" aria-label="Next page">Next →</button>
+        <label class="nr-font-label" for="font-size">Text / zoom</label>
+        <select id="font-size" aria-label="EPUB text size or PDF zoom">
+          <option value="80">80%</option><option value="90">90%</option>
+          <option value="100" selected>100%</option><option value="110">110%</option>
+          <option value="125">125%</option><option value="150">150%</option>
+        </select>
+        <label class="nr-font-label" for="reading-theme">Theme</label>
+        <select id="reading-theme" aria-label="Reading theme">
+          <option value="paper">Paper</option><option value="sepia">Sepia</option>
+          <option value="night">Night</option>
+        </select>
+        <button type="button" class="nr-btn" id="save-position">Bookmark</button>
+      </div>
+      <div id="book-viewport" class="nr-viewport" tabindex="0" aria-label="Book pages. Use left and right arrow keys to turn pages.">
+        <div id="epub-area" class="nr-epub" hidden></div>
+        <div id="pdf-area" class="nr-pdf" hidden>
+          <canvas id="pdf-canvas" aria-label="Current PDF page"></canvas>
+        </div>
+      </div>
+      <div class="nr-footbar">
+        <button type="button" class="nr-btn" id="bottom-prev">← Previous</button>
+        <span class="nr-muted" id="bottom-page-label">Your position saves automatically.</span>
+        <button type="button" class="nr-btn" id="bottom-next">Next →</button>
+      </div>
+    </section>
+    <section class="nr-section nr-note" aria-labelledby="next-heading">
+      <h2 id="next-heading">What's coming to NBL Books?</h2>
+      <p><strong>Purchased books and University materials</strong> will later appear automatically only after LOCKE verifies ownership or enrollment. NBL Book Creator will let you write and illustrate your own book before you read or print it. Those account-connected features are <strong>not yet active</strong>.</p>
+    </section>
+  </main>
+  <footer class="footer"><div class="container"><strong>NBL Reader™</strong> · New Beansland Books · <a href="/books.html">Return to Books</a></div></footer>
+</body>
+</html>
