@@ -12,7 +12,7 @@ test("NBL Studios creator preview stays on its own unlinked page", () => {
   assert.match(html, /id="createForm"/);
   assert.match(html, /id="buyCredits"/);
   assert.match(html, /checkout verification is complete/);
-  assert.match(html, /studio\/creator\.js/);
+  assert.ok(html.includes('src="./creator.js"'));
   assert.ok(css.includes(".columns"));
 });
 
