@@ -8,9 +8,9 @@ function fail(message){console.error("GOOGLE FIXER HELD: "+message);process.exit
 function git(args){return execFileSync("git",args,{encoding:"utf8"}).trim();}
 
 function parseNumstat(raw) {
-  const entries=raw.split("\\0").filter(Boolean);
+  const entries=raw.split("\0").filter(Boolean);
   return entries.map(line=>{
-    const match=line.match(/^([0-9]+|-)\\t([0-9]+|-)\\t(.+)$/);
+    const match=line.match(/^([0-9]+|-)\t([0-9]+|-)\t(.+)$/);
     if(!match)fail("Unrecognized diff statistic; refusing patch.");
     return {path:match[3],added:match[1]==="-"?NaN:Number(match[1]),deleted:match[2]==="-"?NaN:Number(match[2])};
   });
