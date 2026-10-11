@@ -51,10 +51,10 @@ test("Bounded reader patch passes, larger rewrites fail closed",()=>{
 });
 test("Gemini action and CLI version are pinned; only current model is configured",()=>{
   const workflow=readFileSync(".github/workflows/nbl-google-fixer.yml","utf8");
-  assert.match(workflow,/google-github-actions\\/run-gemini-cli@[0-9a-f]{40}/);
-  assert.match(workflow,/gemini_cli_version: ['"]?0\\.63\\.0/);
-  assert.match(workflow,/gemini_model: gemini-3\\.5-flash-lite/);
-  assert.doesNotMatch(workflow,/run-gemini-cli@v0\\b|gemini_cli_version: latest|gemini-2\\.5-flash-lite/);
+  assert.match(workflow,/google-github-actions\/run-gemini-cli@[0-9a-f]{40}/);
+  assert.match(workflow,/gemini_cli_version: ['"]?0\.63\.0/);
+  assert.match(workflow,/gemini_model: gemini-3\.5-flash-lite/);
+  assert.doesNotMatch(workflow,/run-gemini-cli@v0\b|gemini_cli_version: latest|gemini-2\.5-flash-lite/);
   assert.ok(workflow.includes("node scripts/nbl-google-fixer-guard.mjs validate-patch"));
 });
 test("Reader JS and CSS changes always trigger real browser CI",()=>{
