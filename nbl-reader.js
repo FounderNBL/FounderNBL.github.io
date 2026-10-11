@@ -67,15 +67,20 @@
   }
   async function libraryEntries() {
     if (!db) return [...memory.values()].map(v => v.meta);
-    return await transact(["books"], "readonly", tx => tx.objectStore("books").getAll());
+    const stored=await transact(["books"], "readonly", tx => tx.objectStore("books").getAll());
+    const merged=new Map(stored.map(entry=>[entry.id,entry]));
+    for(const entry of memory.values())merged.set(entry.meta.id,entry.meta);
+    return [...merged.values()];
   }
   async function getFile(id) {
-    if (!db) return memory.get(id)?.file || null;
+    if (memory.has(id)) return memory.get(id).file;
+    if (!db) return null;
     const data = await transact(["files"], "readonly", tx => tx.objectStore("files").get(id));
     return data?.blob || null;
   }
   async function getPosition(id) {
-    if (!db) return memoryPositions.get(id) || null;
+    if (memoryPositions.has(id))return memoryPositions.get(id);
+    if (!db) return null;
     return await transact(["positions"], "readonly", tx => tx.objectStore("positions").get(id)) || null;
   }
   async function storeImported(meta, file) {
@@ -90,7 +95,8 @@
     await transact(["positions"],"readwrite",tx=>tx.objectStore("positions").put(position));
   }
   async function eraseBook(id) {
-    if (!db) {memory.delete(id);memoryPositions.delete(id);return;}
+    memory.delete(id);memoryPositions.delete(id);
+    if (!db) return;
     await transact(["books","files","positions"],"readwrite",tx=>{
       tx.objectStore("books").delete(id);
       tx.objectStore("files").delete(id);
