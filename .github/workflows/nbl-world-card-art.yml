@@ -1,0 +1,30 @@
+name: NBL World Cards — Exact Art Check
+on:
+  pull_request:
+    paths:
+      - index.html
+      - NBL_Books_New.png
+      - NBL_Music_Productions.png
+      - NBL_Studios.png
+      - NBL_Clothing_Co.png
+      - scripts/check-approved-world-card-art.test.mjs
+      - .github/workflows/nbl-world-card-art.yml
+  push:
+    branches: [main]
+    paths:
+      - index.html
+      - scripts/check-approved-world-card-art.test.mjs
+      - .github/workflows/nbl-world-card-art.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - run: node --test scripts/check-approved-world-card-art.test.mjs
