@@ -12,7 +12,7 @@
       price:"$4.99 first month · then $29.99/month",
       introPrice:"$4.99 first month",
       renewalPrice:"$29.99/month",
-      introUsage:"350 NBL Usage credits",
+      introUsage:"250 NBL Usage credits",
       monthlyUsage:"1,800 NBL Usage credits/month",
       brandLine:"Premium Beans tools, files, web, voice, images, code/data and more"
     }),
