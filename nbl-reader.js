@@ -185,6 +185,7 @@
     const meta=existing||{id,name:file.name.slice(0,180),type,size:file.size,addedAt:Date.now()};
     await openBook(meta, file);
     if(storagePersistent)status("Book added to your local NBL Library.","success");
+    else status("Book open for this session only. Your browser could not save it to this device; keep your original file.","error");
   }
   function setReaderButtons() {
     const has=Boolean(active);
