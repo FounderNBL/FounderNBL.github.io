@@ -16,7 +16,7 @@ test("exact uploaded assets survive and browser references are cache refreshed",
  }
 });
 test("approved full-image cards use the whole artwork instead of thumbnail and copy overlay",()=>{
- for(const [name,tag] of approved)assert.match(source,new RegExp('world-card official-art reveal[^>]+><div class="media"><img src="'+name.replaceAll(".","\\.")+'\\?v='+tag));
+ for(const [name,tag] of approved)assert.match(source,new RegExp('world-card official-art reveal[^>]+><div class="media"><img src="'+name.replace(/[.*+?^${}()|[\]\\]/g,"\\name.replaceAll(".","\\.")")+'\\?v='+tag));
  assert.match(source,/\.world-card\.official-art \.media\{inset:0;z-index:1\}/);
  assert.match(source,/\.world-card\.official-art \.card-body\{/);
  assert.match(source,/\.world-card\.official-art::after\{display:none\}/);
