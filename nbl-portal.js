@@ -128,6 +128,9 @@
     });
 
     document.querySelectorAll('.world-card').forEach(card=>{
+      // Official Founder World Cards already own the exact uploaded artwork.
+      // This legacy mapping must NEVER silently replace it after page load.
+      if(card.classList.contains('official-art')) return;
       const title=(card.querySelector('h3')?.textContent||'').trim().toLowerCase();
       const image=card.querySelector('.media img');
       if(!image) return;
