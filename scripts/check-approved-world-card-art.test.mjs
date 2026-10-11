@@ -25,3 +25,13 @@ test("approved full-image cards use the whole artwork instead of thumbnail and c
 test("older untouched Founder/City/University scenes still exist",()=>{
  for(const sourceName of ["founder-office-room.png","NBL-Films%20(1).png","NBL_University.png"]) assert.ok(source.includes(sourceName));
 });
+
+test("deferred portal and legacy commercial scripts may NOT overwrite official art after HTML load",()=>{
+ const portal=readFileSync(new URL("../nbl-portal.js",import.meta.url),"utf8");
+ const commercial=readFileSync(new URL("../nbl-commercial.js",import.meta.url),"utf8");
+ assert.match(portal,/if\(card\.classList\.contains\('official-art'\)\) return;/);
+ assert.match(commercial,/if\(card\.classList\.contains\('official-art'\)\) return;/);
+ assert.match(commercial,/!grid\.querySelector\('\.world-card\.official-art\[href="clothing\.html"\]'\)/);
+ assert.match(commercial,/if\(doorGrid&&!doorGrid\.querySelector\('\.world-card\.official-art'\)\)/);
+ assert.ok(source.includes('/nbl-portal.js?v=20261011-world-cards-safe'),"homepage must fetch corrected script, not stale cached portal");
+});
