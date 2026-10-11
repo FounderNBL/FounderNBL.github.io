@@ -9,6 +9,18 @@ on:
       - "reader.html"
       - "nbl-reader.js"
       - "index.html"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/nbl-inspector-internal-source.yml"
+      - "tests/browser/**"
+      - "playwright.config.mjs"
+      - "reader.html"
+      - "nbl-reader.js"
+      - "index.html"
+  # One low-cost daily internal inspection; Cloudflare outside tests stay separate.
+  schedule:
+    - cron: "41 12 * * *"
   workflow_dispatch:
 
 # The Inspector can READ source and publish its own CI evidence only.
