@@ -9,7 +9,7 @@
     if(/\/nbl-kids\.html$/.test(path)) return {label:"NBL Kids",key:"kids"};
     if(/\/shanique\.html$/.test(path)) return {label:"Shanique Washington",key:"her"};
     if(/\/stories\.html$/.test(path)) return {label:"TV & Film",key:"stories"};
-    if(/\/studio\/?(?:index\.html)?$/.test(path)) return {label:"Timmy V Studios",key:"studio"};
+    if(/\/studio\/?(?:index\.html)?$/.test(path)) return {label:"NBL Music Productions",key:"studio"};
     if(/\/founder-office\.html$/.test(path)) return {label:"Founder’s Office",key:"office"};
     if(/\/about\.html$/.test(path)||/\/jamel-hawkins\.html$/.test(path)) return {label:"About NBL",key:"about"};
     if(/\/account\.html$/.test(path)) return {label:"My NBL Account",key:"account"};
@@ -26,7 +26,7 @@
     ["shop","Shop","https://new-beansland.myshopify.com",true],
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
-    ["studio","Timmy V Studios","/studio/",false],
+    ["studio","NBL Music Productions","/studio/",false],
     ["office","Founder’s Office","/founder-office.html",false],
     ["search","Search","#nbl-search",false]
   ];
