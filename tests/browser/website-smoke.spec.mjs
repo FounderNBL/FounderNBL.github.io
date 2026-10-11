@@ -19,6 +19,25 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator('.world-card[href="founder-office.html"]')).toBeVisible();
   });
 
+
+  test("official Founder World Card artwork survives all deferred scripts", async ({ page }) => {
+    await page.goto("/", {waitUntil:"load"});
+    const cards=[
+      ["books.html","NBL_Books_New.png"],
+      ["studio/","NBL_Music_Productions.png"],
+      ["studio/#movie-studio","NBL_Studios.png"],
+      ["clothing.html","NBL_Clothing_Co.png"]
+    ];
+    await expect(page.locator(".world-card.official-art")).toHaveCount(4);
+    for(const [href,name] of cards) {
+      const img=page.locator('.world-card.official-art[href="'+href+'"] .media img');
+      await expect.poll(async()=>img.getAttribute("src")).toContain(name+"?v=");
+      await expect.poll(async()=>img.evaluate(node=>node.complete&&node.naturalWidth>0)).toBe(true);
+    }
+    await expect(page.locator('.world-card[href="clothing.html"]')).toHaveCount(1);
+    await expect(page.locator('.world-card.official-art').first()).toHaveCSS("aspect-ratio","3 / 4");
+  });
+
   test("Beans AI opens in a real browser", async ({ page }) => {
     await open("/", page);
 
