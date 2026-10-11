@@ -23,6 +23,7 @@
   if(headerMark){headerMark.src=asset.brand;headerMark.alt='New Beansland brand mark';}
 
   document.querySelectorAll('.world-card').forEach(card=>{
+    if(card.classList.contains('official-art')) return;
     const title=(card.querySelector('h3')?.textContent||'').toLowerCase();
     const img=card.querySelector('.media img');
     if(!img)return;
@@ -57,7 +58,7 @@
   if(icon) icon.href=asset.brand;
 
   // Keep the destination grid as a clean 3 x 2 layout on larger screens and fill the sixth door with Clothing.
-  if(!document.getElementById('nbl-home-catalog-style')){
+  if(!document.querySelector('.world-grid .official-art')&&!document.getElementById('nbl-home-catalog-style')){
     const style=document.createElement('style');
     style.id='nbl-home-catalog-style';
     style.textContent='@media (min-width:801px){.world-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}.nbl-clothing-card .media img{object-fit:cover;object-position:center 38%}.nbl-clothing-card .status{color:#f0c56f}';
@@ -65,7 +66,7 @@
   }
 
   const grid=document.querySelector('.world-grid');
-  if(grid&&!document.getElementById('nbl-clothing-card')){
+  if(grid&&!grid.querySelector('.world-card.official-art[href="clothing.html"]')&&!document.getElementById('nbl-clothing-card')){
     const card=document.createElement('a');
     card.id='nbl-clothing-card';
     card.className='world-card nbl-clothing-card';
@@ -104,7 +105,7 @@
 
   // Rank the homepage doors by what is actually open and useful now.
   const doorGrid=document.querySelector('.world-grid');
-  if(doorGrid){
+  if(doorGrid&&!doorGrid.querySelector('.world-card.official-art')){
     const cards=[...doorGrid.querySelectorAll('.world-card')];
     const rank=card=>{
       const t=(card.querySelector('h3')?.textContent||'').toLowerCase();
