@@ -30,7 +30,7 @@ test("the creator uses NBL auth and the protected server-only generation door", 
 
 test("secure checkout is account bound and cannot navigate to an arbitrary host", () => {
   assert.match(js, /studios_500/);
-  assert.match(js, /checkout\.stripe\.com/);
+  assert.ok(js.includes('["checkout.stripe.com", "buy.stripe.com"].includes(url.hostname)'), "checkout must use an exact Stripe hostname allowlist");
   assert.match(js, /url\.protocol !== "https:"/);
   assert.match(js, /"PRICE_CHECKOUT_HELD"/);
   assert.match(js, /crypto\.randomUUID\(\)/);
