@@ -1,0 +1,56 @@
+/* NBL Reader v1 — all local, no payment, no entitlement bypass. */
+.nr-main{padding-bottom:34px}
+.nr-hero{padding:66px 18px 34px;text-align:center;position:relative}
+.nr-hero:before{content:"";position:absolute;inset:5px 10% auto;height:230px;background:radial-gradient(ellipse,rgba(214,161,74,.11),transparent 70%);pointer-events:none}
+.nr-hero h1{max-width:850px;margin:8px auto 18px;font-size:clamp(2.3rem,7vw,4.6rem)}
+.nr-hero p:not(.kicker){max-width:740px;margin:14px auto;color:#d3cbbc;font:1.05rem/1.7 Arial,sans-serif}
+.nr-hero-action{display:flex;justify-content:center;flex-wrap:wrap;align-items:center;gap:12px;margin:24px auto 12px}
+.nr-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 17px;border:1px solid rgba(214,161,74,.55);border-radius:12px;background:#11243a;color:#f3eadc;cursor:pointer;text-decoration:none;font:700 .88rem Arial,sans-serif}
+.nr-btn:hover,.nr-btn:focus-visible{border-color:#f1d28b;background:#1b3751;outline-offset:3px}
+.nr-btn:disabled{opacity:.42;cursor:not-allowed}
+.nr-btn-gold{background:#f1d28b;color:#0b1825;border-color:#f1d28b}
+.nr-btn-gold:hover,.nr-btn-gold:focus-visible{background:#e2b458;color:#06111a}
+#book-file{position:absolute;width:1px;height:1px;opacity:0;clip-path:inset(50%);overflow:hidden}
+.nr-file-label:focus-within{outline:3px solid #f1d28b;outline-offset:4px}
+.nr-chip{display:inline-flex;align-items:center;border:1px solid rgba(214,161,74,.23);border-radius:30px;padding:9px 12px;color:#dbcaad;font:700 .75rem Arial,sans-serif}
+.nr-privacy{font-size:.81rem!important;color:#b9b1a5!important;max-width:760px!important}
+.nr-status{min-height:38px;background:#0a1c2e;border:1px solid rgba(214,161,74,.25);border-radius:12px;padding:11px 14px;margin:0 auto 20px;color:#e6d6b9;font:600 .85rem/1.4 Arial,sans-serif}
+.nr-status[data-kind="error"]{border-color:#e6a56b;color:#ffd2b4}
+.nr-status[data-kind="success"]{border-color:#8fae9c}
+.nr-section{margin:30px 0 46px}
+.nr-section-heading,.nr-reader-heading{display:flex;align-items:end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.nr-section h2,.nr-reader-heading h2{margin:0;color:#f1d28b;font-size:clamp(1.5rem,4vw,2.3rem)}
+.nr-muted{font:.84rem/1.6 Arial,sans-serif;color:#b9b1a5}
+.nr-shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
+.nr-book{border:1px solid rgba(214,161,74,.3);border-radius:18px;padding:17px;min-width:0;background:linear-gradient(150deg,#11283d,#05111e);box-shadow:0 16px 35px rgba(0,0,0,.25)}
+.nr-book-art{height:170px;margin-bottom:14px;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;background:linear-gradient(140deg,#18405a,#0a1628 67%,#a77932);border-left:9px solid #f1d28b;color:#f7e5bd;font-size:55px}
+.nr-book-art.pdf{background:linear-gradient(140deg,#583a3d,#111b29 67%,#bd7242)}
+.nr-book-art:after{content:"NEW BEANSLAND";position:absolute;bottom:13px;font:800 .64rem Arial,sans-serif;letter-spacing:.14em;color:#f8dfac}
+.nr-book h3{margin:0 0 7px;font:800 1.02rem/1.36 Arial,sans-serif;overflow-wrap:anywhere}
+.nr-book p{margin:0 0 15px;color:#aabaca;font:.78rem/1.6 Arial,sans-serif}
+.nr-book-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nr-book-actions .nr-btn{min-height:38px;padding:8px 12px}
+.nr-btn-remove{border-color:rgba(219,116,95,.32);background:transparent;font-size:.75rem}
+.nr-empty{padding:30px 22px;border:1px dashed rgba(214,161,74,.4);border-radius:20px;text-align:center;background:rgba(7,20,33,.68)}
+.nr-empty-icon{font-size:3.5rem}.nr-empty h3{color:#f1d28b;margin:12px 0}.nr-empty p{color:#c8c0b3;font:.9rem/1.65 Arial,sans-serif;max-width:650px;margin:12px auto}
+.nr-reader-wrap{background:#081b2b;border:1px solid rgba(214,161,74,.37);border-radius:20px;padding:clamp(10px,2.8vw,22px);margin:25px 0 32px}
+.nr-reader-heading{align-items:center;margin-bottom:18px}
+.nr-reader-heading h2{overflow-wrap:anywhere;font-size:clamp(1.25rem,3.3vw,2rem)}
+.nr-reader-heading p{margin:4px 0}
+.nr-toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding:12px;background:#0d2234;border-radius:14px}
+.nr-toolbar select{min-height:44px;border:1px solid rgba(214,161,74,.4);background:#07131f;color:#f3eadc;border-radius:10px;padding:9px;font:700 .9rem Arial,sans-serif}
+.nr-font-label{font:600 .78rem Arial,sans-serif;color:#c6d1dc}
+.nr-page-label{flex:1;min-width:96px;text-align:center;color:#f1d28b;font:700 .86rem Arial,sans-serif}
+.nr-viewport{height:min(75vh,780px);min-height:360px;border-radius:12px;background:#fdf9f0;overflow:auto;position:relative;color:#151515;touch-action:pan-y}
+.nr-viewport[data-theme="sepia"]{background:#eee0bd}
+.nr-viewport[data-theme="night"]{background:#172231}
+.nr-epub{width:100%;height:100%;overflow:hidden}
+.nr-pdf{display:flex;align-items:flex-start;justify-content:center;width:100%;min-height:100%;padding:15px 4px}
+.nr-pdf canvas{max-width:100%;height:auto;box-shadow:0 4px 28px rgba(0,0,0,.18);background:white}
+.nr-viewport[aria-busy="true"]:after{content:"Loading page…";position:absolute;bottom:10px;left:50%;transform:translateX(-50%);padding:8px 12px;border-radius:40px;background:#081b2b;color:#fff;font:600 .8rem Arial,sans-serif;pointer-events:none}
+.nr-footbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}
+.nr-note{border-top:1px solid rgba(214,161,74,.3);padding-top:24px;color:#c8c0b3;font:1rem/1.65 Arial,sans-serif}
+.nr-note p{max-width:810px}
+[hidden]{display:none!important}
+@media(max-width:620px){.nr-hero{padding:46px 5px 20px}.nr-shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.nr-book{padding:11px}.nr-book-art{height:136px}.nr-book-actions{align-items:stretch}.nr-book-actions .nr-btn{flex:1}.nr-toolbar{gap:6px;padding:9px}.nr-toolbar>.nr-btn{flex:1}.nr-page-label{width:100%;order:3;flex:auto}.nr-toolbar .nr-font-label{font-size:.72rem}.nr-toolbar select{min-width:65px}.nr-viewport{height:67vh;min-height:330px}.nr-footbar .nr-muted{order:3;width:100%;text-align:center}.site-header .nav{flex-wrap:wrap;justify-content:flex-end}.brand-name{font-size:.95rem}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important}}
