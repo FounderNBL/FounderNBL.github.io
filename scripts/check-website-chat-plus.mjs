@@ -3,6 +3,7 @@ import fs from "node:fs";
 const js=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
 const css=fs.readFileSync(new URL("../nbl-world-header.css",import.meta.url),"utf8");
 const plans=fs.readFileSync(new URL("../nbl-product-plans.js",import.meta.url),"utf8");
+const plansHtml=fs.readFileSync(new URL("../plans.html",import.meta.url),"utf8");
 
 function requireText(source,text,message){
   if(!source.includes(text)){
@@ -92,3 +93,8 @@ if(beansListener!==1){
 }
 
 if(!process.exitCode) console.log("[website-chat-plus] PASS: website Beans uses one NBL Core ingress for guest/signed-in Chat and search, routes authenticated use through metering, exposes premium Beans tools, keeps Professor Grey™ / Virgo System™ behind University entitlement, preserves history, and contains no public secrets.");
+
+// Founder-approved new-buyer intro allowance. Old 350-credit purchases stay on their original receipts.
+requireText(plans,'introUsage:"250 NBL Usage credits"',"New-buyer Plus intro catalog must be 250 credits.");
+requireText(plansHtml,"250 NBL Usage credits in the intro month","Plus pricing disclosure must match 250-credit intro.");
+forbidText(plansHtml,"350 NBL Usage credits in the intro month","Old intro copy must not return.");
