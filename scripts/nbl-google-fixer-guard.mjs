@@ -2,7 +2,7 @@
 // Preflight uses a read-only GitHub token; post-run validates changes with NO model token.
 import {writeFileSync} from "node:fs";
 import {execFileSync} from "node:child_process";
-import {ALLOWED_REPO,validateIssue,validatePaths} from "./nbl-google-fixer-policy.mjs";
+import {ALLOWED_REPO,validateIssue,validatePaths,validatePatchBudget} from "./nbl-google-fixer-policy.mjs";
 const phase=process.argv[2];
 function fail(message){console.error("GOOGLE FIXER HELD: "+message);process.exit(1);}
 function git(args){return execFileSync("git",args,{encoding:"utf8"}).trim();}
@@ -39,6 +39,19 @@ if(phase==="preflight"){
   const files=execFileSync("git",["diff","--name-only","-z"],{encoding:"utf8"}).split("\0").filter(Boolean);
   const verdict=validatePaths(files);
   if(!verdict.allowed)fail(verdict.message);
+  // Explicitly limit the size of any AI-proposed patch, not just its paths.
+  // Parse git's NUL-separated numstat output and reject binary/non-numeric entries.
+  const numstat=execFileSync("git",["diff","--numstat","-z"],{encoding:"utf8"});
+  const records=numstat.split("\0").filter(Boolean).map(record=>{
+    const fields=record.split("\t");
+    if(fields.length!==3)fail("Malformed git diff statistics.");
+    return {added:Number(fields[0]),deleted:Number(fields[1]),path:fields[2]};
+  });
+  const patchBytes=execFileSync("git",["diff","--binary"]).byteLength;
+  const budget=validatePatchBudget(records,patchBytes);
+  if(!budget.allowed)fail(budget.message);
+  if(records.length!==files.length || records.some(item=>!files.includes(item.path)))
+    fail("Diff filenames do not match checked statistics.");
   const deleted=execFileSync("git",["diff","--name-only","--diff-filter=D","-z"],{encoding:"utf8"}).split("\0").filter(Boolean);
   if(deleted.length)fail("Removing existing files is not permitted.");
   const untracked=execFileSync("git",["ls-files","--others","--exclude-standard","-z"],{encoding:"utf8"}).split("\0").filter(Boolean);
