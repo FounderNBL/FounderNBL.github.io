@@ -29,3 +29,33 @@ export function validatePaths(changes) {
   }
   return {allowed:true,message:"Changes limited to approved public reader/bookstore files."};
 }
+
+export const FIXER_PATCH_LIMITS = Object.freeze({
+  maxFiles: 3,
+  maxChangedLines: 140,
+  maxLinesPerFile: 100,
+  maxPatchBytes: 32768
+});
+export function validatePatchBudget(records, patchBytes) {
+  const deny = message => ({allowed:false,message});
+  if (!Array.isArray(records) || records.length < 1) return deny("Patch contains no tracked changes.");
+  if (records.length > FIXER_PATCH_LIMITS.maxFiles) return deny("Too many changed files for one repair.");
+  if (!Number.isSafeInteger(patchBytes) || patchBytes <= 0 || patchBytes > FIXER_PATCH_LIMITS.maxPatchBytes)
+    return deny("Patch exceeds byte budget or has an invalid byte count.");
+  const paths = records.map(x=>x.path);
+  const permitted = validatePaths(paths);
+  if (!permitted.allowed) return permitted;
+  if (new Set(paths).size !== paths.length) return deny("Patch contains repeated file records.");
+  let changedLines = 0;
+  for (const item of records) {
+    if (!Number.isSafeInteger(item.added) || !Number.isSafeInteger(item.deleted) ||
+        item.added < 0 || item.deleted < 0)
+      return deny("Binary or invalid diff statistics are not permitted.");
+    if (item.added + item.deleted > FIXER_PATCH_LIMITS.maxLinesPerFile)
+      return deny("Change exceeds the per-file line budget: " + item.path);
+    changedLines += item.added + item.deleted;
+  }
+  if (changedLines < 1 || changedLines > FIXER_PATCH_LIMITS.maxChangedLines)
+    return deny("Patch exceeds total changed-line budget or contains no modifications.");
+  return {allowed:true,message:"Diff is within the small-repair safety budget."};
+}
