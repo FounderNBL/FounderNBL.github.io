@@ -1,0 +1,57 @@
+name: NBL Inspector - Internal Source Browser
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/nbl-inspector-internal-source.yml"
+      - "tests/browser/**"
+      - "playwright.config.mjs"
+      - "reader.html"
+      - "nbl-reader.js"
+      - "index.html"
+  workflow_dispatch:
+
+# The Inspector can READ source and publish its own CI evidence only.
+# No repository writes, Cloudflare exemptions, secrets, or Fixer permissions.
+permissions:
+  contents: read
+
+jobs:
+  internal-source-browser:
+    name: Inspector - source-side desktop and mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Install Playwright
+        run: npm install --no-save @playwright/test@latest
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Inspect local source in desktop and mobile browsers
+        # NBL_BASE_URL is absent: Playwright serves the checkout on localhost.
+        # Production-only checks skip; they remain in the separate external job.
+        run: npx playwright test --project=chromium --project=mobile-chromium
+      - name: Document the inspection boundary
+        if: always()
+        run: |
+          {
+            echo "## Inspector - local source evidence"
+            echo "Read-only local website tests: Cloudflare never stands in the way."
+            echo "A PASS here is not a live-customer PASS, a successful checkout, or a real-device test."
+            echo "Only The Fixer may propose repairs, subject to existing approval rules."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Keep proof of failed local browser checks
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nbl-internal-source-browser-failures
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
