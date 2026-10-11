@@ -1,6 +1,6 @@
 # NBL Google Fixer — independent public-website coding backup (release held)
 
-**Status: draft only, unactivated.** Proposed for NBL public website. No model calls, code changes or billable repair run happened merely from creating this PR.
+**Status: source workflow merged, activation still held.** The independent Google Fixer was merged in PR #368 but has **not** been connected, proven end-to-end, or used to repair public code. Reviewer follow-up strengthens it with version pins, new-model selection, Reader browser CI, and strict patch limits.
 
 ## Purpose
 The Founder wants a coding backup that works through GitHub Actions when ChatGPT is unavailable. The main planned Fixer dispatch in **FounderNBL/nbl-desk PR #38** uses Copilot after confirmed Inspector evidence and separate approval. This alternative uses **Google's Gemini API + Gemini CLI** and requires **NO ChatGPT session** and **NO Replit**. The two are separate providers, though both routes still require GitHub to be operational.
@@ -11,19 +11,21 @@ The Founder wants a coding backup that works through GitHub Actions when ChatGPT
 - Gemini reads the public issue and public NBL Reader/Books code and may edit only `books.html`, `reader.html`, `nbl-reader.js`, `nbl-reader.css`, and `tests/browser/nbl-reader.spec.mjs`.
 - Headless model is configured with file reading and editing tools only, **no shell tool**, no sensitive backend, deployment, authentication, billing, or credential edit permission.
 - The proposal job has **read-only GitHub permissions**, and GitHub checkout credentials aren't persisted. The Google model cannot push to GitHub from that job.
-- Changed path allowlist and JavaScript syntax guard run after it finishes. Any extra file or no-op fails closed.
+- Changed path allowlist, maximum file/line/byte budgets, and JavaScript syntax guard run after it finishes. Any extra file, oversized patch or no-op fails closed. Browser CI is triggered on both Reader JavaScript and CSS changes.
 - Only a separate job **without the Gemini API key** applies the validated patch and opens a **draft PR**. GitHub PR CI must pass and a person must review before any merge/deployment.
 - This is deliberately NOT an overnight autonomous repair system and NOT a promise that Google's agent will solve a real incident: the first actual end-to-end model run is still untested.
 
 ## One Founder action for pilot
 1. In **Google AI Studio** (https://aistudio.google.com/apikey), create a Gemini API key for an appropriately isolated test project. A free tier may be available under current account/model quotas.
-2. In GitHub, open **FounderNBL/FounderNBL.github.io** → Settings → Secrets and variables → Actions → New repository secret. Secret **name exactly** `NBL_GOOGLE_FIXER_API_KEY`; paste its **value only there**, never here or into a repository file.
-3. After this PR is reviewed, CI-validated, and explicitly merged, create a harmless **public website** issue (e.g. styling or Reader spacing), add labels `inspector-confirmed` and `fixer-approved`, then Actions → **NBL Google Fixer (approved public website repairs)** → Run workflow. Specify the issue number and tick approval.
+2. **Only after security-hardening CI passes:** In GitHub, open **FounderNBL/FounderNBL.github.io** → Settings → Secrets and variables → Actions → New repository secret. Secret **name exactly** `NBL_GOOGLE_FIXER_API_KEY`; paste its **value only there**, never here or into a repository file.
+3. Once the independent security-hardening PR has passed CI, been reviewed, and merged, create a harmless **public website** issue (e.g. styling or Reader spacing), add labels `inspector-confirmed` and `fixer-approved`, then Actions → **NBL Google Fixer (approved public website repairs)** → Run workflow. Specify the issue number and tick approval.
 4. Review the **draft PR** it creates and verify changes manually. If nothing safe can be repaired or no key/available quota, the workflow should fail/stop without deploying or charging customers.
 
 **Important data boundary:** Gemini's free-tier data may be used by Google to improve products under published terms. **Do not use a free-tier key on private NBL-Chat, NBL Desk, Supabase code, private client files, payment data, or customer information.** For private-code assistance, first verify a suitable paid-data privacy agreement / approved Vertex AI configuration, least privilege, cost budget and safe test environment.
 
 **Important credit boundary:** Google's $300 Free Trial welcome credit is NOT eligible for Gemini Developer API usage. Do not promise to spend it on this AI. Independent free API quotas can be used where offered; quotas/rates/model availability may change.
+
+The GitHub workflow uses a pinned Google action commit, pinned Gemini CLI release, and a newly supported Gemini model to avoid the previously reviewed mutable tags and unavailable 2.5 model. Keep the key unconfigured until the security review passes and an authorized live test can be observed.
 
 ## Future backup stages (NOT DONE YET)
 1. **Provider fallback for Beans itself:** server-side NBL AI router with a primary OpenAI provider, independent secondary Google provider, per-feature consent/data rules, timeouts and circuit breaker; never expose provider keys to Android or website; preserve LOCKE account access and user isolation. A model fallback alone cannot fix a Supabase/network outage.
