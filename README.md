@@ -22,11 +22,11 @@ This repository contains public-facing production pages, assets, and checks that
 **Production hosting:** GitHub Pages. Replit is a mirror/test bench; Cloudflare Wrangler is not the production deployment path.
 
 
-## NBL Chat™ product standard
+## NBL Chat™ historical website-first parity contract (October 5, superseded October 8)
 
-For NBL Chat™ experience and behavior, **the production website is the reference implementation**.
+The October 8 Founder ownership decision makes **NBL World (nblworld.com)** the customer-facing home of interactive Beans, human NBL Chat, University and accounts. Both the Android and website Beans interfaces must use the same **NBL Core** protected backend/intelligence; their presentation can differ. The existing public New Beansland website is a discovery/read/explore surface. This README update changes documentation only; no interactive customer migration or release is claimed.
 
-The Android/mobile client should follow the website's product language, drawer structure, Beans / Professor Grey™ separation, account/history behavior, pricing labels, and capability state wherever the native platform allows it. Native billing, permissions, and device APIs may differ technically, but they should not invent a second product or a different user experience.
+The following older website-first checklist and prices are **preserved as historical design evidence only**, not active pricing, release permission or instruction to build duplicate public-site product engines. The old mobile-versus-website visual comparison remains useful for retained capabilities but no longer overrides the NBL World source-of-truth for the live member journey. Native billing, permissions, and device APIs may differ technically, but they should not invent a second product or a different user experience.
 
 Current website Chat standard includes:
 
