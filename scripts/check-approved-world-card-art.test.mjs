@@ -5,25 +5,29 @@ const source=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const approved=[
  ["NBL_Books_New.png","4da94563","books.html"],
  ["NBL_Music_Productions.png","d5b9a023","studio/"],
- ["NBL_Studios.png","e220f7dc","studio/#movie-studio"],
- ["NBL_Clothing_Co.png","f38a1e26","clothing.html"]
+ ["NBL_Games.png","20261012","games.html"],
+ ["NBL-Studios%20(1).png","ef98576f","studio/#movie-studio"],
+ ["NBL-Clothing%20(1).png","48ce5891","clothing.html"]
 ];
 test("exact uploaded assets survive and browser references are cache refreshed",()=>{
  for(const [name,tag,href] of approved){
-  assert.ok(existsSync(new URL("../"+name,import.meta.url)),name+" source asset missing");
+  assert.ok(existsSync(new URL("../"+decodeURIComponent(name),import.meta.url)),name+" source asset missing");
   assert.ok(source.includes('src="'+name+'?v='+tag+'"'),name+" production reference incorrect");
   assert.ok(source.includes('href="'+href+'"'),href+" was changed");
  }
 });
 test("approved full-image cards use the whole artwork instead of thumbnail and copy overlay",()=>{
- for(const [name,tag] of approved)assert.match(source,new RegExp('world-card official-art reveal[^>]+><div class="media"><img src="'+name.replaceAll(".","\\.")+'\\?v='+tag));
+ for(const [name,tag] of approved){
+  const escaped=name.replaceAll(".", "\\.").replaceAll("(", "\\(").replaceAll(")", "\\)");
+  assert.match(source,new RegExp('world-card official-art reveal[^>]+><div class="media"><img src="'+escaped+'\\?v='+tag));
+ }
  assert.match(source,/\.world-card\.official-art \.media\{inset:0;z-index:1\}/);
  assert.match(source,/\.world-card\.official-art \.card-body\{/);
  assert.match(source,/\.world-card\.official-art::after\{display:none\}/);
  assert.match(source,/\.world-card\.official-art:focus-visible\{/);
 });
-test("City and University cards stay unchanged; Founder Office moves into NBL Games",()=>{
- for(const sourceName of ["NBL-Films%20(1).png","NBL_University.png"]) assert.ok(source.includes(sourceName));
+test("City and University cards remain available; Founder Office moves into NBL Games",()=>{
+ for(const sourceName of ["assets/brand/NBL-Films.png","NBL_University.png"]) assert.ok(source.includes(sourceName));
  const games=readFileSync(new URL("../games.html",import.meta.url),"utf8");
  assert.ok(source.includes('src="NBL_Games.png?v=20261012"'));
  assert.ok(source.includes('href="games.html"'));
