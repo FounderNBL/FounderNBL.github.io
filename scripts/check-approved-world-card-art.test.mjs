@@ -5,6 +5,7 @@ const source=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const approved=[
  ["NBL_Books_New.png","4da94563","books.html"],
  ["NBL_Music_Productions.png","d5b9a023","studio/"],
+ ["NBL_Games.png","20261012","games.html"],
  ["NBL-Studios%20(1).png","ef98576f","studio/#movie-studio"],
  ["NBL-Clothing%20(1).png","48ce5891","clothing.html"]
 ];
@@ -25,8 +26,14 @@ test("approved full-image cards use the whole artwork instead of thumbnail and c
  assert.match(source,/\.world-card\.official-art::after\{display:none\}/);
  assert.match(source,/\.world-card\.official-art:focus-visible\{/);
 });
-test("older untouched Founder/City/University scenes still exist",()=>{
- for(const sourceName of ["founder-office-room.png","assets/brand/NBL-Films.png","NBL_University.png"]) assert.ok(source.includes(sourceName));
+test("City and University cards remain available; Founder Office moves into NBL Games",()=>{
+ for(const sourceName of ["assets/brand/NBL-Films.png","NBL_University.png"]) assert.ok(source.includes(sourceName));
+ const games=readFileSync(new URL("../games.html",import.meta.url),"utf8");
+ assert.ok(source.includes('src="NBL_Games.png?v=20261012"'));
+ assert.ok(source.includes('href="games.html"'));
+ assert.ok(games.includes('href="founder-office.html"'));
+ assert.ok(games.includes("Block Boss") && games.includes("Coming Soon"));
+ assert.ok(!source.includes("nbl-kidz-kayes-cubs"));
 });
 
 test("deferred portal and legacy commercial scripts may NOT overwrite official art after HTML load",()=>{
@@ -37,4 +44,15 @@ test("deferred portal and legacy commercial scripts may NOT overwrite official a
  assert.match(commercial,/!grid\.querySelector\('\.world-card\.official-art\[href="clothing\.html"\]'\)/);
  assert.match(commercial,/if\(doorGrid&&!doorGrid\.querySelector\('\.world-card\.official-art'\)\)/);
  assert.ok(source.includes('/nbl-portal.js?v=20261011-world-cards-safe'),"homepage must fetch corrected script, not stale cached portal");
+});
+
+test("company profile replaces Kaye's Cubs spotlight with readable three-page PDF",()=>{
+ const viewer=readFileSync(new URL("../company-profile.html",import.meta.url),"utf8");
+ const pdf="NBL_Company_Profile_Page2_World_Team_Updated.pdf";
+ assert.ok(existsSync(new URL("../"+pdf,import.meta.url)),"company profile PDF missing");
+ assert.ok(source.includes('id="nbl-company-profile"'));
+ assert.ok(source.includes('href="company-profile.html"'));
+ assert.ok(!source.includes('href="kayes-cubs.html"'));
+ for(let page=1;page<=3;page++) assert.ok(viewer.includes(pdf+"#page="+page),"missing PDF page "+page);
+ assert.ok(viewer.includes('iframe') && viewer.includes(pdf+"#toolbar=1"));
 });
