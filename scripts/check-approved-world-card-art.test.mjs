@@ -22,8 +22,14 @@ test("approved full-image cards use the whole artwork instead of thumbnail and c
  assert.match(source,/\.world-card\.official-art::after\{display:none\}/);
  assert.match(source,/\.world-card\.official-art:focus-visible\{/);
 });
-test("older untouched Founder/City/University scenes still exist",()=>{
- for(const sourceName of ["founder-office-room.png","NBL-Films%20(1).png","NBL_University.png"]) assert.ok(source.includes(sourceName));
+test("City and University cards stay unchanged; Founder Office moves into NBL Games",()=>{
+ for(const sourceName of ["NBL-Films%20(1).png","NBL_University.png"]) assert.ok(source.includes(sourceName));
+ const games=readFileSync(new URL("../games.html",import.meta.url),"utf8");
+ assert.ok(source.includes('src="NBL_Games.png?v=20261012"'));
+ assert.ok(source.includes('href="games.html"'));
+ assert.ok(games.includes('href="founder-office.html"'));
+ assert.ok(games.includes("Block Boss") && games.includes("Coming Soon"));
+ assert.ok(!source.includes("nbl-kidz-kayes-cubs"));
 });
 
 test("deferred portal and legacy commercial scripts may NOT overwrite official art after HTML load",()=>{
