@@ -25,8 +25,8 @@ test.describe("New Beansland web app browser smoke", () => {
     const cards=[
       ["books.html","NBL_Books_New.png"],
       ["studio/","NBL_Music_Productions.png"],
-      ["studio/#movie-studio","NBL_Studios.png"],
-      ["clothing.html","NBL_Clothing_Co.png"]
+      ["studio/#movie-studio","NBL-Studios%20(1).png"],
+      ["clothing.html","NBL-Clothing%20(1).png"]
     ];
     await expect(page.locator(".world-card.official-art")).toHaveCount(4);
     for(const [href,name] of cards) {
