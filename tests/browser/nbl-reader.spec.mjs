@@ -13,6 +13,22 @@ async function reloadAndCheckCloudflare(page) {
   }
 }
 
+// A denied INITIAL navigation must be classified just as carefully as a
+// denied reload. Never turn arbitrary HTTP errors or missing reader elements
+// into a PASS: only Cloudflare's explicit challenge header can be UNVERIFIED.
+async function visitAndCheckCloudflare(page, path) {
+  const response = await page.goto(path,{waitUntil:"domcontentloaded"});
+  expect(response, "No response for Reader route "+path).not.toBeNull();
+  const status=response.status();
+  const headers=response.headers();
+  if (status===403 && String(headers["cf-mitigated"] || "").toLowerCase()==="challenge") {
+    console.log("NBL_EXTERNAL_UNVERIFIED reader-entry url="+path+" http=403 cf-mitigated=challenge cf-ray="+
+      String(headers["cf-ray"] || "unknown"));
+    test.skip(true,"UNVERIFIED: Cloudflare challenged Reader entry; independent browser/device proof required.");
+  }
+  expect(status, "Unexpected HTTP "+status+" for Reader route "+path).toBeLessThan(400);
+}
+
 // Real browser tests for browser/IndexedDB interaction. Reader engines are
 // deliberately mocked so tests never depend on a third-party CDN, paid key,
 // customer account, or external book content.
@@ -60,9 +76,9 @@ test.beforeEach(async ({page}) => {
 });
 
 test("NBL Books provides a free local reader door",async({page})=>{
-  await page.goto("/books.html",{waitUntil:"domcontentloaded"});
+  await visitAndCheckCloudflare(page,"/books.html");
   await expect(page.getByRole("link",{name:/Open My Library/i})).toHaveAttribute("href","/reader.html");
-  await page.goto("/reader.html",{waitUntil:"domcontentloaded"});
+  await visitAndCheckCloudflare(page,"/reader.html");
   await expect(page.getByRole("heading",{name:/Your Library. Your Stories/i})).toBeVisible();
   await expect(page.locator("#library-empty")).toBeVisible();
   await expect(page.locator("#library-count")).toHaveText("0 books");
@@ -70,7 +86,7 @@ test("NBL Books provides a free local reader door",async({page})=>{
 });
 
 test("PDF imported on device turns pages, saves progress and is removable",async({page})=>{
-  await page.goto("/reader.html",{waitUntil:"domcontentloaded"});
+  await visitAndCheckCloudflare(page,"/reader.html");
   const fakePdf=Buffer.from("%PDF-1.7\n"+"X".repeat(1024));
   await page.locator("#book-file").setInputFiles({name:"Test Story.pdf",mimeType:"application/pdf",buffer:fakePdf});
   await expect(page.locator("#reader-section")).toBeVisible();
@@ -90,7 +106,7 @@ test("PDF imported on device turns pages, saves progress and is removable",async
 });
 
 test("EPUB reads with text size/theme and remembers CFI",async({page})=>{
-  await page.goto("/reader.html",{waitUntil:"domcontentloaded"});
+  await visitAndCheckCloudflare(page,"/reader.html");
   const fakeEpub=Buffer.concat([Buffer.from([0x50,0x4b,0x03,0x04]),Buffer.alloc(1024,66)]);
   await page.locator("#book-file").setInputFiles({name:"My Story.epub",mimeType:"application/epub+zip",buffer:fakeEpub});
   await expect(page.locator("#reader-section")).toBeVisible();
@@ -108,7 +124,7 @@ test("EPUB reads with text size/theme and remembers CFI",async({page})=>{
 });
 
 test("invalid file never enters the local library",async({page})=>{
-  await page.goto("/reader.html",{waitUntil:"domcontentloaded"});
+  await visitAndCheckCloudflare(page,"/reader.html");
   await page.locator("#book-file").setInputFiles({name:"not-a-book.pdf",mimeType:"application/pdf",buffer:Buffer.from("fake".repeat(80))});
   await expect(page.locator("#reader-status")).toContainText(/doesn't appear/);
   await expect(page.locator("#library-count")).toHaveText("0 books");
