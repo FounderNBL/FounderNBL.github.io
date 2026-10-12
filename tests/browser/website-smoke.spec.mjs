@@ -16,7 +16,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator('.world-card[href="stories.html"]')).toBeVisible();
     await expect(page.locator('.world-card[href="university.html"]')).toBeVisible();
     await expect(page.locator('.world-card[href="studio/"]')).toBeVisible();
-    await expect(page.locator('.world-card[href="founder-office.html"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="games.html"]')).toBeVisible();
   });
 
 
@@ -25,10 +25,11 @@ test.describe("New Beansland web app browser smoke", () => {
     const cards=[
       ["books.html","NBL_Books_New.png"],
       ["studio/","NBL_Music_Productions.png"],
+      ["games.html","NBL_Games.png"],
       ["studio/#movie-studio","NBL_Studios.png"],
       ["clothing.html","NBL_Clothing_Co.png"]
     ];
-    await expect(page.locator(".world-card.official-art")).toHaveCount(4);
+    await expect(page.locator(".world-card.official-art")).toHaveCount(5);
     for(const [href,name] of cards) {
       const img=page.locator('.world-card.official-art[href="'+href+'"] .media img');
       await expect.poll(async()=>img.getAttribute("src")).toContain(name+"?v=");
