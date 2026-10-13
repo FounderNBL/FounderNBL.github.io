@@ -163,7 +163,12 @@ forbidText(books,"https://cash.app/","Books returned to the manual Cash App back
 forbidText(books,'id="direct-order"',"Manual book-order form returned.");
 forbidText(books,'payhip-embed-page',"Oversized Payhip product embed returned to Books.");
 forbidText(books,"https://payhip.com/embed-page.js","Payhip embed loader returned to Books.");
-forbidText(books,"<lulu-buy-button","Oversized Lulu product showcase returned to Books.");
+requireText(books,'<script defer src="https://js.lulu.com/lulu-buy.js"></script>',"Lulu preview loader is missing.");
+requireText(books,'<lulu-buy-button buy-button-id="7cc013d3-dd8e-469d-8c75-fc11b81c7584" variant="product-preview"></lulu-buy-button>',"Approved compact Lulu product preview is missing or has changed.");
+requireText(books,'data-nbl-lulu-direct="true"',"Compact Lulu preview must replace the extra dynamic Buy Direct banner.");
+forbidText(books,'variant="product-showcase"',"Oversized Lulu product showcase returned to Books.");
+forbidText(books,'<div class="store-cover">', "Oversized duplicate decorative book-cover panels returned to Books.");
+if((books.match(/<lulu-buy-button\b/g)||[]).length!==1){console.error("[website-repair] FAIL: Lulu preview must appear exactly once.");failed=true;}
 
 
 for(const value of ['$4.99/month','300 successful replies','$39.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$54.99 one-time','$449.99 one-time','$14.99/month','$29.99/month']){
