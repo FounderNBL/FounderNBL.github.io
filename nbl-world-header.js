@@ -484,6 +484,7 @@
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">Beans</h2>
+            <a href="https://nblworld.com/university.html#grey" style="display:inline-block;margin-top:8px;color:#f0c56f;font-weight:700;text-decoration:underline">Talk to Grey</a>
             
           </div>
         </div>
