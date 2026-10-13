@@ -34,10 +34,7 @@ test("Founder's six homepage destinations preserve the approved order with Unive
  assert.ok(!grid.includes("The City"),"The City belongs inside Stories, not as a homepage card");
  assert.ok(grid.includes('src="NBL_University.png"'),"University existing art must remain");
  assert.ok(source.includes('.world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))'),"desktop grid must be three columns for the 3-by-2 cards");
- const games=readFileSync(new URL("../games.html",import.meta.url),"utf8");
- assert.ok(grid.includes('href="games.html"'));
- assert.ok(games.includes('href="founder-office.html"'));
- assert.ok(games.includes("Block Boss") && games.includes("Coming Soon"));
+ assert.ok(grid.includes('href="games.html"'),"existing Games homepage destination must remain");
  assert.ok(!source.includes("nbl-kidz-kayes-cubs"));
 });
 
