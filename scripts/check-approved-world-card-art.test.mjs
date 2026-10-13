@@ -29,11 +29,11 @@ test("approved full-image cards use the whole artwork instead of thumbnail and c
 test("Founder's six homepage destinations preserve the approved order with University last",()=>{
  const grid=source.slice(source.indexOf('<div class="world-grid">'),source.indexOf('</div></section>',source.indexOf('<div class="world-grid">')));
  const names=["NBL Books","NBL Clothing Co.","NBL Games","NBL Music Productions","NBL Studios","New Beansland University"];
- const actual=[...grid.matchAll(/<h3>([^<]+)<\\/h3>/g)].map(x=>x[1]);
+ const actual=grid.split('<h3>').slice(1).map(part=>part.split('</h3>')[0]);
  assert.deepEqual(actual,names,"no extra homepage destinations or reordered cards");
  assert.ok(!grid.includes("The City"),"The City belongs inside Stories, not as a homepage card");
  assert.ok(grid.includes('src="NBL_University.png"'),"University existing art must remain");
- assert.match(source,/\\.world-grid\\{display:grid;grid-template-columns:repeat\\(3,minmax\\(0,1fr\\)\\)/,"desktop grid must be three columns for the 3-by-2 cards");
+ assert.ok(source.includes('.world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))'),"desktop grid must be three columns for the 3-by-2 cards");
  const games=readFileSync(new URL("../games.html",import.meta.url),"utf8");
  assert.ok(grid.includes('href="games.html"'));
  assert.ok(games.includes('href="founder-office.html"'));
