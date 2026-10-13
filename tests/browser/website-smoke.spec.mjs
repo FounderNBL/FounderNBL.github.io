@@ -13,10 +13,13 @@ test.describe("New Beansland web app browser smoke", () => {
 
     await expect(page).toHaveTitle(/New Beansland/i);
     await expect(page.locator('.world-card[href="books.html"]')).toBeVisible();
-    await expect(page.locator('.world-card[href="stories.html"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="stories.html"]')).toHaveCount(0);
     await expect(page.locator('.world-card[href="university.html"]')).toBeVisible();
     await expect(page.locator('.world-card[href="studio/"]')).toBeVisible();
     await expect(page.locator('.world-card[href="games.html"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="clothing.html"]')).toBeVisible();
+    await expect(page.locator('.world-grid .world-card')).toHaveCount(6);
+    await expect(page.locator('.world-grid .world-card').last()).toHaveAttribute('href','university.html');
   });
 
 
@@ -26,8 +29,8 @@ test.describe("New Beansland web app browser smoke", () => {
       ["books.html","NBL_Books_New.png"],
       ["studio/","NBL_Music_Productions.png"],
       ["games.html","NBL_Games.png"],
-      ["studio/#movie-studio","NBL-Studios%20(1).png"],
-      ["clothing.html","NBL-Clothing%20(1).png"]
+      ["studio/#movie-studio","NBL_Studios.png"],
+      ["clothing.html","NBL_Clothing_Co.png"]
     ];
     await expect(page.locator(".world-card.official-art")).toHaveCount(5);
     for(const [href,name] of cards) {

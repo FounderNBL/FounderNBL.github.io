@@ -4,10 +4,10 @@ import { readFileSync, existsSync } from "node:fs";
 const source=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const approved=[
  ["NBL_Books_New.png","4da94563","books.html"],
+ ["NBL_Clothing_Co.png","f38a1e26","clothing.html"],
+ ["NBL_Games.png","ce83c71b","games.html"],
  ["NBL_Music_Productions.png","d5b9a023","studio/"],
- ["NBL_Games.png","20261012","games.html"],
- ["NBL-Studios%20(1).png","ef98576f","studio/#movie-studio"],
- ["NBL-Clothing%20(1).png","48ce5891","clothing.html"]
+ ["NBL_Studios.png","e220f7dc","studio/#movie-studio"]
 ];
 test("exact uploaded assets survive and browser references are cache refreshed",()=>{
  for(const [name,tag,href] of approved){
@@ -26,13 +26,15 @@ test("approved full-image cards use the whole artwork instead of thumbnail and c
  assert.match(source,/\.world-card\.official-art::after\{display:none\}/);
  assert.match(source,/\.world-card\.official-art:focus-visible\{/);
 });
-test("City and University cards remain available; Founder Office moves into NBL Games",()=>{
- for(const sourceName of ["assets/brand/NBL-Films.png","NBL_University.png"]) assert.ok(source.includes(sourceName));
- const games=readFileSync(new URL("../games.html",import.meta.url),"utf8");
- assert.ok(source.includes('src="NBL_Games.png?v=20261012"'));
- assert.ok(source.includes('href="games.html"'));
- assert.ok(games.includes('href="founder-office.html"'));
- assert.ok(games.includes("Block Boss") && games.includes("Coming Soon"));
+test("Founder's six homepage destinations preserve the approved order with University last",()=>{
+ const grid=source.slice(source.indexOf('<div class="world-grid">'),source.indexOf('</div></section>',source.indexOf('<div class="world-grid">')));
+ const names=["NBL Books","NBL Clothing Co.","NBL Games","NBL Music Productions","NBL Studios","New Beansland University"];
+ const actual=grid.split('<h3>').slice(1).map(part=>part.split('</h3>')[0]);
+ assert.deepEqual(actual,names,"no extra homepage destinations or reordered cards");
+ assert.ok(!grid.includes("The City"),"The City belongs inside Stories, not as a homepage card");
+ assert.ok(grid.includes('src="NBL_University.png"'),"University existing art must remain");
+ assert.ok(source.includes('.world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))'),"desktop grid must be three columns for the 3-by-2 cards");
+ assert.ok(grid.includes('href="games.html"'),"existing Games homepage destination must remain");
  assert.ok(!source.includes("nbl-kidz-kayes-cubs"));
 });
 
