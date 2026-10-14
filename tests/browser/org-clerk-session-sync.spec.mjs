@@ -23,7 +23,7 @@ const mockClerk=String.raw`
 `;
 async function mockSession(page){
   await page.route("https://clerk.newbeansland.org/npm/**",route=>route.fulfill({
-    status:200, contentType:"application/javascript", body:mockClerk
+    status:200, contentType:"application/javascript", headers:{"Access-Control-Allow-Origin":"*"}, body:mockClerk
   }));
 }
 test("member Chat recovers a late Clerk session without redirect or leaking former messages",async({page})=>{
