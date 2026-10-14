@@ -28,11 +28,16 @@ test("approved full-image cards use the whole artwork instead of thumbnail and c
 });
 test("Founder's six homepage destinations preserve the approved order with University last",()=>{
  const grid=source.slice(source.indexOf('<div class="world-grid">'),source.indexOf('</div></section>',source.indexOf('<div class="world-grid">')));
- const names=["NBL Books","NBL Clothing Co.","NBL Games","NBL Music Productions","NBL Studios","New Beansland University"];
+ const names=["NBL Clothing Co.","NBL Books","NBL Games","NBL Music Productions","NBL Studios","New Beansland University"];
  const actual=grid.split('<h3>').slice(1).map(part=>part.split('</h3>')[0]);
  assert.deepEqual(actual,names,"no extra homepage destinations or reordered cards");
  assert.ok(!grid.includes("The City"),"The City belongs inside Stories, not as a homepage card");
  assert.ok(grid.includes('src="NBL_University.png"'),"University existing art must remain");
+ assert.match(grid,/class="world-card official-art reveal" href="university\.html"/,"University full artwork must not be cropped");
+ assert.ok(source.includes(".world-card.official-art .media img{max-width:100%;max-height:100%;object-fit:contain"),"Official art must scale without cropping");
+ assert.ok(source.includes("@media(max-width:520px){.world-card.official-art{width:100%;max-width:440px"),"Mobile cards need contain-sized frames");
+ assert.ok(grid.includes('href="studios.html"'),"Studios goes to its video-production page, not the music studio");
+ assert.ok(grid.includes('href="studio/"'),"Music remains a separate free showcase");
  assert.ok(source.includes('.world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))'),"desktop grid must be three columns for the 3-by-2 cards");
  assert.ok(grid.includes('href="games.html"'),"existing Games homepage destination must remain");
  assert.ok(!source.includes("nbl-kidz-kayes-cubs"));
