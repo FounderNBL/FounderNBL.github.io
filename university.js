@@ -939,7 +939,7 @@ async function syncCampusSession(){
   $("[data-frontier]").hidden=true;
   $("[data-campus]").hidden=true;
   $("[data-grey-log]")?.replaceChildren();
-  $("[data-signin]").forEach(b=>b.hidden=Boolean(userId));
+  $$("[data-signin]").forEach(b=>b.hidden=Boolean(userId));
   $("[data-signout]").hidden=!userId;
   if(!userId){
     setStatus("Sign in with your NBL account to enter the campus.");
@@ -948,7 +948,7 @@ async function syncCampusSession(){
   await refreshUniversity();
 }
 async function boot(){
-  $("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
+  $$("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
   $$("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
   $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();state.social.realtimeStop?.();studyLab?.close();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
