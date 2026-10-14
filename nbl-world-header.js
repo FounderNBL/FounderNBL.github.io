@@ -10,6 +10,8 @@
     if(/\/shanique\.html$/.test(path)) return {label:"Shanique Washington",key:"her"};
     if(/\/stories\.html$/.test(path)) return {label:"TV & Film",key:"stories"};
     if(/\/studio\/?(?:index\.html)?$/.test(path)) return {label:"NBL Music Productions",key:"studio"};
+    if(/\/studios\.html$/.test(path)||/\/studio\/creator\.html$/.test(path)) return {label:"NBL Studios",key:"studios"};
+    if(/\/pricing\.html$/.test(path)) return {label:"NBL Services & Pricing",key:"pricing"};
     if(/\/founder-office\.html$/.test(path)) return {label:"Founder’s Office",key:"office"};
     if(/\/about\.html$/.test(path)||/\/jamel-hawkins\.html$/.test(path)) return {label:"About NBL",key:"about"};
     if(/\/account\.html$/.test(path)) return {label:"My NBL Account",key:"account"};
@@ -27,6 +29,8 @@
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
     ["studio","NBL Music Productions","/studio/",false],
+    ["studios","NBL Studios","/studios.html",false],
+    ["pricing","Pricing","/pricing.html",false],
     ["office","Founder’s Office","/founder-office.html",false],
     ["search","Search","#nbl-search",false]
   ];
