@@ -172,12 +172,10 @@
         els.output.replaceChildren();
         const url = new URL(String(result.outputUrl || ""));
         if (url.protocol !== "https:") throw new Error("The output link is not available.");
-        const media = document.createElement(latestKind === "image" ? "img" : "video");
+        const media = document.createElement("video");
         media.src = url.href;
-        if (latestKind === "video") {
-          media.controls = true;
-          media.playsInline = true;
-        } else media.alt = "Generated NBL Studios creation";
+        media.controls = true;
+        media.playsInline = true;
         const link = document.createElement("a");
         link.href = url.href;
         link.target = "_blank";
