@@ -201,21 +201,49 @@
     if(!bridge) return;
 
     const clerk=await bridge.getClerk().catch(()=>null);
-    const signedInAtLoad=Boolean(clerk?.isSignedIn&&clerk.session);
-    clerk?.addListener?.(()=>{
-      const signedInNow=Boolean(clerk?.isSignedIn&&clerk.session);
-      if(!authNavigationInProgress&&signedInNow!==signedInAtLoad){
-        location.reload();
-      }
-    });
-    if(!signedInAtLoad){
+    if(!clerk){
       signedOut.classList.add("show");
       accountBody.classList.add("hidden");
+      signedOut.querySelector("p").textContent="The sign-in service could not connect. Retry from this page; your account and purchases have not been changed.";
       return;
     }
 
-    signedOut.classList.remove("show");
-    accountBody.classList.remove("hidden");
+    // Clerk can finish synchronizing AFTER this page has loaded. Never reload
+    // automatically on every auth event: that caused the sign-in/checkout loop.
+    let initializedAccountId=null;
+    let accountInitializationStarted=false;
+    const renderAuthState=()=>{
+      if(authNavigationInProgress) return;
+      const signedIn=Boolean(clerk.isSignedIn&&clerk.session);
+      const accountId=String(clerk.user?.id||clerk.session?.user?.id||clerk.session?.id||"");
+      if(!signedIn){
+        signedOut.classList.add("show");
+        accountBody.classList.add("hidden");
+        return;
+      }
+      if(accountInitializationStarted&&accountId!==initializedAccountId){
+        // Don't reveal one account's loaded history after an identity switch.
+        accountBody.classList.add("hidden");
+        signedOut.classList.add("show");
+        signedOut.querySelector("p").textContent="Your signed-in account changed. Refresh this page to load the new account securely.";
+        return;
+      }
+      signedOut.classList.remove("show");
+      accountBody.classList.remove("hidden");
+      if(!accountInitializationStarted){
+        accountInitializationStarted=true;
+        initializedAccountId=accountId;
+        void initializeSignedInAccount().catch(error=>{
+          accountBody.classList.add("hidden");
+          signedOut.classList.add("show");
+          signedOut.querySelector("p").textContent=error?.message||"Account details could not load. Refresh the page to try again.";
+        });
+      }
+    };
+    clerk.addListener?.(renderAuthState);
+    renderAuthState();
+
+    async function initializeSignedInAccount(){
     const checkoutParams=new URLSearchParams(location.search);
     if(checkoutParams.get("checkout")==="success"){
       checkoutNotice?.classList.remove("hidden");
@@ -572,6 +600,7 @@
       }
     }
     catch(error){profileStatus.textContent=error.message;history.innerHTML='<p class="status">'+error.message.replace(/[<>&]/g,"")+'</p>'}
+    }
   });
   </script>
 </body>
