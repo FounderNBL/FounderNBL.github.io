@@ -35,3 +35,13 @@ test("secure checkout is account bound and cannot navigate to an arbitrary host"
   assert.match(js, /"PRICE_CHECKOUT_HELD"/);
   assert.match(js, /crypto\.randomUUID\(\)/);
 });
+
+
+test("Studio customer UI cannot offer image creation or non-video model catalogs",()=>{
+  assert.doesNotMatch(html,/id="imageTab"|>Still Image</);
+  assert.match(html,/Video production models only/);
+  assert.match(js,/const mediaKind = "video"/);
+  assert.match(js,/data\.models\.filter\(model => model\.media_kind === "video"\)/);
+  assert.doesNotMatch(js,/els\.imageTab\.addEventListener/);
+  assert.match(js,/document\.createElement\("video"\)/);
+});
