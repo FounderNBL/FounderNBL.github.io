@@ -15,6 +15,7 @@ on:
       - "scripts/check-website-chat-parity.mjs"
       - "scripts/check-website-repair.mjs"
       - "scripts/check-org-member-services.mjs"
+      - "scripts/check-campus-protected-source.mjs"
       - "chat.js"
       - "chat.css"
       - "university.js"
@@ -45,6 +46,7 @@ on:
       - "scripts/check-website-chat-parity.mjs"
       - "scripts/check-website-repair.mjs"
       - "scripts/check-org-member-services.mjs"
+      - "scripts/check-campus-protected-source.mjs"
       - "chat.js"
       - "chat.css"
       - "university.js"
@@ -89,6 +91,7 @@ jobs:
           node --check study-lab.mjs
           node --check voice-lab.js
           node scripts/check-org-member-services.mjs
+          node scripts/check-campus-protected-source.mjs
       - name: Check NBL Studios creator preview
         run: |
           node --check studio/creator.js
