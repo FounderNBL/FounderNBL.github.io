@@ -8,6 +8,8 @@ const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 // Sign-in return is same-origin on newbeansland.org; never use the .com origin.
 const $=selector=>document.querySelector(selector);
 const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:false,realtimeThread:null,realtimeStop:null,inboxStop:null};
+let activeAuthUserId;
+let authSyncGeneration=0;
 const status=message=>{const el=$("[data-chat-status]");if(el)el.textContent=message;};
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el;};
 
@@ -152,15 +154,18 @@ async function openThread(id){
   $("[data-chat-mute]").textContent=row?.muted?"Unmute":"Mute";
   $("[data-chat-block]").textContent="Block member";
   resetComposer();renderThreads();
+  const requestedUserId=state.clerk?.user?.id;
   const payload=await social({action:"list_messages",threadId:id});
-  if(state.selectedId!==id)return;
+  if(state.selectedId!==id||state.clerk?.user?.id!==requestedUserId)return;
   renderMessages(payload.messages||[]);
   status("Conversation ready. NBL human messages do not use AI credits.");
 }
 async function refresh(){
+  const requestedUserId=state.clerk?.user?.id;
   try{
     status("Refreshing NBL Chat…");
     const [identity,threads]=await Promise.all([social({action:"me"}),social({action:"list_threads"})]);
+    if(!requestedUserId||state.clerk?.user?.id!==requestedUserId)return;
     renderIdentity(identity.me||{});
     state.threads=threads.threads||[];
     if(state.selectedId&&!state.threads.some(t=>t.id===state.selectedId)){
@@ -253,6 +258,33 @@ async function reportMessage(messageId){
     status("Report recorded for review.");
   }catch(error){status(error.message||"Report could not be submitted.");}
 }
+async function syncClerkSession(){
+  const userId=state.clerk?.isSignedIn&&state.clerk?.session ? state.clerk.user?.id||null : null;
+  if(userId===activeAuthUserId)return;
+  activeAuthUserId=userId;
+  const generation=++authSyncGeneration;
+  state.realtimeStop?.();state.inboxStop?.();
+  state.realtimeStop=null;state.inboxStop=null;state.realtimeThread=null;
+  state.selectedId=null;state.selected=null;state.threads=[];state.me=null;
+  $("[data-chat-app]").hidden=true;
+  $("[data-chat-userbar]").hidden=true;
+  $("[data-chat-messages]").replaceChildren(node("p","hint","Choose a conversation."));
+  $("[data-chat-threads]").replaceChildren();
+  $("[data-chat-thread-title]").textContent="Choose a conversation";
+  resetComposer();
+  if(!userId){
+    $("[data-chat-guest]").hidden=false;
+    $("[data-chat-auth-status]").textContent="Sign in to send and read human-to-human messages. University enrollment is not required for direct messages.";
+    status("Your NBL conversations are private until you sign in.");
+    return;
+  }
+  $("[data-chat-guest]").hidden=true;
+  $("[data-chat-userbar]").hidden=false;
+  $("[data-chat-app]").hidden=false;
+  watchInbox();
+  await refresh();
+  if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
+}
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
@@ -268,18 +300,15 @@ async function boot(){
   });
   try{
     const connection=await clerk();
-    if(!connection.isSignedIn||!connection.session){
-      $("[data-chat-auth-status]").textContent="Sign in to send and read human-to-human messages. University enrollment is not required for direct messages.";
-      return;
-    }
-    $("[data-chat-guest]").hidden=true;
-    $("[data-chat-userbar]").hidden=false;
-    $("[data-chat-app]").hidden=false;
-    watchInbox();
-    await refresh();
-  }catch(error){
-    $("[data-chat-auth-status]").textContent="NBL account connection is unavailable. Try signing in again.";
-    status(error.message||"NBL account service unavailable.");
+    // Clerk may hydrate a valid session AFTER its initial load. React to
+    // actual identity changes instead of asking already-signed-in members to sign in again.
+    connection.addListener?.(()=>{void syncClerkSession();});
+    await syncClerkSession();
+  }catch{
+    $("[data-chat-guest]").hidden=false;
+    $("[data-chat-app]").hidden=true;
+    $("[data-chat-auth-status]").textContent="NBL account connection is temporarily unavailable. Please try again later.";
+    status("Secure NBL sign-in is temporarily unavailable.");
   }
 }
 void boot();
