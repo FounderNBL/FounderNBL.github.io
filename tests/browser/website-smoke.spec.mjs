@@ -27,20 +27,24 @@ test.describe("New Beansland web app browser smoke", () => {
   test("official Founder World Card artwork survives all deferred scripts", async ({ page }) => {
     await page.goto("/", {waitUntil:"load"});
     const cards=[
+      ["clothing.html","NBL_Clothing_Co.png"],
       ["books.html","NBL_Books_New.png"],
-      ["studio/","NBL_Music_Productions.png"],
       ["games.html","NBL_Games.png"],
+      ["studio/","NBL_Music_Productions.png"],
       ["studios.html","NBL_Studios.png"],
-      ["clothing.html","NBL_Clothing_Co.png"]
+      ["university.html","NBL_University.png"]
     ];
-    await expect(page.locator(".world-card.official-art")).toHaveCount(5);
+    await expect(page.locator(".world-card.official-art")).toHaveCount(6);
     for(const [href,name] of cards) {
       const img=page.locator('.world-card.official-art[href="'+href+'"] .media img');
-      await expect.poll(async()=>img.getAttribute("src")).toContain(name+"?v=");
+      await expect.poll(async()=>img.getAttribute("src")).toContain(name);
+      await expect(img).toHaveCSS("object-fit","contain");
       await expect.poll(async()=>img.evaluate(node=>node.complete&&node.naturalWidth>0)).toBe(true);
     }
     await expect(page.locator('.world-card[href="clothing.html"]')).toHaveCount(1);
     await expect(page.locator('.world-card.official-art').first()).toHaveCSS("aspect-ratio","3 / 4");
+    const order=await page.locator(".world-grid .world-card").evaluateAll(nodes=>nodes.map(node=>node.getAttribute("href")));
+    expect(order).toEqual(cards.map(([href])=>href));
   });
 
   test("Beans AI opens in a real browser", async ({ page }) => {
