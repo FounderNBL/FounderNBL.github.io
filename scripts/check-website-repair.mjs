@@ -146,7 +146,10 @@ requireText(header,"window.history.pushState({...window.history.state,nblChatOve
 requireText(header,"const shouldConsumeHistory=!fromPopState","Closing Chat does not distinguish UI-close from browser Back.");
 requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Chat leaves a duplicate same-page history entry behind.");
 
-requireText(home,"Enrollment Display · Verification Pending","Homepage overstates University enrollment readiness.");
+requireText(home,"Under Construction · Early Enrollment Information","Homepage must identify University as under construction, not imply classes are open.");
+requireText(home,"checkout remains held pending verification","Homepage must preserve the University checkout hold.");
+requireText(home,"full-refund promise","Homepage must disclose the advance-enrollment refund policy.");
+requireText(university,"full refund of the advance-enrollment payment","University must explain the full-refund promise when prepaid access cannot be delivered.");
 requireText(portal,"https://books.newbeansland.org/","Connected NBL Books custom domain is missing from the public portal.");
 requireText(books,"Digital · Payhip","Books no longer states the digital Payhip route.");
 requireText(books,"Physical · Lulu","Books no longer states the physical Lulu route.");

@@ -7,7 +7,7 @@ const approved=[
  ["NBL_Clothing_Co.png","f38a1e26","clothing.html"],
  ["NBL_Games.png","ce83c71b","games.html"],
  ["NBL_Music_Productions.png","d5b9a023","studio/"],
- ["NBL_Studios.png","e220f7dc","studio/#movie-studio"]
+ ["NBL_Studios.png","e220f7dc","studios.html"]
 ];
 test("exact uploaded assets survive and browser references are cache refreshed",()=>{
  for(const [name,tag,href] of approved){

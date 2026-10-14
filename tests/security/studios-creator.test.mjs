@@ -7,11 +7,11 @@ const html = read("studio/creator.html");
 const js = read("studio/creator.js");
 const css = read("studio/creator.css");
 
-test("NBL Studios creator preview stays on its own unlinked page", () => {
+test("NBL Studios creator preview remains independent and gated even when linked", () => {
   assert.match(html, /<title>Create · NBL Studios/);
   assert.match(html, /id="createForm"/);
   assert.match(html, /id="buyCredits"/);
-  assert.match(html, /checkout verification is complete/);
+  assert.match(html, /New credit purchases remain disabled/);
   assert.ok(html.includes('src="./creator.js"'));
   assert.ok(css.includes(".columns"));
 });
@@ -34,4 +34,14 @@ test("secure checkout is account bound and cannot navigate to an arbitrary host"
   assert.match(js, /url\.protocol !== "https:"/);
   assert.match(js, /"PRICE_CHECKOUT_HELD"/);
   assert.match(js, /crypto\.randomUUID\(\)/);
+});
+
+
+test("Studio customer UI cannot offer image creation or non-video model catalogs",()=>{
+  assert.doesNotMatch(html,/id="imageTab"|>Still Image</);
+  assert.match(html,/Video production models only/);
+  assert.match(js,/const mediaKind = "video"/);
+  assert.match(js,/data\.models\.filter\(model => model\.media_kind === "video"\)/);
+  assert.doesNotMatch(js,/els\.imageTab\.addEventListener/);
+  assert.match(js,/document\.createElement\("video"\)/);
 });

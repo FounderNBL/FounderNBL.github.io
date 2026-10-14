@@ -5,21 +5,21 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#07121d">
   <title>Create · NBL Studios | New Beansland</title>
-  <meta name="description" content="Create original images and short film clips at NBL Studios using account-bound production credits.">
+  <meta name="description" content="Create short film and video clips at NBL Studios using account-bound production credits.">
   <link rel="stylesheet" href="/nbl-world-header.css">
   <link rel="stylesheet" href="./creator.css">
-  <script defer src="/nbl-product-plans.js?v=20261009-final-prices"></script>
-  <script defer src="/nbl-world-header.js"></script>
+  <script defer src="/nbl-product-plans.js?v=20261014-studios"></script>
+  <script defer src="/nbl-world-header.js?v=20261014-studios"></script>
   <script defer src="./creator.js"></script>
 </head>
 <body>
   <main class="studio-creator">
     <header class="hero">
-      <a class="back" href="/studio/">← Timmy V Studios</a>
+      <a class="back" href="/studios.html">← NBL Studios</a>
       <p class="eyebrow">NEW BEANSLAND · NBL STUDIOS</p>
       <h1>Make something of your own.</h1>
-      <p class="intro">Create original images and short movie clips. Choose a model, describe your scene, and review the credit cost before generating.</p>
-      <p class="release-note" role="status">Creator preview. New credit purchases are held until our checkout verification is complete.</p>
+      <p class="intro">Create original video and short movie clips. Choose a video model, describe your scene, and review the credit cost before generating.</p>
+      <p class="release-note" role="status">Creator preview. NBL Studios is a paid credit-based creation service. New credit purchases remain disabled until account, billing and production verification is complete. <a href="/pricing.html">See approved NBL prices</a>.</p>
     </header>
     <div class="columns">
       <section class="panel" aria-labelledby="create-heading">
@@ -27,12 +27,9 @@
           <h2 id="create-heading">Your production desk</h2>
           <span id="catalogStatus" class="muted" aria-live="polite">Loading the model catalog…</span>
         </div>
-        <div class="type-toggle" role="group" aria-label="Media type">
-          <button type="button" id="imageTab" class="selected" aria-pressed="true">Still Image</button>
-          <button type="button" id="videoTab" aria-pressed="false">Movie Clip</button>
-        </div>
+        <p class="hint">Video production models only. Images may be used as starting references for eligible videos, not as standalone Studio products.</p>
         <form id="createForm">
-          <label for="model">Production model</label>
+          <label for="model">Video production model</label>
           <select id="model" required disabled><option value="">Loading models…</option></select>
           <p id="modelInfo" class="hint">Choose a model to see its NBL Studios Credit cost.</p>
           <label for="prompt">Describe what you want to create</label>
@@ -57,7 +54,7 @@
             <button type="button" id="refreshWallet">Refresh wallet</button>
           </div>
           <hr>
-          <p class="package">500 Studio Credits <strong>$7.00 once</strong></p>
+          <p class="package">500 Studio Credits <strong data-nbl-plan-value="studiosCredits.price">$8.99 one-time</strong></p>
           <p class="hint">Studio Credits are separate from Beans chat replies. Credits do not expire while your account remains active.</p>
           <button id="buyCredits" type="button">Get 500 credits</button>
           <p class="hint">Checkout is temporarily held for safety verification. The button will report the current checkout status and won't charge you on this page.</p>
@@ -71,7 +68,7 @@
         </section>
       </aside>
     </div>
-    <footer><a href="/">New Beansland</a> · <a href="/account.html">My Account</a> · <a href="/studio/">NBL Records</a></footer>
+    <footer><a href="/">New Beansland</a> · <a href="/account.html">My Account</a> · <a href="/studios.html">NBL Studios</a> · <a href="/pricing.html">All NBL Pricing</a></footer>
   </main>
 </body>
 </html>

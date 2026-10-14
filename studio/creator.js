@@ -4,7 +4,7 @@
   const BILLING_API = "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link";
   const $ = (id) => document.getElementById(id);
   const els = {
-    imageTab: $("imageTab"), videoTab: $("videoTab"), model: $("model"),
+    model: $("model"),
     modelInfo: $("modelInfo"), prompt: $("prompt"), imageUrl: $("imageUrl"),
     cost: $("quotedCost"), form: $("createForm"), createButton: $("createButton"),
     catalogStatus: $("catalogStatus"), createStatus: $("createStatus"),
@@ -12,7 +12,7 @@
     buy: $("buyCredits"), refreshWallet: $("refreshWallet"),
     output: $("output"), jobStatus: $("jobStatus"), refreshJob: $("refreshJob")
   };
-  let mediaKind = "image";
+  const mediaKind = "video";
   let models = [];
   let token = null;
   let wallet = null;
@@ -96,17 +96,14 @@
     filtered.forEach(m => els.model.append(new Option(m.display_name + " · " + m.studio_credit_cost + " credits", m.model_key)));
     if (filtered.some(m => m.model_key === current)) els.model.value = current;
     els.model.disabled = filtered.length === 0;
-    els.imageTab.classList.toggle("selected", mediaKind === "image");
-    els.videoTab.classList.toggle("selected", mediaKind === "video");
-    els.imageTab.setAttribute("aria-pressed", String(mediaKind === "image"));
-    els.videoTab.setAttribute("aria-pressed", String(mediaKind === "video"));
     updateControls();
   }
 
   async function loadCatalog() {
     try {
       const data = await request(STUDIO_API, "models");
-      models = Array.isArray(data.models) ? data.models : [];
+      // Only video products belong in NBL Studios. Preserve the private image registry for other future products.
+      models = Array.isArray(data.models) ? data.models.filter(model => model.media_kind === "video") : [];
       els.catalogStatus.textContent = models.length + " available models";
       renderModels();
     } catch (e) {
@@ -175,12 +172,10 @@
         els.output.replaceChildren();
         const url = new URL(String(result.outputUrl || ""));
         if (url.protocol !== "https:") throw new Error("The output link is not available.");
-        const media = document.createElement(latestKind === "image" ? "img" : "video");
+        const media = document.createElement("video");
         media.src = url.href;
-        if (latestKind === "video") {
-          media.controls = true;
-          media.playsInline = true;
-        } else media.alt = "Generated NBL Studios creation";
+        media.controls = true;
+        media.playsInline = true;
         const link = document.createElement("a");
         link.href = url.href;
         link.target = "_blank";
@@ -254,8 +249,6 @@
     }
   }
 
-  els.imageTab.addEventListener("click", () => { mediaKind = "image"; renderModels(); });
-  els.videoTab.addEventListener("click", () => { mediaKind = "video"; renderModels(); });
   els.model.addEventListener("change", updateControls);
   els.imageUrl.addEventListener("input", updateControls);
   els.form.addEventListener("submit", submit);
