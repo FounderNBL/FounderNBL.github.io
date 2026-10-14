@@ -43,7 +43,7 @@ need("university",'clerk.session.getToken()',"Campus bearer identity is missing.
 need("university",'action:"university_status"',"Protected University status verification is missing.");
 need("university",'action:"grey"',"Professor Grey must go through protected University runtime.");
 need("university",'trustedBillingDestination',"Protected checkout destination allowlist is missing.");
-need("university",'"/study-lab.mjs"',"University must load student-safe local Study Lab.");
+need("university",'/study-lab.mjs',"University must load student-safe local Study Lab.");
 need("lab",'action: "university_submit_work"',"Study Lab must save to the protected Registrar API.");
 need("realtime",'config:{private:true}',"Realtime channels must be private.");
 need("realtime",'watchThread',"Private thread updates must be available.");
