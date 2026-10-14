@@ -484,7 +484,7 @@
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">Beans</h2>
-            <p class="nbl-beans-note">Beans is the New Beansland AI assistant. NBL Chat is where people message people in NBL World. NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI. Protected course teaching remains controlled by LOCKE and the account’s University entitlement. <a href="https://nblworld.com/chat.html">Open NBL Chat for human messages</a>.</p>
+            <a href="https://nblworld.com/university.html#grey" class="nbl-beans-grey-link" style="display:inline-block;margin-top:8px;color:#f0c56f;font-weight:700">Talk to Grey</a>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close Beans">✕</button>
