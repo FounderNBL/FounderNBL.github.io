@@ -8,6 +8,14 @@ on:
       - "nbl-world-header.css"
       - "nbl-product-plans.js"
       - "nbl-university-checkout.js"
+      - "university-campus.js"
+      - "university-campus.css"
+      - "member-chat.js"
+      - "member-chat.css"
+      - "study-lab.mjs"
+      - "study-lab.css"
+      - "social-realtime.js"
+      - "scripts/check-org-member-surfaces.mjs"
       - "**.html"
       - "account.html"
       - "account-deletion.html"
@@ -28,6 +36,14 @@ on:
       - "nbl-world-header.css"
       - "nbl-product-plans.js"
       - "nbl-university-checkout.js"
+      - "university-campus.js"
+      - "university-campus.css"
+      - "member-chat.js"
+      - "member-chat.css"
+      - "study-lab.mjs"
+      - "study-lab.css"
+      - "social-realtime.js"
+      - "scripts/check-org-member-surfaces.mjs"
       - "**.html"
       - "account.html"
       - "account-deletion.html"
@@ -55,12 +71,18 @@ jobs:
         run: |
           node --check nbl-world-header.js
           node --check nbl-university-checkout.js
+          node --check university-campus.js
+          node --check member-chat.js
+          node --check social-realtime.js
+          node --check study-lab.mjs
       - name: Check NBL Chat Plus wiring
         run: node scripts/check-website-chat-plus.mjs
       - name: Check website Chat standard regressions
         run: node scripts/check-website-chat-parity.mjs
       - name: Check website-only repair regressions
         run: node scripts/check-website-repair.mjs
+      - name: Check same-origin protected campus and human member Chat
+        run: node scripts/check-org-member-surfaces.mjs
       - name: Check NBL Studios creator preview
         run: |
           node --check studio/creator.js
