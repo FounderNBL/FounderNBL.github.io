@@ -7,7 +7,7 @@ const html = read("studio/creator.html");
 const js = read("studio/creator.js");
 const css = read("studio/creator.css");
 
-test("NBL Studios creator preview stays on its own unlinked page", () => {
+test("NBL Studios creator preview remains independent and gated even when linked", () => {
   assert.match(html, /<title>Create · NBL Studios/);
   assert.match(html, /id="createForm"/);
   assert.match(html, /id="buyCredits"/);
