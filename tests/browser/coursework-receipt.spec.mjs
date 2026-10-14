@@ -9,7 +9,7 @@ async function mockCampus(page,submissions=[]){
   let denyDownloads=false;
   await page.route("**/*",route=>route.request().url().includes("clerk.browser.js")?route.fulfill({
     contentType:"application/javascript",
-    body:'window.Clerk={load:async()=>{},isSignedIn:true,session:{getToken:async()=>"student-token"},signOut:async()=>{}};'
+    body:'window.Clerk={load:async()=>{},isSignedIn:true,user:{id:"mock-student"},session:{getToken:async()=>"student-token"},signOut:async()=>{}};'
   }):route.continue());
   await page.route("**/storage/v1/object/sign/**",route=>route.fulfill({
     status:200,
