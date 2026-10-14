@@ -54,6 +54,8 @@ test.describe("New Beansland web app browser smoke", () => {
 
     await expect(page.locator("#nbl-beans-panel")).toBeVisible();
     await expect(page.locator("#nbl-beans-title")).toBeVisible();
+    await expect(page.getByRole("link",{name:"Talk to Grey"})).toHaveAttribute("href","/campus.html#grey");
+    await expect(page.getByRole("link",{name:"Talk to People"})).toHaveAttribute("href","/chat.html");
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect.poll(async () => page.locator(".nbl-beans-avatar").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
@@ -96,38 +98,37 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
   });
 
-  test("University enrollment is shown on .org and its held checkout stays separate from NBL World campus", async ({ page }) => {
+  test("University enrollment and protected classroom are both on .org", async ({ page }) => {
     await open("/university.html", page);
 
     await expect(page).toHaveTitle(/New Beansland University/i);
-    await expect(page.locator("body")).toContainText("NBL University lives in NBL World.");
+    await expect(page.locator("body")).toContainText("NBL University lives in New Beansland.");
     await expect(page.locator("body")).toContainText("Beans, the AI assistant");
     await expect(page.getByRole("heading", { name: "University enrollment and payment" })).toBeVisible();
     await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
     await expect(page.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
-    await expect(page.getByRole("link", { name: "Explore the University classroom" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Enter the University classroom" })).toHaveAttribute(
       "href",
-      "https://nblworld.com/university.html",
+      "/campus.html",
     );
     await expect(page.locator('a[href="https://nblworld.com/university.html#enroll"]')).toHaveCount(0);
   });
 
-  test("live NBL World campus remains reachable and enrollment-gated", async ({ page }) => {
-    test.skip(!process.env.NBL_BASE_URL, "Live cross-site check only runs against deployed production.");
-
-    await page.goto("https://nblworld.com/university.html", { waitUntil: "domcontentloaded" });
+  test("same-origin campus remains protected and sign-in points to verified .org", async ({ page }) => {
+    await open("/campus.html", page);
 
     await expect(page).toHaveTitle(/NBL University Campus/i);
     await expect(page.getByRole("heading", { name: "Student Campus" })).toBeVisible();
     await expect(page.locator("[data-campus-gate]")).toBeVisible();
+    await expect(page.locator("[data-campus]")).toBeHidden();
+    await expect(page.getByRole("link",{name:"NBL Chat"})).toHaveAttribute("href","/chat.html");
   });
 
   // The Inspector tests each route separately. A confirmed Cloudflare browser
   // challenge to the CI runner is UNVERIFIED, never a PASS or a customer outage.
   const registeredRoutes = [
     "/", "/books.html", "/stories.html", "/founder-office.html",
-    "/studio/", "/account.html", "/university.html",
-    "https://nblworld.com/", "https://nblworld.com/university.html"
+    "/studio/", "/account.html", "/university.html", "/campus.html", "/chat.html", "/voice-lab.html"
   ];
   for (const route of registeredRoutes) {
     test("live registered route " + route + " responds without error", async ({ page }) => {
@@ -143,6 +144,16 @@ test.describe("New Beansland web app browser smoke", () => {
       expect(status, "Expected " + route + " to be reachable; HTTP " + status).toBeLessThan(400);
     });
   }
+
+  test("same-origin human NBL Chat offers real member-search and DM affordances", async ({page}) => {
+    await open("/chat.html",page);
+    await expect(page).toHaveTitle(/NBL Chat/);
+    await expect(page.locator("[data-chat-guest]")).toBeVisible();
+    await expect(page.locator("[data-chat-app]")).toBeHidden();
+    await expect(page.locator("[data-chat-find-form]")).toHaveCount(1);
+    await expect(page.locator("[data-chat-dm-form]")).toHaveCount(1);
+    await expect(page.getByRole("link",{name:/Sign in \/ create account/i})).toHaveAttribute("href","https://newbeansland.org/account.html");
+  });
 
   test("account recovery uses the Clerk portal with a safe return URL", async ({ page }) => {
     await open("/account.html?source=smoke#account", page);
