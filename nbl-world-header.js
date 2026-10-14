@@ -21,6 +21,7 @@
   const nav=[
     ["home","Home","/",false],
     ["university","University","/university.html",false],
+    ["members","Member Chat","/member-chat.html",false],
     ["books","Books","/books.html",false],
     ["clothing","Clothing","https://new-beansland.myshopify.com",true],
     ["shop","Shop","https://new-beansland.myshopify.com",true],
@@ -418,7 +419,7 @@
           <img src="/NBLChat_Beans.png" alt="" aria-hidden="true">
           <span>Beans</span>
         </button>
-        <a class="nbl-world-nblworld-link" href="https://nblworld.com/" aria-label="Enter NBL World">NBL World</a>
+        <a class="nbl-world-nblworld-link" href="/member-chat.html" aria-label="Start a person-to-person NBL Chat">Member Chat</a>
       </div>
     </div>`:`
     <div class="nbl-world-header-inner">
@@ -484,7 +485,7 @@
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">Beans</h2>
-            <a href="https://nblworld.com/university.html#grey" class="nbl-beans-grey-link" style="display:inline-block;margin-top:8px;color:#f0c56f;font-weight:700">Talk to Grey</a>
+            <a href="/university-campus.html#grey" class="nbl-beans-grey-link" style="display:inline-block;margin-top:8px;color:#f0c56f;font-weight:700">Talk to Grey</a>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close Beans">✕</button>
@@ -541,6 +542,10 @@
           <a class="nbl-chat-drawer-item" href="/university.html">
             <img src="/NBL_University.png" alt="" aria-hidden="true">
             <span><strong>NBL University</strong><small>Courses and University doors · separate from Chat Plus</small></span>
+          </a>
+          <a class="nbl-chat-drawer-item" href="/member-chat.html">
+            <span class="nbl-chat-drawer-fallback" aria-hidden="true">DM</span>
+            <span><strong>Member Chat</strong><small>Start private conversations with other people — not Beans</small></span>
           </a>
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-tools>
