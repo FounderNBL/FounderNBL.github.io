@@ -144,7 +144,7 @@
 
   const trustedNblBillingDestination=value=>{
     const url=new URL(String(value||""));
-    if(url.protocol!=="https:"||!["buy.stripe.com","billing.stripe.com"].includes(url.hostname)){
+    if(url.protocol!=="https:"||!["buy.stripe.com","checkout.stripe.com","billing.stripe.com"].includes(url.hostname)){
       throw new Error("The secure billing destination could not be verified.");
     }
     return url.href;
