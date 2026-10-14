@@ -11,7 +11,7 @@ test("NBL Studios creator preview remains independent and gated even when linked
   assert.match(html, /<title>Create · NBL Studios/);
   assert.match(html, /id="createForm"/);
   assert.match(html, /id="buyCredits"/);
-  assert.match(html, /checkout verification is complete/);
+  assert.match(html, /New credit purchases remain disabled/);
   assert.ok(html.includes('src="./creator.js"'));
   assert.ok(css.includes(".columns"));
 });
