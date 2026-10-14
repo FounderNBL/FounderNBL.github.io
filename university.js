@@ -16,6 +16,8 @@ const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 let studyLab=null;
 let studyLabPromise=null;
 const state={clerk:null,university:null,course:"APSK 101",schoolTaskId:null,schoolPlan:null,greyHistory:[],conversationId:null,assessment:null,reader:null,pendingSubmission:null,social:{me:null,threadId:null,threadType:null,threadTitle:null,threads:[],helpCases:[],realtimeThread:null,realtimeStop:null}};
+let activeCampusIdentity;
+let campusAuthGeneration=0;
 
 function safeReturnUrl(){const u=new URL(location.href);u.hash="";return u.href;}
 function signInUrl(){return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(safeReturnUrl());}
@@ -453,9 +455,19 @@ function renderUniversity(u){
   setStatus("University access confirmed by LOCKE.");
 }
 async function refreshUniversity(){
+  const requestedUserId=state.clerk?.user?.id;
   setStatus("Checking NBL University enrollment…");
-  try{const payload=await api({action:"university_status"});renderUniversity(payload.university);}
-  catch(error){if(error.status===401){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("Sign in with your NBL account to enter the campus.");}else setStatus(error.message||"University status could not be loaded.");}
+  try{
+    const payload=await api({action:"university_status"});
+    if(!requestedUserId||state.clerk?.user?.id!==requestedUserId)return;
+    renderUniversity(payload.university);
+  }catch(error){
+    if(state.clerk?.user?.id!==requestedUserId)return;
+    if(error.status===401){
+      $("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;
+      setStatus("Sign in with your NBL account to enter the campus.");
+    }else setStatus("NBL University is temporarily unavailable. Please try again.");
+  }
 }
 
 function submissionAttachment(row){return row?.attachment||row?.file||{};}
@@ -915,8 +927,28 @@ async function loadHelperBoard(){
   catch(error){const host=$("[data-helper-board]");if(host)host.textContent=error.message||"Helper board unavailable.";}
 }
 
+async function syncCampusSession(){
+  const userId=state.clerk?.isSignedIn&&state.clerk?.session ? state.clerk.user?.id||null : null;
+  if(userId===activeCampusIdentity)return;
+  activeCampusIdentity=userId;
+  ++campusAuthGeneration;
+  state.university=null;state.greyHistory=[];state.conversationId=null;
+  state.social.realtimeStop?.();state.social.realtimeStop=null;state.social.realtimeThread=null;
+  studyLab?.close();
+  $("[data-campus-gate]").hidden=false;
+  $("[data-frontier]").hidden=true;
+  $("[data-campus]").hidden=true;
+  $("[data-grey-log]")?.replaceChildren();
+  $("[data-signin]").forEach(b=>b.hidden=Boolean(userId));
+  $("[data-signout]").hidden=!userId;
+  if(!userId){
+    setStatus("Sign in with your NBL account to enter the campus.");
+    return;
+  }
+  await refreshUniversity();
+}
 async function boot(){
-  $$("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
+  $("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
   $$("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
   $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();state.social.realtimeStop?.();studyLab?.close();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
@@ -942,10 +974,15 @@ async function boot(){
   $("[data-reader-next]").addEventListener("click",()=>state.reader&&openMaterial(state.reader.sourceKey,state.reader.chunkIndex+1));
   document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("[data-reader]").hidden)closeReader();});
   try{
-    const clerk=await getClerk(),signed=Boolean(clerk?.isSignedIn&&clerk.session);
-    $$("[data-signin]").forEach(b=>b.hidden=signed);$("[data-signout]").hidden=!signed;
-    if(signed)await refreshUniversity();else setStatus("Sign in with your NBL account to enter the campus.");
-  }catch{setStatus("NBL account connection is unavailable here right now. Use the sign-in button and try again.");}
+    const clerk=await getClerk();
+    // Clerk may finish restoring a browser session after the first page load.
+    // Show the authenticated view on identity changes without redirect loops.
+    clerk.addListener?.(()=>{void syncCampusSession();});
+    await syncCampusSession();
+  }catch{
+    $("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;
+    setStatus("Secure NBL sign-in is temporarily unavailable. Please try again later.");
+  }
 }
 boot();
 })();
