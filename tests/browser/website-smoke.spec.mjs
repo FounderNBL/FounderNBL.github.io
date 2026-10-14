@@ -96,29 +96,29 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
   });
 
-  test("University enrollment hands off to NBL World while Beans stays here", async ({ page }) => {
+  test("University enrollment is shown on .org and its held checkout stays separate from NBL World campus", async ({ page }) => {
     await open("/university.html", page);
 
     await expect(page).toHaveTitle(/New Beansland University/i);
     await expect(page.locator("body")).toContainText("NBL University lives in NBL World.");
     await expect(page.locator("body")).toContainText("Beans, the AI assistant");
-    await expect(page.getByRole("link", { name: /View New Beansland University enrollment information/i })).toHaveAttribute(
+    await expect(page.getByRole("heading", { name: "University enrollment and payment" })).toBeVisible();
+    await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
+    await expect(page.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
+    await expect(page.getByRole("link", { name: "Explore the University classroom" })).toHaveAttribute(
       "href",
-      "https://nblworld.com/university.html#enroll",
+      "https://nblworld.com/university.html",
     );
-    await expect(page.locator('[data-nbl-university-checkout]')).toHaveCount(0);
+    await expect(page.locator('a[href="https://nblworld.com/university.html#enroll"]')).toHaveCount(0);
   });
 
-  test("live NBL World campus and enrollment surface are reachable", async ({ page }) => {
+  test("live NBL World campus remains reachable and enrollment-gated", async ({ page }) => {
     test.skip(!process.env.NBL_BASE_URL, "Live cross-site check only runs against deployed production.");
 
-    await page.goto("https://nblworld.com/university.html#enroll", { waitUntil: "domcontentloaded" });
+    await page.goto("https://nblworld.com/university.html", { waitUntil: "domcontentloaded" });
 
     await expect(page).toHaveTitle(/NBL University Campus/i);
     await expect(page.getByRole("heading", { name: "Student Campus" })).toBeVisible();
-    await expect(page.locator('[data-nblu-checkout="foundation"]')).toBeVisible();
-    await expect(page.locator('[data-nblu-checkout="full_foundation"]')).toBeVisible();
-    await expect(page.locator('[data-nblu-checkout="full_nblu"]')).toBeVisible();
     await expect(page.locator("[data-campus-gate]")).toBeVisible();
   });
 

@@ -57,12 +57,13 @@ forbidText(header,'nbl-chat.replit.app',"Website still depends on the old Replit
 forbidText(header,'NBL_ACCOUNT_API',"Legacy Replit account API constant is still present.");
 forbidText(header,'exam-prep/access',"Legacy Replit University access route is still present.");
 requireText(header,'fetch(NBL_CHAT_PLUS_API',"University account status is not using the canonical NBL Foundation runtime.");
-requireText(header,'NBL CHAT PLUS™ adds premium Beans tools. NBL CHAT PLUS™ + University adds Professor Grey™ and the Virgo System™ for guided course teaching — powered by OpenAI.',"Public Chat header does not state the trademarked Plus brand line.");
+requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"Beans header is missing.");
+forbidText(header,'Beans is the New Beansland AI assistant. NBL Chat is where people message people',"Removed Beans promotional paragraph has returned.");
 
 // Website-standard Chat shell and Beans continuity.
 requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat™ drawer is missing.");
 requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"Beans must be the AI dialog name.");
-requireText(header,'href="https://nblworld.com/chat.html"',"Human NBL Chat handoff to NBL World is missing.");
+requireText(header,'href="https://nblworld.com/university.html#grey"',"Talk to Grey must link to the NBL World University classroom.");
 forbidText(header,'Beans is NBL Chat™',"Beans must not be labeled as human NBL Chat.");
 requireText(header,'NBL CHAT PLUS™',"NBL CHAT PLUS™ trademark display is missing.");
 requireText(header,'Professor Grey™',"Professor Grey™ trademark display is missing.");
