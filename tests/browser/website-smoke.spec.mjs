@@ -121,7 +121,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.getByRole("heading", { name: "Student Campus" })).toBeVisible();
     await expect(page.locator("[data-campus-gate]")).toBeVisible();
     await expect(page.locator("[data-campus]")).toBeHidden();
-    await expect(page.getByRole("link",{name:"NBL Chat"})).toHaveAttribute("href","/chat.html");
+    await expect(page.getByRole("navigation",{name:"Campus navigation"}).getByRole("link",{name:"NBL Chat"})).toHaveAttribute("href","/chat.html");
   });
 
   // The Inspector tests each route separately. A confirmed Cloudflare browser
@@ -152,7 +152,12 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator("[data-chat-app]")).toBeHidden();
     await expect(page.locator("[data-chat-find-form]")).toHaveCount(1);
     await expect(page.locator("[data-chat-dm-form]")).toHaveCount(1);
-    await expect(page.getByRole("link",{name:/Sign in \/ create account/i})).toHaveAttribute("href","https://newbeansland.org/account.html");
+    const signInUrl=new URL(await page.getByRole("link",{name:/Sign in \/ create account/i}).getAttribute("href"));
+    expect(signInUrl.origin).toBe("https://accounts.newbeansland.org");
+    expect(signInUrl.pathname).toBe("/sign-in");
+    const returnTo=new URL(signInUrl.searchParams.get("redirect_url"));
+    expect(returnTo.origin).toBe(new URL(page.url()).origin);
+    expect(returnTo.pathname).toBe("/chat.html");
   });
 
   test("account recovery uses the Clerk portal with a safe return URL", async ({ page }) => {
