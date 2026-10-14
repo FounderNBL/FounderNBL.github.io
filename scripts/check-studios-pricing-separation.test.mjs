@@ -55,3 +55,20 @@ test("NBL navigation shares pricing, Studios and music without duplicating authe
  assert.match(home,/href="pricing\.html"/);
  assert.doesNotMatch(studio+pricing,/nblworld\.com|sk_live_/);
 });
+
+test("official homepage hero keeps the full artwork in portrait view without crop",()=>{
+ assert.match(home,/src="assets\/site\/homepage\/New_New_homepage\.png"/);
+ assert.match(home,/@media\(max-width:800px\) and \(orientation:portrait\)/);
+ assert.match(home,/html body#home \.hero \.hero-media\{position:relative;inset:auto;width:100%;height:auto;max-width:100%;object-fit:contain/);
+ assert.match(home,/body#home \.hero \.hero-content\{width:100%;min-height:0/);
+});
+test("NBL Studios storefront and Creator are video-only, while video input may use an authorized reference image",()=>{
+ const studioClient=read("studio/creator.js");
+ assert.match(studioClient,/const mediaKind = "video"/);
+ assert.match(studioClient,/data\.models\.filter\(model => model\.media_kind === "video"\)/);
+ assert.match(studioClient,/document\.createElement\("video"\)/);
+ assert.doesNotMatch(creator,/id="imageTab"|>Still Image<|original images/);
+ assert.doesNotMatch(studio, /image-and-video creation|image\/video creator|image and short-video generation/);
+ assert.doesNotMatch(pricing,/Image and video generation using NBL Studios Credits/);
+ assert.match(creator,/Starting image URL/);
+});
