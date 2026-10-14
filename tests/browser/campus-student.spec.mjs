@@ -1,0 +1,37 @@
+import {test,expect} from "@playwright/test";
+
+test("University campus loads with a protected enrollment gate",async({page})=>{
+  await page.goto("/campus.html");
+  await expect(page).toHaveTitle(/NBL University Campus/i);
+  await expect(page.getByRole("heading",{name:"Student Campus"})).toBeVisible();
+  await expect(page.locator("[data-study-lab] h2")).toHaveText("Your Study Lab");
+  await expect(page.locator("[data-study-lab]")).toBeHidden();
+  await expect(page.locator("[data-study-save]")).toBeHidden();
+  await expect(page.locator("#enroll")).toBeVisible();
+  await expect(page.locator("[data-nblu-checkout=\"full_nblu\"]")).toBeVisible();
+  await expect(page.locator("[data-nblu-checkout=\"full_nblu\"]")).toBeDisabled();
+  await expect(page.locator("[data-release-proof-notice]")).toBeVisible();
+  await expect(page.locator("body")).toContainText("$449.99");
+  await expect(page.locator("body")).toContainText("$14.99/month");
+  await expect(page.locator("[data-campus-gate]")).toBeVisible();
+  await expect(page.locator("body")).toContainText("LOCKE opens the classroom only when that account has University enrollment");
+  await expect(page.locator("[data-campus]")).toBeHidden();
+  await expect(page.locator("[data-frontier]")).toBeHidden();
+  await expect(page.locator("body")).toContainText("The Frontier Check");
+  await expect(page.locator("body")).toContainText("Some are trying to get you to confidently say some bullshit");
+  await expect(page.locator("body")).toContainText("Professor Grey");
+  await expect(page.locator("body")).toContainText("Your digital materials");
+  await expect(page.locator("body")).toContainText("Course assessment");
+  await expect(page.locator("body")).toContainText("Your course work");
+  await expect(page.locator("body")).toContainText("Registrar rail");
+  await expect(page.locator("body")).toContainText("Gradebook");
+  await expect(page.locator("body")).toContainText("approximately 9 hours of engaged learning total");
+  await expect(page.locator("body")).toContainText("What each course expects");
+  await expect(page.locator("body")).toContainText("Opt-in scoreboard");
+  await expect(page.locator("body")).toContainText("Access / accommodation");
+  await expect(page.locator("body")).toContainText("Request academic review");
+  await expect(page.locator("body")).toContainText("Chat means people");
+  await expect(page.locator("body")).toContainText("Ask classmates first");
+  await expect(page.locator("body")).toContainText("Helper leaderboard");
+  await expect(page.locator("#nbl-social")).toBeHidden();
+});
