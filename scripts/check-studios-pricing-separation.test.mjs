@@ -25,7 +25,7 @@ test("Studios now has an independent film/video door and protected creator",()=>
  assert.match(studio,/href="\/studio\/creator\.html"/);
  assert.match(creator,/id="createForm"/);
  assert.match(creator,/500 Studio Credits/);
- assert.match(creator,/checkout verification is complete/);
+ assert.match(creator,/New credit purchases remain disabled/);
  assert.match(studioClient,/NBLAccountBridge/);
  assert.doesNotMatch(studioClient,/RUNWAY_API_KEY|SUPABASE_SERVICE_ROLE_KEY/);
 });
