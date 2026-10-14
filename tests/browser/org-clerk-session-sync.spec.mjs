@@ -2,7 +2,7 @@ import {test,expect} from "@playwright/test";
 
 // Browser-only Clerk fixture: proves the UI reacts when Clerk restores an
 // existing account AFTER initial load. It does not impersonate a real customer.
-const mockClerk=String.raw\`
+const mockClerk=String.raw`
 (()=>{
   const listeners=[];
   let id=null;
@@ -20,7 +20,7 @@ const mockClerk=String.raw\`
     for(const f of listeners)f({session:id?session:null,user:id?{id}:null});
   };
 })();
-\`;
+`;
 async function mockSession(page){
   await page.route("https://clerk.newbeansland.org/npm/**",route=>route.fulfill({
     status:200, contentType:"application/javascript", body:mockClerk
