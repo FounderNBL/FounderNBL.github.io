@@ -13,14 +13,14 @@ test("authenticated mock campus opens Study Lab and keeps practice out of offici
     "content-type": "application/json"
   };
   await page.addInitScript(() => {
-    window.Clerk = {load:async()=>{},isSignedIn:true,user:{id:"mock-student"},session:{getToken:async()=> "stub-signed-in-token"},signOut:async()=>{}};
+    window.Clerk = {load:async()=>{},isSignedIn:true,user:{id:'mock-student'},session:{getToken:async()=> "stub-signed-in-token"},signOut:async()=>{}};
   });
   await page.route("**/clerk.browser.js", async route => {
     await route.fulfill({
       status: 200,
       contentType: "application/javascript",
       headers: { "access-control-allow-origin": "*" },
-      body: "window.Clerk={load:async()=>{},isSignedIn:true,user:{id:"mock-student"},session:{getToken:async()=> 'stub-signed-in-token'},signOut:async()=>{}};"
+      body: "window.Clerk={load:async()=>{},isSignedIn:true,user:{id:'mock-student'},session:{getToken:async()=> 'stub-signed-in-token'},signOut:async()=>{}};"
     });
   });
   await page.route("**/functions/v1/nbl-core/**", async route => {
