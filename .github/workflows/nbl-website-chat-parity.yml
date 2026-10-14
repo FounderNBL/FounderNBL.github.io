@@ -14,10 +14,23 @@ on:
       - "scripts/check-website-chat-plus.mjs"
       - "scripts/check-website-chat-parity.mjs"
       - "scripts/check-website-repair.mjs"
+      - "scripts/check-org-member-services.mjs"
+      - "scripts/check-campus-protected-source.mjs"
+      - "chat.js"
+      - "chat.css"
+      - "university.js"
+      - "university.css"
+      - "study-lab.mjs"
+      - "study-lab.css"
+      - "social-realtime.js"
+      - "voice-lab.js"
+      - "voice-lab.css"
       - "playwright.config.mjs"
       - "nbl-reader.js"
       - "nbl-reader.css"
       - "tests/browser/**"
+      - "tests/study-lab.test.mjs"
+      - "tests/voice-lab-source.test.mjs"
       - "studio/creator.js"
       - "studio/creator.css"
       - "tests/security/studios-creator.test.mjs"
@@ -34,10 +47,23 @@ on:
       - "scripts/check-website-chat-plus.mjs"
       - "scripts/check-website-chat-parity.mjs"
       - "scripts/check-website-repair.mjs"
+      - "scripts/check-org-member-services.mjs"
+      - "scripts/check-campus-protected-source.mjs"
+      - "chat.js"
+      - "chat.css"
+      - "university.js"
+      - "university.css"
+      - "study-lab.mjs"
+      - "study-lab.css"
+      - "social-realtime.js"
+      - "voice-lab.js"
+      - "voice-lab.css"
       - "playwright.config.mjs"
       - "nbl-reader.js"
       - "nbl-reader.css"
       - "tests/browser/**"
+      - "tests/study-lab.test.mjs"
+      - "tests/voice-lab-source.test.mjs"
       - "studio/creator.js"
       - "studio/creator.css"
       - "tests/security/studios-creator.test.mjs"
@@ -61,6 +87,16 @@ jobs:
         run: node scripts/check-website-chat-parity.mjs
       - name: Check website-only repair regressions
         run: node scripts/check-website-repair.mjs
+      - name: Verify Clerk-primary member Chat, LOCKE/University and voice security rails
+        run: |
+          node --check chat.js
+          node --check university.js
+          node --check social-realtime.js
+          node --check study-lab.mjs
+          node --check voice-lab.js
+          node scripts/check-org-member-services.mjs
+          node scripts/check-campus-protected-source.mjs
+          node --test tests/study-lab.test.mjs tests/voice-lab-source.test.mjs
       - name: Check NBL Studios creator preview
         run: |
           node --check studio/creator.js

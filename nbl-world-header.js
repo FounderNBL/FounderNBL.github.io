@@ -418,7 +418,7 @@
           <img src="/NBLChat_Beans.png" alt="" aria-hidden="true">
           <span>Beans</span>
         </button>
-        <a class="nbl-world-nblworld-link" href="https://nblworld.com/" aria-label="Enter NBL World">NBL World</a>
+        <a class="nbl-world-nblworld-link" href="https://nblworld.com/" aria-label="Shop NBL World">NBL Shop</a>
       </div>
     </div>`:`
     <div class="nbl-world-header-inner">
@@ -484,7 +484,7 @@
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">Beans</h2>
-            <a href="https://nblworld.com/university.html#grey" class="nbl-beans-grey-link" style="display:inline-block;margin-top:8px;color:#f0c56f;font-weight:700">Talk to Grey</a>
+            <nav aria-label="NBL conversations" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px"><a href="/campus.html#grey" class="nbl-beans-grey-link" style="display:inline-block;color:#f0c56f;font-weight:700">Talk to Grey</a><a href="/chat.html" class="nbl-beans-people-link" style="display:inline-block;color:#f0c56f;font-weight:700">Talk to People</a></nav>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close Beans">✕</button>

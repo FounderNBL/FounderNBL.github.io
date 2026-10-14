@@ -1,3 +1,9 @@
+## Current Founder decision — October 14, 2026: member services on .org
+
+**THIS OVERRIDES October 8 routing instructions below.** Clerk production for newbeansland.org does not provide a shared signed-in session to nblworld.com. Founder expressly approved moving human-to-human Chat, University/Professor Grey/Virgo, all NBL-owned paid account services, and member interactions to **https://newbeansland.org**. The existing Beans and account gateway already run here. The independent **nblworld.com** domain is for **commercial sales/discovery** (Shopify, books, external merchant links) and must not own a second Clerk sign-in or NBL Stripe checkout. Source migration is staged in PRs and is not live/verified until approved, merged and tested. Keep protected NBL academic content and credentials on Supabase/LOCKE servers, and keep University checkout held until account binding and second-account isolation are proven. Preserve all game/Office/video art and files unchanged. Newest Founder decision beats older README/test text.
+
+---
+
 ## Founder public-site boundary — October 8, 2026
 
 **NewBeansland.org is for visitors to look, touch, explore and READ.** It is not the long-term functional Beans, human-chat or University application.
