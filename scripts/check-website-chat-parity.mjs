@@ -63,7 +63,8 @@ forbidText(header,'Beans is the New Beansland AI assistant. NBL Chat is where pe
 // Website-standard Chat shell and Beans continuity.
 requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat™ drawer is missing.");
 requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"Beans must be the AI dialog name.");
-requireText(header,'href="https://nblworld.com/university.html#grey"',"Talk to Grey must link to the NBL World University classroom.");
+requireText(header,'href="/campus.html#grey"',"Talk to Grey must open the .org protected University classroom.");
+requireText(header,'href="/chat.html"',"Talk to People must open same-origin member NBL Chat.");
 forbidText(header,'Beans is NBL Chat™',"Beans must not be labeled as human NBL Chat.");
 requireText(header,'NBL CHAT PLUS™',"NBL CHAT PLUS™ trademark display is missing.");
 requireText(header,'Professor Grey™',"Professor Grey™ trademark display is missing.");
