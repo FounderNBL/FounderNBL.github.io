@@ -37,6 +37,7 @@ test("member Chat recovers a late Clerk session without redirect or leaking form
   await page.goto("/chat.html");
   await expect(page.locator("[data-chat-guest]")).toBeVisible();
   await expect(page.locator("[data-chat-app]")).toBeHidden();
+  await page.waitForFunction(()=>typeof window.__NBL_TEST_SET_IDENTITY === "function");
   await page.evaluate(()=>window.__NBL_TEST_SET_IDENTITY("user-test-one"));
   await expect(page.locator("[data-chat-userbar]")).toBeVisible();
   await expect(page.locator("[data-chat-app]")).toBeVisible();
@@ -58,6 +59,7 @@ test("University rechecks LOCKE when Clerk restores a member identity",async({pa
   await page.goto("/campus.html");
   await expect(page.locator("[data-campus-gate]")).toBeVisible();
   await expect(page.locator("[data-campus]")).toBeHidden();
+  await page.waitForFunction(()=>typeof window.__NBL_TEST_SET_IDENTITY === "function");
   await page.evaluate(()=>window.__NBL_TEST_SET_IDENTITY("user-test-two"));
   await expect(page.locator("[data-signout]")).toBeVisible();
   await expect(page.locator("[data-campus]")).toBeHidden();
