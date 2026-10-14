@@ -10,7 +10,8 @@
     fullFoundation:Object.freeze({name:"Guided Foundation",price:"$54.99 one-time"}),
     fullNblu:Object.freeze({name:"Full NBLU Experience",price:"$449.99 one-time"}),
     nbluContinuation:Object.freeze({name:"Full NBLU Owner Continuation",price:"$14.99/month"}),
-    studiosCredits:Object.freeze({name:"NBL Studios Credits",price:"$8.99 one-time",credits:"500 NBL Studios Credits"})
+    studiosCredits:Object.freeze({name:"NBL Studios Credits",price:"$8.99 one-time",credits:"500 NBL Studios Credits"}),
+    studiosSupport:Object.freeze({name:"Support NBL Studios Fund",price:"$1.00 minimum",credits:"0 personal Studio Credits"})
   });
   window.NBL_PRODUCT_PLANS=plans;
   const valueFor=path=>path.split(".").reduce((value,key)=>value?.[key],plans);
