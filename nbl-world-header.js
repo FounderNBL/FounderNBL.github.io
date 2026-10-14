@@ -142,6 +142,25 @@
     }
   };
 
+  // Signed-in customers must never be sent back to sign-in merely because
+  // Clerk is still syncing a token. Only genuinely signed-out visitors need it.
+  const getNblBillingSessionToken=async()=>{
+    let clerk;
+    try{
+      clerk=await getNblClerk();
+    }catch{
+      throw new Error("NBL sign-in could not connect. Stay here and retry when the account service is available.");
+    }
+    if(!clerk?.isSignedIn||!clerk.session) return null;
+    try{
+      const token=await clerk.session.getToken();
+      if(typeof token==="string"&&token.trim()) return token.trim();
+    }catch{
+      // A brief Clerk token refresh failure is not a signed-out state.
+    }
+    throw new Error("Your NBL account is signed in, but its secure session has not finished connecting. Refresh this page or sign out and sign in again.");
+  };
+
   const trustedNblBillingDestination=value=>{
     const url=new URL(String(value||""));
     if(url.protocol!=="https:"||!["buy.stripe.com","checkout.stripe.com","billing.stripe.com"].includes(url.hostname)){
@@ -150,7 +169,7 @@
     return url.href;
   };
   const requestNblBilling=async({plan=null,portal=false}={})=>{
-    const token=await getNblBeansAuthToken();
+    const token=await getNblBillingSessionToken();
     if(!token) return {signInRequired:true,signInUrl:accountPortalUrl("/sign-in")};
     const route=portal?"/billing/portal":"/billing/checkout";
     const response=await fetch(`${NBL_CHAT_GATEWAY_API}${route}`,{
@@ -174,7 +193,7 @@
   };
 
   const requestNblMeter=async()=>{
-    const token=await getNblBeansAuthToken();
+    const token=await getNblBillingSessionToken();
     if(!token) return {signInRequired:true,signInUrl:accountPortalUrl("/sign-in"),meter:null};
     const response=await fetch(`${NBL_CHAT_GATEWAY_API}/chat/meter`,{
       method:"GET",
