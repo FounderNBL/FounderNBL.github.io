@@ -22,7 +22,7 @@
       <div class="header-copy">
         <p class="eyebrow">NEW BEANSLAND · MUSIC</p>
         <h1>NBL Music Productions</h1>
-        <p>Music, trailers, commercials and releases from New Beansland. Pick a record and press play.</p>
+        <p>Official NBL Music Productions releases and playlists. Pick a record and press play. No paid music services are offered here.</p>
       </div>
     </header>
 
@@ -68,55 +68,13 @@
       <div id="trackList" class="track-list"></div>
     </section>
 
-    <section class="movie-section" id="movie-studio" aria-labelledby="movie-studio-title">
-      <div class="section-heading movie-heading">
-        <p class="eyebrow">NBL STUDIOS</p>
-        <h2 id="movie-studio-title">NBL Movie Studio</h2>
-        <p>Trailers, commercials and music films live here too. Every screen stays on its cover until you press Play.</p>
-      </div>
-
-      <div class="movie-grid">
-        <article class="movie-card">
-          <video controls playsinline preload="metadata" poster="../assets/brand/NBL-Studios.png" aria-label="Still Walking">
-            <source src="../%40FounderNBL.mp4" type="video/mp4" />
-          </video>
-          <div class="movie-copy">
-            <p class="eyebrow">MUSIC FILM</p>
-            <h3>Still Walking</h3>
-            <p>New Beansland™ · @FounderNBL</p>
-          </div>
-        </article>
-
-        <article class="movie-card">
-          <video controls playsinline preload="metadata" poster="../assets/brand/NBL-Films.png" aria-label="The City official trailer">
-            <source src="../NBL_Studio_Presents_The_City_Trailer.mp4" type="video/mp4" />
-          </video>
-          <div class="movie-copy">
-            <p class="eyebrow">NBL STUDIOS · TV &amp; FILM</p>
-            <h3>The City — Official Trailer</h3>
-            <p>The trailer also remains in its original New Beansland™ location.</p>
-          </div>
-        </article>
-
-        <article class="movie-card">
-          <video controls playsinline preload="metadata" poster="../NBL-Clothing%20(1).png?v=48ce5891" aria-label="NBL Clothing commercial">
-            <source src="../Identity%20isn%27t%20something%20you%20wear.mp4" type="video/mp4" />
-          </video>
-          <div class="movie-copy">
-            <p class="eyebrow">NBL CLOTHING CO.</p>
-            <h3>NBL Clothing Commercial</h3>
-            <p>The commercial also remains in the NBL Clothing catalog.</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
     <footer>
       <p>© 2026 New Beansland™. Artist and writing credits remain attached to each release.</p>
       <p><a href="https://www.youtube.com/@JMeloNBLRecords" target="_blank" rel="noopener noreferrer">New Beansland music on YouTube</a></p>
     </footer>
   </main>
 
+  <script>if(location.hash==="#movie-studio") location.replace("/studios.html");</script>
   <script src="./catalog.js"></script>
   <script src="./player.js"></script>
 </body>
