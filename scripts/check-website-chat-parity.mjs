@@ -34,7 +34,12 @@ requireText(header,'url.searchParams.delete(key)', "Transient auth/payment param
 requireText(account,'const signInPortal=accountPortalUrl("/sign-in")', "Account sign-in does not use the shared portal builder.");
 requireText(account,'location.assign(signInPortal)', "Sign-in control is not wired before Clerk account loading.");
 requireText(account,'passwordHelpButton.href=signInPortal', "Forgot-password control does not share the tested sign-in/recovery destination.");
-requireText(account,'clerk?.addListener?.(()=>{', "Account page does not respond to Clerk session-state changes.");
+requireText(account,'clerk.addListener?.(renderAuthState)', "Account page does not respond to Clerk session-state changes.");
+requireText(account,'void initializeSignedInAccount()', "Account UI cannot initialize after delayed Clerk session sync.");
+requireText(account,'initializedAccountId', "Account state must not show another member's private data.");
+forbidText(account,'location.reload()', "Auth state listener can cause repeated Clerk sign-in page reloads.");
+requireText(header,'const getNblBillingSessionToken=async()=>{', "Billing should distinguish a signed-in missing token from a signed-out visitor.");
+requireText(header,'const token=await getNblBillingSessionToken()', "Billing and meter must use the safe auth token bridge.");
 requireText(account,'location.assign(accountPortalUrl("/user"))', "Security management does not use the shared safe return URL.");
 if(account.indexOf('const signInPortal=accountPortalUrl("/sign-in")')>account.indexOf("const waitForBridge=async()=>{")){
   console.error("[website-chat-parity] FAIL: account sign-in/recovery is wired only after the Clerk bridge.");

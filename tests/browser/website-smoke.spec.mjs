@@ -209,4 +209,75 @@ test.describe("New Beansland web app browser smoke", () => {
     expect(redirect.pathname).toBe("/account.html");
     expect(redirect.hash).toBe("");
   });
+
+  test("Clerk delayed sign-in renders account without reloading or redirecting", async ({ page }) => {
+    await page.addInitScript(() => {
+      const k="nbl-auth-loop-browser-loads";
+      sessionStorage.setItem(k,String(Number(sessionStorage.getItem(k)||"0")+1));
+    });
+    // No real user, credential, checkout, or Stripe charge is involved.
+    await page.route("**/npm/@clerk/clerk-js@6/dist/clerk.browser.js", route => route.fulfill({
+      status:200,
+      contentType:"application/javascript",
+      body:"window.__nblAuthTestClerk={isSignedIn:false,session:null,user:null,listeners:[],"+
+        "async load(){},addListener(fn){this.listeners.push(fn);},"+
+        "change(signedIn,userId='user_test_one'){this.isSignedIn=signedIn;"+
+        "this.session=signedIn?{id:'session_test',getToken:async()=>null}:null;"+
+        "this.user=signedIn?{id:userId,primaryEmailAddress:{emailAddress:'test@example.org'}}:null;"+
+        "this.listeners.forEach(fn=>fn());}};window.Clerk=window.__nblAuthTestClerk;"
+    }));
+    await page.route("https://tvypdakofcrlvnwporhh.supabase.co/**", route => route.fulfill({
+      status:200,
+      contentType:"application/json",
+      body:JSON.stringify({profile:{username:""},usage:{conversations:0,messages:0,modelResponses:0},conversations:[],deliveries:[],meter:{}})
+    }));
+    await open("/account.html?source=payment-redirect-test",page);
+    await expect(page.locator("#signedOut")).toBeVisible();
+    await expect(page.locator("#accountBody")).toBeHidden();
+
+    // Portal return can precede Clerk session synchronization.
+    // The account must initialize in place, without a second page load.
+    await page.evaluate(() => window.__nblAuthTestClerk.change(true));
+    await expect(page.locator("#accountBody")).toBeVisible();
+    await expect(page.locator("#identityLine")).toContainText("test@example.org");
+    expect(new URL(page.url()).searchParams.get("source")).toBe("payment-redirect-test");
+    expect(await page.evaluate(() => Number(sessionStorage.getItem("nbl-auth-loop-browser-loads")))).toBe(1);
+
+    // A signed-in account missing its JWT must not bounce back to Clerk.
+    const paymentResult=await page.evaluate(async () => {
+      try{
+        await window.NBLBillingBridge.checkout("beans");
+        return "unexpected success";
+      }catch(error){
+        return String(error.message||error);
+      }
+    });
+    expect(paymentResult).toMatch(/signed in.*secure session.*not finished connecting/i);
+    expect(new URL(page.url()).pathname).toBe("/account.html");
+
+    // Another identity must never see the previously initialized account.
+    await page.evaluate(() => window.__nblAuthTestClerk.change(true,"user_test_two"));
+    await expect(page.locator("#accountBody")).toBeHidden();
+    await expect(page.locator("#signedOut")).toBeVisible();
+    expect(await page.evaluate(() => Number(sessionStorage.getItem("nbl-auth-loop-browser-loads")))).toBe(1);
+
+    await page.evaluate(() => window.__nblAuthTestClerk.change(false));
+    await expect(page.locator("#accountBody")).toBeHidden();
+  });
+
+  test("truly signed-out checkout offers sign-in without automatic navigation", async ({ page }) => {
+    await page.route("**/npm/@clerk/clerk-js@6/dist/clerk.browser.js", route => route.fulfill({
+      contentType:"application/javascript",
+      body:"window.Clerk={isSignedIn:false,session:null,async load(){},addListener(){}};"
+    }));
+    await open("/account.html?source=signout-test",page);
+    const result=await page.evaluate(() => window.NBLBillingBridge.checkout("beans"));
+    expect(result.signInRequired).toBe(true);
+    const portal=new URL(result.signInUrl);
+    expect(portal.origin).toBe("https://accounts.newbeansland.org");
+    const destination=new URL(portal.searchParams.get("redirect_url"));
+    expect(destination.pathname).toBe("/account.html");
+    expect(destination.searchParams.get("source")).toBe("signout-test");
+    expect(page.url()).toContain("/account.html?source=signout-test");
+  });
 });
