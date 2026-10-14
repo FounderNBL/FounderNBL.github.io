@@ -29,6 +29,8 @@ on:
       - "nbl-reader.js"
       - "nbl-reader.css"
       - "tests/browser/**"
+      - "tests/study-lab.test.mjs"
+      - "tests/voice-lab-source.test.mjs"
       - "studio/creator.js"
       - "studio/creator.css"
       - "tests/security/studios-creator.test.mjs"
@@ -60,6 +62,8 @@ on:
       - "nbl-reader.js"
       - "nbl-reader.css"
       - "tests/browser/**"
+      - "tests/study-lab.test.mjs"
+      - "tests/voice-lab-source.test.mjs"
       - "studio/creator.js"
       - "studio/creator.css"
       - "tests/security/studios-creator.test.mjs"
@@ -92,6 +96,7 @@ jobs:
           node --check voice-lab.js
           node scripts/check-org-member-services.mjs
           node scripts/check-campus-protected-source.mjs
+          node --test tests/study-lab.test.mjs tests/voice-lab-source.test.mjs
       - name: Check NBL Studios creator preview
         run: |
           node --check studio/creator.js
