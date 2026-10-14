@@ -117,7 +117,7 @@ forbidText(header,'data:image/webp;base64,',"Inline Base64 Chat artwork returned
 requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"The AI dialog title must be Beans.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
-requireText(header,'href="https://nblworld.com/university.html#grey"',"Talk to Grey link is missing.");
+requireText(header,'href="/university-campus.html#grey"',"Talk to Grey link is missing.");
 forbidText(header,'Beans is the New Beansland AI assistant. NBL Chat is where people message people',"Removed promotional copy has returned.");
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
@@ -191,12 +191,12 @@ requireText(terms,'data-nbl-plan-value="foundationProgram.price"',"Terms do not 
 requireText(terms,'data-nbl-plan-value="guidedFoundation.price"',"Terms do not use the canonical Guided Foundation price.");
 requireText(terms,'data-nbl-plan-value="fullNblu.price"',"Terms do not use the canonical Full NBLU price.");
 requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not use the canonical Full NBLU owner continuation price.");
-requireText(terms,"University checkout is offered on NewBeansland.org only after payment/account verification passes; NBL World remains the protected classroom.","Terms do not state the protected .org billing and .com campus split.");
+requireText(terms,"University checkout and its protected University classroom are on NewBeansland.org; checkout remains held until payment/account verification and second-account isolation tests pass.","Terms do not state same-origin .org checkout and campus ownership.");
 requireText(university,'id="enroll"',"University enrollment section is missing from .org.");
-requireText(university,'href="https://nblworld.com/university.html"',"Public .org University page does not link to NBL World classroom.");
+requireText(university,'href="/university-campus.html#grey"',"Public .org University page does not link to its same-origin classroom.");
 forbidText(university,'https://nblworld.com/university.html#enroll',"University enrollment must remain on .org, not return to the old .com payment route.");
 requireText(university,"Beans, the AI assistant","Public University handoff must identify Beans as the AI assistant.");
-requireText(university,"NBL Chat is for human messages on NBL World.","Public University handoff must separate human NBL Chat from Beans.");
+requireText(university,"person-to-person Member Chat","Public University must distinguish Member Chat from Beans.");
 requireText(university,"NBL CHAT PLUS™ provides upgraded Beans tools on NewBeansland.org. NBL CHAT PLUS™ + University adds Professor Grey™ / Virgo System™ guided course teaching","Public University handoff does not preserve the current Plus / Plus + University boundary.");
 requireText(university,'data-nbl-university-checkout="foundation" disabled',"Foundation checkout on .org must stay disabled until payment/isolation verification.");
 requireText(university,'data-nbl-university-checkout="full_foundation" disabled',"Guided Foundation checkout on .org must stay disabled until payment/isolation verification.");
@@ -226,7 +226,8 @@ requireText(header,'/billing/checkout',"Chat checkout is not routed through the 
 requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
 requireText(support,'data-nbl-plan-value="chatPlus.price"',"Support does not use the canonical Chat Plus price.");
 requireText(support,'href="/university.html#enroll"',"Support does not direct enrollment to .org.");
-requireText(support,'https://nblworld.com/university.html',"Support omits the NBL World University classroom.");
+requireText(support,'href="/university-campus.html#grey"',"Support omits the same-origin protected University classroom.");
+requireText(support,'href="/member-chat.html"',"Support omits same-origin person-to-person Chat.");
 forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
 requireText(support,"Signed-in website checkout is available from Membership & plans in NBL Chat™.","Support does not document signed-in Chat checkout.");
 requireText(terms,"Signed-in website checkout is available through NBL Chat™","Terms do not document authenticated Chat checkout.");
@@ -260,4 +261,4 @@ for(const forbidden of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_
 }
 
 if(failed) process.exitCode=1;
-else console.log("[website-repair] PASS: Beans is first on NewBeansland.org; Grey/Virgo remains entitlement-gated; University enrollment is on .org, classroom on NBL World; checkout stays held; Chat auth and history/security regressions pass.");
+else console.log("[website-repair] PASS: Beans, University enrollment/campus and Member Chat share the .org Clerk origin; LOCKE gates remain, checkout stays held and existing Chat/account safeguards are preserved.");

@@ -58,6 +58,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect.poll(async () => page.locator(".nbl-beans-avatar").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
     await expect(page.getByRole("tab", { name: "Beans" })).toBeVisible();
+    await expect(page.locator(".nbl-beans-grey-link")).toHaveAttribute("href", "/university-campus.html#grey");
     await expect(page.getByRole("tab", { name: /NBL University Professor Grey™/i })).toBeHidden();
     await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
     await page.getByRole("button", { name: "Open Beans tools" }).click();
@@ -96,37 +97,44 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
   });
 
-  test("University enrollment is shown on .org and its held checkout stays separate from NBL World campus", async ({ page }) => {
+  test("University enrollment and held checkout stay on .org", async ({ page }) => {
     await open("/university.html", page);
 
     await expect(page).toHaveTitle(/New Beansland University/i);
-    await expect(page.locator("body")).toContainText("NBL University lives in NBL World.");
     await expect(page.locator("body")).toContainText("Beans, the AI assistant");
     await expect(page.getByRole("heading", { name: "University enrollment and payment" })).toBeVisible();
     await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
     await expect(page.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
-    await expect(page.getByRole("link", { name: "Explore the University classroom" })).toHaveAttribute(
-      "href",
-      "https://nblworld.com/university.html",
+    await expect(page.getByRole("link", { name: /Enter the student campus/i })).toHaveAttribute(
+      "href", "/university-campus.html#grey",
     );
-    await expect(page.locator('a[href="https://nblworld.com/university.html#enroll"]')).toHaveCount(0);
+    await expect(page.locator('a[href^="https://nblworld.com/university"]')).toHaveCount(0);
   });
 
-  test("live NBL World campus remains reachable and enrollment-gated", async ({ page }) => {
-    test.skip(!process.env.NBL_BASE_URL, "Live cross-site check only runs against deployed production.");
-
-    await page.goto("https://nblworld.com/university.html", { waitUntil: "domcontentloaded" });
-
+  test("protected University campus is served on the verified .org Clerk origin", async ({ page }) => {
+    await open("/university-campus.html", page);
     await expect(page).toHaveTitle(/NBL University Campus/i);
     await expect(page.getByRole("heading", { name: "Student Campus" })).toBeVisible();
     await expect(page.locator("[data-campus-gate]")).toBeVisible();
+    await expect(page.locator('[data-nblu-checkout="foundation"]')).toBeDisabled();
+    await expect(page.locator('[data-nblu-checkout="full_foundation"]')).toBeDisabled();
+  });
+
+  test("human-to-human member Chat is independently available on .org", async ({ page }) => {
+    await open("/member-chat.html", page);
+    await expect(page).toHaveTitle(/NBL Member Chat/i);
+    await expect(page.getByRole("heading", { name: "NBL Chat" })).toBeVisible();
+    await expect(page.locator("[data-chat-guest]")).toBeVisible();
+    await expect(page.locator("[data-chat-app]")).toBeHidden();
+    await expect(page.locator("[data-chat-find-form]")).toHaveCount(1);
+    await expect(page.locator("[data-chat-dm-form]")).toHaveCount(1);
   });
 
   // The Inspector tests each route separately. A confirmed Cloudflare browser
   // challenge to the CI runner is UNVERIFIED, never a PASS or a customer outage.
   const registeredRoutes = [
     "/", "/books.html", "/stories.html", "/founder-office.html",
-    "/studio/", "/account.html", "/university.html",
+    "/studio/", "/account.html", "/university.html", "/university-campus.html", "/member-chat.html",
     "https://nblworld.com/", "https://nblworld.com/university.html"
   ];
   for (const route of registeredRoutes) {
