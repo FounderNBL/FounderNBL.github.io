@@ -1811,8 +1811,18 @@
         Accept:"application/json",
         "Content-Type":"application/json"
       };
-      const accountToken=await getNblBeansAuthToken();
-      if(accountToken) headers.Authorization=`Bearer ${accountToken}`;
+      // A temporary Clerk token refresh failure is NOT a sign-out. Do not
+      // silently send a signed-in person's message as an anonymous guest:
+      // that drops their history, account entitlement, and request identity.
+      let accountToken=await getNblBeansAuthToken();
+      if(!accountToken&&nblClerk?.isSignedIn){
+        try{accountToken=await nblClerk.session?.getToken({skipCache:true})}catch{}
+        if(typeof accountToken!=="string"||!accountToken.trim()){
+          throw new Error("Your NBL account is still signed in, but its secure session could not refresh. Retry in a moment or sign out and sign in again.");
+        }
+      }
+      if(currentClerkUserId()!==requestedUserId) return;
+      if(accountToken) headers.Authorization=`Bearer ${String(accountToken).trim()}`;
       const requestId=(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`);
       const requestBody={action:"chat",mode:"beans",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),toolMode:beansToolMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
       const endpoint=NBL_BEANS_WEB_API;
