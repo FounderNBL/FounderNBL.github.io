@@ -98,6 +98,10 @@ requireText(header,'NBL_CHAT_GATEWAY_API=NBL_CORE_API',"Signed-in Beans metering
 requireText(header,'NBL_BEANS_WEB_API=`\${NBL_CORE_API}/chat`',"Website Beans Chat is not using the canonical NBL Core ingress.");
 requireText(header,'NBL_SEARCH_API=`\${NBL_CORE_API}/search`',"Website public search is not using the canonical NBL Core ingress.");
 requireText(header,'const endpoint=NBL_BEANS_WEB_API',"Website Beans still chooses different client-side backends instead of letting Core route by authentication state.");
+requireText(header,'if(!accountToken&&nblClerk?.isSignedIn)',"A signed-in Beans user must not silently fall back to public guest chat on transient token failure.");
+requireText(header,'nblClerk.session?.getToken({skipCache:true})',"A signed-in Beans user must get one fresh Clerk token chance before retry.");
+requireText(header,'if(currentClerkUserId()!==requestedUserId) throw new Error',"Beans must stop an in-flight request when the active Clerk user changes before dispatch.");
+requireText(header,'Your NBL account is still signed in, but its secure session could not refresh.',"Beans must report a recoverable session error instead of downgrading.");
 forbidText(header,'functions/v1/beans-public',"Website client still hardcodes the internal public Beans runtime.");
 requireText(header,'meter:requestNblMeter',"Website membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership status card is missing.");
