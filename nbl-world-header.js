@@ -142,8 +142,9 @@
     }
   };
 
-  // Signed-in customers must never be sent back to sign-in merely because
-  // Clerk is still syncing a token. Only genuinely signed-out visitors need it.
+  // A late Clerk session restore or a briefly missing JWT is NOT proof that
+  // the member signed out. Wait briefly and try a fresh token before offering
+  // another sign-in redirect. No new payment or entitlement is issued here.
   const getNblBillingSessionToken=async()=>{
     let clerk;
     try{
@@ -151,14 +152,19 @@
     }catch{
       throw new Error("NBL sign-in could not connect. Stay here and retry when the account service is available.");
     }
-    if(!clerk?.isSignedIn||!clerk.session) return null;
-    try{
-      const token=await clerk.session.getToken();
-      if(typeof token==="string"&&token.trim()) return token.trim();
-    }catch{
-      // A brief Clerk token refresh failure is not a signed-out state.
+    for(let attempt=0;attempt<4;attempt++){
+      if(clerk?.session){
+        try{
+          const token=await clerk.session.getToken(attempt?{skipCache:true}:undefined);
+          if(typeof token==="string"&&token.trim()) return token.trim();
+        }catch{
+          // Transient token failure: retry without bouncing a signed-in user.
+        }
+      }
+      if(attempt<3) await new Promise(resolve=>setTimeout(resolve,200));
     }
-    throw new Error("Your NBL account is signed in, but its secure session has not finished connecting. Refresh this page or sign out and sign in again.");
+    if(!clerk?.isSignedIn&&!clerk?.user&&!clerk?.session) return null;
+    throw new Error("Your NBL account is signed in, but its secure session has not finished connecting. Please retry checkout here; if it continues, sign out and back in.");
   };
 
   const trustedNblBillingDestination=value=>{
