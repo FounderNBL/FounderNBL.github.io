@@ -71,20 +71,26 @@ test("Clerk restores late on account page without reload or portal bounce",async
 
 test("billing waits for a refreshed Clerk token and never reopens sign-in",async({page})=>{
   await configure(page);
-  const seen=[];
-  await page.route("https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-chat-gateway/billing/checkout",route=>{
-    const cors={
-      "Access-Control-Allow-Origin":"*",
-      "Access-Control-Allow-Headers":"Authorization, Content-Type, Accept",
-      "Access-Control-Allow-Methods":"POST, OPTIONS"
-    };
-    if(route.request().method()==="OPTIONS")return route.fulfill({status:204,headers:cors});
-    seen.push({auth:route.request().headers().authorization,body:route.request().postDataJSON()});
-    return route.fulfill({status:200,headers:cors,contentType:"application/json",body:JSON.stringify({checkoutUrl:"https://checkout.stripe.com/c/pay/fixture"})});
-  });
   // Start on the homepage to avoid unrelated automatic account metering.
-  // This tests the exact same shared checkout bridge used by the account page.
+  // Exercise the actual shared checkout function using an in-page fetch fixture
+  // so the browser's cross-origin preflight cannot alter this unit-level test.
   await page.goto("/");
+  await page.evaluate(()=>{
+    window.__NBL_BILLING_REQUESTS=[];
+    const realFetch=window.fetch.bind(window);
+    window.fetch=(input,init)=>{
+      if(String(input).endsWith("/nbl-chat-gateway/billing/checkout")){
+        window.__NBL_BILLING_REQUESTS.push({
+          auth:init?.headers?.Authorization,
+          body:JSON.parse(init?.body||"{}")
+        });
+        return Promise.resolve(new Response(JSON.stringify({
+          checkoutUrl:"https://checkout.stripe.com/c/pay/fixture"
+        }),{status:200,headers:{"Content-Type":"application/json"}}));
+      }
+      return realFetch(input,init);
+    };
+  });
   await page.evaluate(()=>window.NBLAccountBridge.getClerk());
   await page.evaluate(()=>{
     window.__NBL_FIXTURE.setIdentity("fixture_member_1");
@@ -93,7 +99,7 @@ test("billing waits for a refreshed Clerk token and never reopens sign-in",async
   const result=await page.evaluate(()=>window.NBLBillingBridge.checkout("beans"));
   expect(result.signInRequired).toBe(false);
   expect(result.destination).toBe("https://checkout.stripe.com/c/pay/fixture");
-  expect(seen).toEqual([{auth:"Bearer test-clerk-session-token",body:{plan:"beans"}}]);
+  expect(await page.evaluate(()=>window.__NBL_BILLING_REQUESTS)).toEqual([{auth:"Bearer test-clerk-session-token",body:{plan:"beans"}}]);
   expect(await page.evaluate(()=>window.__NBL_FIXTURE.tokenCalls())).toBeGreaterThanOrEqual(2);
   await expect(page).toHaveURL(/\/$/);
 });
