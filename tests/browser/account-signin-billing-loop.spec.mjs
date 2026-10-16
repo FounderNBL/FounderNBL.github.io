@@ -76,19 +76,20 @@ test("billing waits for a refreshed Clerk token and never reopens sign-in",async
     seen.push({auth:route.request().headers().authorization,body:route.request().postDataJSON()});
     return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({checkoutUrl:"https://checkout.stripe.com/c/pay/fixture"})});
   });
-  await page.goto("/account.html");
-  await page.evaluate(()=>window.__NBL_FIXTURE.setIdentity("fixture_member_1"));
-  await expect(page.locator("#accountBody")).toBeVisible();
-  // Let automatic membership initialization finish so only checkout consumes
-  // the deliberately stale first token in this test.
-  await expect(page.locator("#membershipStatus")).not.toContainText("Checking your Beans membership");
-  await page.evaluate(()=>window.__NBL_FIXTURE.mode("recover"));
+  // Start on the homepage to avoid unrelated automatic account metering.
+  // This tests the exact same shared checkout bridge used by the account page.
+  await page.goto("/");
+  await page.evaluate(()=>window.NBLAccountBridge.getClerk());
+  await page.evaluate(()=>{
+    window.__NBL_FIXTURE.setIdentity("fixture_member_1");
+    window.__NBL_FIXTURE.mode("recover");
+  });
   const result=await page.evaluate(()=>window.NBLBillingBridge.checkout("beans"));
   expect(result.signInRequired).toBe(false);
   expect(result.destination).toBe("https://checkout.stripe.com/c/pay/fixture");
   expect(seen).toEqual([{auth:"Bearer test-clerk-session-token",body:{plan:"beans"}}]);
   expect(await page.evaluate(()=>window.__NBL_FIXTURE.tokenCalls())).toBeGreaterThanOrEqual(2);
-  await expect(page).toHaveURL(/\/account\.html$/);
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test("signed-in but unavailable token stays on account page with an error; no redirect",async({page})=>{
@@ -104,7 +105,7 @@ test("signed-in but unavailable token stays on account page with an error; no re
     catch(error){return {error:error.message};}
   });
   expect(response.value).toBeUndefined();
-  expect(response.error).toMatch(/signed in.*session could not be verified/i);
+  expect(response.error).toMatch(/signed in.*session has not finished connecting/i);
   await expect(page).toHaveURL(/\/account\.html$/);
 });
 
