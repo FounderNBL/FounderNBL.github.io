@@ -164,7 +164,7 @@
       if(attempt<3) await new Promise(resolve=>setTimeout(resolve,200));
     }
     if(!clerk?.isSignedIn&&!clerk?.user&&!clerk?.session) return null;
-    throw new Error("Your NBL account is signed in, but its secure session could not be verified. Please retry checkout here; if it continues, sign out and back in.");
+    throw new Error("Your NBL account is signed in, but its secure session has not finished connecting. Please retry checkout here; if it continues, sign out and back in.");
   };
 
   const trustedNblBillingDestination=value=>{
