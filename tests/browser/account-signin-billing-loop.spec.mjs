@@ -73,8 +73,14 @@ test("billing waits for a refreshed Clerk token and never reopens sign-in",async
   await configure(page);
   const seen=[];
   await page.route("https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-chat-gateway/billing/checkout",route=>{
+    const cors={
+      "Access-Control-Allow-Origin":"*",
+      "Access-Control-Allow-Headers":"Authorization, Content-Type, Accept",
+      "Access-Control-Allow-Methods":"POST, OPTIONS"
+    };
+    if(route.request().method()==="OPTIONS")return route.fulfill({status:204,headers:cors});
     seen.push({auth:route.request().headers().authorization,body:route.request().postDataJSON()});
-    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({checkoutUrl:"https://checkout.stripe.com/c/pay/fixture"})});
+    return route.fulfill({status:200,headers:cors,contentType:"application/json",body:JSON.stringify({checkoutUrl:"https://checkout.stripe.com/c/pay/fixture"})});
   });
   // Start on the homepage to avoid unrelated automatic account metering.
   // This tests the exact same shared checkout bridge used by the account page.
