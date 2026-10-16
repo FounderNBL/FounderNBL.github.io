@@ -79,7 +79,7 @@ test("billing waits for a refreshed Clerk token and never reopens sign-in",async
     window.__NBL_BILLING_REQUESTS=[];
     const realFetch=window.fetch.bind(window);
     window.fetch=(input,init)=>{
-      if(String(input).endsWith("/nbl-chat-gateway/billing/checkout")){
+      if(String(input).endsWith("/nbl-core/billing/checkout")){
         window.__NBL_BILLING_REQUESTS.push({
           auth:init?.headers?.Authorization,
           body:JSON.parse(init?.body||"{}")
