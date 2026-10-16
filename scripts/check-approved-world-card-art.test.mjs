@@ -16,15 +16,23 @@ test("exact uploaded assets survive and browser references are cache refreshed",
   assert.ok(source.includes('href="'+href+'"'),href+" was changed");
  }
 });
-test("approved full-image cards use the whole artwork instead of thumbnail and copy overlay",()=>{
- for(const [name,tag] of approved){
-  const escaped=name.replaceAll(".", "\\.").replaceAll("(", "\\(").replaceAll(")", "\\)");
-  assert.match(source,new RegExp('world-card official-art reveal[^>]+><div class="media"><img src="'+escaped+'\\?v='+tag));
+test("all six World Cards have equal 4:3 frames and uncropped artwork",()=>{
+ const grid=source.slice(source.indexOf('<div class="world-grid">'),source.indexOf('</div></section>',source.indexOf('<div class="world-grid">')));
+ const cards=[...grid.matchAll(/<a class="world-card official-art reveal" href="([^"]+)" style="--nbl-world-card-art:url\('([^']+)'\)"><div class="media"><img src="([^"]+)"/g)];
+ assert.equal(cards.length,6,"all six approved cards must use the same background-fill/foreground-art system");
+ for(const [,href,background,foreground] of cards){
+  assert.equal(background,foreground,"soft backdrop must use the SAME Founder-approved image as the visible cover for "+href);
+  assert.ok(href,"Each card must remain clickable");
  }
- assert.match(source,/\.world-card\.official-art \.media\{inset:0;z-index:1\}/);
- assert.match(source,/\.world-card\.official-art \.card-body\{/);
+ assert.match(source,/\.world-card\.official-art\{aspect-ratio:4\/3;/,"All six cards must be equal 4:3 frames");
+ assert.match(source,/grid-auto-rows:1fr;align-items:stretch/,"Grid must keep equal row heights");
+ assert.match(source,/\.world-card\.official-art \.media::before\{/,"Letterbox fill must use a background layer");
+ assert.match(source,/background-image:var\(--nbl-world-card-art\)/,"Letterbox fill must reuse original art, never a replacement image");
+ assert.match(source,/object-fit:contain;object-position:center;background:transparent/,"The visible card artwork must never be cropped");
+ assert.match(source,/\.world-card\.official-art \.card-body\{/,"Original approved art includes its titles; duplicate overlays stay hidden");
  assert.match(source,/\.world-card\.official-art::after\{display:none\}/);
  assert.match(source,/\.world-card\.official-art:focus-visible\{/);
+ assert.match(source,/@media\(max-width:520px\)\{\.world-card\.official-art\{width:100%;max-width:520px/,"Mobile cards should use the available width");
 });
 test("Founder's six homepage destinations preserve the approved order with University last",()=>{
  const grid=source.slice(source.indexOf('<div class="world-grid">'),source.indexOf('</div></section>',source.indexOf('<div class="world-grid">')));
@@ -34,8 +42,8 @@ test("Founder's six homepage destinations preserve the approved order with Unive
  assert.ok(!grid.includes("The City"),"The City belongs inside Stories, not as a homepage card");
  assert.ok(grid.includes('src="NBL_University.png"'),"University existing art must remain");
  assert.match(grid,/class="world-card official-art reveal" href="university\.html"/,"University full artwork must not be cropped");
- assert.ok(source.includes(".world-card.official-art .media img{max-width:100%;max-height:100%;object-fit:contain"),"Official art must scale without cropping");
- assert.ok(source.includes("@media(max-width:520px){.world-card.official-art{width:100%;max-width:440px"),"Mobile cards need contain-sized frames");
+ assert.ok(source.includes("object-fit:contain;object-position:center;background:transparent"),"Official art must scale without cropping");
+ assert.ok(source.includes("@media(max-width:520px){.world-card.official-art{width:100%;max-width:520px"),"Mobile cards need full-width frames");
  assert.ok(grid.includes('href="studios.html"'),"Studios goes to its video-production page, not the music studio");
  assert.ok(grid.includes('href="studio/"'),"Music remains a separate free showcase");
  assert.ok(source.includes('.world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))'),"desktop grid must be three columns for the 3-by-2 cards");

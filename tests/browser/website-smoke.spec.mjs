@@ -42,9 +42,26 @@ test.describe("New Beansland web app browser smoke", () => {
       await expect.poll(async()=>img.evaluate(node=>node.complete&&node.naturalWidth>0)).toBe(true);
     }
     await expect(page.locator('.world-card[href="clothing.html"]')).toHaveCount(1);
-    await expect(page.locator('.world-card.official-art').first()).toHaveCSS("aspect-ratio","3 / 4");
+    await expect(page.locator('.world-card.official-art').first()).toHaveCSS("aspect-ratio","4 / 3");
     const order=await page.locator(".world-grid .world-card").evaluateAll(nodes=>nodes.map(node=>node.getAttribute("href")));
     expect(order).toEqual(cards.map(([href])=>href));
+
+    // All six cards must be visually even on both desktop and phone viewports,
+    // despite portrait book art and landscape studio, clothing, and games art.
+    const layout=await page.locator(".world-grid .world-card").evaluateAll(nodes=>nodes.map(card=>{
+      const {width,height}=card.getBoundingClientRect();
+      const image=card.querySelector(".media img");
+      const fill=getComputedStyle(card.querySelector(".media"),"::before").backgroundImage;
+      return {width,height,imageSrc:image.getAttribute("src"),fill};
+    }));
+    const widths=layout.map(card=>card.width),heights=layout.map(card=>card.height);
+    expect(Math.max(...widths)-Math.min(...widths)).toBeLessThanOrEqual(2);
+    expect(Math.max(...heights)-Math.min(...heights)).toBeLessThanOrEqual(2);
+    for(const card of layout){
+      expect(card.height).toBeGreaterThan(0);
+      expect(Math.abs(card.width/card.height-4/3)).toBeLessThan(.04);
+      expect(card.fill).toContain(card.imageSrc);
+    }
   });
 
   test("Beans AI opens in a real browser", async ({ page }) => {
