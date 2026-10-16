@@ -77,11 +77,12 @@ test("billing waits for a refreshed Clerk token and never reopens sign-in",async
     return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({checkoutUrl:"https://checkout.stripe.com/c/pay/fixture"})});
   });
   await page.goto("/account.html");
-  await page.evaluate(()=>{
-    window.__NBL_FIXTURE.setIdentity("fixture_member_1");
-    window.__NBL_FIXTURE.mode("recover");
-  });
+  await page.evaluate(()=>window.__NBL_FIXTURE.setIdentity("fixture_member_1"));
   await expect(page.locator("#accountBody")).toBeVisible();
+  // Let automatic membership initialization finish so only checkout consumes
+  // the deliberately stale first token in this test.
+  await expect(page.locator("#membershipStatus")).not.toContainText("Checking your Beans membership");
+  await page.evaluate(()=>window.__NBL_FIXTURE.mode("recover"));
   const result=await page.evaluate(()=>window.NBLBillingBridge.checkout("beans"));
   expect(result.signInRequired).toBe(false);
   expect(result.destination).toBe("https://checkout.stripe.com/c/pay/fixture");
