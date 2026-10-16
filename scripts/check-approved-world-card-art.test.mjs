@@ -53,13 +53,19 @@ test("deferred portal and legacy commercial scripts may NOT overwrite official a
  assert.ok(source.includes('/nbl-portal.js?v=20261011-world-cards-safe'),"homepage must fetch corrected script, not stale cached portal");
 });
 
-test("company profile replaces Kaye's Cubs spotlight with readable three-page PDF",()=>{
+test("company profile replaces Kaye's Cubs spotlight with one directly displayed page",()=>{
  const viewer=readFileSync(new URL("../company-profile.html",import.meta.url),"utf8");
- const pdf="NBL_Company_Profile_Page2_World_Team_Updated.pdf";
- assert.ok(existsSync(new URL("../"+pdf,import.meta.url)),"company profile PDF missing");
+ const art="NBL_Corporate_Profile_2026.png";
+ assert.ok(existsSync(new URL("../"+art,import.meta.url)),"one-page image asset missing");
  assert.ok(source.includes('id="nbl-company-profile"'));
  assert.ok(source.includes('href="company-profile.html"'));
  assert.ok(!source.includes('href="kayes-cubs.html"'));
- for(let page=1;page<=3;page++) assert.ok(viewer.includes(pdf+"#page="+page),"missing PDF page "+page);
- assert.ok(viewer.includes('iframe') && viewer.includes(pdf+"#toolbar=1"));
+ assert.ok(viewer.includes('src="/'+art+'"'),"company profile must display the existing one-page artwork");
+ assert.ok(viewer.includes('class="profile-art"'),"expected one-page full-width image");
+ assert.ok(viewer.includes('.profile-art::after'),"obsolete Learn More artwork must be masked");
+ assert.ok(!viewer.includes("<iframe"),"do not embed a PDF viewer");
+ assert.ok(!viewer.includes("<button"),"no profile buttons");
+ assert.ok(!viewer.includes('download>'),"no PDF download button");
+ assert.ok(!viewer.includes("NBL_Company_Profile_Page2_World_Team_Updated.pdf"),"old three-page PDF must not be linked");
+ assert.ok(source.includes("View the one-page NBL Company Profile"),"homepage link should describe one page");
 });
