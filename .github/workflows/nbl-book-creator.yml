@@ -1,0 +1,44 @@
+name: NBL Books Creator and PDF Delivery
+on:
+  pull_request:
+    paths:
+      - "book-creator.html"
+      - "books.html"
+      - "reader.html"
+      - "nbl-book-creator*.mjs"
+      - "nbl-book-creator.js"
+      - "nbl-reader.js"
+      - "tests/book-creator.test.mjs"
+      - ".github/workflows/nbl-book-creator.yml"
+  push:
+    branches: [main]
+    paths:
+      - "book-creator.html"
+      - "books.html"
+      - "reader.html"
+      - "nbl-book-creator*.mjs"
+      - "nbl-book-creator.js"
+      - "nbl-reader.js"
+      - "tests/book-creator.test.mjs"
+      - ".github/workflows/nbl-book-creator.yml"
+permissions:
+  contents: read
+jobs:
+  verify-digital-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Check Browser PDF maker and reader syntax
+        run: |
+          node --check nbl-book-creator.js
+          node --check nbl-book-creator-core.mjs
+          node --check nbl-reader.js
+      - name: Exercise PDF reader, maker, giver and Lulu order hold
+        run: node --test tests/book-creator.test.mjs
+      - name: Preserve Founder release boundary
+        run: |
+          echo "Digital reading drafts only: No Lulu print orders, customer billing, University unlock, source signing or Android release." >> "$GITHUB_STEP_SUMMARY"
