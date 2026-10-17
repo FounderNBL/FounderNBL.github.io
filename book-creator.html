@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Write, import, read, download and save your own book as a PDF with NBL Books. Your draft stays on your device; Lulu print orders remain unavailable.">
+<link rel="canonical" href="https://newbeansland.org/book-creator.html">
+<title>Create a Book | NBL Books</title>
+<link rel="stylesheet" href="/nbl-site.css">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#06111d;color:#f6eee0;font:16px/1.6 Arial,sans-serif}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:20px max(18px,calc((100vw - 1120px)/2));background:#0c2133;border-bottom:1px solid #876f48}
+header a{color:#f3d28a;text-decoration:none;font-weight:bold}header nav{display:flex;gap:18px;flex-wrap:wrap}
+main{max-width:1080px;margin:auto;padding:38px 20px 70px}.eyebrow{letter-spacing:.15em;color:#e5bc69;text-transform:uppercase;font-size:.78rem;font-weight:900}
+h1,h2{font-family:Georgia,serif}h1{font-size:clamp(2.3rem,6vw,4rem);line-height:1.12;margin:10px 0 14px}
+h2{color:#f3d28a}.intro{max-width:820px;color:#d8cdbb}.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,1fr);gap:23px;margin-top:28px}
+.panel{border:1px solid #655633;border-radius:14px;background:#0c2033;padding:23px;box-shadow:0 12px 34px #01070c50}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{display:block;font-size:.85rem;font-weight:bold;margin-top:15px;margin-bottom:7px}
+input,textarea{width:100%;border:1px solid #a58b5d;border-radius:9px;background:#041323;color:#fff;min-height:46px;padding:12px;font:1rem Arial,sans-serif}
+textarea{resize:vertical;min-height:290px;line-height:1.5}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #f3d28a;outline-offset:2px}
+button,.action{display:inline-flex;justify-content:center;align-items:center;min-height:46px;border:1px solid #b89b65;border-radius:10px;background:#f0c875;color:#102033;padding:10px 17px;cursor:pointer;font-weight:800;text-decoration:none}
+button.alt,.action.alt{background:#172d41;color:#f7e8cd}
+button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px}.status{min-height:44px;margin-top:17px;padding:10px 12px;border-left:3px solid #e6bd66;background:#071521}
+.status[data-kind="error"]{border-color:#e48181}.status[data-kind="success"]{border-color:#82d1ab}
+.note{font-size:.88rem;color:#c6bba9}.step{margin:16px 0;padding-left:17px;border-left:2px solid #6b573b}
+.checks{padding-left:22px}.checks li{margin:10px 0}.badge{color:#f1cf8e;font-size:.77rem;letter-spacing:.09em;font-weight:900;text-transform:uppercase}
+[hidden]{display:none!important}footer{padding:25px;text-align:center;border-top:1px solid #63543a;color:#ad9e86}
+@media(max-width:740px){.layout,.row{grid-template-columns:1fr}main{padding:22px 15px 50px}.panel{padding:16px}}
+</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script type="module" src="/nbl-book-creator.js"></script>
+</head>
+<body>
+<header><a href="/books.html">← NBL Books</a><nav><a href="/reader.html">My NBL Reader</a><a href="/lulu/">Our Lulu books</a><a href="/">NBL Home</a></nav></header>
+<main>
+<p class="eyebrow">NBL Books · Your words, your story</p>
+<h1>Create Your Own Book</h1>
+<p class="intro">Build a readable digital book, import the words from a PDF, and receive your own downloadable PDF. Save it to your device's NBL Reader library. There is no checkout, upload or print order here.</p>
+<div class="layout">
+<section class="panel" aria-labelledby="editor-heading">
+<h2 id="editor-heading">Book creation desk</h2>
+<form id="book-form" novalidate>
+<div class="row"><div><label for="title">Book title</label><input id="title" name="title" maxlength="130" placeholder="My Story" required></div>
+<div><label for="author">Author / byline</label><input id="author" name="author" maxlength="100" placeholder="Your name" required></div></div>
+<label for="manuscript">Your manuscript</label>
+<textarea id="manuscript" maxlength="180001" placeholder="Chapter One&#10;&#10;Write your story here, or import the text from a PDF you own…" required></textarea>
+<p class="note">Your writing stays in this browser session. Save a copy before closing this page. Imported PDF text may lose visual formatting; review it before export.</p>
+<label for="import-file">Import existing text or PDF (max 12 MB for PDF)</label>
+<input id="import-file" type="file" accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf" aria-describedby="import-note">
+<p class="note" id="import-note">Text and PDFs are read locally; files are not sent to NBL or Lulu. Image-only scans cannot be converted to editable text automatically.</p>
+<div class="actions"><button type="submit" id="make-pdf">Create reading PDF</button>
+<button type="button" id="clear-form" class="alt">Clear editor</button></div>
+</form>
+<div id="creator-status" class="status" role="status" aria-live="polite">Your desk is ready. Add your title, author and manuscript.</div>
+<div class="actions" id="delivery-actions" hidden>
+<button type="button" id="download-pdf">Download my PDF</button>
+<button type="button" id="give-to-reader" class="alt">Add PDF to NBL Reader</button>
+<a id="open-reader" class="action alt" href="/reader.html" hidden>Open my library →</a>
+</div>
+<p id="delivery-details" class="note" hidden></p>
+</section>
+<aside class="panel" aria-labelledby="how-heading">
+<h2 id="how-heading">How it works</h2>
+<div class="step"><strong>1. Write with Beans</strong><p>Ask Beans for a title, outline, chapters, proofreading or ideas. Bring your approved words here to make a digital draft.</p></div>
+<div class="step"><strong>2. Import and review</strong><p>Already have a PDF? Read its text into the editor, edit it and check every page before exporting.</p></div>
+<div class="step"><strong>3. Receive your PDF</strong><p>Download the draft for yourself or save it into <a href="/reader.html">NBL Reader</a> on this device.</p></div>
+<div class="step"><strong>4. Physical books through Lulu</strong><p>Our published books are available through <a href="/lulu/">Lulu</a>. Personalized Lulu orders are not yet enabled. A separately formatted interior PDF and cover PDF, verified costs, and customer approval are required before that service opens.</p></div>
+<p class="badge">Digital draft ready · Lulu orders held</p>
+<ul class="checks"><li>No bank details or payments collected here</li><li>No Lulu printing occurs</li><li>No University entitlement or private files unlocked</li><li>You remain responsible for rights to your submitted content</li></ul>
+<p class="note">The PDF maker uses basic fonts and layout; special glyphs and illustrations need separate review before any commercial production. The reading draft is not guaranteed to meet Lulu specifications.</p>
+</aside>
+</div>
+</main>
+<footer>© 2026 New Beansland · NBL Books · <a href="/books.html">Bookstore</a></footer>
+</body></html>
