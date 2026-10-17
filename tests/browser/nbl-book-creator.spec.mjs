@@ -30,7 +30,9 @@ test.beforeEach(async({page})=>{
   for(const src of [
     "**/ajax/libs/pdf.js/3.11.174/pdf.min.js",
     "**/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js",
-    "**/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"
+    "**/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js",
+    "**/npm/jszip@3.10.1/**",
+    "**/npm/epubjs@0.3.93/**"
   ])await page.route(src,route=>route.fulfill({status:200,contentType:"application/javascript",body:"/* external engine mocked in this isolated test */"}));
 });
 test("NBL Books draft is given to NBL Reader and can be opened on the same device",async({page})=>{
@@ -75,6 +77,6 @@ test("customer PDF can be read into editable manuscript without network upload",
   const buffer=Buffer.from("%PDF-1.7\n"+"I".repeat(900));
   await page.locator("#import-file").setInputFiles({name:"My Source.pdf",mimeType:"application/pdf",buffer});
   await expect(page.locator("#creator-status")).toContainText("Extracted text from 2 PDF pages");
-  await expect(page.locator("#manuscript")).toContainText("Real text from page 2");
+  await expect(page.locator("#manuscript")).toHaveValue(/Real text from page 2/);
   await expect(page.locator("#title")).toHaveValue("My Source");
 });
