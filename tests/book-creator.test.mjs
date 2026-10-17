@@ -80,3 +80,15 @@ test("bookstore has live, no-charge draft door with custom printing held",()=>{
   assert.match(books,/Not yet accepting custom-book orders/);
   assert.match(reader,/href="\/book-creator\.html"/);
 });
+
+test("approved Lulu Direct showcase is rendered once with its only loader script",()=>{
+  const books=read("books.html");
+  const id="7cc013d3-dd8e-469d-8c75-fc11b81c7584";
+  const widgets=[...books.matchAll(/<lulu-buy-button\\b[^>]*>/g)];
+  assert.equal(widgets.length,1,"NBL Books should not show duplicate Lulu checkouts");
+  assert.match(widgets[0][0],new RegExp('buy-button-id="'+id+'"'));
+  assert.match(widgets[0][0],/variant="product-showcase"/);
+  assert.equal((books.match(/https:\/\/js\\.lulu\\.com\/lulu-buy\\.js/g)||[]).length,1,
+    "Load official Lulu checkout JS only once");
+  assert.match(books,/max-width:720px/);
+});
