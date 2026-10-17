@@ -10,7 +10,10 @@ for (const viewport of [
     const profile = page.getByRole("img", { name: /New Beansland company profile/ });
     await expect(profile).toBeVisible();
     await expect(page.locator("main img")).toHaveCount(1);
-    await expect(page.locator("iframe, embed, object, canvas, button, a[download], nav.pages")).toHaveCount(0);
+    // The company profile is a single image with no page-level controls.
+    // Browser/hosting providers may inject unrelated controls outside <main>;
+    // those must not be mistaken for NBL's PDF navigation or download buttons.
+    await expect(page.locator("main iframe, main embed, main object, main canvas, main button, main a, main nav.pages")).toHaveCount(0);
     await expect(page.locator('a[href$=".pdf"], iframe[src*=".pdf"]')).toHaveCount(0);
     const fits = await profile.evaluate(img => img.getBoundingClientRect().right <= window.innerWidth + 1);
     expect(fits).toBe(true);

@@ -229,6 +229,9 @@ test.describe("New Beansland web app browser smoke", () => {
 
   test("Clerk delayed sign-in renders account without reloading or redirecting", async ({ page }) => {
     await page.addInitScript(() => {
+      // addInitScript also fires inside child frames. A widget or authentication
+      // iframe is not a second top-level page load or a redirect loop.
+      if (window.self !== window.top) return;
       const k="nbl-auth-loop-browser-loads";
       sessionStorage.setItem(k,String(Number(sessionStorage.getItem(k)||"0")+1));
     });
