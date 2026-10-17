@@ -81,14 +81,20 @@ test("bookstore has live, no-charge draft door with custom printing held",()=>{
   assert.match(reader,/href="\/book-creator\.html"/);
 });
 
-test("approved Lulu Direct showcase is rendered once with its only loader script",()=>{
-  const books=read("books.html");
+test("approved Lulu Direct full showcase is on the Lulu shelf; compact store preview stays intact",()=>{
+  const books=read("books.html"),lulu=read("lulu/index.html");
   const id="7cc013d3-dd8e-469d-8c75-fc11b81c7584";
-  const widgets=[...books.matchAll(/<lulu-buy-button\b[^>]*>/g)];
-  assert.equal(widgets.length,1,"NBL Books should not show duplicate Lulu checkouts");
-  assert.match(widgets[0][0],new RegExp('buy-button-id="'+id+'"'));
-  assert.match(widgets[0][0],/variant="product-showcase"/);
-  assert.equal((books.match(/https:\/\/js\.lulu\.com\/lulu-buy\.js/g)||[]).length,1,
-    "Load official Lulu checkout JS only once");
-  assert.match(books,/max-width:720px/);
+  const onBooks=[...books.matchAll(/<lulu-buy-button\b[^>]*>/g)];
+  const onLulu=[...lulu.matchAll(/<lulu-buy-button\b[^>]*>/g)];
+  assert.equal(onBooks.length,1,"Main bookstore must retain one compact checkout preview");
+  assert.equal(onLulu.length,1,"Lulu shelf must contain one full checkout showcase");
+  for(const tag of [onBooks[0][0],onLulu[0][0]])
+    assert.ok(tag.includes('buy-button-id="'+id+'"'));
+  assert.match(onBooks[0][0],/variant="product-preview"/);
+  assert.doesNotMatch(books,/variant="product-showcase"/);
+  assert.match(onLulu[0][0],/variant="product-showcase"/);
+  assert.equal((lulu.match(/https:\/\/js\.lulu\.com\/lulu-buy\.js/g)||[]).length,1);
+  assert.equal((books.match(/https:\/\/js\.lulu\.com\/lulu-buy\.js/g)||[]).length,1);
+  assert.match(books,/max-width:320px/);
+  assert.match(lulu,/max-width:760px/);
 });
