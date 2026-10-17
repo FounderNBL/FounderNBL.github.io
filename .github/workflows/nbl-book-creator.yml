@@ -4,6 +4,7 @@ on:
     paths:
       - "book-creator.html"
       - "books.html"
+      - "lulu/index.html"
       - "reader.html"
       - "nbl-book-creator*.mjs"
       - "nbl-book-creator.js"
@@ -15,6 +16,7 @@ on:
     paths:
       - "book-creator.html"
       - "books.html"
+      - "lulu/index.html"
       - "reader.html"
       - "nbl-book-creator*.mjs"
       - "nbl-book-creator.js"
