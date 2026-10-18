@@ -45,7 +45,22 @@ test("NBL Books draft is given to NBL Reader and can be opened on the same devic
   await expect(page.locator("#creator-status")).toContainText("Your PDF is ready");
   await page.locator("#give-to-reader").click();
   await expect(page.locator("#creator-status")).toContainText("Saved");
-  await page.getByRole("link",{name:"Open my library"}).click();
+  // The PDF is already saved in the device's Reader library. A challenged
+  // cross-page navigation is unverified browser evidence, not a missing book
+  // or a broken counter. Keep genuine HTTP errors and count mismatches failing.
+  const [readerResponse]=await Promise.all([
+    page.waitForNavigation({waitUntil:"domcontentloaded"}),
+    page.getByRole("link",{name:"Open my library"}).click()
+  ]);
+  expect(readerResponse,"NBL Reader did not return a navigation response.").not.toBeNull();
+  const headers=readerResponse.headers();
+  const status=readerResponse.status();
+  if(status===403&&String(headers["cf-mitigated"]||"").toLowerCase()==="challenge"){
+    console.log("NBL_EXTERNAL_UNVERIFIED creator-to-reader http=403 cf-mitigated=challenge cf-ray="+
+      String(headers["cf-ray"]||"unknown"));
+    test.skip(true,"UNVERIFIED: Cloudflare challenged Book Creator to Reader navigation; a real device check is needed.");
+  }
+  expect(status,"Unexpected HTTP "+status+" when opening NBL Reader from Book Creator").toBeLessThan(400);
   await expect(page.locator("#library-count")).toHaveText("1 book");
   await expect(page.getByRole("heading",{name:"My-Reader-Test-reading-draft.pdf"})).toBeVisible();
   await page.getByRole("button",{name:"Read"}).click();
