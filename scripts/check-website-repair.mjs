@@ -263,5 +263,15 @@ for(const forbidden of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_
   forbidText(plans,forbidden,`Public catalog contains a private secret marker: ${forbidden}`);
 }
 
+// Worker permission gates: website Copilot workers must not be auto-selected.
+const webInspector=read(".github/agents/the-health-inspector.agent.md");
+const webFixer=read(".github/agents/the-fixer.agent.md");
+requireText(webInspector,"disable-model-invocation: true","Website Inspector could start an unapproved paid agent.");
+requireText(webInspector,'tools: ["read", "search", "github/*", "playwright/*", "cloudflare-docs/*"]',"Website Inspector gained editing or production MCP tools.");
+requireText(webFixer,"disable-model-invocation: true","Website Fixer could start an unapproved paid agent.");
+requireText(webFixer,'tools: ["read", "search", "edit", "execute", "github/*", "playwright/*", "cloudflare-docs/*"]',"Website Fixer agent toolbox does not match approved local repair permissions.");
+requireText(webFixer,"Do not run paid cloud agent tasks without explicit Founder approval","Website Fixer does not preserve cost approval.");
+forbidText(webInspector,'cloudflare/*',"Website Inspector must never have broad Cloudflare account tools.");
+
 if(failed) process.exitCode=1;
 else console.log("[website-repair] PASS: Beans and people Chat stay on .org; Grey/Virgo protected campus and University enrollment are same-origin; checkout stays held; Chat auth, history and security boundaries pass.");
