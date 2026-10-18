@@ -1,0 +1,51 @@
+# NBL live website: focused regression evidence; source-only, no secrets or write tokens.
+name: NBL Member Chat social entrance
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "chat.html"
+      - "chat.js"
+      - "member-chat.html"
+      - "member-chat.js"
+      - "social-realtime.js"
+      - "scripts/check-org-member-services.mjs"
+      - "tests/browser/website-smoke.spec.mjs"
+      - ".github/workflows/nbl-social-entry-gate.yml"
+  push:
+    branches: [main]
+    paths:
+      - "chat.html"
+      - "chat.js"
+      - "member-chat.html"
+      - "member-chat.js"
+      - "social-realtime.js"
+      - "scripts/check-org-member-services.mjs"
+      - "tests/browser/website-smoke.spec.mjs"
+      - ".github/workflows/nbl-social-entry-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout website source
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Verify NBL Member Chat social entrance
+        run: |
+          node --check chat.js
+          node --check social-realtime.js
+          node scripts/check-org-member-services.mjs
+      - name: Publish scope boundary
+        if: always()
+        run: |
+          echo "This check reads local website source only. It does not exercise paid AI, live customer payments, real student data, Android signing, or production deployments." >> "$GITHUB_STEP_SUMMARY"
