@@ -1,0 +1,65 @@
+# NBL live website: focused regression evidence; source-only, no secrets or write tokens.
+name: NBL Study Lab safety
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "campus.html"
+      - "study-lab.mjs"
+      - "study-lab.css"
+      - "university.js"
+      - "tests/study-lab.test.mjs"
+      - "tests/browser/study-lab-campus.spec.mjs"
+      - "playwright.config.mjs"
+      - ".github/workflows/nbl-study-lab-safety.yml"
+  push:
+    branches: [main]
+    paths:
+      - "campus.html"
+      - "study-lab.mjs"
+      - "study-lab.css"
+      - "university.js"
+      - "tests/study-lab.test.mjs"
+      - "tests/browser/study-lab-campus.spec.mjs"
+      - "playwright.config.mjs"
+      - ".github/workflows/nbl-study-lab-safety.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout website source
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Verify NBL Study Lab safety
+        run: |
+          node --test tests/study-lab.test.mjs
+      - name: Install isolated browser test tools
+        run: |
+          npm install --no-save @playwright/test@latest
+          npx playwright install --with-deps chromium
+      - name: Verify NBL Study Lab safety on desktop and mobile against local source
+        run: npx playwright test tests/browser/study-lab-campus.spec.mjs --project=chromium --project=mobile-chromium
+      - name: Preserve failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nbl-study-lab-safety-evidence
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
+      - name: Publish scope boundary
+        if: always()
+        run: |
+          echo "This check reads local website source only. It does not exercise paid AI, live customer payments, real student data, Android signing, or production deployments." >> "$GITHUB_STEP_SUMMARY"
