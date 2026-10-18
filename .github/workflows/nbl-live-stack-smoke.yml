@@ -1,0 +1,158 @@
+name: NBL Health Inspector - Live Stack Check
+
+# Run fresh, low-cost production connection evidence before any merge.
+# No app builds, deployments, payments, AI calls, secrets or privileged writes.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/nbl-live-stack-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  live-stack:
+    name: Inspector - website, Core and access boundaries
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Inspect live public paths and protected Core boundaries
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {mkdir,writeFile,appendFile} from "node:fs/promises";
+
+          const CORE = "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core";
+          const WEBSITE_ROUTES = [
+            "https://newbeansland.org/",
+            "https://newbeansland.org/account.html",
+            "https://newbeansland.org/books.html",
+            "https://newbeansland.org/reader.html",
+            "https://newbeansland.org/chat.html",
+            "https://newbeansland.org/university.html",
+            "https://nblworld.com/"
+          ];
+          const records = [];
+          const add = (target,state,detail) => {
+            records.push({target,state,detail});
+            console.log("[" + state + "] " + target + " - " + detail);
+            if(state==="UNVERIFIED") console.log("::warning::" + target + ": " + detail);
+            if(state==="FAIL") console.log("::error::" + target + ": " + detail);
+          };
+          const pull = async (url,init={}) => {
+            const response=await fetch(url,{
+              redirect:"follow",
+              signal:AbortSignal.timeout(12000),
+              headers:{"accept":"application/json, text/html;q=0.8","user-agent":"NBL-Health-Inspector/1.0 (read-only GitHub Actions)"},
+              ...init
+            });
+            return response;
+          };
+
+          // Public static routes: Cloudflare can challenge runner IPs.
+          // Such evidence is UNVERIFIED, never a customer outage or a PASS.
+          for(const url of WEBSITE_ROUTES){
+            try{
+              const response=await pull(url);
+              if(response.ok){
+                const type=response.headers.get("content-type")||"";
+                add(url,type.includes("text/html")?"PASS":"UNVERIFIED",
+                  "HTTP "+response.status+"; type="+type.split(";")[0]+
+                  (type.includes("text/html")?"; reachable from runner":"; unexpected content type"));
+              } else if([403,429].includes(response.status)){
+                const ray=response.headers.get("cf-ray")||"none";
+                const mitigation=response.headers.get("cf-mitigated")||"not-declared";
+                add(url,"UNVERIFIED","HTTP "+response.status+"; cf-ray="+ray+"; cf-mitigated="+mitigation);
+              } else {
+                add(url,"FAIL","HTTP "+response.status+"; expected public HTML route");
+              }
+            } catch(error){
+              add(url,"UNVERIFIED","Runner network error ("+(error?.name||"fetch error")+")");
+            }
+          }
+
+          // Core's GET /health probes the actual signed-in Chat Gateway and
+          // the public Beans function. It does NOT make an OpenAI/model request.
+          try{
+            const response=await pull(CORE+"/health");
+            const data=await response.json();
+            if(response.status===200 && data.service==="NBL Core" &&
+              data.components?.gateway?.ok===true && data.components?.publicBeans?.ok===true &&
+              data.routes?.publicChat==="nbl-foundation-runtime" &&
+              data.routes?.signedChat==="nbl-chat-gateway"){
+              add("Supabase NBL Core + downstream health","PASS",
+                "HTTP 200; version="+String(data.version||"unknown")+
+                "; gateway="+data.components.gateway.status+
+                "; publicBeans="+data.components.publicBeans.status);
+            } else {
+              add("Supabase NBL Core + downstream health","FAIL",
+                "HTTP "+response.status+"; downstream health, version or routing contract failed");
+            }
+          } catch(error){
+            add("Supabase NBL Core + downstream health","FAIL",
+              "Health probe unavailable ("+(error?.name||"invalid response")+")");
+          }
+
+          // Read-only public knowledge search: no model provider billing.
+          try{
+            const response=await pull(CORE+"/search?q=New%20Beansland");
+            const data=await response.json();
+            add("NBL Core public search",response.ok && data.mode==="nbl-search"?"PASS":"FAIL",
+              "HTTP "+response.status+"; expected public knowledge contract");
+          } catch(error){
+            add("NBL Core public search","FAIL","Search unreachable ("+(error?.name||"invalid response")+")");
+          }
+
+          // Negative access checks: no accounts or payments; Core must reject
+          // these unauthenticated requests BEFORE any protected backend.
+          for(const route of ["university","social","billing"]){
+            const name="NBL Core "+route+" anonymous boundary";
+            try{
+              const response=await pull(CORE+"/"+route,{
+                method:"POST",
+                headers:{"content-type":"application/json","accept":"application/json"},
+                body:JSON.stringify({action:"status"})
+              });
+              add(name,response.status===401?"PASS":"FAIL",
+                "HTTP "+response.status+"; expected 401 without account");
+            } catch(error){
+              add(name,"FAIL","Boundary probe unavailable ("+(error?.name||"fetch error")+")");
+            }
+          }
+
+          const count=kind=>records.filter(item=>item.state===kind).length;
+          const counts={pass:count("PASS"),fail:count("FAIL"),unverified:count("UNVERIFIED")};
+          await mkdir(".inspector",{recursive:true});
+          await writeFile(".inspector/live-stack.json",
+            JSON.stringify({at:new Date().toISOString(),scope:"unauthenticated read-only checks; no paid AI or real-user flows",counts,records},null,2)+"\n");
+          const summary=[
+            "## NBL Live Stack Inspector (fresh production evidence)",
+            "",
+            "**PASS "+counts.pass+" | FAIL "+counts.fail+" | UNVERIFIED "+counts.unverified+"**",
+            "",
+            "| Surface | Finding | Evidence |",
+            "| --- | --- | --- |",
+            ...records.map(item=>"| "+item.target+" | "+item.state+" | "+item.detail+" |"),
+            "",
+            "A GitHub-runner challenge is UNVERIFIED, not proof of a customer outage or a pass.",
+            "The Core health endpoint checks gateway/public runtime reachability, NOT completion of a paid AI conversation.",
+            "Private account isolation, real checkout, OpenAI/Gemini responses, Cloudflare event rules, native Android and privileged Inspector credentials are NOT tested.",
+            "No deployments, secrets, application changes, billing calls, or fixes are performed."
+          ].join("\n");
+          if(process.env.GITHUB_STEP_SUMMARY)await appendFile(process.env.GITHUB_STEP_SUMMARY,summary+"\n");
+          if(counts.fail>0)process.exitCode=1;
+          NODE
+      - name: Attach Inspector report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nbl-live-stack-evidence
+          path: .inspector/live-stack.json
+          if-no-files-found: warn
+          retention-days: 14
