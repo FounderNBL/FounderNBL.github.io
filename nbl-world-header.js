@@ -598,6 +598,10 @@
       </div>
 
       <section id="nbl-chat-panel-beans" role="tabpanel" aria-labelledby="nbl-chat-tab-beans" tabindex="0" data-nbl-beans-regular>
+        <!-- Beans is an independent, persistent character display. Swap the image for seasonal merch without changing chat or message history. -->
+        <div class="nbl-beans-presence" data-nbl-beans-presence>
+          <img class="nbl-beans-presence-art" src="/Beans.png" alt="Beans wearing his current New Beansland outfit" loading="eager" decoding="async">
+        </div>
         <div class="nbl-beans-log" data-nbl-beans-log aria-live="polite">
           <div class="nbl-beans-message is-beans"><strong>Beans</strong><p>I'm Beans. What's up?</p></div>
         </div>

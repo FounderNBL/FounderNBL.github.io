@@ -615,8 +615,21 @@ body.nbl-beans-open{overflow:hidden!important}
 }
 .nbl-chat-drawer-account:hover{border-color:var(--nbl-world-gold2)}
 
+/* Beans is always visible: character / wardrobe artwork is separate from the working message list. */
+.nbl-beans-presence{
+  position:relative;flex:none;display:grid;place-items:center;
+  min-height:186px;margin-top:12px;overflow:hidden;
+  border:1px solid rgba(240,197,111,.34);border-radius:16px;
+  background:radial-gradient(ellipse at 50% 112%,rgba(214,161,75,.20),transparent 53%),
+    radial-gradient(ellipse at 50% 4%,rgba(34,65,89,.66),transparent 76%),
+    linear-gradient(145deg,#071421,#02060b);
+}
+.nbl-beans-presence-art{
+  position:relative;display:block;width:min(220px,55vw);height:clamp(150px,22dvh,210px);
+  object-fit:contain;filter:drop-shadow(0 5px 15px rgba(0,0,0,.42));
+}
 .nbl-beans-log{
-  flex:1;min-height:280px;max-height:55dvh;overflow:auto;margin-top:18px;padding:14px;
+  flex:1;min-height:160px;max-height:55dvh;overflow:auto;margin-top:10px;padding:14px;
   border:1px solid rgba(214,161,75,.18);border-radius:15px;background:#020a12;
 }
 .nbl-beans-message{max-width:86%;margin:0 0 12px;padding:11px 13px;border-radius:14px}
@@ -673,7 +686,9 @@ body.nbl-beans-open{overflow:hidden!important}
   .nbl-chat-drawer-scroll{padding:10px}
   .nbl-chat-drawer-item{min-height:58px}
   .nbl-beans-note{font-size:.80rem}
-  .nbl-beans-log{max-height:none}
+  .nbl-beans-presence{min-height:130px;margin-top:10px}
+  .nbl-beans-presence-art{width:min(168px,46vw);height:min(168px,20dvh)}
+  .nbl-beans-log{max-height:none;min-height:150px}
   .nbl-beans-row{grid-template-columns:1fr}
   .nbl-beans-row button{width:100%}
   .nbl-beans-message{max-width:94%}
