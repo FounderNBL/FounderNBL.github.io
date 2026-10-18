@@ -1,0 +1,42 @@
+# NBL live website: focused regression evidence; source-only, no secrets or write tokens.
+name: NBL Voice Lab consent guard
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "voice-lab.html"
+      - "voice-lab.js"
+      - "tests/voice-lab-source.test.mjs"
+      - ".github/workflows/nbl-voice-lab-source-gate.yml"
+  push:
+    branches: [main]
+    paths:
+      - "voice-lab.html"
+      - "voice-lab.js"
+      - "tests/voice-lab-source.test.mjs"
+      - ".github/workflows/nbl-voice-lab-source-gate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout website source
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Verify NBL Voice Lab consent guard
+        run: |
+          node --check voice-lab.js
+          node --test tests/voice-lab-source.test.mjs
+      - name: Publish scope boundary
+        if: always()
+        run: |
+          echo "This check reads local website source only. It does not exercise paid AI, live customer payments, real student data, Android signing, or production deployments." >> "$GITHUB_STEP_SUMMARY"
