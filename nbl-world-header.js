@@ -561,9 +561,9 @@
             <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>Two books, course materials and one month of Beans. Then Beans renews at $4.99/month until cancelled or upgraded, with customer consent. No University enrollment.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation" disabled aria-disabled="true" title="Fulfillment and recurring-billing verification pending">Foundation checkout pending</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.foundationUniversity.name} · ${NBL_PRODUCT_PLANS.foundationUniversity.price}</strong><span>Foundation materials and the first month of Beans + University. Qualifying continuation: $9.99/month. Enrollment held.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout verification pending">Foundation + University pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.guidedFoundation.name} · ${NBL_PRODUCT_PLANS.guidedFoundation.price}</strong><span>Foundation physical + digital materials plus one month of the full University guided experience with Professor Grey™ / Virgo System™.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_foundation">Choose Guided Foundation</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.guidedFoundation.name} · ${NBL_PRODUCT_PLANS.guidedFoundation.price}</strong><span>Foundation physical + digital materials plus one month of the full University guided experience with Professor Grey™ / Virgo System™.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation checkout pending</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.fullNblu.name} · ${NBL_PRODUCT_PLANS.fullNblu.price}</strong><span>Six months of the full University experience plus the staged physical-book and ebook entitlement across the planned program as material is completed and released. Shipping may be charged separately for physical stage packs.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.nbluContinuation.name} · ${NBL_PRODUCT_PLANS.nbluContinuation.price}</strong><span>Owner-only continuation after the included six-month Full NBLU guided period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nblu_continuation">Continue Full NBLU</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.nbluContinuation.name} · ${NBL_PRODUCT_PLANS.nbluContinuation.price}</strong><span>Owner-only continuation after the included six-month Full NBLU guided period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU continuation checkout pending</button></article>
             <button class="nbl-billing-manage" type="button" data-nbl-billing-portal>Manage billing</button>
             <p class="nbl-billing-status" data-nbl-billing-status role="status">Foundation and University checkouts are held pending verified renewal consent, fulfillment, payment and LOCKE identity binding.</p>
           </div>
@@ -2142,6 +2142,10 @@
   });
 
   const runBillingAction=async({plan=null,portal=false}={})=>{
+    // Restore each control to its original status; held University/Foundation
+    // checkout must never become clickable after an unrelated failed checkout.
+    const initialDisabled=new Map(billingButtons.map(button=>[button,button.disabled]));
+    const portalWasDisabled=Boolean(billingPortal?.disabled);
     billingButtons.forEach(button=>button.disabled=true);
     if(billingPortal) billingPortal.disabled=true;
     if(billingStatus) billingStatus.textContent=portal?"Opening secure billing…":"Preparing secure checkout…";
@@ -2164,11 +2168,14 @@
     }catch(error){
       if(billingStatus) billingStatus.textContent=error?.message||"Secure billing is temporarily unavailable.";
     }finally{
-      billingButtons.forEach(button=>button.disabled=false);
-      if(billingPortal) billingPortal.disabled=false;
+      billingButtons.forEach(button=>button.disabled=initialDisabled.get(button)??true);
+      if(billingPortal) billingPortal.disabled=portalWasDisabled;
     }
   };
-  billingButtons.forEach(button=>button.addEventListener("click",()=>runBillingAction({plan:button.dataset.nblBillingPlan||""})));
+  billingButtons.forEach(button=>button.addEventListener("click",()=>{
+    if(button.disabled) return;
+    return runBillingAction({plan:button.dataset.nblBillingPlan||""});
+  }));
   billingPortal?.addEventListener("click",()=>runBillingAction({portal:true}));
 
   chatDrawerAccountAction.addEventListener("click",async()=>{
