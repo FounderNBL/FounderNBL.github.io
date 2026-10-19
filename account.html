@@ -686,12 +686,12 @@
     };
 
     deleteDataButton.onclick=async()=>{
-      if(!confirm("Delete your saved NBL username and all saved Beans conversations? This cannot be undone.")) return;
+      if(!confirm("Delete your saved NBL username, Beans conversations and connected app credentials? This cannot be undone.")) return;
       deleteDataButton.disabled=true;deleteStatus.textContent="Deleting your NBL data…";
       try{
         await accountFetch("?action=data",{method:"DELETE"});
         deleteStatus.textContent="Your saved NBL data was deleted.";
-        await Promise.all([renderSummary(),renderHistory()]);
+        await Promise.all([renderSummary(),renderHistory(),renderConnect()]);
       }catch(error){deleteStatus.textContent=error.message}
       finally{deleteDataButton.disabled=false}
     };
