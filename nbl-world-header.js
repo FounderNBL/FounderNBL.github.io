@@ -1271,7 +1271,12 @@
     try{
       const result=await requestNblMeter();
       const meter=result?.meter||null;
-      return Boolean(!result?.signInRequired&&(meter?.privileged||meter?.planKey==="chat_plus"));
+      // Membership is verified by the server-side meter, never by an editable
+      // browser flag. A previously canceled membership is valid only through
+      // its paid-through date; University remains a separate entitlement.
+      const active=Boolean(["active","canceled","grace"].includes(String(meter?.membershipStatus||"").toLowerCase())
+        &&meter?.paidPeriodEnd&&Date.parse(meter.paidPeriodEnd)>Date.now());
+      return Boolean(!result?.signInRequired&&(meter?.privileged||(active&&["beans","chat_plus"].includes(meter?.planKey))));
     }catch{return false;}
   };
 
