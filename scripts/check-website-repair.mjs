@@ -176,10 +176,10 @@ forbidText(books,'<div class="store-cover">', "Oversized duplicate decorative bo
 if((books.match(/<lulu-buy-button\b/g)||[]).length!==1){console.error("[website-repair] FAIL: Lulu preview must appear exactly once.");failed=true;}
 
 
-for(const value of ['$4.99/month','300 successful replies','$39.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$54.99 one-time','$449.99 one-time','$14.99/month','$29.99/month']){
+for(const value of ['$4.99/month','300 successful replies','$9.99/month','$9.99 one-time','+500 successful replies','$29.99 one-time','$34.99 one-time','$54.99 one-time','$449.99 one-time','$14.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
-const planFields=["beans.price","beans.replies","chatPlus.price","chatPlus.replies","getMore.price","getMore.replies","foundationProgram.price","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
+const planFields=["beans.price","beans.replies","beans.renewal","beansUniversity.price","foundationStudentContinuation.price","foundationUniversity.price","getMore.price","getMore.replies","foundationProgram.price","foundationProgram.renewal","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
 const planContext={window:{},document:{querySelectorAll:()=>planFields}};
 vm.runInNewContext(plans,planContext);
 for(const field of planFields){
@@ -201,7 +201,7 @@ requireText(university,'href="/campus.html"',"University enrollment must link to
 forbidText(university,'https://nblworld.com/university.html#enroll',"University enrollment must remain on .org, not return to the old .com payment route.");
 requireText(university,"Beans, the AI assistant","Public University handoff must identify Beans as the AI assistant.");
 requireText(university,'Human-to-human <a href="/chat.html">NBL Chat</a> is here on NewBeansland.org too', "University must link to same-origin person-to-person Chat.");
-requireText(university,"NBL CHAT PLUS™ provides upgraded Beans tools on NewBeansland.org. NBL CHAT PLUS™ + University adds Professor Grey™ / Virgo System™ guided course teaching","Public University handoff does not preserve the current Plus / Plus + University boundary.");
+requireText(university,"Combined Beans + University is $14.99/month","University must show combined $14.99 membership.");
 requireText(university,'data-nbl-university-checkout="foundation" disabled',"Foundation checkout on .org must stay disabled until payment/isolation verification.");
 requireText(university,'data-nbl-university-checkout="full_foundation" disabled',"Guided Foundation checkout on .org must stay disabled until payment/isolation verification.");
 requireText(university,'src="/nbl-university-checkout.js"',"The .org University page does not load the authenticated checkout bridge.");
@@ -211,8 +211,8 @@ requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridg
 requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership card is missing.");
 requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
-requireText(account,'data-account-billing-plan="chat_plus" disabled',"Unverified $29.99 Plus checkout must remain held.");
-requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout control is missing.");
+requireText(account,'data-account-billing-plan="beans_university" disabled',"Unverified combined University checkout must remain held.");
+requireText(account,'data-account-billing-plan="foundation_student_continuation" disabled',"Qualified student continuation must remain held.");
 requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
 requireText(account,"renderMembership","Account membership meter rendering is missing.");
 for(const staleUniversityAccountCopy of [
@@ -224,11 +224,11 @@ for(const staleUniversityAccountCopy of [
   forbidText(header,staleUniversityAccountCopy,"University account panel still describes enrollment identity as optional.");
 }
 requireText(header,'data-nbl-billing-plan="beans"',"Beans checkout control is missing.");
-requireText(header,'data-nbl-billing-plan="chat_plus"',"Chat Plus checkout control is missing.");
+requireText(header,'data-nbl-billing-plan="foundation_student_continuation" disabled',"Qualified student continuation checkout must remain held.");
 requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout control is missing.");
 requireText(header,'/billing/checkout',"Chat checkout is not routed through the server gateway.");
 requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
-requireText(support,'data-nbl-plan-value="chatPlus.price"',"Support does not use the canonical Chat Plus price.");
+requireText(support,'data-nbl-plan-value="foundationProgram.price"',"Support does not show the canonical Foundation price.");
 requireText(support,'href="/university.html#enroll"',"Support does not direct enrollment to .org.");
 requireText(support,'href="/campus.html"',"Support must link to the .org University classroom.");
 forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
