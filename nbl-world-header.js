@@ -552,24 +552,25 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
             <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
-            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More</small></span>
+            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.foundationProgram.price} Foundation Materials · ${NBL_PRODUCT_PLANS.beansUniversity.price} Beans + University (held) · Get More</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
             <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlus.replies} + plan-approved premium Beans tools. ${NBL_PRODUCT_PLANS.chatPlus.brandLine}. No University course teaching.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus" disabled aria-disabled="true" title="New price checkout verification pending">Plus checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.chatPlusUniversity.name} · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price}</strong><span>${NBL_PRODUCT_PLANS.chatPlusUniversity.replies}. ${NBL_PRODUCT_PLANS.chatPlusUniversity.brandLine}. Physical books are not included in this monthly tier.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="chat_plus_university" disabled aria-disabled="true" title="University checkout verification pending">Plus + University checkout pending</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.beansUniversity.name} · ${NBL_PRODUCT_PLANS.beansUniversity.price}</strong><span>Combined Beans + University membership. Renews at $14.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout verification pending">University membership checkout pending</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.foundationStudentContinuation.name} · ${NBL_PRODUCT_PLANS.foundationStudentContinuation.price}</strong><span>Only for verified $34.99 purchasers, beginning after their included first month. Renews at $9.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Student continuation checkout pending</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>2 physical books + 2 ebooks + one month regular Beans. Self-directed/offline coursework is supported: complete the work, upload the PDF, and use NBL's grading flow. No University month included.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation" disabled aria-disabled="true" title="University checkout verification pending">Foundation checkout pending</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>Two books, course materials and one month of Beans. Then Beans renews at $4.99/month until cancelled or upgraded, with customer consent. No University enrollment.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation" disabled aria-disabled="true" title="Fulfillment and recurring-billing verification pending">Foundation checkout pending</button></article>
+            <article><strong>${NBL_PRODUCT_PLANS.foundationUniversity.name} · ${NBL_PRODUCT_PLANS.foundationUniversity.price}</strong><span>Foundation materials and the first month of Beans + University. Qualifying continuation: $9.99/month. Enrollment held.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout verification pending">Foundation + University pending</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.guidedFoundation.name} · ${NBL_PRODUCT_PLANS.guidedFoundation.price}</strong><span>Foundation physical + digital materials plus one month of the full University guided experience with Professor Grey™ / Virgo System™.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_foundation">Choose Guided Foundation</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.fullNblu.name} · ${NBL_PRODUCT_PLANS.fullNblu.price}</strong><span>Six months of the full University experience plus the staged physical-book and ebook entitlement across the planned program as material is completed and released. Shipping may be charged separately for physical stage packs.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU checkout pending</button></article>
             <article><strong>${NBL_PRODUCT_PLANS.nbluContinuation.name} · ${NBL_PRODUCT_PLANS.nbluContinuation.price}</strong><span>Owner-only continuation after the included six-month Full NBLU guided period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nblu_continuation">Continue Full NBLU</button></article>
             <button class="nbl-billing-manage" type="button" data-nbl-billing-portal>Manage billing</button>
-            <p class="nbl-billing-status" data-nbl-billing-status role="status">Sign in with your NBL account before checkout. New-price Plus and University checkout remain held pending verified payment and LOCKE account binding.</p>
+            <p class="nbl-billing-status" data-nbl-billing-status role="status">Foundation and University checkouts are held pending verified renewal consent, fulfillment, payment and LOCKE identity binding.</p>
           </div>
 
           <a class="nbl-chat-drawer-item" href="/university.html">
             <img src="/NBL_University.png" alt="" aria-hidden="true">
-            <span><strong>NBL University</strong><small>Courses and University doors · separate from Chat Plus</small></span>
+            <span><strong>NBL University</strong><small>Courses and University doors · enrollment required</small></span>
           </a>
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-tools>
@@ -613,15 +614,15 @@
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
-                <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · Plus</span></button>
-                <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · Plus</span></button>
-                <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · Plus</span></button>
-                <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · Plus</span></button>
-                <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · Plus</span></button>
-                <button type="button" data-nbl-tool="artifact"><strong>Create a PDF / file</strong><span>Build a downloadable PDF, document, spreadsheet, CSV, or presentation · Plus</span></button>
-                <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · Plus</span></button>
-                <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · Plus</span></button>
-                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice on Plus; browser voice otherwise</span></button>
+                <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="artifact"><strong>Create a PDF / file</strong><span>Build a downloadable PDF, document, spreadsheet, CSV, or presentation · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice with verified access; browser voice otherwise</span></button>
               </div>
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
               <input data-nbl-beans-knowledge-file type="file" accept=".pdf,.txt,.md,.json,.html,.css,.js,.ts,.py,.doc,.docx,.pptx,.c,.cpp,.cs,.go,.java,.php,.rb,.sh,.tex,application/pdf,application/json,text/plain,text/markdown,text/html" hidden>
@@ -640,7 +641,7 @@
 
       <section id="nbl-chat-panel-plus" class="nbl-plus-shell" role="tabpanel" aria-labelledby="nbl-chat-tab-plus" tabindex="0" data-nbl-plus hidden>
         <div class="nbl-plus-access" data-nbl-plus-access tabindex="-1">
-          <p class="nbl-beans-kicker">NBL CHAT PLUS™ + University</p>
+          <p class="nbl-beans-kicker">NBL University</p>
           <h3>Professor Grey™ · Virgo System™ · powered by OpenAI</h3>
           <p data-nbl-plus-access-copy>Turn on Guided Learning after LOCKE confirms your course enrollment and Professor Grey™ access.</p>
           <button type="button" data-nbl-plus-signin>Sign in to check access</button>
@@ -1145,7 +1146,7 @@
     }
     beansAttachments=next;
     renderBeansToolState();
-    beansStatus.textContent=`${beansAttachments.length} attachment${beansAttachments.length===1?"":"s"} ready. NBL CHAT PLUS™ is required to send them.`;
+    beansStatus.textContent=`${beansAttachments.length} attachment${beansAttachments.length===1?"":"s"} ready. verified membership is required to send them.`;
   };
 
   const callBeansUtility=async(route,body={})=>{
@@ -1945,7 +1946,7 @@
     if(tool==="voice-mode"){
       setBeansToolMenu(false);
       if(!(await plusVoiceEligible())){
-        beansStatus.textContent="OpenAI voice mode requires NBL CHAT PLUS™. The mic still supports browser dictation.";
+        beansStatus.textContent="OpenAI voice mode requires verified membership. The mic still supports browser dictation.";
         return;
       }
       beansVoiceMode=!beansVoiceMode;
@@ -1967,12 +1968,12 @@
       setBeansToolMenu(false);
       renderBeansToolState();
       beansStatus.textContent=tool==="web"
-        ?"Live web selected · NBL CHAT PLUS™."
+        ?"Live web selected · verified membership."
         :tool==="code"
-          ?"Code / data analysis selected · NBL CHAT PLUS™."
+          ?"Code / data analysis selected · verified membership."
           :tool==="artifact"
-            ?"PDF / file creation selected · NBL CHAT PLUS™."
-            :"Image creation selected · NBL CHAT PLUS™.";
+            ?"PDF / file creation selected · verified membership."
+            :"Image creation selected · verified membership.";
       beansInput.focus();
     }
   });
@@ -2357,8 +2358,9 @@
       if(/\b(price|pricing|prices|cost|costs|plan|plans|membership|how much)\b/i.test(query)&&["results","not_found"].includes(payload?.status)){
         const catalogText=[
           `${NBL_PRODUCT_PLANS.beans.name}: ${NBL_PRODUCT_PLANS.beans.price}, ${NBL_PRODUCT_PLANS.beans.replies}.`,
-          `${NBL_PRODUCT_PLANS.chatPlus.name}: ${NBL_PRODUCT_PLANS.chatPlus.price}, ${NBL_PRODUCT_PLANS.chatPlus.replies}.`,
-          `${NBL_PRODUCT_PLANS.chatPlusUniversity.name}: ${NBL_PRODUCT_PLANS.chatPlusUniversity.price}, ${NBL_PRODUCT_PLANS.chatPlusUniversity.replies}; guided course teaching, ebook coupon redemption.`,
+          `${NBL_PRODUCT_PLANS.beansUniversity.name}: ${NBL_PRODUCT_PLANS.beansUniversity.price}; renews monthly; University checkout held.`,
+          `${NBL_PRODUCT_PLANS.foundationStudentContinuation.name}: ${NBL_PRODUCT_PLANS.foundationStudentContinuation.price}; eligible $34.99 purchasers only, renewal after first included month.`,
+          `${NBL_PRODUCT_PLANS.foundationUniversity.name}: ${NBL_PRODUCT_PLANS.foundationUniversity.price}; University enrollment held.`,
           `${NBL_PRODUCT_PLANS.getMore.name}: ${NBL_PRODUCT_PLANS.getMore.price}, ${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}`,
           `${NBL_PRODUCT_PLANS.foundationProgram.name}: ${NBL_PRODUCT_PLANS.foundationProgram.price}.`,
           `${NBL_PRODUCT_PLANS.fullFoundation.name}: ${NBL_PRODUCT_PLANS.fullFoundation.price}.`,
