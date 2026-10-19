@@ -329,6 +329,9 @@
     };
 
     const openCheckout=async(plan,button)=>{
+      // Plan availability is set by the verified release gate, not by a
+      // failed checkout's cleanup handler or manual DOM changes.
+      if(button.disabled||!["beans","topup_500"].includes(plan)) return;
       button.disabled=true;
       membershipStatus.textContent="Preparing secure Stripe checkout…";
       try{
