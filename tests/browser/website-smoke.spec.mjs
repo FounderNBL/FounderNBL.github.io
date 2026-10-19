@@ -96,13 +96,13 @@ test.describe("New Beansland web app browser smoke", () => {
       await page.getByRole("button", { name: /Open Beans menu/i }).click();
       await page.getByRole("button", { name: /Membership & plans/i }).click();
       await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
-      await expect(page.getByRole("button", { name: "University membership checkout pending" })).toBeDisabled();
-      await expect(page.getByRole("button", { name: "Student continuation checkout pending" })).toBeDisabled();
-      await expect(page.getByRole("button", { name: "Foundation checkout pending" })).toBeDisabled();
-      await expect(page.getByRole("button", { name: "Foundation + University pending" })).toBeDisabled();
-      await expect(page.getByRole("button", { name: "Guided Foundation checkout pending" })).toBeDisabled();
-      await expect(page.getByRole("button", { name: "Full NBLU checkout pending" })).toBeDisabled();
-      await expect(page.getByRole("button", { name: "Full NBLU continuation checkout pending" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "University membership checkout pending", exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Student continuation checkout pending", exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Foundation checkout pending", exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Foundation + University pending", exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Guided Foundation checkout pending", exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Full NBLU checkout pending", exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Full NBLU continuation checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: /Plus checkout pending/i })).toHaveCount(0);
       await expect(page.getByRole("button", { name: /Get \+500 replies/i })).toBeVisible();
     }
