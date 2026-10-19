@@ -303,6 +303,7 @@ async function syncClerkSession(){
 }
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
+  $("[data-nbl-infinity-preview]")?.addEventListener("click",()=>{window.NBLInfinitySound?.play("people");});
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
   $("[data-chat-dm-form]").addEventListener("submit",event=>{event.preventDefault();void openDM($("[data-chat-dm-handle]").value.trim());});
   $("[data-chat-send-form]").addEventListener("submit",sendMessage);
