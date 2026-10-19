@@ -1,3 +1,4 @@
+import "./check-website-infinity.mjs";
 import fs from "node:fs";
 
 const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");

@@ -1,5 +1,12 @@
 (()=>{
   "use strict";
+  // Shared NBL Infinity audio loads only on real reply events. Missing asset stays silent.
+  if(!document.querySelector('script[data-nbl-infinity]')){
+    const soundScript=document.createElement("script");
+    soundScript.dataset.nblInfinity="true";
+    soundScript.src="/nbl-infinity-sound.js?v=20261019";
+    document.head.appendChild(soundScript);
+  }
   const path=(location.pathname||"/").replace(/\/+/g,"/");
   const room=(()=>{
     if(path==="/"||/\/index\.html$/.test(path)||/\/home\.html$/.test(path)) return {label:"Stories · Questions · Worlds",key:"home"};
@@ -1264,7 +1271,12 @@
     try{
       const result=await requestNblMeter();
       const meter=result?.meter||null;
-      return Boolean(!result?.signInRequired&&(meter?.privileged||meter?.planKey==="chat_plus"));
+      // Membership is verified by the server-side meter, never by an editable
+      // browser flag. A previously canceled membership is valid only through
+      // its paid-through date; University remains a separate entitlement.
+      const active=Boolean(["active","canceled","grace"].includes(String(meter?.membershipStatus||"").toLowerCase())
+        &&meter?.paidPeriodEnd&&Date.parse(meter.paidPeriodEnd)>Date.now());
+      return Boolean(!result?.signInRequired&&(meter?.privileged||(active&&["beans","chat_plus"].includes(meter?.planKey))));
     }catch{return false;}
   };
 
@@ -1852,6 +1864,7 @@
       if(payload?.conversationId) beansConversationId=String(payload.conversationId);
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply,String(payload?.speaker||"Beans"));
+      window.NBLInfinitySound?.play("beans");
       appendBeansSources(payload?.sources);
       appendBeansFileSources(payload?.fileSources);
       appendBeansImages(payload?.generatedImages);
@@ -2031,6 +2044,7 @@
       plusHistory.push({role:"assistant",content:reply});
       beansHistory.push({role:"assistant",content:reply});
       appendPlusMessage("assistant",reply);
+      window.NBLInfinitySound?.play("university");
       appendPlusSources(payload?.sources);
       plusStatus.textContent=`Professor Grey™ · ${plusCourse.value}`;
     }catch(error){

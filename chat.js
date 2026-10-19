@@ -11,6 +11,18 @@ const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:fa
 let activeAuthUserId;
 let authSyncGeneration=0;
 const status=message=>{const el=$("[data-chat-status]");if(el)el.textContent=message;};
+const lastSeenMessages=new Map();
+function rememberIncoming(threadId,messages,{announce=false}={}){
+  if(!threadId)return;
+  const rows=Array.isArray(messages)?messages:[];
+  const old=lastSeenMessages.get(threadId);
+  const seen=new Set(rows.filter(item=>item?.id).map(item=>String(item.id)));
+  const me=String(state.me?.handle||"").toLowerCase();
+  const incoming=Boolean(announce&&old&&rows.some(item=>item?.id&&!old.has(String(item.id))
+    &&!item.deleted&&String(item.sender?.handle||"").toLowerCase()!==me));
+  lastSeenMessages.set(threadId,seen);
+  if(incoming&&!state.selected?.muted)window.NBLInfinitySound?.play("people");
+}
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el;};
 
 function signInUrl(){
@@ -133,7 +145,10 @@ function watchOpenThread(id){
   state.realtimeStop=window.NBLSocialRealtime.watchThread(id,authToken,async()=>{
     if(state.selectedId!==id)return;
     const payload=await social({action:"list_messages",threadId:id});
-    if(state.selectedId===id)renderMessages(payload.messages||[]);
+    if(state.selectedId===id){
+      rememberIncoming(id,payload.messages||[],{announce:true});
+      renderMessages(payload.messages||[]);
+    }
   });
 }
 function watchInbox(){
@@ -157,6 +172,7 @@ async function openThread(id){
   const requestedUserId=state.clerk?.user?.id;
   const payload=await social({action:"list_messages",threadId:id});
   if(state.selectedId!==id||state.clerk?.user?.id!==requestedUserId)return;
+  rememberIncoming(id,payload.messages||[]);
   renderMessages(payload.messages||[]);
   status("Conversation ready. NBL human messages do not use AI credits.");
 }
@@ -287,6 +303,7 @@ async function syncClerkSession(){
 }
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
+  $("[data-nbl-infinity-preview]")?.addEventListener("click",()=>{window.NBLInfinitySound?.play("people");});
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
   $("[data-chat-dm-form]").addEventListener("submit",event=>{event.preventDefault();void openDM($("[data-chat-dm-handle]").value.trim());});
   $("[data-chat-send-form]").addEventListener("submit",sendMessage);
