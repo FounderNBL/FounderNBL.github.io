@@ -71,7 +71,7 @@ requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"Beans must be the AI d
 requireText(header,'href="/campus.html#grey"',"Talk to Grey must open the .org protected University classroom.");
 requireText(header,'href="/chat.html"',"Talk to People must open same-origin member NBL Chat.");
 forbidText(header,'Beans is NBL Chat™',"Beans must not be labeled as human NBL Chat.");
-requireText(header,'NBL CHAT PLUS™',"NBL CHAT PLUS™ trademark display is missing.");
+forbidText(header,'NBL CHAT PLUS™',"Retired Plus marketing must not be displayed.");
 requireText(header,'Professor Grey™',"Professor Grey™ trademark display is missing.");
 requireText(header,'Virgo System™',"Virgo System™ trademark display is missing.");
 requireText(header,'powered by OpenAI',"OpenAI provider brand line is missing.");
@@ -80,13 +80,13 @@ requireText(header,'?action=conversations',"Website-standard recent Chat history
 requireText(header,'data-nbl-drawer-grey hidden',"Preserved Professor Grey entry must stay hidden from public Chat.");
 requireText(header,'data-nbl-drawer-tools',"Website-standard Beans tools entry is missing.");
 requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans entry is missing.");
-requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More',"Website-standard plan labels do not use the canonical catalog.");
+requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.foundationProgram.price} Foundation Materials · ${NBL_PRODUCT_PLANS.beansUniversity.price} Beans + University (held) · Get More',"Website-standard plan labels do not use the canonical catalog.");
 requireText(plans,'beans:Object.freeze({name:"Beans"',"Beans base-tier display name must be Beans, not human NBL Chat.");
 requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
-requireText(plans,'price:"$29.99/month"',"Final approved Chat Plus price is missing.");
-requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + University tier is missing.");
-requireText(account,'data-account-billing-plan="chat_plus_university"',"Account Plus + University checkout action is missing.");
-requireText(account,'data-account-billing-plan="chat_plus_university" disabled',"University-granting monthly checkout must stay held pending proof.");
+requireText(plans,'price:"$29.99 one-time"',"Correct one-time Foundation Materials price is missing.");
+requireText(plans,'beansUniversity:Object.freeze',"Combined Beans + University plan is missing.");
+requireText(account,'data-account-billing-plan="beans_university"',"Account Beans + University checkout action is missing.");
+requireText(account,'data-account-billing-plan="beans_university" disabled',"University membership checkout must remain held.");
 requireText(account,'data-account-billing-plan="foundation" disabled',"Foundation checkout must stay held pending proof.");
 requireText(account,'data-account-billing-plan="full_foundation" disabled',"Guided Foundation checkout must stay held pending proof.");
 requireText(account,'data-account-billing-plan="full_nblu" disabled',"Full NBLU checkout must stay held pending proof.");
@@ -105,7 +105,7 @@ requireText(header,'Your NBL account is still signed in, but its secure session 
 forbidText(header,'functions/v1/beans-public',"Website client still hardcodes the internal public Beans runtime.");
 requireText(header,'meter:requestNblMeter',"Website membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership status card is missing.");
-requireText(account,'data-account-billing-plan="chat_plus"',"Account Chat Plus checkout action is missing.");
+requireText(account,'data-account-billing-plan="foundation_student_continuation" disabled',"Qualified continuation checkout must stay held.");
 requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to the backend.");
 requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
 requireText(header,'data-nbl-tool="artifact"',"Beans downloadable file/PDF creation control is missing.");

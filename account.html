@@ -87,15 +87,16 @@
         </div>
         <div class="row">
           <button type="button" data-account-billing-plan="beans">Beans · $4.99/month</button>
-          <button type="button" data-account-billing-plan="chat_plus" disabled aria-disabled="true" title="New price checkout verification pending">NBL CHAT PLUS™ · $29.99/month</button>
-          <button type="button" data-account-billing-plan="chat_plus_university" disabled aria-disabled="true" title="University checkout verification pending">NBL CHAT PLUS™ + University · $39.99/month</button>
+          <button type="button" data-account-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout pending">Beans + University · $14.99/month</button>
+          <button type="button" data-account-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Qualified Foundation Student Continuation · $9.99/month</button>
           <button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button>
-          <button type="button" data-account-billing-plan="foundation" disabled aria-disabled="true" title="University checkout verification pending">Foundation · $29.99 one-time</button>
+          <button type="button" data-account-billing-plan="foundation" disabled aria-disabled="true" title="Renewal consent and fulfillment checkout pending">Foundation Materials + first month Beans · $29.99 once</button>
+          <button type="button" data-account-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout pending">Foundation + University first month · $34.99 once</button>
           <button type="button" data-account-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation · $54.99 one-time</button>
           <button type="button" data-account-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Experience · $449.99 one-time</button>
           <button type="button" data-account-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Owner Continuation · $14.99/month</button>
         </div>
-        <p class="status">University-granting checkout is temporarily held while New Beansland completes one controlled real checkout and a second-account student-record isolation test. Current University prices are display information until those gates pass. Regular Beans and Get More remain separate. Plus checkout is also held until its $29.99 Stripe price is safely mapped to your NBL account.</p>
+        <p class="status">Every monthly membership renews at its own price until cancelled or changed. Foundation Materials is $29.99 once with the first month of Beans; Beans then renews at $4.99/month with customer consent. The $34.99 Foundation + University offer includes its first month and only qualified purchasers can continue at $9.99/month without an extra Beans subscription. University and Foundation checkouts remain held pending verified payment, fulfillment, renewal consent and account isolation.</p>
       </section>
 
       <section class="card hidden" id="founder-actions">
@@ -314,7 +315,7 @@
       const plan=meter.privileged
         ?"Founder"
         :planKey==="chat_plus"
-          ?"NBL CHAT PLUS™"
+          ?"Legacy Beans membership"
           :planKey==="beans"
             ?"Beans"
             :"Free";
@@ -328,6 +329,9 @@
     };
 
     const openCheckout=async(plan,button)=>{
+      // Plan availability is set by the verified release gate, not by a
+      // failed checkout's cleanup handler or manual DOM changes.
+      if(button.disabled||!["beans","topup_500"].includes(plan)) return;
       button.disabled=true;
       membershipStatus.textContent="Preparing secure Stripe checkout…";
       try{
