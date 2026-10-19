@@ -671,6 +671,18 @@
             <div class="nbl-beans-message is-beans"><strong>Professor Grey™</strong><p>Choose your course and ask me about the lesson.</p></div>
           </div>
           <form class="nbl-beans-form" data-nbl-plus-form>
+            <label for="nbl-grey-teaching-tool">Professor Grey's teaching tools</label>
+            <select id="nbl-grey-teaching-tool" data-nbl-grey-teaching-tool aria-label="Choose Professor Grey teaching tool">
+              <option value="">Guided Learning · Grey chooses</option>
+              <option value="explain">Explain the lesson</option>
+              <option value="socratic">Socratic coaching</option>
+              <option value="worked_example">Worked example</option>
+              <option value="misconception">Misconception repair</option>
+              <option value="practice">Ungraded practice</option>
+              <option value="exit_ticket">Exit ticket</option>
+              <option value="review_plan">Study and review plan</option>
+              <option value="source_walkthrough">Course source walkthrough</option>
+            </select>
             <label for="nbl-plus-input">Ask Professor Grey™</label>
             <div class="nbl-beans-row">
               <textarea id="nbl-plus-input" name="message" rows="2" maxlength="3500" placeholder="Ask about your course…" required></textarea>
@@ -737,6 +749,7 @@
   const plusSignIn=beansPanel.querySelector("[data-nbl-plus-signin]");
   const plusLive=beansPanel.querySelector("[data-nbl-plus-live]");
   const plusCourse=beansPanel.querySelector("[data-nbl-plus-course]");
+  const plusTeachingTool=beansPanel.querySelector("[data-nbl-grey-teaching-tool]");
   const plusLog=beansPanel.querySelector("[data-nbl-plus-log]");
   const plusForm=beansPanel.querySelector("[data-nbl-plus-form]");
   const plusInput=beansPanel.querySelector("#nbl-plus-input");
@@ -2004,6 +2017,7 @@
     event.preventDefault();
     const text=plusInput.value.trim();
     if(!text||!plusAllowed) return;
+    const teachingTool=plusTeachingTool?.value||"";
     const accountGeneration=beansAccountGeneration;
     const accessRequestGeneration=plusAccessRequestGeneration;
     const requestedUserId=currentClerkUserId();
@@ -2023,12 +2037,13 @@
     plusSubmit.disabled=true;
     plusInput.disabled=true;
     plusCourse.disabled=true;
-    plusStatus.textContent="Professor Grey™ is thinking…";
+    if(plusTeachingTool) plusTeachingTool.disabled=true;
+    plusStatus.textContent="Professor Grey™ is teaching…";
     try{
       const response=await fetch(NBL_CHAT_PLUS_API,{
         method:"POST",
         headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${identity.token}`},
-        body:JSON.stringify({action:"chat",mode:"guided_learning",conversationId:beansConversationId,courseCode:plusCourse.value,messages:beansHistory.slice(-12)})
+        body:JSON.stringify({action:"chat",mode:"guided_learning",teachingTool,conversationId:beansConversationId,courseCode:plusCourse.value,messages:beansHistory.slice(-12)})
       });
       const payload=await response.json().catch(()=>({}));
       if(accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||!plusAllowed||currentClerkUserId()!==identity.userId) return;
@@ -2046,7 +2061,7 @@
       appendPlusMessage("assistant",reply);
       window.NBLInfinitySound?.play("university");
       appendPlusSources(payload?.sources);
-      plusStatus.textContent=`Professor Grey™ · ${plusCourse.value}`;
+      plusStatus.textContent=`Professor Grey™ · ${plusCourse.value}${payload?.teachingTool?.label?" · "+payload.teachingTool.label:""}`;
     }catch(error){
       if(accountGeneration!==beansAccountGeneration||accessRequestGeneration!==plusAccessRequestGeneration||currentClerkUserId()!==identity.userId) return;
       const message=error?.message||"Professor Grey™ could not answer just now.";
@@ -2056,6 +2071,7 @@
       plusSubmit.disabled=false;
       plusInput.disabled=false;
       plusCourse.disabled=false;
+      if(plusTeachingTool) plusTeachingTool.disabled=false;
       if(plusAllowed) plusInput.focus();
     }
   });
