@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>NBL Vault · New Beansland</title>
+<meta name="theme-color" content="#07131f">
+<link rel="stylesheet" href="/nbl-world-header.css">
+<script defer src="/nbl-world-header.js"></script>
+<style>
+:root{--gold:#efc66f;--panel:#102237;--line:rgba(239,198,111,.22);--muted:#b9c6cf}
+*{box-sizing:border-box}
+body{background:#07131f;color:#f2eadc;font:16px/1.5 system-ui,sans-serif;margin:0}
+main{max-width:1050px;margin:auto;padding:130px 18px 70px}
+h1{font-size:clamp(2.2rem,6vw,4rem);color:var(--gold);margin:0 0 8px}
+h2{margin:0 0 10px;color:var(--gold)}
+.panel,.metric{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px;margin-top:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.metric{margin:0}.metric strong{display:block;color:var(--gold);font-size:2rem}
+.note{color:var(--muted)}.item{padding:11px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+button,a.action{padding:11px 18px;border-radius:999px;background:#9c773d;color:white;border:1px solid var(--gold);text-decoration:none;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+[hidden]{display:none!important}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+</style>
+</head>
+<body>
+<main>
+<p class="note">New Beansland · Private account services</p>
+<h1>NBL Vault</h1>
+<p class="note">Your balances, in one place. Beans replies and Studios credits are service allowances, not cash or withdrawals.</p>
+<section class="panel" aria-label="Your NBL Vault">
+<h2>My Vault</h2>
+<div class="grid">
+  <div class="metric"><strong id="free">—</strong>Free Beans replies</div>
+  <div class="metric"><strong id="paid">—</strong>Member Beans replies</div>
+  <div class="metric"><strong id="topups">—</strong>Get More replies</div>
+  <div class="metric"><strong id="studio">—</strong>Studios credits</div>
+</div>
+<p id="status" class="note" role="status" aria-live="polite">Checking your signed-in account…</p>
+<div class="controls"><button type="button" id="refresh">Refresh balances</button><a class="action" href="https://accounts.newbeansland.org/sign-in?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fvault.html" id="signin" hidden>Sign in / Create account</a></div>
+</section>
+<section class="panel" id="founder" hidden>
+<h2>Founder · NBL Operating Vault</h2>
+<p id="money" class="note"></p>
+<h3>Verified provider resources</h3><div id="resources"></div>
+<h3>Customer balances</h3><div id="accounts"></div>
+<div class="controls"><button type="button" id="prev">Previous</button><button type="button" id="next">Next</button><span id="page" class="note"></span></div>
+<p class="note">Provider promotional credits aren't cash. Unverified balances remain unknown. Automated provider refills and Founder payouts are off.</p>
+</section>
+<p class="note"><a href="/account.html">Back to my NBL account</a></p>
+</main>
+<script>
+(()=>{
+"use strict";
+const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-vault";
+const $=id=>document.getElementById(id);
+const state={bridge:null,clerk:null,page:0,loading:false,identity:""};
+function node(label,value){
+ const p=document.createElement("p");p.className="item";
+ const b=document.createElement("strong");b.textContent=label+": ";
+ const s=document.createElement("span");s.textContent=String(value);
+ p.append(b,s);return p;
+}
+const cash=cents=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number(cents)/100);
+async function api(view){
+ const token=await state.bridge.getToken();
+ if(!token)throw new Error("Your NBL session is still connecting.");
+ const url=API+"?view="+encodeURIComponent(view)+(view==="founder"?"&page="+state.page:"");
+ const response=await fetch(url,{headers:{Authorization:"Bearer "+token,Accept:"application/json"},cache:"no-store"});
+ const data=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(response.status===401?"Please sign in again.":"Vault records cannot be read right now.");
+ return data;
+}
+function renderPersonal(data){
+ const beans=data?.customer?.beans||{},studios=data?.customer?.studios||{};
+ $("free").textContent=beans.freeRepliesRemaining??"—";
+ $("paid").textContent=beans.unlimitedByPrivilege?"∞":beans.paidRepliesRemaining??"—";
+ $("topups").textContent=beans.purchasedTopupRepliesRemaining??"—";
+ $("studio").textContent=studios.creditsRemaining??"—";
+ $("status").textContent="Read directly from your account's existing Beans meter and Studios wallet.";
+}
+function renderFounder(result){
+ const f=result.founder;
+ if(!f){$("founder").hidden=true;return;}
+ $("founder").hidden=false;
+ const r=f.financials;
+ $("money").textContent=r?.verified?
+   "Verified net surplus: "+cash(r.netSurplusCents)+" · 5% Founder allocation: "+cash(r.founderProfitCents)+" · NBL operating reserve: "+cash(r.nblOperatingReserveCents):
+   "Founder allocation is 5% of reconciled net surplus. No reconciled settlements yet; actual cash/profit is not established.";
+ $("resources").replaceChildren();
+ for(const v of f.resources||[])$("resources").append(node(v.provider_key+" · "+v.funding_kind,
+   v.verified_available===null?"Not yet verified":String(v.verified_available)+" "+v.resource_unit));
+ if(!$("resources").children.length)$("resources").append(node("Resources","No verified provider balances recorded yet."));
+ $("accounts").replaceChildren();
+ for(const v of f.accounts||[]){
+  const b=v.beans||{},s=v.studios||{};
+  $("accounts").append(node(v.accountId,
+    "Beans free "+b.freeRepliesRemaining+", member "+(b.unlimitedByPrivilege?"∞":b.paidRepliesRemaining)+
+    ", Get More "+b.purchasedTopupRepliesRemaining+", Studios "+s.creditsRemaining));
+ }
+ if(!$("accounts").children.length)$("accounts").append(node("Customer accounts","No accounts on this page."));
+ const count=Number(f.accountCount||0),limit=Number(f.accountsPerPage||25);
+ $("prev").disabled=state.page===0;$("next").disabled=(state.page+1)*limit>=count;
+ $("page").textContent="Showing "+(count?state.page*limit+1:0)+"–"+Math.min(count,(state.page+1)*limit)+" of "+count;
+}
+async function refresh(){
+ if(state.loading||!state.bridge)return;
+ if(!state.clerk?.isSignedIn||!state.clerk.session){
+  $("signin").hidden=false;$("founder").hidden=true;$("status").textContent="Sign in to see your Vault.";return;
+ }
+ state.loading=true;$("status").textContent="Loading verified balances…";$("signin").hidden=true;
+ try{
+  const personal=await api("mine");renderPersonal(personal);
+  try{renderFounder(await api("founder"));}catch{$("founder").hidden=true;}
+ }catch(e){$("status").textContent=e?.message||"Vault temporarily unavailable.";}
+ finally{state.loading=false;}
+}
+$("refresh").addEventListener("click",refresh);
+$("prev").addEventListener("click",()=>{if(state.page>0){state.page--;refresh();}});
+$("next").addEventListener("click",()=>{state.page++;refresh();});
+(async()=>{
+ for(let i=0;i<60;i++){if(window.NBLAccountBridge){state.bridge=window.NBLAccountBridge;break;}
+  await new Promise(resolve=>setTimeout(resolve,100));}
+ if(!state.bridge){$("status").textContent="NBL account connection is unavailable.";return;}
+ try{state.clerk=await state.bridge.getClerk();}catch{$("status").textContent="NBL sign-in is unavailable.";return;}
+ state.identity=String(state.clerk.user?.id||"");
+ await refresh();
+ state.clerk.addListener(()=>{
+  const next=state.clerk.isSignedIn?String(state.clerk.user?.id||""):"";
+  if(next!==state.identity){state.identity=next;state.page=0;refresh();}
+ });
+})();
+})();
+</script>
+</body></html>
