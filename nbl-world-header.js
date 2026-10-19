@@ -1,5 +1,12 @@
 (()=>{
   "use strict";
+  // Shared NBL Infinity audio loads only on real reply events. Missing asset stays silent.
+  if(!document.querySelector('script[data-nbl-infinity]')){
+    const soundScript=document.createElement("script");
+    soundScript.dataset.nblInfinity="true";
+    soundScript.src="/nbl-infinity-sound.js?v=20261019";
+    document.head.appendChild(soundScript);
+  }
   const path=(location.pathname||"/").replace(/\/+/g,"/");
   const room=(()=>{
     if(path==="/"||/\/index\.html$/.test(path)||/\/home\.html$/.test(path)) return {label:"Stories · Questions · Worlds",key:"home"};
@@ -1852,6 +1859,7 @@
       if(payload?.conversationId) beansConversationId=String(payload.conversationId);
       beansHistory.push({role:"assistant",content:reply});
       appendBeansMessage("assistant",reply,String(payload?.speaker||"Beans"));
+      window.NBLInfinitySound?.play("beans");
       appendBeansSources(payload?.sources);
       appendBeansFileSources(payload?.fileSources);
       appendBeansImages(payload?.generatedImages);
@@ -2031,6 +2039,7 @@
       plusHistory.push({role:"assistant",content:reply});
       beansHistory.push({role:"assistant",content:reply});
       appendPlusMessage("assistant",reply);
+      window.NBLInfinitySound?.play("university");
       appendPlusSources(payload?.sources);
       plusStatus.textContent=`Professor Grey™ · ${plusCourse.value}`;
     }catch(error){
