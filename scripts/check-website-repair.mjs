@@ -225,6 +225,7 @@ for(const staleUniversityAccountCopy of [
 }
 requireText(header,'data-nbl-billing-plan="beans"',"Beans checkout control is missing.");
 requireText(header,'data-nbl-billing-plan="foundation_student_continuation" disabled',"Qualified student continuation checkout must remain held.");
+requireText(header,'button.disabled=initialDisabled.get(button)??true',"Billing failure must not enable held University checkouts.");
 requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout control is missing.");
 requireText(header,'/billing/checkout',"Chat checkout is not routed through the server gateway.");
 requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
@@ -232,10 +233,10 @@ requireText(support,'data-nbl-plan-value="foundationProgram.price"',"Support doe
 requireText(support,'href="/university.html#enroll"',"Support does not direct enrollment to .org.");
 requireText(support,'href="/campus.html"',"Support must link to the .org University classroom.");
 forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
-requireText(support,"Signed-in website checkout is available from Membership & plans in NBL Chat™.","Support does not document signed-in Chat checkout.");
+requireText(support,"Signed-in website checkout is available from Membership & plans in NBL Chat™ for verified products","Support does not document verified signed-in Chat checkout.");
 requireText(terms,"Signed-in website checkout is available through NBL Chat™","Terms do not document authenticated Chat checkout.");
 requireText(privacy,"signed-in website checkout is handed off to Stripe","Privacy does not document Stripe checkout handling.");
-requireText(deletion,"Deleting NBL application data does not by itself cancel an active Stripe subscription","Account deletion does not explain active subscription cancellation.");
+requireText(deletion,"Deleting NBL application data does not cancel an active Stripe subscription","Account deletion does not explain active subscription cancellation.");
 for(const staleBillingCopy of ["website checkout/payment rails for the Chat plans are not currently available","website checkout/payment rails for these plans are not currently available","The public Chat-plan catalog is not a website checkout"]){
   forbidText(support,staleBillingCopy,"Support still says checkout is unavailable.");
   forbidText(terms,staleBillingCopy,"Terms still say checkout is unavailable.");
