@@ -99,6 +99,14 @@
         <p class="status">Every monthly membership renews at its own price until cancelled or changed. Foundation Materials is $29.99 once with the first month of Beans; Beans then renews at $4.99/month with customer consent. The $34.99 Foundation + University offer includes its first month and only qualified purchasers can continue at $9.99/month without an extra Beans subscription. University and Foundation checkouts remain held pending verified payment, fulfillment, renewal consent and account isolation.</p>
       </section>
 
+      <section class="card" id="nblConnectCard">
+        <h2>Beans · Connected apps</h2>
+        <p class="status">Connect supported accounts so Beans can work with what you authorize. GitHub begins with read-only repository inspection.</p>
+        <p id="nblConnectStatus" class="status">Checking connected apps…</p>
+        <div id="nblConnectApps" class="fulfillment-list"></div>
+        <div id="nblConnectRepos" class="fulfillment-list"></div>
+      </section>
+
       <section class="card hidden" id="founder-actions">
         <h2>LOCKE needs Founder approval</h2>
         <p id="founderActionsStatus" class="status">Checking the Founder queue…</p>
@@ -167,6 +175,10 @@
     const deliveryStatus=document.getElementById("deliveryStatus");
     const deliveries=document.getElementById("deliveries");
     const FULFILLMENT_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/locke-fulfillment";
+    const CONNECT_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core/connect";
+    const nblConnectStatus=document.getElementById("nblConnectStatus");
+    const nblConnectApps=document.getElementById("nblConnectApps");
+    const nblConnectRepos=document.getElementById("nblConnectRepos");
 
     let authNavigationInProgress=false;
     const accountPortalUrl=(page="/sign-in")=>{
@@ -289,6 +301,94 @@
         throw error;
       }
       return payload;
+    };
+
+    const connectFetch=async(body)=>{
+      const t=await token();
+      if(!t)throw new Error("Your NBL sign-in session is not available.");
+      const response=await fetch(CONNECT_API,{
+        method:"POST",
+        headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:"Bearer "+t},
+        body:JSON.stringify(body),cache:"no-store"
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(payload.message||"NBL Connect is not ready yet.");
+      return payload;
+    };
+    const renderConnect=async()=>{
+      nblConnectApps.replaceChildren();
+      nblConnectRepos.replaceChildren();
+      const connectParam=new URLSearchParams(location.search).get("connect");
+      try{
+        const data=await connectFetch({operation:"status"});
+        const provider=(data.providers||[]).find(x=>x.id==="github");
+        const connected=(data.connections||[]).find(x=>x.provider==="github");
+        const card=document.createElement("article");card.className="fulfillment-item";
+        const title=document.createElement("h3");title.textContent="GitHub";
+        const details=document.createElement("p");details.className="fulfillment-meta";
+        details.textContent=connected?"Connected: "+connected.label+" · repository reading only"
+          :provider?.configured?"Not connected · you choose the repositories GitHub permits":"GitHub connection setup is being prepared.";
+        card.append(title,details);
+        if(connected){
+          const inspect=document.createElement("button");inspect.type="button";inspect.textContent="Show my repositories";
+          inspect.onclick=async()=>{
+            inspect.disabled=true;nblConnectStatus.textContent="Asking GitHub for your authorized repositories…";
+            try{
+              const repos=await connectFetch({operation:"github_repositories"});
+              nblConnectRepos.replaceChildren();
+              const entries=Array.isArray(repos.repositories)?repos.repositories:[];
+              for(const item of entries){
+                const row=document.createElement("article");row.className="fulfillment-item";
+                const label=document.createElement("h3");label.textContent=item.fullName+(item.private?" · Private":"");
+                const link=document.createElement("a");link.textContent="Open in GitHub";link.href=item.url;link.target="_blank";link.rel="noopener noreferrer";
+                const read=document.createElement("button");read.type="button";read.textContent="Inspect README.md";
+                const preview=document.createElement("pre");preview.style.whiteSpace="pre-wrap";preview.style.overflowWrap="anywhere";
+                read.onclick=async()=>{
+                  read.disabled=true;
+                  try{
+                    const [owner,repo]=String(item.fullName||"").split("/");
+                    const file=await connectFetch({operation:"github_read_file",owner,repo,path:"README.md"});
+                    preview.textContent=String(file.content||"").slice(0,20000);
+                  }catch(error){preview.textContent=error.message}
+                  finally{read.disabled=false}
+                };
+                row.append(label,link,read,preview);nblConnectRepos.append(row);
+              }
+              nblConnectStatus.textContent=entries.length+" authorized GitHub repos returned. Only read-only inspection is enabled.";
+            }catch(error){nblConnectStatus.textContent=error.message}
+            finally{inspect.disabled=false}
+          };
+          const disconnect=document.createElement("button");disconnect.type="button";disconnect.className="danger";disconnect.textContent="Disconnect GitHub";
+          disconnect.onclick=async()=>{
+            if(!confirm("Disconnect GitHub from Beans? NBL will remove its stored connection."))return;
+            disconnect.disabled=true;
+            try{await connectFetch({operation:"github_disconnect"});await renderConnect();}
+            catch(error){nblConnectStatus.textContent=error.message;disconnect.disabled=false}
+          };
+          const actions=document.createElement("div");actions.className="row";actions.append(inspect,disconnect);card.append(actions);
+        }else if(provider?.configured){
+          const connect=document.createElement("button");connect.type="button";connect.textContent="Connect my GitHub";
+          connect.onclick=async()=>{
+            connect.disabled=true;
+            try{
+              const result=await connectFetch({operation:"github_begin"});
+              const url=new URL(result.authorizationUrl);
+              if(url.protocol!=="https:"||url.hostname!=="github.com")throw Error("Invalid GitHub authorization destination.");
+              location.assign(url.href);
+            }catch(error){nblConnectStatus.textContent=error.message;connect.disabled=false}
+          };
+          card.append(connect);
+        }
+        nblConnectApps.append(card);
+        nblConnectStatus.textContent=connectParam==="github_connected"
+          ?"Your GitHub connection was saved. You may inspect the repositories you approved."
+          :connectParam==="github_failed"||connectParam==="github_expired"
+            ?"GitHub sign-in did not finish. You can try again.":connected?"Connected apps are ready for your review.":"No customer GitHub connection is active yet.";
+        if(connectParam){
+          const cleanUrl=new URL(location.href);cleanUrl.searchParams.delete("connect");
+          window.history.replaceState(window.history.state,"",cleanUrl.href);
+        }
+      }catch(error){nblConnectStatus.textContent=error.message||"NBL Connect is not ready yet."}
     };
 
     const renderSummary=async()=>{
@@ -427,13 +527,27 @@
 
           if(item.fulfillment_kind==="payhip_coupon"){
             const rule=document.createElement("p");rule.className="fulfillment-meta";
-            rule.textContent="Make a 100% Payhip coupon with usage limit 1. Then enter the exact code and the product/collection link below.";
+            rule.textContent="Use NBL Connect to create the 100% one-use Payhip coupon when approving this student, or enter an existing Payhip coupon manually below.";
             const code=document.createElement("input");code.type="text";code.maxLength=80;code.placeholder="Payhip coupon code";code.value=String(item?.metadata?.suggestedCode||"");
             const url1=document.createElement("input");url1.type="url";url1.placeholder="Payhip product or collection link";
             const url2=document.createElement("input");url2.type="url";url2.placeholder="Second Payhip link (optional)";
-            const approve=document.createElement("button");approve.type="button";approve.textContent="Coupon made — confirm & approve";
+            const autoApprove=document.createElement("button");autoApprove.type="button";autoApprove.textContent="Create Payhip coupon & approve";
+            const approve=document.createElement("button");approve.type="button";approve.textContent="Already created coupon — approve manually";
             const hold=document.createElement("button");hold.type="button";hold.className="danger";hold.textContent="Hold";
             const status=document.createElement("p");status.className="status";
+            autoApprove.onclick=async()=>{
+              if(!confirm("Confirm this student's University ebook entitlement and create a one-use 100% Payhip coupon?"))return;
+              autoApprove.disabled=true;status.textContent="Verifying University order, creating Payhip coupon and recording Founder approval…";
+              try{
+                await fulfillmentFetch({
+                  operation:"founder_approve",fulfillmentRequestId:item.id,
+                  confirmRecipient:true,recipientEmail:email,autoCreatePayhipCoupon:true
+                });
+                status.textContent="Created and approved. The student can reveal the Payhip code through their NBL account.";
+                await Promise.all([renderFounderActions(),renderDeliveries()]);
+              }catch(error){status.textContent=error.message}
+              finally{autoApprove.disabled=false}
+            };
             approve.onclick=async()=>{
               approve.disabled=true;status.textContent="Recording Founder approval…";
               try{
@@ -458,7 +572,7 @@
               catch(error){status.textContent=error.message}
               finally{hold.disabled=false}
             };
-            const row=document.createElement("div");row.className="row";row.style.marginTop="10px";row.append(approve,hold);
+            const row=document.createElement("div");row.className="row";row.style.marginTop="10px";row.append(autoApprove,approve,hold);
             card.append(rule,code,url1,url2,row,status);
           }else{
             const details=document.createElement("p");details.className="fulfillment-meta";
@@ -594,7 +708,7 @@
     };
 
     try{
-      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderFounderActions()]);
+      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderFounderActions(),renderConnect()]);
       if(checkoutParams.get("checkout")==="success"){
         for(let attempt=0;attempt<3;attempt++){
           await new Promise(resolve=>setTimeout(resolve,1500));
