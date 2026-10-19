@@ -59,24 +59,24 @@ requireText(js,'data-nbl-drawer-new',"New Chat drawer action is missing.");
 requireText(js,'data-nbl-drawer-grey hidden',"Preserved Grey drawer entry is not hidden from public Chat.");
 requireText(js,'data-nbl-drawer-plans',"Membership & plans drawer action is missing.");
 requireText(js,'?action=conversations',"Recent saved conversations are not loaded into the NBL drawer.");
-requireText(js,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.chatPlus.price} NBL CHAT PLUS™ · ${NBL_PRODUCT_PLANS.chatPlusUniversity.price} + University · Get More',"Drawer prices are not sourced from the canonical catalog.");
-requireText(js,'${NBL_PRODUCT_PLANS.chatPlus.name} · ${NBL_PRODUCT_PLANS.chatPlus.price}',"NBL CHAT PLUS™ drawer price is missing.");
-requireText(js,'data-nbl-billing-plan="chat_plus" disabled',"Unverified Plus checkout must stay held until new-price Stripe binding is proven.");
-requireText(js,'data-nbl-billing-plan="chat_plus_university"',"NBL CHAT PLUS™ + University checkout action is missing.");
-requireText(plans,'chatPlusUniversity:Object.freeze',"Canonical Plus + University tier is missing.");
+requireText(js,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.foundationProgram.price} Foundation Materials · ${NBL_PRODUCT_PLANS.beansUniversity.price} Beans + University (held) · Get More',"Drawer prices are not sourced from the canonical catalog.");
+requireText(js,'${NBL_PRODUCT_PLANS.beansUniversity.name} · ${NBL_PRODUCT_PLANS.beansUniversity.price}',"Combined Beans + University price is missing.");
+requireText(js,'data-nbl-billing-plan="beans_university" disabled',"University checkout must remain held.");
+requireText(js,'data-nbl-billing-plan="foundation_student_continuation" disabled',"Student continuation checkout must remain held.");
+requireText(plans,'foundationUniversity:Object.freeze',"Canonical Foundation + University first month price is missing.");
 for(const plan of ['foundation','full_foundation','full_nblu','nblu_continuation']) requireText(js,`data-nbl-billing-plan="${plan}"`,`Pricing drawer action missing: ${plan}`);
 requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}',"Get More drawer price is missing.");
-for(const value of ['$4.99/month','300 successful replies','$29.99/month','$39.99/month','1,050 successful replies total','$9.99 one-time','+500 successful replies','$29.99 one-time','$54.99 one-time','$449.99 one-time']){
+for(const value of ['$4.99/month','300 successful replies','$14.99/month','$9.99/month','$34.99 one-time','$9.99 one-time','+500 successful replies','$29.99 one-time','$54.99 one-time','$449.99 one-time']){
   requireText(plans,value,`Canonical locked product value is missing: ${value}`);
 }
-requireText(js,'NBL CHAT PLUS™ is required to send them.',"Attachment Plus-boundary status is missing.");
+requireText(js,'verified membership is required to send them.',"Account entitlement notice is missing.");
 forbidText(js,'data-nbl-tool="grey"',"Professor Grey™ must not appear as a public Beans / ordinary Chat Plus tool.");
 forbidText(js,'mode:beansToolMode==="grey"?"grey_chat":"beans"',"Public Beans must not route ordinary Chat Plus into Grey mode.");
 requireText(js,'mode:"beans"',"Public Beans request must stay on the Beans rail.");
-requireText(js,'Live web selected · NBL CHAT PLUS™.',"Web-tool Plus-boundary status is missing.");
-requireText(js,'Code / data analysis selected · NBL CHAT PLUS™.',"Code-tool Plus-boundary status is missing.");
-requireText(js,'PDF / file creation selected · NBL CHAT PLUS™.',"Artifact-tool Plus-boundary status is missing.");
-requireText(js,'Image creation selected · NBL CHAT PLUS™.',"Image-tool Plus-boundary status is missing.");
+requireText(js,'Live web selected · verified membership.',"Web-tool Plus-boundary status is missing.");
+requireText(js,'Code / data analysis selected · verified membership.',"Code-tool Plus-boundary status is missing.");
+requireText(js,'PDF / file creation selected · verified membership.',"Artifact-tool Plus-boundary status is missing.");
+requireText(js,'Image creation selected · verified membership.',"Image-tool Plus-boundary status is missing.");
 requireText(css,'.nbl-chat-modes',"Chat mode styling is missing.");
 requireText(css,'.nbl-plus-access',"Plus access styling is missing.");
 requireText(css,'.nbl-chat-drawer',"NBL Chat drawer styling is missing.");
