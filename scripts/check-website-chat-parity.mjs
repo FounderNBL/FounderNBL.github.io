@@ -1,3 +1,4 @@
+import "./check-website-grey-teaching.mjs";
 import "./check-website-infinity.mjs";
 import fs from "node:fs";
 
