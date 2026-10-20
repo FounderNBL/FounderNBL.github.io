@@ -1,0 +1,27 @@
+name: NBL Vault — source hold check
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "vault.html"
+      - "scripts/check-vault-account-gate.mjs"
+      - ".github/workflows/nbl-vault-source-gate.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Inspect static Vault safety invariants
+        run: |
+          node --test scripts/check-vault-account-gate.mjs
+      - name: Record environment verification HOLD
+        if: always()
+        run: |
+          echo "Source-only: no live nbl-vault function, database migration, account isolation, verified provider balances, or banking/payments are exercised." >> "$GITHUB_STEP_SUMMARY"
