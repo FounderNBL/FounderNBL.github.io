@@ -147,7 +147,10 @@
         <img src="${track.cover || "../assets/brand/NBL-Studios.png"}" alt="" />
         <span class="track-meta"><strong>${track.title}</strong><span>${track.artist}${track.credit ? ` • ${track.credit}` : ""}</span></span>
         <span class="track-badge">${track.badge || "NBL"}</span>`;
-      row.addEventListener("click", () => load(i, true));
+      row.addEventListener("click", () => {
+        load(i, true);
+        details.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+      });
       trackList.appendChild(row);
     });
   }
