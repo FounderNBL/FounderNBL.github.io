@@ -520,7 +520,6 @@
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">Beans</h2>
-            <nav aria-label="NBL conversations" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:8px"><a href="/campus.html#grey" class="nbl-beans-grey-link" style="display:inline-block;color:#f0c56f;font-weight:700">Talk to Grey</a><a href="/chat.html" class="nbl-beans-people-link" style="display:inline-block;color:#f0c56f;font-weight:700">Talk to People</a></nav>
           </div>
         </div>
         <button class="nbl-beans-close" type="button" data-nbl-beans-close aria-label="Close Beans">✕</button>
@@ -543,6 +542,16 @@
             <span><strong>New chat</strong><small>Start fresh with Beans</small></span>
           </button>
 
+          <nav class="nbl-chat-drawer-conversations" aria-label="NBL conversations">
+            <a class="nbl-chat-drawer-item nbl-beans-grey-link" href="/campus.html#grey">
+              <span class="nbl-chat-drawer-fallback" aria-hidden="true">G</span>
+              <span><strong>Talk to Grey</strong><small>Protected NBL University</small></span>
+            </a>
+            <a class="nbl-chat-drawer-item nbl-beans-people-link" href="/chat.html">
+              <span class="nbl-chat-drawer-fallback" aria-hidden="true">P</span>
+              <span><strong>Talk to People</strong><small>Your NBL member messages</small></span>
+            </a>
+          </nav>
           <section class="nbl-chat-drawer-history" aria-labelledby="nbl-chat-drawer-history-title">
             <div class="nbl-chat-drawer-section-head">
               <strong id="nbl-chat-drawer-history-title">Recent conversations</strong>
@@ -585,6 +594,10 @@
             <span><strong>Beans tools</strong><small>Photos, saved knowledge, web, code/data, downloadable files, images, and voice</small></span>
           </button>
 
+          <a class="nbl-chat-drawer-item" href="/privacy.html">
+            <span class="nbl-chat-drawer-fallback" aria-hidden="true">i</span>
+            <span><strong>Privacy & AI notice</strong><small>Read NBL data-use and AI limitations at any time</small></span>
+          </a>
           <a class="nbl-chat-drawer-item" href="/account.html">
             <span class="nbl-chat-drawer-fallback" aria-hidden="true">NBL</span>
             <span><strong>Account</strong><small>Username, security, usage, and saved history</small></span>
@@ -644,7 +657,7 @@
             <button class="nbl-beans-send" type="submit">Send</button>
           </div>
         </form>
-        <p class="nbl-beans-note" style="margin-top:10px">
+        <p class="nbl-beans-note" data-nbl-beans-disclaimer style="margin-top:10px">
           Signed-in chats may be stored with your NBL account and processed by service providers to provide Beans. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
         </p>
         <p class="nbl-beans-status" data-nbl-beans-status role="status">Beans includes limited free replies. Sign in to keep your history and use your NBL membership.</p>
@@ -741,6 +754,12 @@
   const chatDrawerTools=beansPanel.querySelector("[data-nbl-drawer-tools]");
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
   const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
+  const beansDisclaimer=beansPanel.querySelector("[data-nbl-beans-disclaimer]");
+  let beansDisclaimerTimer=null;
+  const brieflyShowBeansStatus=(text)=>{
+    beansStatus.textContent=text;
+    window.setTimeout(()=>{if(beansStatus.textContent===text) beansStatus.textContent="";},2000);
+  };
   const regularBeansShell=beansPanel.querySelector("[data-nbl-beans-regular]");
   const plusShell=beansPanel.querySelector("[data-nbl-plus]");
   const modeButtons=[...beansPanel.querySelectorAll("[data-nbl-chat-mode]")];
@@ -1471,9 +1490,9 @@
           beansHistory.push({role,content});
           appendBeansMessage(role,content);
         }
-        beansStatus.textContent="Saved conversation restored from your NBL account.";
+        brieflyShowBeansStatus("Saved conversation restored from your NBL account.");
       }else{
-        beansStatus.textContent="Beans recognizes your NBL account. New conversations will save here.";
+        brieflyShowBeansStatus("Beans recognizes your NBL account. New conversations will save here.");
       }
       beansHistoryLoadedFor=identity.userId;
     }catch(error){
@@ -1787,6 +1806,7 @@
     setChatDrawerOpen(false);
     setModalIsolation(beansPanel,false);
     beansPanel.hidden=true;
+    if(beansDisclaimerTimer!==null){window.clearTimeout(beansDisclaimerTimer);beansDisclaimerTimer=null;}
     document.body.classList.remove("nbl-beans-open");
     beansToggle.setAttribute("aria-expanded","false");
     beansToggle.focus();
@@ -1801,6 +1821,14 @@
     chatHistoryEntry=`nbl-chat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     window.history.pushState({...window.history.state,nblChatOverlay:chatHistoryEntry},"",location.href);
     beansPanel.hidden=false;
+    beansDisclaimer.hidden=false;
+    if(beansDisclaimerTimer!==null) window.clearTimeout(beansDisclaimerTimer);
+    beansDisclaimerTimer=window.setTimeout(()=>{
+      beansDisclaimer.hidden=true;
+      beansDisclaimerTimer=null;
+      const intro="Beans includes limited free replies. Sign in to keep your history and use your NBL membership.";
+      if(beansStatus.textContent===intro) beansStatus.textContent="";
+    },2000);
     setModalIsolation(beansPanel,true);
     document.body.classList.add("nbl-beans-open");
     beansToggle.setAttribute("aria-expanded","true");
