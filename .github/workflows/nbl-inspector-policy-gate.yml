@@ -11,6 +11,8 @@ on:
       - "scripts/nbl-google-fixer-guard.mjs"
       - "tests/security/nbl-google-fixer-policy.test.mjs"
       - "tests/security/nbl-live-production-watch-policy.test.mjs"
+      - "scripts/nbl-cloudflare-handshake.mjs"
+      - "tests/security/nbl-cloudflare-handshake.test.mjs"
       - ".github/workflows/nbl-inspector-policy-gate.yml"
   push:
     branches: [main]
@@ -40,7 +42,7 @@ jobs:
           node-version: "22"
       - name: Verify NBL Inspector and Fixer policy safety
         run: |
-          node --test tests/security/nbl-google-fixer-policy.test.mjs tests/security/nbl-live-production-watch-policy.test.mjs
+          node --test tests/security/nbl-google-fixer-policy.test.mjs tests/security/nbl-live-production-watch-policy.test.mjs tests/security/nbl-cloudflare-handshake.test.mjs
       - name: Publish scope boundary
         if: always()
         run: |
