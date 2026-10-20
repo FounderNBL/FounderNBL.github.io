@@ -21,3 +21,8 @@ test("Cloudflare preflight must precede ALL external Inspector visits",()=>{
   assert.match(workflow,/CLOUDFLARE_HANDSHAKE/);
   assert.doesNotMatch(workflow,/cloudflare\.request\(|skip_waf|bypass_challenge|security_level:.*off/i);
 });
+
+test("reuse canonical Cloudflare Inspector credential, never require a duplicate secret",()=>{
+  assert.match(workflow,/secrets\.NBL_CLOUDFLARE_INSPECTOR_TOKEN\s*\|\|\s*secrets\.CLOUDFLARE_NBL_INSPECTOR_TOKEN/);
+  assert.doesNotMatch(workflow,/run:\s*.*echo.*\$\{\{\s*secrets\./);
+});
