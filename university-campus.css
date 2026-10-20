@@ -131,3 +131,30 @@
 .school-task-state{font-size:.76rem;color:var(--gold2);margin-right:auto}
 .school-office-task .btn{min-height:36px}
 @media(max-width:600px){.school-office-course{padding:12px}.school-office-task .btn{width:100%}}
+
+
+/* Official Professor Grey artwork lives BEHIND the course conversation,
+   never as an extra page card, and never outside student-only campus access. */
+#grey > .panel:first-child{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 40%,rgba(240,197,111,.16),transparent 60%),#071421;
+}
+#grey > .panel:first-child::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:url("/Professor_Grey.png") center 43% / min(87%,440px) auto no-repeat;
+  opacity:.38;
+}
+#grey .chat-log{
+  position:relative;z-index:1;
+  border-color:rgba(240,197,111,.38);
+  background:rgba(3,10,18,.32);backdrop-filter:blur(3px);
+}
+#grey .msg{
+  border:1px solid rgba(240,197,111,.27);
+  background:rgba(5,18,30,.88);
+}
+#grey .msg.user{background:rgba(85,58,24,.88);border-color:rgba(240,197,111,.49)}
+#grey .chat-form{
+  position:relative;z-index:1;padding:10px;border-radius:14px;
+  background:rgba(3,10,18,.87);border:1px solid rgba(240,197,111,.29);
+}

@@ -13,6 +13,7 @@ on:
       - "account-deletion.html"
       - "scripts/check-website-chat-plus.mjs"
       - "scripts/check-website-chat-parity.mjs"
+      - "scripts/check-v12-beans-grey-visual.test.mjs"
       - "scripts/check-website-repair.mjs"
       - "scripts/check-org-member-services.mjs"
       - "scripts/check-campus-protected-source.mjs"
@@ -46,6 +47,7 @@ on:
       - "account-deletion.html"
       - "scripts/check-website-chat-plus.mjs"
       - "scripts/check-website-chat-parity.mjs"
+      - "scripts/check-v12-beans-grey-visual.test.mjs"
       - "scripts/check-website-repair.mjs"
       - "scripts/check-org-member-services.mjs"
       - "scripts/check-campus-protected-source.mjs"
@@ -84,7 +86,9 @@ jobs:
       - name: Check NBL Chat Plus wiring
         run: node scripts/check-website-chat-plus.mjs
       - name: Check website Chat standard regressions
-        run: node scripts/check-website-chat-parity.mjs
+        run: |
+          node scripts/check-website-chat-parity.mjs
+          node --test scripts/check-v12-beans-grey-visual.test.mjs
       - name: Check website-only repair regressions
         run: node scripts/check-website-repair.mjs
       - name: Verify Clerk-primary member Chat, LOCKE/University and voice security rails
