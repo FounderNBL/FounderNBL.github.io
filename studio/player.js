@@ -189,7 +189,7 @@
     }
     // Only offer direct free downloads of actual NBL-hosted recordings.
     const src=track.audio?new URL(track.audio,location.href):null;
-    const canDownload=Boolean(src&&src.origin===location.origin&&/\\.mp3$/i.test(src.pathname));
+    const canDownload=Boolean(src&&src.origin===location.origin&&/\.mp3$/i.test(src.pathname));
     download.hidden=!canDownload;
     if(canDownload){
       download.href=src.href;
