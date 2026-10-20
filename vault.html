@@ -56,7 +56,16 @@ button:disabled{opacity:.45;cursor:not-allowed}
 "use strict";
 const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-vault";
 const $=id=>document.getElementById(id);
-const state={bridge:null,clerk:null,page:0,loading:false,identity:""};
+const state={bridge:null,clerk:null,page:0,loading:false,identity:"",epoch:0};
+function identity(){return state.clerk?.isSignedIn?String(state.clerk.user?.id||""):"";}
+function isCurrent(epoch){return epoch===state.epoch&&Boolean(state.clerk?.isSignedIn&&state.clerk.session)&&identity()===state.identity;}
+function clearPrivateDisplay(){
+ for(const id of ["free","paid","topups","studio"])$(id).textContent="—";
+ $("founder").hidden=true;$("money").textContent="";
+ $("resources").replaceChildren();$("accounts").replaceChildren();
+ $("page").textContent="";
+}
+
 function node(label,value){
  const p=document.createElement("p");p.className="item";
  const b=document.createElement("strong");b.textContent=label+": ";
@@ -64,12 +73,14 @@ function node(label,value){
  p.append(b,s);return p;
 }
 const cash=cents=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number(cents)/100);
-async function api(view){
+async function api(view,epoch){
  const token=await state.bridge.getToken();
+ if(!isCurrent(epoch))return null;
  if(!token)throw new Error("Your NBL session is still connecting.");
  const url=API+"?view="+encodeURIComponent(view)+(view==="founder"?"&page="+state.page:"");
  const response=await fetch(url,{headers:{Authorization:"Bearer "+token,Accept:"application/json"},cache:"no-store"});
  const data=await response.json().catch(()=>({}));
+ if(!isCurrent(epoch))return null;
  if(!response.ok)throw new Error(response.status===401?"Please sign in again.":"Vault records cannot be read right now.");
  return data;
 }
@@ -107,15 +118,23 @@ function renderFounder(result){
 }
 async function refresh(){
  if(state.loading||!state.bridge)return;
- if(!state.clerk?.isSignedIn||!state.clerk.session){
-  $("signin").hidden=false;$("founder").hidden=true;$("status").textContent="Sign in to see your Vault.";return;
+ const epoch=state.epoch;
+ if(!isCurrent(epoch)){
+  clearPrivateDisplay();$("signin").hidden=false;
+  $("status").textContent="Sign in to see your Vault.";return;
  }
  state.loading=true;$("status").textContent="Loading verified balances…";$("signin").hidden=true;
  try{
-  const personal=await api("mine");renderPersonal(personal);
-  try{renderFounder(await api("founder"));}catch{$("founder").hidden=true;}
- }catch(e){$("status").textContent=e?.message||"Vault temporarily unavailable.";}
- finally{state.loading=false;}
+  const personal=await api("mine",epoch);
+  if(!isCurrent(epoch))return;
+  if(!personal?.ok)throw new Error("Vault account response is unavailable.");
+  renderPersonal(personal);
+  try{
+   const company=await api("founder",epoch);
+   if(isCurrent(epoch)&&company?.ok)renderFounder(company);
+  }catch{if(isCurrent(epoch))$("founder").hidden=true;}
+ }catch(e){if(isCurrent(epoch))$("status").textContent=e?.message||"Vault temporarily unavailable.";}
+ finally{if(epoch===state.epoch)state.loading=false;}
 }
 $("refresh").addEventListener("click",refresh);
 $("prev").addEventListener("click",()=>{if(state.page>0){state.page--;refresh();}});
@@ -125,12 +144,15 @@ $("next").addEventListener("click",()=>{state.page++;refresh();});
   await new Promise(resolve=>setTimeout(resolve,100));}
  if(!state.bridge){$("status").textContent="NBL account connection is unavailable.";return;}
  try{state.clerk=await state.bridge.getClerk();}catch{$("status").textContent="NBL sign-in is unavailable.";return;}
- state.identity=String(state.clerk.user?.id||"");
- await refresh();
+ state.identity=identity();
  state.clerk.addListener(()=>{
-  const next=state.clerk.isSignedIn?String(state.clerk.user?.id||""):"";
-  if(next!==state.identity){state.identity=next;state.page=0;refresh();}
+  const next=identity();
+  if(next!==state.identity){
+   state.epoch++;state.identity=next;state.page=0;state.loading=false;
+   clearPrivateDisplay();refresh();
+  }
  });
+ await refresh();
 })();
 })();
 </script>
