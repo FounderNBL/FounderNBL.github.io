@@ -9,6 +9,9 @@ on:
       - "chat.js"
       - "member-chat.html"
       - "member-chat.js"
+      - "messenger/**"
+      - "university-campus.html"
+      - "scripts/check-messenger-separation.mjs"
       - "social-realtime.js"
       - "scripts/check-org-member-services.mjs"
       - "tests/browser/website-smoke.spec.mjs"
@@ -20,6 +23,9 @@ on:
       - "chat.js"
       - "member-chat.html"
       - "member-chat.js"
+      - "messenger/**"
+      - "university-campus.html"
+      - "scripts/check-messenger-separation.mjs"
       - "social-realtime.js"
       - "scripts/check-org-member-services.mjs"
       - "tests/browser/website-smoke.spec.mjs"
@@ -43,6 +49,9 @@ jobs:
       - name: Verify NBL Member Chat social entrance
         run: |
           node --check chat.js
+          node --check messenger/app.js
+          node --check messenger/sw.js
+          node scripts/check-messenger-separation.mjs
           node --check social-realtime.js
           node scripts/check-org-member-services.mjs
       - name: Publish scope boundary
