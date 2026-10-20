@@ -1143,3 +1143,25 @@ body.nbl-world-menu-open{overflow:hidden!important}
 @media(prefers-reduced-motion:reduce){
   #nbl-chat-panel-beans .nbl-beans-message{backdrop-filter:none}
 }
+
+
+/* Grey's identity art appears only inside the pre-existing protected live class panel.
+   LOCKE entitlement, enrollment gates and instructor permissions are unchanged. */
+#nbl-chat-panel-plus [data-nbl-plus-live]{
+  position:relative;isolation:isolate;overflow:hidden;border-radius:18px;
+  border:1px solid rgba(240,197,111,.30);padding:12px;
+  background:radial-gradient(circle at 50% 40%,rgba(240,197,111,.19),transparent 63%),#030913;
+}
+#nbl-chat-panel-plus [data-nbl-plus-live]::before{
+  content:"";position:absolute;z-index:-1;inset:0;
+  background:url("/Professor_Grey.png") center 46% / min(84%,480px) auto no-repeat;
+  opacity:.32;pointer-events:none;
+}
+#nbl-chat-panel-plus .nbl-plus-log{
+  background:rgba(3,12,22,.52);border-color:rgba(240,197,111,.32);
+  backdrop-filter:blur(3px);
+}
+#nbl-chat-panel-plus [data-nbl-plus-form]{
+  position:relative;z-index:1;border:1px solid rgba(240,197,111,.24);
+  border-radius:15px;padding:12px;background:rgba(3,12,22,.87);
+}
