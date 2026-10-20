@@ -1782,6 +1782,7 @@
   };
 
   const closeBeans=({fromPopState=false}={})=>{
+    setBeansToolMenu(false); // Reopening Beans must NEVER leave quick actions visible.
     const shouldConsumeHistory=!fromPopState&&Boolean(chatHistoryEntry)&&window.history.state?.nblChatOverlay===chatHistoryEntry;
     setChatDrawerOpen(false);
     setModalIsolation(beansPanel,false);
@@ -2285,7 +2286,17 @@
   beansToggle.addEventListener("click",openBeans);
   beansClose.addEventListener("click",closeBeans);
   beansPanel.addEventListener("click",event=>{
-    if(event.target===beansPanel) closeBeans();
+    if(event.target===beansPanel){closeBeans();return;}
+    if(!beansToolsMenu.hidden&&!event.target.closest("[data-nbl-tools-menu]")&&!event.target.closest("[data-nbl-tools-toggle]")){
+      setBeansToolMenu(false);
+    }
+  });
+  beansPanel.addEventListener("keydown",event=>{
+    if(event.key==="Escape"&&!beansToolsMenu.hidden){
+      event.stopPropagation();
+      setBeansToolMenu(false);
+      beansToolsToggle.focus();
+    }
   });
 
   const searchForm=searchPanel.querySelector("[data-nbl-search-form]");
