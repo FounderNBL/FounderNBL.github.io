@@ -76,8 +76,14 @@ test.describe("New Beansland web app browser smoke", () => {
 
     await expect(page.locator("#nbl-beans-panel")).toBeVisible();
     await expect(page.locator("#nbl-beans-title")).toBeVisible();
-    await expect(page.getByRole("link",{name:"Talk to Grey"})).toHaveAttribute("href","/campus.html#grey");
-    await expect(page.getByRole("link",{name:"Talk to People"})).toHaveAttribute("href","/chat.html");
+    await expect(page.locator(".nbl-beans-head .nbl-beans-grey-link")).toHaveCount(0);
+    await expect(page.locator(".nbl-beans-head .nbl-beans-people-link")).toHaveCount(0);
+    await page.getByRole("button",{name:"Open Beans menu"}).click();
+    await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to Grey/})).toHaveAttribute("href","/campus.html#grey");
+    await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to People/})).toHaveAttribute("href","/chat.html");
+    await expect(page.getByRole("link",{name:/Privacy & AI notice/})).toHaveAttribute("href","/privacy.html");
+    await page.getByRole("button",{name:"Close Beans menu"}).click();
+    await expect(page.locator("[data-nbl-beans-disclaimer]")).toBeHidden({timeout:4500});
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect.poll(async () => page.locator(".nbl-beans-avatar").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
