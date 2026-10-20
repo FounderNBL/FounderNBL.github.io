@@ -19,7 +19,35 @@
   const nowLabel = $("nowLabel");
   const notice = $("previewNotice");
   const purchase = $("purchaseButton");
+  const download = $("downloadButton");
+  const details = $("trackDetails");
+  const detailsButton = $("detailsButton");
+  const detailsDescription = $("trackDetailsDescription");
+  const trackFacts = $("trackFacts");
   const trackList = $("trackList");
+
+  const trackFields = [
+    ["Song", "title"], ["Artist", "artist"], ["Album / catalog", "album"],
+    ["Songwriter / composer", "songwriter"], ["Beat & music producer", "producer"],
+    ["Record label", "label"], ["Master / copyright holder", "rightsHolder"],
+    ["Publisher", "publisher"], ["Release date", "releaseDate"]
+  ];
+  function showDetails(track) {
+    trackFacts.replaceChildren();
+    detailsDescription.textContent=track.description||"NBL Music Productions release.";
+    for(const [label,key] of trackFields){
+      const dt=document.createElement("dt"),dd=document.createElement("dd");
+      dt.textContent=label;
+      dd.textContent=track[key]||"Not listed";
+      trackFacts.append(dt,dd);
+    }
+    details.hidden=false;
+    detailsButton.setAttribute("aria-expanded","true");
+  }
+  detailsButton.addEventListener("click",()=>{
+    details.hidden=!details.hidden;
+    detailsButton.setAttribute("aria-expanded",String(!details.hidden));
+  });
 
   let index = 0;
   let previewEnded = false;
@@ -159,6 +187,17 @@
     } else {
       purchase.hidden = true;
     }
+    // Only offer direct free downloads of actual NBL-hosted recordings.
+    const src=track.audio?new URL(track.audio,location.href):null;
+    const canDownload=Boolean(src&&src.origin===location.origin&&/\\.mp3$/i.test(src.pathname));
+    download.hidden=!canDownload;
+    if(canDownload){
+      download.href=src.href;
+      download.download=(track.title||"NBL-Music").replace(/[^a-z0-9 _-]/gi,"").trim()+".mp3";
+    }else{
+      download.removeAttribute("href");
+    }
+    showDetails(track);
 
     setActiveRow();
     seek.value = 0;
