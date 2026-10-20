@@ -1,0 +1,20 @@
+{
+  "id": "/messenger/",
+  "name": "NBL Messenger",
+  "short_name": "Messenger",
+  "description": "New Beansland human-to-human messages. University student rooms remain protected.",
+  "start_url": "/messenger/",
+  "scope": "/messenger/",
+  "display": "standalone",
+  "background_color": "#02060b",
+  "theme_color": "#06111d",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/messenger/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
