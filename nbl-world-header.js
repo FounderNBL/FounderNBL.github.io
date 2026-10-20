@@ -2286,8 +2286,8 @@
   beansToggle.addEventListener("click",openBeans);
   beansClose.addEventListener("click",closeBeans);
   beansPanel.addEventListener("click",event=>{
-    if(event.target===beansPanel){closeBeans();return;}
-    if(!beansToolsMenu.hidden&&!event.target.closest("[data-nbl-tools-menu]")&&!event.target.closest("[data-nbl-tools-toggle]")){
+    if(event.target===beansPanel) closeBeans();
+    else if(!beansToolsMenu.hidden&&!event.target.closest("[data-nbl-tools-menu]")&&!event.target.closest("[data-nbl-tools-toggle]")){
       setBeansToolMenu(false);
     }
   });
