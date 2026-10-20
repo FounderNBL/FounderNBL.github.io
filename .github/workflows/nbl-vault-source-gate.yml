@@ -28,4 +28,4 @@ jobs:
       - name: Record environment verification HOLD
         if: always()
         run: |
-          echo "Source-only: no live nbl-vault function, database migration, account isolation, verified provider balances, or banking/payments are exercised." >> "$GITHUB_STEP_SUMMARY"
+          echo "Vault source checks and live negative-path smoke only. Database/function are deployed; real signed-in customer isolation, Founder access, financial reconciliation and any funds movement remain unverified/disabled." >> "$GITHUB_STEP_SUMMARY"
