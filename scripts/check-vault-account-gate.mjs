@@ -11,20 +11,22 @@ test("Vault requires an existing signed-in NBL account",()=>{
   checks(/getClerk\(\)/,"Clerk account required");
   checks(/getToken\(\)/,"bearer must come from existing signed-in account");
   checks(/Authorization:"Bearer "\+token/,"token required for GET");
-  checks(/if\(!state\.clerk\?\.isSignedIn\|\|!state\.clerk\.session\)/,"guest state required");
+  checks(/function isCurrent\(epoch\)/,"signed-in epoch state required");
+  checks(/function clearPrivateDisplay\(\)/,"clear prior user account values");
+  checks(/if\(!isCurrent\(epoch\)\)return null/,"reject stale network results");
 });
 
 test("customer data only requested for the authenticated identity",()=>{
   checks(/functions\/v1\/nbl-vault/);
   checks(/\?view="\+encodeURIComponent\(view\)/);
-  checks(/api\("mine"\)/);
+  checks(/api\("mine",epoch\)/);
   // Caller never passes an arbitrary user, account, or student id.
   assert.doesNotMatch(html,/[?&]user_id=|[?&]clerk_user_id=|[?&]accountId=/);
   assert.doesNotMatch(html,/localStorage\.|sessionStorage\.|\bPOST\b/);
 });
 
 test("Founder data must come only from verified backend, not a client role flag",()=>{
-  checks(/api\("founder"\)/);
+  checks(/api\("founder",epoch\)/);
   checks(/const f=result\.founder/);
   checks(/if\(!f\)\{\$\("founder"\)\.hidden=true;return;\}/);
   checks(/id="founder" hidden/);
