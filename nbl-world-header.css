@@ -1055,3 +1055,91 @@ body.nbl-world-menu-open{overflow:hidden!important}
   .nbl-beans-tool-toggle,.nbl-beans-mic{min-width:44px;width:44px;padding:0}
   .nbl-beans-tools-menu{position:fixed;left:10px;right:10px;bottom:max(12px,env(safe-area-inset-bottom));width:auto}
 }
+
+
+/* V12 Beans — official character stays behind the conversation, never in a separate card.
+   Only the '+' button opens the context menu, anchored to the live composer. */
+.nbl-beans-panel .nbl-beans-card{
+  max-height:calc(100dvh - 100px);
+  min-height:min(700px,calc(100dvh - 100px));
+}
+#nbl-chat-panel-beans{
+  position:relative;isolation:isolate;display:flex;flex:1 1 auto;
+  flex-direction:column;min-height:0;overflow:hidden;
+  margin-top:10px;border:1px solid rgba(240,197,111,.25);border-radius:18px;
+  background:radial-gradient(ellipse at center,rgba(147,99,27,.19),transparent 66%),#030913;
+}
+#nbl-chat-panel-beans .nbl-beans-presence{
+  position:absolute;inset:0;z-index:0;pointer-events:none;display:grid;
+  place-items:center;min-height:0;margin:0;border:0;border-radius:0;
+  background:radial-gradient(ellipse at 50% 46%,rgba(240,197,111,.20),transparent 57%),
+             radial-gradient(ellipse at center,rgba(16,42,62,.56),transparent 70%);
+}
+#nbl-chat-panel-beans .nbl-beans-presence::before,
+#nbl-chat-panel-beans .nbl-beans-presence::after{
+  content:"";position:absolute;width:min(78%,500px);aspect-ratio:1;border-radius:50%;
+  border:2px solid rgba(240,197,111,.25);box-shadow:0 0 40px rgba(214,161,75,.12);
+}
+#nbl-chat-panel-beans .nbl-beans-presence::after{
+  width:min(61%,390px);border-width:1px;border-color:rgba(240,197,111,.38);
+}
+#nbl-chat-panel-beans .nbl-beans-presence-art{
+  width:min(95%,510px);height:min(100%,580px);object-fit:contain;opacity:.78;
+  filter:drop-shadow(0 8px 28px rgba(0,0,0,.45));
+}
+#nbl-chat-panel-beans .nbl-beans-log{
+  position:relative;z-index:1;flex:1 1 auto;min-height:170px;max-height:none;
+  margin:0;padding:20px 14px;overflow:auto;overscroll-behavior:contain;
+  border:0;border-radius:0;background:rgba(2,7,13,.12);
+}
+#nbl-chat-panel-beans .nbl-beans-message{
+  color:#f5ead8;border:1px solid rgba(240,197,111,.23);
+  background:rgba(4,15,26,.86);
+  box-shadow:0 5px 20px rgba(0,0,0,.25);backdrop-filter:blur(8px);
+}
+#nbl-chat-panel-beans .nbl-beans-message.is-user{
+  border-color:rgba(240,197,111,.48);background:rgba(77,53,23,.86);
+}
+#nbl-chat-panel-beans .nbl-beans-form{
+  position:relative;z-index:4;flex:none;margin:0;padding:11px;
+  background:rgba(2,9,17,.89);border-top:1px solid rgba(240,197,111,.32);
+  backdrop-filter:blur(12px);
+}
+#nbl-chat-panel-beans .nbl-beans-composer textarea{
+  border-radius:20px;background:rgba(9,23,39,.92);
+}
+#nbl-chat-panel-beans .nbl-beans-tools-wrap{position:relative;z-index:12}
+#nbl-chat-panel-beans .nbl-beans-tools-menu{
+  position:absolute;z-index:20;bottom:calc(100% + 9px);left:0;right:auto;
+  width:min(370px,calc(100vw - 44px));max-height:min(54dvh,440px);
+  overflow:auto;overscroll-behavior:contain;
+  border-color:rgba(240,197,111,.56);border-radius:19px;
+  background:rgba(5,17,29,.98);box-shadow:0 20px 48px rgba(0,0,0,.69);
+}
+#nbl-chat-panel-beans .nbl-beans-tools-menu button{
+  border-radius:12px;background:rgba(214,161,75,.045);
+}
+#nbl-chat-panel-beans .nbl-beans-tools-menu button:hover,
+#nbl-chat-panel-beans .nbl-beans-tools-menu button:focus-visible{
+  background:rgba(214,161,75,.16);
+}
+@media(max-width:760px){
+  .nbl-beans-panel{overflow:hidden}
+  .nbl-beans-panel .nbl-beans-card{
+    height:calc(100dvh - 83px);min-height:0;max-height:calc(100dvh - 83px);
+    overflow:hidden;
+  }
+  #nbl-chat-panel-beans .nbl-beans-presence-art{
+    width:min(92%,390px);height:100%;opacity:.72;
+  }
+  #nbl-chat-panel-beans .nbl-beans-log{padding:12px 10px;min-height:110px}
+  #nbl-chat-panel-beans .nbl-beans-form{padding:9px 6px}
+  #nbl-chat-panel-beans .nbl-beans-tools-menu{
+    position:absolute;left:0;right:auto;
+    bottom:calc(100% + 9px);max-height:min(42dvh,375px);
+    width:min(340px,calc(100vw - 35px));
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #nbl-chat-panel-beans .nbl-beans-message{backdrop-filter:none}
+}
