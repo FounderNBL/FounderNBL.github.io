@@ -4,10 +4,11 @@ import { readFileSync, existsSync } from "node:fs";
 const source=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const approved=[
  ["NBL_Books_New.png","4da94563","books.html"],
- ["NBL_Clothing_Co.png","f38a1e26","clothing.html"],
- ["NBL_Games.png","ce83c71b","games.html"],
+ ["NBL_Clothing_Co.png","f06b568f","clothing.html"],
+ ["NBL_Games.png","1ff58013","games.html"],
  ["NBL_Music_Productions.png","d5b9a023","studio/"],
- ["NBL_Studios.png","e220f7dc","studios.html"]
+ ["NBL_Studios.png","c342a8ee","studios.html"],
+ ["NBL_University.png","5fa210ae","university.html"]
 ];
 test("exact uploaded assets survive and browser references are cache refreshed",()=>{
  for(const [name,tag,href] of approved){
@@ -40,7 +41,7 @@ test("Founder's six homepage destinations preserve the approved order with Unive
  const actual=grid.split('<h3>').slice(1).map(part=>part.split('</h3>')[0]);
  assert.deepEqual(actual,names,"no extra homepage destinations or reordered cards");
  assert.ok(!grid.includes("The City"),"The City belongs inside Stories, not as a homepage card");
- assert.ok(grid.includes('src="NBL_University.png"'),"University existing art must remain");
+ assert.ok(grid.includes('src="NBL_University.png?v=5fa210ae"'),"University existing art must remain");
  assert.match(grid,/class="world-card official-art reveal" href="university\.html"/,"University full artwork must not be cropped");
  assert.ok(source.includes("object-fit:contain;object-position:center;background:transparent"),"Official art must scale without cropping");
  assert.ok(source.includes("@media(max-width:520px){.world-card.official-art{width:100%;max-width:520px"),"Mobile cards need full-width frames");
