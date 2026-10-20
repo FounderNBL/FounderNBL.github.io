@@ -16,11 +16,40 @@ permissions:
   issues: write
 
 jobs:
+  cloudflare-preflight:
+    name: Cloudflare · security handshake first
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out Inspector configuration
+        uses: actions/checkout@v7
+
+      - name: Ask Cloudflare for live zone status before website tests
+        env:
+          CLOUDFLARE_NBL_INSPECTOR_TOKEN: ${{ secrets.CLOUDFLARE_NBL_INSPECTOR_TOKEN }}
+        run: node scripts/nbl-cloudflare-handshake.mjs
+
+      - name: Preserve Cloudflare-first evidence for downstream checks
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nbl-cloudflare-handshake
+          path: .inspector/cloudflare-handshake.json
+          if-no-files-found: warn
+          retention-days: 7
+
   route-inspection:
     name: Health Inspector · live routes
+    needs: cloudflare-preflight
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Receive Cloudflare handshake evidence
+        uses: actions/download-artifact@v7
+        with:
+          name: nbl-cloudflare-handshake
+          path: .inspector
+
       - name: Inspect registered production routes
         id: routes
         shell: bash
@@ -30,6 +59,12 @@ jobs:
           unverified=0
           all_verified=true
           : > health-route-results.txt
+          cf_handshake="$(node -e 'try { const h=require("./.inspector/cloudflare-handshake.json"); console.log(h.overall || "UNVERIFIED") } catch { console.log("UNVERIFIED") }')"
+          echo "CLOUDFLARE_HANDSHAKE $cf_handshake (zone configuration; NOT visitor proof)" | tee -a health-route-results.txt
+          if [ "$cf_handshake" != "PASS" ]; then
+            all_verified=false
+            unverified=1
+          fi
 
           urls=(
             "https://newbeansland.org/"
@@ -65,7 +100,11 @@ jobs:
 
             case "$code" in
               2*|3*)
-                printf "PASS url=%s http=%s (runner reachability only)\n" "$url" "$code" >> health-route-results.txt
+                if [ "$cf_handshake" = "PASS" ]; then
+                  printf "PASS url=%s http=%s (runner reachability only; Cloudflare zone active)\n" "$url" "$code" >> health-route-results.txt
+                else
+                  printf "UNVERIFIED url=%s http=%s (runner reached route but Cloudflare API handshake not verified)\n" "$url" "$code" >> health-route-results.txt
+                fi
                 ;;
               403|429|000)
                 # Runner denial, rate limiting, or network failure cannot prove customer outage.
@@ -143,6 +182,7 @@ jobs:
 
   deep-browser-inspection:
     name: Health Inspector · external desktop + mobile
+    needs: cloudflare-preflight
     if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
