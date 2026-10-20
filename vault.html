@@ -127,7 +127,7 @@ async function refresh(){
  try{
   const personal=await api("mine",epoch);
   if(!isCurrent(epoch))return;
-  if(!personal?.ok)throw new Error("Vault account response is unavailable.");
+  if(!personal?.ok||!personal.customer?.beans||!personal.customer?.studios)throw new Error("Vault account response is unavailable.");
   renderPersonal(personal);
   try{
    const company=await api("founder",epoch);
@@ -137,8 +137,8 @@ async function refresh(){
  finally{if(epoch===state.epoch)state.loading=false;}
 }
 $("refresh").addEventListener("click",refresh);
-$("prev").addEventListener("click",()=>{if(state.page>0){state.page--;refresh();}});
-$("next").addEventListener("click",()=>{state.page++;refresh();});
+$("prev").addEventListener("click",()=>{if(!state.loading&&state.page>0){state.page--;refresh();}});
+$("next").addEventListener("click",()=>{if(!state.loading){state.page++;refresh();}});
 (async()=>{
  for(let i=0;i<60;i++){if(window.NBLAccountBridge){state.bridge=window.NBLAccountBridge;break;}
   await new Promise(resolve=>setTimeout(resolve,100));}
