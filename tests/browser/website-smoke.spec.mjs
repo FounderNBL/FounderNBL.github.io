@@ -80,7 +80,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-head .nbl-beans-people-link")).toHaveCount(0);
     await page.getByRole("button",{name:"Open Beans menu"}).click();
     await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to Grey/})).toHaveAttribute("href","/campus.html#grey");
-    await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to People/})).toHaveAttribute("href","/chat.html");
+    await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to People/})).toHaveAttribute("href","/messenger/");
     await expect(page.getByRole("link",{name:/Privacy & AI notice/})).toHaveAttribute("href","/privacy.html");
     await page.getByRole("button",{name:"Close Beans menu"}).click();
     await expect(page.locator("[data-nbl-beans-disclaimer]")).toBeHidden({timeout:4500});
