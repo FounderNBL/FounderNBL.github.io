@@ -107,3 +107,57 @@ test("a Stream session for another Clerk identity is rejected before the SDK loa
   expect(sdkRequests).toBe(0);
   expect(page.url()).toContain("/studios-live.html");
 });
+
+test("network loss invalidates stale LIVE status and hides viewer join", async ({ page }) => {
+  await installClerk(page);
+  await page.route(streamEndpoint, async route => {
+    const { action } = route.request().postDataJSON();
+    if (action === "status") {
+      await route.fulfill({ json: { ok: true, provider: "stream_video", status: "LIVE", sessionId: "session-1" } });
+    } else {
+      await route.fulfill({ status: 403, json: { ok: false } });
+    }
+  });
+  await page.goto("/studios-live.html");
+  await expect(page.getByRole("button", { name: "Join live video" })).toBeVisible();
+  await page.evaluate(() => window.dispatchEvent(new Event("offline")));
+
+  await expect(page.getByText("UNAVAILABLE", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Join live video" })).toBeHidden();
+});
+
+test("insecure contexts never load the SDK or use its random fallback", async ({ page }) => {
+  let sdkRequests = 0;
+  page.on("request", request => {
+    if (request.url().endsWith("/assets/nbl-studios-live-sdk.js")) sdkRequests += 1;
+  });
+  await installClerk(page);
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "isSecureContext", { configurable: true, value: false });
+  });
+  await page.route(streamEndpoint, async route => {
+    const { action } = route.request().postDataJSON();
+    if (action === "status") {
+      await route.fulfill({ json: { ok: true, provider: "stream_video", status: "LIVE", sessionId: "session-1" } });
+    } else if (action === "viewer_session") {
+      await route.fulfill({
+        json: {
+          ok: true,
+          provider: "stream_video",
+          apiKey: "public-test-key",
+          callId: "call-1",
+          sessionId: "session-1",
+          userId: "user_test_member",
+          token: "not-a-real-video-token"
+        }
+      });
+    } else {
+      await route.fulfill({ status: 403, json: { ok: false } });
+    }
+  });
+  await page.goto("/studios-live.html");
+  await page.getByRole("button", { name: "Join live video" }).click();
+
+  await expect(page.getByRole("alert").filter({ hasText: "secure browser context" })).toBeVisible();
+  expect(sdkRequests).toBe(0);
+});

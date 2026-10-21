@@ -25,6 +25,8 @@ test("Video status and sessions are fail-closed and Clerk-authenticated", () => 
   assert.match(client, /payload\.userId !== userId/);
   assert.match(client, /"host_backstage"/);
   assert.match(client, /"viewer_session"/);
+  assert.match(client, /window\.isSecureContext/);
+  assert.match(client, /markStatusUnavailable/);
   assert.doesNotMatch(client, /localStorage|sessionStorage|role\s*:/);
   assert.doesNotMatch(client, /\/social.*health|chat.*health/i);
 });

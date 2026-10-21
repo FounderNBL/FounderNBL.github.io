@@ -37,6 +37,15 @@
     error.hidden = true;
   }
 
+  function markStatusUnavailable(message) {
+    state.streamStatus = null;
+    state.streamSessionId = null;
+    setStatus("UNAVAILABLE", "Stream Video status could not be verified.");
+    $("[data-live-join]").hidden = true;
+    if (!$("[data-live-session]").hidden && state.sessionMode === "viewer") leaveVideo();
+    showError(message || "Stream Video status could not be verified.");
+  }
+
   function clerkDomain() {
     const encoded = (CLERK_PUBLISHABLE_KEY.split("_")[2] || "").replace(/-/g, "+").replace(/_/g, "/");
     return atob(encoded.padEnd(Math.ceil(encoded.length / 4) * 4, "=")).replace(/\$/, "");
@@ -135,6 +144,9 @@
 
   function loadVideoSdk() {
     if (!sdkPromise) {
+      if (!window.isSecureContext || typeof window.crypto?.getRandomValues !== "function") {
+        return Promise.reject(new Error("Stream Video requires a secure browser context with WebRTC cryptography."));
+      }
       if (!window.process) {
         window.process = {
           env: { NODE_ENV: "production", I18NEXT_NO_SUPPORT_NOTICE: "true" },
@@ -181,7 +193,6 @@
     state.unmountVideo?.();
     state.unmountVideo = null;
     state.sessionMode = null;
-    state.streamSessionId = state.streamSessionId || null;
     $("[data-live-session]").hidden = true;
     $("[data-live-chat-section]").hidden = true;
     $("[data-live-video]").replaceChildren();
@@ -332,10 +343,10 @@
     $("[data-live-leave]").addEventListener("click", leaveVideo);
     $("[data-live-chat-form]").addEventListener("submit", event => { void sendMessage(event); });
     $("[data-live-chat-mute]").addEventListener("click", () => { void toggleChatMute(); });
-    window.addEventListener("offline", () => showError("Network connection lost. Reconnect, then retry the Stream controls."));
+    window.addEventListener("offline", () => markStatusUnavailable("Network connection lost. Reconnect to verify Stream Video status and retry."));
     window.addEventListener("online", () => {
       clearError();
-      if (state.clerk?.isSignedIn) void refreshStatus().catch(error => showError(error.message));
+      if (state.clerk?.isSignedIn) void refreshStatus().catch(error => markStatusUnavailable(error.message));
     });
     $("[data-live-signout]").addEventListener("click", async () => {
       leaveVideo();
@@ -359,22 +370,19 @@
       try {
         await refreshStatus();
       } catch (error) {
-        setStatus("UNAVAILABLE", "Stream Video status could not be verified.");
-        showError(error.message || "Stream Video status could not be verified.");
+        markStatusUnavailable(error.message);
       }
       await checkHostAccess();
       state.statusTimer = window.setInterval(() => {
         if (!document.hidden && state.clerk?.isSignedIn) {
           void refreshStatus().catch(error => {
-            setStatus("UNAVAILABLE", "Stream Video status could not be verified.");
-            showError(error.message || "Stream Video status could not be verified.");
+            markStatusUnavailable(error.message);
           });
         }
       }, 20000);
     } catch (error) {
       $("[data-live-auth]").textContent = "NBL account connection is unavailable. Try signing in again.";
-      setStatus("UNAVAILABLE", "Stream Video status could not be verified.");
-      showError(error.message || "NBL account service is unavailable.");
+      markStatusUnavailable(error.message || "NBL account service is unavailable.");
     }
   }
 
