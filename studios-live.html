@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#06111d">
+  <title>NBL Studios LIVE · Preview</title>
+  <link rel="stylesheet" href="/studios-live.css">
+  <link rel="stylesheet" href="/assets/nbl-studios-live-sdk.css">
+  <script type="module" src="/studios-live.js"></script>
+</head>
+<body>
+  <header class="live-header">
+    <span class="brand">NBL Studios</span>
+    <span class="preview-label">Unlinked preview · not a public launch</span>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="live-title">
+      <p class="eyebrow">NBL Studios · LIVE</p>
+      <h1 id="live-title">Live room</h1>
+      <p>Sign in with your NBL account to check the Stream Video broadcast or enter an authorized host backstage.</p>
+      <div class="account-row">
+        <p data-live-auth role="status" aria-live="polite">Checking NBL account…</p>
+        <a class="button primary" data-live-signin href="https://newbeansland.org/account.html" hidden>Sign in to NBL</a>
+        <button class="button" data-live-signout type="button" hidden>Sign out</button>
+      </div>
+    </section>
+
+    <section class="broadcast panel" aria-labelledby="broadcast-title">
+      <div class="broadcast-head">
+        <div>
+          <p class="eyebrow">Broadcast status</p>
+          <h2 id="broadcast-title">Stream Video</h2>
+        </div>
+        <p class="live-state" data-live-provider-status role="status" aria-live="polite">Checking…</p>
+      </div>
+      <p class="status-detail" data-live-status-detail>Waiting for a verified Stream Video status.</p>
+      <div class="controls">
+        <button class="button primary" data-live-join type="button" hidden>Join live video</button>
+        <button class="button" data-live-backstage type="button" hidden>Enter host backstage</button>
+      </div>
+      <p class="hint" data-live-host-status role="status" aria-live="polite" hidden></p>
+      <p class="error" data-live-error role="alert" hidden></p>
+      <div class="video-frame" data-live-session hidden>
+        <div class="video-mount" data-live-video aria-label="Stream Video livestream"></div>
+        <p class="hint">Use the Stream controls to set up your camera and microphone. Host broadcast controls are authorized by Stream permissions.</p>
+        <button class="button" data-live-leave type="button">Leave video</button>
+      </div>
+    </section>
+
+    <section class="audience panel" data-live-chat-section hidden aria-labelledby="audience-title">
+      <div class="broadcast-head">
+        <div>
+          <p class="eyebrow">Human conversation</p>
+          <h2 id="audience-title">Audience chat</h2>
+        </div>
+        <button class="button small" data-live-chat-mute type="button" disabled>Mute chat</button>
+      </div>
+      <p class="hint">Messages are member-to-member, moderated, and do not use Beans AI or NBL Usage credits.</p>
+      <p class="error" data-live-chat-error role="status" aria-live="polite" hidden></p>
+      <div class="chat-messages" data-live-chat-messages role="log" aria-live="polite" aria-relevant="additions text">
+        <p class="hint">Loading audience conversation…</p>
+      </div>
+      <form class="chat-composer" data-live-chat-form>
+        <label for="live-chat-compose">Message the audience</label>
+        <textarea id="live-chat-compose" data-live-chat-compose rows="2" maxlength="2000" required disabled></textarea>
+        <button class="button primary" type="submit" disabled>Send message</button>
+      </form>
+    </section>
+
+    <p class="footer-note">This preview is not an announcement or launch. No recording, paid-provider broadcast, OBS stream, or production activation is enabled by this page.</p>
+  </main>
+</body>
+</html>
