@@ -38,7 +38,7 @@ requireText(js,'EBPR 120',"EBPR 120 is missing.");
 requireText(js,'beansHistoryLoadedFor',"Signed-in Beans history is not tracked per account.");
 requireText(js,'clerk.addListener',"Account state changes do not retrigger Beans/Plus continuity.");
 requireText(js,'href="/campus.html#grey"',"Talk to Grey link is missing.");
-requireText(js,'href="/chat.html"',"Talk to People member-chat link is missing.");
+requireText(js,'href="/messenger/"',"Talk to People independent NBL Messenger link is missing.");
 forbidText(js,'Beans is the New Beansland AI assistant. NBL Chat is where people message people',"Removed promotional copy has returned.");
 requireText(js,'data-nbl-drawer-tools',"Beans tools drawer entry is missing.");
 requireText(js,'data-nbl-tools-toggle',"Beans + tool button is missing.");

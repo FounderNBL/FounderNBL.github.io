@@ -547,7 +547,7 @@
               <span class="nbl-chat-drawer-fallback" aria-hidden="true">G</span>
               <span><strong>Talk to Grey</strong><small>Protected NBL University</small></span>
             </a>
-            <a class="nbl-chat-drawer-item nbl-beans-people-link" href="/chat.html">
+            <a class="nbl-chat-drawer-item nbl-beans-people-link" href="/messenger/">
               <span class="nbl-chat-drawer-fallback" aria-hidden="true">P</span>
               <span><strong>Talk to People</strong><small>Your NBL member messages</small></span>
             </a>

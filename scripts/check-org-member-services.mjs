@@ -14,7 +14,7 @@ const forbid=(key,needle,why)=>{if(files[key].includes(needle))failures.push(why
 need("account",'accounts.newbeansland.org',"Verified .org account portal missing.");
 need("chat",'href="https://newbeansland.org/chat.html"',"Person-to-person Chat must canonically live on .org.");
 need("campus",'href="https://newbeansland.org/campus.html"',"Student campus must canonically live on .org.");
-need("header",'href="/chat.html"',"Talk to People must open .org Chat.");
+need("header",'href="/messenger/"',"Talk to People must open independent .org Messenger.");
 need("header",'href="/campus.html#grey"',"Talk to Grey must open the protected .org campus.");
 need("landing",'href="/campus.html"',"University enrollment must open .org classroom.");
 need("landing",'data-nbl-university-checkout="foundation" disabled',"University enrollment checkout was unlocked without verification.");
