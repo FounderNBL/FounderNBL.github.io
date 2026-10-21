@@ -21,6 +21,7 @@ const universityCheckout=read("nbl-university-checkout.js");
 const portal=read("nbl-portal.js");
 const home=read("index.html");
 const books=read("books.html");
+const lulu=read("lulu/index.html");
 let failed=false;
 
 function requireText(source,text,message){
@@ -165,17 +166,20 @@ requireText(books,"https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-
 requireText(books,"https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-test/hardcover/product-q6qv49m.html","Islamic Dilemma deluxe Lulu link is missing.");
 requireText(books,"https://svc.lulu.com/?items=dc35ccd4-bdc1-497d-ba69-fa4316fc16a6","Tree That Grew Lulu purchase button is missing.");
 requireText(books,"Physical · Lulu link pending verification","People Zoo physical ACORN is not being held pending a verified Lulu URL.");
+requireText(books,"Digital · Payhip link pending verification","People Zoo digital ACORN is not being held pending a verified Payhip URL.");
 forbidText(books,"https://buy.stripe.com/","Books returned to duplicate Stripe checkout instead of Payhip/Lulu routing.");
 forbidText(books,"https://cash.app/","Books returned to the manual Cash App backup.");
 forbidText(books,'id="direct-order"',"Manual book-order form returned.");
 forbidText(books,'payhip-embed-page',"Oversized Payhip product embed returned to Books.");
 forbidText(books,"https://payhip.com/embed-page.js","Payhip embed loader returned to Books.");
-requireText(books,'<script defer src="https://js.lulu.com/lulu-buy.js"></script>',"Lulu preview loader is missing.");
-requireText(books,'<lulu-buy-button buy-button-id="7cc013d3-dd8e-469d-8c75-fc11b81c7584" variant="product-preview"></lulu-buy-button>',"Approved compact Lulu product preview is missing or has changed.");
-requireText(books,'data-nbl-lulu-direct="true"',"Compact Lulu preview must replace the extra dynamic Buy Direct banner.");
-forbidText(books,'variant="product-showcase"',"Oversized Lulu product showcase returned to Books.");
+forbidText(books,"<lulu-buy-button","Embedded Lulu widget returned to Books.");
+forbidText(lulu,"<lulu-buy-button","Embedded Lulu widget returned to the Lulu shelf.");
+forbidText(books,"https://js.lulu.com/lulu-buy.js","Lulu widget loader returned to Books.");
+forbidText(lulu,"https://js.lulu.com/lulu-buy.js","Lulu widget loader returned to the Lulu shelf.");
+forbidText(portal,"activateLuluDirectBuy","Dynamic duplicate Books purchase banner returned.");
+forbidText(books,"new-beansland.myshopify.com/collections/nbl-books","Books returned to Shopify checkout/catalog routing.");
+forbidText(books,"amazon.com/People-Zoo-Jamel-Hawkins-ebook","People Zoo digital checkout drifted away from Payhip.");
 forbidText(books,'<div class="store-cover">', "Oversized duplicate decorative book-cover panels returned to Books.");
-if((books.match(/<lulu-buy-button\b/g)||[]).length!==1){console.error("[website-repair] FAIL: Lulu preview must appear exactly once.");failed=true;}
 
 
 for(const value of ['$4.99/month','300 successful replies','$9.99/month','$9.99 one-time','+500 successful replies','$29.99 one-time','$34.99 one-time','$54.99 one-time','$449.99 one-time','$14.99/month']){
