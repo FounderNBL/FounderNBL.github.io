@@ -153,7 +153,7 @@ requireText(home,"Under Construction · Early Enrollment Information","Homepage 
 requireText(home,"checkout remains held pending verification","Homepage must preserve the University checkout hold.");
 requireText(home,"full-refund promise","Homepage must disclose the advance-enrollment refund policy.");
 requireText(university,"full refund of the advance-enrollment payment","University must explain the full-refund promise when prepaid access cannot be delivered.");
-requireText(portal,"https://books.newbeansland.org/","Connected NBL Books custom domain is missing from the public portal.");
+requireText(books,"https://books.newbeansland.org/","Connected NBL Books Payhip custom domain is missing from the bookstore.");
 requireText(books,"Digital · Payhip","Books no longer states the digital Payhip route.");
 requireText(books,"Physical · Lulu","Books no longer states the physical Lulu route.");
 requireText(books,"https://books.newbeansland.org/b/jIEUZ","Doctor/Rocketship Standard Edition Payhip link is missing.");
