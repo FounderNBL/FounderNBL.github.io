@@ -1,0 +1,37 @@
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
+const ui=read("messenger/social-v1.html"),js=read("messenger/social-v1.mjs"),css=read("messenger/social-v1.css");
+const existing=read("messenger/app.js");
+const campus=read("university-campus.html");
+const releases=read("messenger/README.md");
+assert.match(ui,/SOCIAL INTEGRATION PREVIEW/);
+assert.match(ui,/noindex,nofollow/);
+assert.match(ui,/social-v1\.mjs/);
+assert.match(ui,/href="\/messenger\/"/);
+assert.match(ui,/data-feed="foryou"/);
+assert.match(ui,/data-feed="timeline"/);
+assert.match(ui,/data-feed="user"/);
+assert.match(ui,/data-feed="notification"/);
+assert.match(ui,/id="postForm"/);
+assert.match(js,/@stream-io\/feeds-client@2\.9\.0/);
+assert.match(js,/functions\/v1\/nbl-stream/);
+assert.match(js,/functions\/v1\/nbl-social/);
+assert.match(js,/secured\(STREAM_BRIDGE,\{action:"session"\}\)/);
+assert.match(js,/secured\(SOCIAL_API,\{action:"me"\}\)/);
+assert.match(js,/const jwt=await c\.session\.getToken\(\)/);
+assert.match(js,/client\.connectUser\(\{id:api\.user\.id/);
+assert.match(js,/new FeedsClient\(api\.key/);
+assert.match(js,/getOrCreate\(\{watch:true,limit:20\}\)/);
+for(const method of ["addActivity","addActivityReaction","addComment","getComments","getOrCreateFollows","getOrCreateUnfollows"]){
+  assert.match(js,new RegExp(method+"\\("),method+" missing");
+}
+assert.match(js,/textContent=String\(text\)/);
+assert.doesNotMatch(js,/(?:innerHTML|document\.write|localStorage|sessionStorage|STR[E]?AM_API_SECRET|SERVICE_ROLE_KEY|\bsecret:)/);
+assert.doesNotMatch(js,/https:\/\/.*secret/i);
+assert.match(css,/social-card/);
+assert.match(existing,/functions\/v1\/nbl-social/);
+assert.match(existing,/data-chat-messages/);
+assert.match(campus,/id="nbl-social"/);
+assert.match(releases,/not yet a Play Store Android package/);
+console.log("PASS: separate NBL Social preview source, server-owned identity, Stream Feeds calls, existing DMs and University preserved.");
