@@ -1,7 +1,14 @@
 import { defineConfig } from "vite";
 import { fileURLToPath } from "node:url";
+import { hardenStreamSdkBuild } from "./security-hardening.mjs";
 
 export default defineConfig({
+  plugins: [{
+    name: "nbl-stream-sdk-security-hardening",
+    generateBundle(_outputOptions, bundle) {
+      hardenStreamSdkBuild(bundle);
+    }
+  }],
   define: {
     "process.env": JSON.stringify({ NODE_ENV: "production", I18NEXT_NO_SUPPORT_NOTICE: "true" })
   },
