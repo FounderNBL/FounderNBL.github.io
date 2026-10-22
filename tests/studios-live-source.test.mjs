@@ -54,10 +54,10 @@ test("audience messages use human moderation actions and safe text rendering", (
 
 test("committed Stream Video SDK bundle has no prototype-polluting map write or insecure session RNG", () => {
   const chunk = readFileSync(new URL("../assets/nbl-studios-live-chunk-clsx.js", import.meta.url), "utf8");
-  assert.doesNotMatch(chunk, /o\\[c\\]\\[l\\] = u;/);
-  assert.match(chunk, /Object\\.defineProperty\\(o\\[c\\], l, \\{ value: u/);
-  assert.match(chunk, /hasOwnProperty\\.call\\(Object\\.prototype, l\\)/);
-  assert.doesNotMatch(chunk, /e\\[n\\] = Math\\.random\\(\\) \\* t/);
+  assert.doesNotMatch(chunk, /o\[c\]\[l\] = u;/);
+  assert.match(chunk, /Object\.defineProperty\(o\[c\], l, \{ value: u/);
+  assert.match(chunk, /hasOwnProperty\.call\(Object\.prototype, l\)/);
+  assert.doesNotMatch(chunk, /e\[n\] = Math\.random\(\) \* t/);
   assert.match(chunk, /Secure random generation required for NBL Studios LIVE sessions/);
 });
 
@@ -65,12 +65,12 @@ test("Stream Video vendor fixes regenerate during build and fail closed on chang
   const unsafe = [
     'o[c][l] = u;',
     'var Pd = typeof crypto < "u" && crypto.getRandomValues ? crypto.getRandomValues.bind(crypto) : function(e) {',
-    '\\tlet t = 2 ** (8 * e.byteLength / e.length);',
-    '\\tfor (let n = 0; n < e.length; n++) e[n] = Math.random() * t;',
+    '\tlet t = 2 ** (8 * e.byteLength / e.length);',
+    '\tfor (let n = 0; n < e.length; n++) e[n] = Math.random() * t;',
     '};'
-  ].join("\\n").replaceAll("\\\\t", "\\t");
+  ].join("\n");
   const safe = hardenStreamSdkBundle(unsafe);
-  assert.match(safe, /Object\\.defineProperty/);
+  assert.match(safe, /Object\.defineProperty/);
   assert.match(safe, /Secure random generation required/);
   assert.throws(() => hardenStreamSdkBundle(safe), /security build guard/);
   const output = { "bundle.js": { type: "chunk", code: unsafe } };
