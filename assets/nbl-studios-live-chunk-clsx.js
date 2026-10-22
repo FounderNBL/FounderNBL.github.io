@@ -3846,7 +3846,8 @@ var an = class {
 					break;
 				case "map":
 					let [l, u] = this.mapEntry(a, e, n);
-					o[c][l] = u;
+					if (l === "prototype" || Object.prototype.hasOwnProperty.call(Object.prototype, l)) throw Error("Unsafe protobuf map key");
+					Object.defineProperty(o[c], l, { value: u, writable: true, enumerable: true, configurable: true });
 			}
 		}
 	}
@@ -12987,9 +12988,8 @@ function Nd() {
 		Md(e.subarray(10, 16))
 	].join("-");
 }
-var Pd = typeof crypto < "u" && crypto.getRandomValues ? crypto.getRandomValues.bind(crypto) : function(e) {
-	let t = 2 ** (8 * e.byteLength / e.length);
-	for (let n = 0; n < e.length; n++) e[n] = Math.random() * t;
+var Pd = typeof crypto < "u" && crypto.getRandomValues ? crypto.getRandomValues.bind(crypto) : function() {
+	throw Error("Secure random generation required for NBL Studios LIVE sessions");
 };
 function Fd(e) {
 	let t = new Uint8Array(e);
