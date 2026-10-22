@@ -1,5 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { hardenStreamSdkBundle, hardenStreamSdkBuild } from "../studio/live-video/security-hardening.mjs";
 import { readFileSync } from "node:fs";
 
 const page = readFileSync(new URL("../studios-live.html", import.meta.url), "utf8");
@@ -49,4 +50,31 @@ test("audience messages use human moderation actions and safe text rendering", (
   assert.match(client, /body\.textContent = String\(message\.body \|\| ""\)/);
   assert.match(page, /do not use Beans AI or NBL Usage credits/);
   assert.match(docs, /existing human member-chat moderation/);
+});
+
+test("committed Stream Video SDK bundle has no prototype-polluting map write or insecure session RNG", () => {
+  const chunk = readFileSync(new URL("../assets/nbl-studios-live-chunk-clsx.js", import.meta.url), "utf8");
+  assert.doesNotMatch(chunk, /o\\[c\\]\\[l\\] = u;/);
+  assert.match(chunk, /Object\\.defineProperty\\(o\\[c\\], l, \\{ value: u/);
+  assert.match(chunk, /hasOwnProperty\\.call\\(Object\\.prototype, l\\)/);
+  assert.doesNotMatch(chunk, /e\\[n\\] = Math\\.random\\(\\) \\* t/);
+  assert.match(chunk, /Secure random generation required for NBL Studios LIVE sessions/);
+});
+
+test("Stream Video vendor fixes regenerate during build and fail closed on changed vendor code", () => {
+  const unsafe = [
+    'o[c][l] = u;',
+    'var Pd = typeof crypto < "u" && crypto.getRandomValues ? crypto.getRandomValues.bind(crypto) : function(e) {',
+    '\\tlet t = 2 ** (8 * e.byteLength / e.length);',
+    '\\tfor (let n = 0; n < e.length; n++) e[n] = Math.random() * t;',
+    '};'
+  ].join("\\n").replaceAll("\\\\t", "\\t");
+  const safe = hardenStreamSdkBundle(unsafe);
+  assert.match(safe, /Object\\.defineProperty/);
+  assert.match(safe, /Secure random generation required/);
+  assert.throws(() => hardenStreamSdkBundle(safe), /security build guard/);
+  const output = { "bundle.js": { type: "chunk", code: unsafe } };
+  hardenStreamSdkBuild(output);
+  assert.equal(output["bundle.js"].code, safe);
+  assert.throws(() => hardenStreamSdkBuild(output), /security build guard/);
 });
