@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 const source=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const approved=[
- ["NBL_Books_New.png","4da94563","books.html"],
+ ["NBL_Books.png","e7397f38","books.html"],
  ["NBL_Clothing_Co.png","f06b568f","clothing.html"],
  ["NBL_Games.png","1ff58013","games.html"],
- ["NBL_Music_Productions.png","d5b9a023","studio/"],
+ ["NBL_Music_Productions%20(1).png","32e2b3ba","studio/"],
  ["NBL_Studios.png","c342a8ee","studios.html"],
  ["NBL_University.png","5fa210ae","university.html"]
 ];
