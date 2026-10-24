@@ -2640,4 +2640,12 @@
     searchTrigger=searchLink;
     openSearch();
   });
+
+  // Android Beans can open this same zero-API-cost local reader via an in-app
+  // browser tab. This query parameter never attaches/uploads a document.
+  if(new URLSearchParams(window.location.search).get("nblpdf")==="1"){
+    window.setTimeout(()=>{
+      beansToolsMenu.querySelector('[data-nbl-tool="pdf-local"]')?.click();
+    },0);
+  }
 })();
