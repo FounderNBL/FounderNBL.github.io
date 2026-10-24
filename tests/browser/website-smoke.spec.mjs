@@ -64,6 +64,38 @@ test.describe("New Beansland web app browser smoke", () => {
     }
   });
 
+  test("Beans PDF Reader opens a local PDF without an AI or upload request",async({page})=>{
+    let pdfUploads=0;
+    await page.route("**/functions/v1/**",route=>{
+      if(route.request().method()==="POST")pdfUploads++;
+      return route.fulfill({status:200,contentType:"application/json",body:"{}"});
+    });
+    await page.route("**/pdf.js/3.11.174/pdf.min.js",route=>route.fulfill({
+      status:200,contentType:"application/javascript",
+      body:"window.pdfjsLib={GlobalWorkerOptions:{},getDocument:()=>({promise:Promise.resolve({numPages:2,destroy:async()=>{},getPage:async()=>({getViewport:()=>({width:400,height:520}),render:()=>({promise:Promise.resolve()}),getTextContent:async()=>({items:[{str:'Local NBL PDF page',transform:[1,0,0,1,20,100]}]})})})})};"
+    }));
+    await page.route("**/tesseract.js@5.1.1/**",route=>route.fulfill({
+      status:200,contentType:"application/javascript",
+      body:"window.Tesseract={createWorker:async()=>({recognize:async()=>({data:{text:'Scanned NBL page'}}),terminate:async()=>{}})};"
+    }));
+    await open("/",page);
+    await page.getByRole("button",{name:"Open Beans"}).click();
+    await page.getByRole("button",{name:"Open Beans tools"}).click();
+    await page.locator('[data-nbl-tool="pdf-local"]').click();
+    const pdf=page.getByRole("dialog",{name:"NBL PDF Reader"});
+    await expect(pdf).toBeVisible();
+    await pdf.locator('[data-file]').setInputFiles({name:"local.pdf",mimeType:"application/pdf",buffer:Buffer.from("%PDF-1.7\n"+" ".repeat(1000))});
+    await expect(pdf.locator('[data-count]')).toContainText("1 / 2");
+    await expect(pdf.locator('[data-text]')).toContainText("Local NBL PDF page");
+    await pdf.getByRole("button",{name:"Next →"}).click();
+    await expect(pdf.locator('[data-count]')).toContainText("2 / 2");
+    await pdf.getByRole("button",{name:"OCR this page"}).click();
+    await expect(pdf.locator('[data-text]')).toContainText("Scanned NBL page");
+    expect(pdfUploads).toBe(0);
+    await pdf.getByRole("button",{name:"Close"}).click();
+    await expect(pdf).toBeHidden();
+  });
+
   test("Beans AI opens in a real browser", async ({ page }) => {
     await open("/", page);
 
