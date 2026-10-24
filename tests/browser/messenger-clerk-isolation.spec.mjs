@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 // Synthetic Clerk identities, no actual customer credentials or private data.
-const identityFixture = String.raw\`
+const identityFixture = String.raw`
 (() => {
   const listeners=[];
   let current=null;
@@ -19,7 +19,7 @@ const identityFixture = String.raw\`
     listeners.forEach(f=>f({session:id?session:null,user:id?{id}:null}));
   };
 })();
-\`;
+`;
 test.beforeEach(async({page})=>{
   await page.addInitScript({content:identityFixture});
   await page.route("**/social-realtime.js*",route=>route.fulfill({
