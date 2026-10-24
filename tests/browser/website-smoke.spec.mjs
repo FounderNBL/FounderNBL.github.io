@@ -28,9 +28,9 @@ test.describe("New Beansland web app browser smoke", () => {
     await page.goto("/", {waitUntil:"load"});
     const cards=[
       ["clothing.html","NBL_Clothing_Co.png"],
-      ["books.html","NBL_Books_New.png"],
+      ["books.html","NBL_Books.png"],
       ["games.html","NBL_Games.png"],
-      ["studio/","NBL_Music_Productions.png"],
+      ["studio/","NBL_Music_Productions%20(1).png"],
       ["studios.html","NBL_Studios.png"],
       ["university.html","NBL_University.png"]
     ];
