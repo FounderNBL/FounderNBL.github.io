@@ -613,6 +613,11 @@
         </div>
       </aside>
 
+      <div class="nbl-quick-selector" id="nbl-quick-selector" data-nbl-quick-selector role="group" aria-label="Choose NBL conversation" hidden>
+        <button type="button" data-nbl-quick="beans" aria-label="Chat with Beans"><img src="/Beans.png" alt="" aria-hidden="true"><strong>Beans</strong><small>AI assistant</small></button>
+        <button type="button" data-nbl-quick="grey" aria-label="Talk to Professor Grey, LOCKE authorization required"><img src="/Professor_Grey.png" alt="" aria-hidden="true"><strong>Grey</strong><small>Teaching · LOCKE</small></button>
+        <a href="/university.html" data-nbl-quick="university" aria-label="NBL University entrance, enrollment and LOCKE approval required"><img src="/NBL_University.png" alt="" aria-hidden="true"><strong>University</strong><small>Locked · enrollment</small></a>
+      </div>
       <div class="nbl-chat-modes" role="tablist" aria-label="Beans mode">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
         <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden>University</button>
@@ -651,6 +656,7 @@
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
               <input data-nbl-beans-knowledge-file type="file" accept=".pdf,.txt,.md,.json,.html,.css,.js,.ts,.py,.doc,.docx,.pptx,.c,.cpp,.cs,.go,.java,.php,.rb,.sh,.tex,application/pdf,application/json,text/plain,text/markdown,text/html" hidden>
             </div>
+            <button class="nbl-quick-toggle" type="button" data-nbl-quick-toggle aria-controls="nbl-quick-selector" aria-expanded="false" aria-label="Choose Beans, Professor Grey or University">⌕</button>
             <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
             <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans">🎙</button>
             <button class="nbl-beans-stop" type="button" data-nbl-beans-stop aria-label="Stop Beans response" hidden>Stop</button>
@@ -763,6 +769,9 @@
   const regularBeansShell=beansPanel.querySelector("[data-nbl-beans-regular]");
   const plusShell=beansPanel.querySelector("[data-nbl-plus]");
   const modeButtons=[...beansPanel.querySelectorAll("[data-nbl-chat-mode]")];
+  const nblQuickSelector=beansPanel.querySelector("[data-nbl-quick-selector]");
+  const nblQuickToggle=beansPanel.querySelector("[data-nbl-quick-toggle]");
+  let nblQuickTimer=null;
   const plusAccess=beansPanel.querySelector("[data-nbl-plus-access]");
   const plusAccessCopy=beansPanel.querySelector("[data-nbl-plus-access-copy]");
   const plusSignIn=beansPanel.querySelector("[data-nbl-plus-signin]");
@@ -1125,6 +1134,15 @@
     }
   };
 
+  const setNblQuickMenu=open=>{
+    if(nblQuickTimer!==null){window.clearTimeout(nblQuickTimer);nblQuickTimer=null;}
+    nblQuickSelector.hidden=!open;
+    nblQuickToggle.setAttribute("aria-expanded",open?"true":"false");
+    if(open)nblQuickTimer=window.setTimeout(()=>{
+      nblQuickTimer=null;
+      if(!nblQuickSelector.matches(":focus-within")&&!nblQuickSelector.matches(":hover"))setNblQuickMenu(false);
+    },2000);
+  };
   const setBeansToolMenu=open=>{
     beansToolsMenu.hidden=!open;
     beansToolsToggle.setAttribute("aria-expanded",open?"true":"false");
@@ -1801,6 +1819,7 @@
   };
 
   const closeBeans=({fromPopState=false}={})=>{
+    setNblQuickMenu(false);
     setBeansToolMenu(false); // Reopening Beans must NEVER leave quick actions visible.
     const shouldConsumeHistory=!fromPopState&&Boolean(chatHistoryEntry)&&window.history.state?.nblChatOverlay===chatHistoryEntry;
     setChatDrawerOpen(false);
@@ -2266,6 +2285,19 @@
     location.href=accountPortalUrl("/sign-in");
   });
 
+  nblQuickToggle.addEventListener("click",()=>setNblQuickMenu(nblQuickSelector.hidden));
+  nblQuickSelector.querySelector('[data-nbl-quick="beans"]').addEventListener("click",()=>{
+    setNblQuickMenu(false);setChatMode("beans");
+  });
+  nblQuickSelector.querySelector('[data-nbl-quick="grey"]').addEventListener("click",()=>{
+    setNblQuickMenu(false);setChatMode("plus"); // Existing Grey authentication + LOCKE
+  });
+  nblQuickSelector.addEventListener("keydown",event=>{
+    if(event.key==="Escape"){setNblQuickMenu(false);nblQuickToggle.focus();}
+  });
+  nblQuickSelector.addEventListener("focusout",()=>{
+    if(!nblQuickSelector.matches(":focus-within"))setNblQuickMenu(false);
+  });
   for(const button of modeButtons){
     button.addEventListener("click",()=>setChatMode(button.dataset.nblChatMode));
   }
