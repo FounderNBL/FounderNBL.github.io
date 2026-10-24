@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "nbl-world-header.js"
+      - "nbl-device-pdf.js"
       - "nbl-world-header.css"
       - "nbl-product-plans.js"
       - "nbl-university-checkout.js"
@@ -39,6 +40,7 @@ on:
   pull_request:
     paths:
       - "nbl-world-header.js"
+      - "nbl-device-pdf.js"
       - "nbl-world-header.css"
       - "nbl-product-plans.js"
       - "nbl-university-checkout.js"
@@ -82,6 +84,7 @@ jobs:
       - name: Check website JavaScript syntax
         run: |
           node --check nbl-world-header.js
+          node --check nbl-device-pdf.js
           node --check nbl-university-checkout.js
       - name: Check NBL Chat Plus wiring
         run: node scripts/check-website-chat-plus.mjs
