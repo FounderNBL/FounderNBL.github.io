@@ -26,8 +26,8 @@ test("Grey stays locked while official artwork is displayed only behind protecte
  assert.match(read("university-campus.html"),/data-grey-log/);
 });
 test("fresh cache keys load new styles and scripts on real entry pages",()=>{
- assert.match(read("index.html"),/20261020-v12-beans-backdrop/);
- assert.match(read("index.html"),/20261020-v12-plus-menu/);
+ assert.match(read("index.html"),/nbl-world-header\.css\?v=20261024-v12-final-parity/);
+ assert.match(read("index.html"),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
  assert.match(read("university-campus.html"),/20261020-grey-backdrop/);
 });
 
