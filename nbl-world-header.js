@@ -638,6 +638,7 @@
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
+                <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
                 <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · eligible membership required</span></button>
@@ -1977,6 +1978,23 @@
     const button=event.target.closest("[data-nbl-tool]");
     if(!button) return;
     const tool=button.dataset.nblTool;
+    if(tool==="pdf-local"){
+      setBeansToolMenu(false);
+      try{
+        if(!window.NblDevicePdf){
+          await new Promise((resolve,reject)=>{
+            const tag=document.createElement("script");
+            tag.src="/nbl-device-pdf.js?v=20261023";
+            tag.onload=resolve;
+            tag.onerror=()=>reject(new Error("NBL PDF Reader script could not load."));
+            document.head.appendChild(tag);
+          });
+        }
+        if(!window.NblDevicePdf)throw new Error("Local reader unavailable.");
+        window.NblDevicePdf.open();
+      }catch(error){beansStatus.textContent=error?.message||"NBL PDF Reader could not open.";}
+      return;
+    }
     if(tool==="attach"){
       setBeansToolMenu(false);
       beansFileInput.click();
@@ -2622,4 +2640,12 @@
     searchTrigger=searchLink;
     openSearch();
   });
+
+  // Android Beans can open this same zero-API-cost local reader via an in-app
+  // browser tab. This query parameter never attaches/uploads a document.
+  if(new URLSearchParams(window.location.search).get("nblpdf")==="1"){
+    window.setTimeout(()=>{
+      beansToolsMenu.querySelector('[data-nbl-tool="pdf-local"]')?.click();
+    },0);
+  }
 })();
