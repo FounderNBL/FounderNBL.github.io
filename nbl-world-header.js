@@ -2298,6 +2298,9 @@
   nblQuickSelector.addEventListener("focusout",()=>{
     if(!nblQuickSelector.matches(":focus-within"))setNblQuickMenu(false);
   });
+  nblQuickSelector.addEventListener("mouseleave",()=>{
+    if(nblQuickTimer===null&&!nblQuickSelector.matches(":focus-within"))setNblQuickMenu(false);
+  });
   for(const button of modeButtons){
     button.addEventListener("click",()=>setChatMode(button.dataset.nblChatMode));
   }
