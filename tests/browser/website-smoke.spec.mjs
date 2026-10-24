@@ -87,7 +87,15 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect.poll(async () => page.locator(".nbl-beans-avatar").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
-    await expect(page.getByRole("tab", { name: "Beans" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Beans" })).toBeHidden();
+    const switcher=page.getByRole("button",{name:"Choose Beans, Professor Grey or University"});
+    await expect(switcher).toBeVisible();
+    await expect(page.locator("[data-nbl-quick-selector]")).toBeHidden();
+    await switcher.click();
+    await expect(page.locator('[data-nbl-quick="beans"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-quick="grey"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-quick="university"]')).toHaveAttribute("href","/university.html");
+    await expect(page.locator("[data-nbl-quick-selector]")).toBeHidden({timeout:4500});
     await expect(page.getByRole("tab", { name: /NBL University Professor Grey™/i })).toBeHidden();
     await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
     await page.getByRole("button", { name: "Open Beans tools" }).click();
