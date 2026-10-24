@@ -147,7 +147,7 @@ test.describe("New Beansland web app browser smoke", () => {
     if (expectBillingReleaseUi) {
       await page.getByRole("button", { name: /Open Beans menu/i }).click();
       await page.getByRole("button", { name: /Membership & plans/i }).click();
-      await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Choose Beans", exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: "University membership checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Student continuation checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Foundation checkout pending", exact: true })).toBeDisabled();
