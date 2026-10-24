@@ -60,13 +60,24 @@ async function authToken(){
   return token;
 }
 async function social(body){
+  // A reply issued for account A may finish after Clerk switches to account B.
+  // Reject it *before* it can update state, messages, or member-visible UI.
+  const requestedUserId=state.clerk?.user?.id||null;
+  const requestedGeneration=authSyncGeneration;
+  const assertCurrentAccount=()=>{
+    if(!requestedUserId||state.clerk?.user?.id!==requestedUserId||authSyncGeneration!==requestedGeneration){
+      throw new Error("Your NBL account changed. Retry in the current account.");
+    }
+  };
   const token=await authToken();
+  assertCurrentAccount();
   const response=await fetch(SOCIAL_API,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
     body:JSON.stringify(body),cache:"no-store"
   });
   const payload=await response.json().catch(()=>({}));
+  assertCurrentAccount();
   if(!response.ok||payload?.ok!==true){
     const error=new Error(payload?.message||"NBL Chat is temporarily unavailable. Try again.");
     error.status=response.status;error.reason=payload?.reason;throw error;
