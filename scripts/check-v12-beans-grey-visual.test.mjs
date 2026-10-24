@@ -26,7 +26,29 @@ test("Grey stays locked while official artwork is displayed only behind protecte
  assert.match(read("university-campus.html"),/data-grey-log/);
 });
 test("fresh cache keys load new styles and scripts on real entry pages",()=>{
- assert.match(read("index.html"),/20261020-v12-beans-backdrop/);
- assert.match(read("index.html"),/20261020-v12-plus-menu/);
+ assert.match(read("index.html"),/nbl-world-header\.css\?v=20261024-v12-final-parity/);
+ assert.match(read("index.html"),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
  assert.match(read("university-campus.html"),/20261020-grey-backdrop/);
+});
+
+test("website Beans matches V12 native 2-second chooser while retaining free PDF and LOCKE rails",()=>{
+ assert.match(js,/id="nbl-quick-selector"[^>]*hidden/);
+ assert.match(js,/data-nbl-quick="beans"/);
+ assert.match(js,/data-nbl-quick="grey"/);
+ assert.match(js,/href="\/university\.html" data-nbl-quick="university"/);
+ assert.match(js,/src="\/Beans\.png"/);
+ assert.match(js,/src="\/Professor_Grey\.png"/);
+ assert.match(js,/setChatMode\("plus"\); \/\/ Existing Grey authentication \+ LOCKE/);
+ assert.match(js,/nblQuickToggle\.addEventListener\("click"/);
+ assert.match(js, /},2000\);/);
+ assert.match(css,/\.nbl-quick-selector\s*\{[^}]*position:absolute/s);
+ assert.match(css,/\.nbl-beans-card > \.nbl-chat-modes\{display:none!important\}/);
+ assert.match(js,/data-nbl-tool="pdf-local"/);
+ assert.match(js,/NblDevicePdf/);
+ assert.match(js,/nblpdf/);
+ for(const page of ["index.html","account.html","books.html","clothing.html","nbl-kids.html","pricing.html","stories.html","studios.html","university.html"]){
+   assert.match(read(page),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
+ }
+ const appParity=read("nbl-world-header.js");
+ assert.doesNotMatch(appParity,/lockeOverride|bypassLocker|universityUnlocked=true/);
 });

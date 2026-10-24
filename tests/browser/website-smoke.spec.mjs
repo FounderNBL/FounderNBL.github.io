@@ -119,7 +119,21 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect.poll(async () => page.locator(".nbl-beans-avatar").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
-    await expect(page.getByRole("tab", { name: "Beans" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Beans" })).toBeHidden();
+    const quickToggle=page.getByRole("button",{name:"Choose Beans, Professor Grey or University"});
+    await expect(quickToggle).toBeVisible();
+    const quickMenu=page.locator("[data-nbl-quick-selector]");
+    await expect(quickMenu).toBeHidden();
+    await quickToggle.click();
+    await expect(quickMenu).toBeVisible();
+    await expect(page.locator('[data-nbl-quick="beans"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-quick="grey"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-quick="university"]')).toHaveAttribute("href","/university.html");
+    await expect(quickMenu).toBeHidden({timeout:4500});
+    await quickToggle.click();
+    await page.locator('[data-nbl-quick="beans"]').click();
+    await expect(quickMenu).toBeHidden();
+    await expect(page.locator("[data-nbl-beans-regular]")).toBeVisible();
     await expect(page.getByRole("tab", { name: /NBL University Professor Grey™/i })).toBeHidden();
     await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
     await page.getByRole("button", { name: "Open Beans tools" }).click();
@@ -133,7 +147,7 @@ test.describe("New Beansland web app browser smoke", () => {
     if (expectBillingReleaseUi) {
       await page.getByRole("button", { name: /Open Beans menu/i }).click();
       await page.getByRole("button", { name: /Membership & plans/i }).click();
-      await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Choose Beans", exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: "University membership checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Student continuation checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Foundation checkout pending", exact: true })).toBeDisabled();
