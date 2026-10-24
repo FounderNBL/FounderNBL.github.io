@@ -7,6 +7,8 @@ const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=selector=>document.querySelector(selector);
 const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:false,realtimeThread:null,realtimeStop:null,inboxStop:null};
+let activeAuthUserId;
+let authSyncGeneration=0;
 const status=message=>{const el=$("[data-chat-status]");if(el)el.textContent=message;};
 const lastSeenMessages=new Map();
 function rememberIncoming(threadId,messages,{announce=false}={}){
@@ -58,13 +60,24 @@ async function authToken(){
   return token;
 }
 async function social(body){
+  // Bind this request to a real Clerk identity. A delayed response from A must
+  // never update B's Messenger UI after logout/account-switch.
+  const userId=state.clerk?.user?.id||null;
+  const generation=authSyncGeneration;
+  const assertCurrent=()=>{
+    if(!userId||!state.clerk?.isSignedIn||state.clerk?.user?.id!==userId||generation!==authSyncGeneration){
+      throw new Error("Your NBL account changed. Retry from the current account.");
+    }
+  };
   const token=await authToken();
+  assertCurrent();
   const response=await fetch(SOCIAL_API,{
     method:"POST",
     headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
     body:JSON.stringify(body),cache:"no-store"
   });
   const payload=await response.json().catch(()=>({}));
+  assertCurrent();
   if(!response.ok||payload?.ok!==true){
     const error=new Error(payload?.message||"NBL Messenger is temporarily unavailable. Try again.");
     error.status=response.status;error.reason=payload?.reason;throw error;
@@ -269,6 +282,41 @@ async function reportMessage(messageId){
     status("Report recorded for review.");
   }catch(error){status(error.message||"Report could not be submitted.");}
 }
+async function syncClerkSession(){
+  const userId=state.clerk?.isSignedIn&&state.clerk?.session?state.clerk.user?.id||null:null;
+  if(userId===activeAuthUserId)return;
+  activeAuthUserId=userId;
+  const generation=++authSyncGeneration;
+  // Existing DMs are private. Clear them synchronously before any new requests.
+  state.realtimeStop?.();state.inboxStop?.();
+  state.realtimeStop=null;state.inboxStop=null;state.realtimeThread=null;
+  state.selectedId=null;state.selected=null;state.threads=[];state.me=null;state.busy=false;
+  lastSeenMessages.clear();
+  $("[data-chat-userbar]").hidden=true;
+  $("[data-chat-app]").hidden=true;
+  $("[data-chat-myhandle]").textContent="@NBL member";
+  $("[data-chat-messages]").replaceChildren(node("p","hint","Choose a conversation."));
+  $("[data-chat-threads]").replaceChildren();
+  $("[data-chat-search-results]").replaceChildren();
+  $("[data-chat-thread-title]").textContent="Choose a conversation";
+  $("[data-chat-thread-kind]").textContent="Messages";
+  $("[data-chat-compose]").value="";
+  $("[data-chat-find-input]").value="";
+  $("[data-chat-dm-handle]").value="";
+  resetComposer();
+  if(!userId){
+    $("[data-chat-guest]").hidden=false;
+    $("[data-chat-auth-status]").textContent="Sign in to send and read human-to-human messages. University enrollment is not required for direct messages.";
+    status("NBL Messenger conversations are private until you sign in.");
+    return;
+  }
+  $("[data-chat-guest]").hidden=true;
+  $("[data-chat-userbar]").hidden=false;
+  $("[data-chat-app]").hidden=false;
+  watchInbox();
+  await refresh();
+  if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
+}
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
   $("[data-nbl-infinity-preview]")?.addEventListener("click",()=>{window.NBLInfinitySound?.play("people");});
@@ -285,15 +333,10 @@ async function boot(){
   });
   try{
     const connection=await clerk();
-    if(!connection.isSignedIn||!connection.session){
-      $("[data-chat-auth-status]").textContent="Sign in to send and read human-to-human messages. University enrollment is not required for direct messages.";
-      return;
-    }
-    $("[data-chat-guest]").hidden=true;
-    $("[data-chat-userbar]").hidden=false;
-    $("[data-chat-app]").hidden=false;
-    watchInbox();
-    await refresh();
+    // Clerk may restore the session after initial load, or change users in place.
+    // An early guest snapshot is not proof the user must authenticate again.
+    connection.addListener?.(()=>{void syncClerkSession();});
+    await syncClerkSession();
   }catch(error){
     $("[data-chat-auth-status]").textContent="NBL account connection is unavailable. Try signing in again.";
     status(error.message||"NBL account service unavailable.");
