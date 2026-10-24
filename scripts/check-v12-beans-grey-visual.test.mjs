@@ -26,7 +26,22 @@ test("Grey stays locked while official artwork is displayed only behind protecte
  assert.match(read("university-campus.html"),/data-grey-log/);
 });
 test("fresh cache keys load new styles and scripts on real entry pages",()=>{
- assert.match(read("index.html"),/20261020-v12-beans-backdrop/);
- assert.match(read("index.html"),/20261020-v12-plus-menu/);
+ assert.match(read("index.html"),/20261023-v12-quick-selector/);
+ assert.match(read("index.html"),/20261023-v12-quick-selector/);
  assert.match(read("university-campus.html"),/20261020-grey-backdrop/);
+});
+
+test("three temporary chat choices reuse existing Grey LOCKE gate and official assets",()=>{
+ assert.match(js,/id="nbl-quick-selector"[^>]*hidden/);
+ assert.match(js,/data-nbl-quick="beans"/);
+ assert.match(js,/data-nbl-quick="grey"/);
+ assert.match(js,/data-nbl-quick="university"/);
+ assert.match(js,/src="\/Beans\.png"/);
+ assert.match(js,/src="\/Professor_Grey\.png"/);
+ assert.match(js,/href="\/university\.html" data-nbl-quick="university"/);
+ assert.match(js,/nblQuickToggle\.addEventListener\("click"/);
+ assert.match(js,/setChatMode\("plus"\); \/\/ Existing Grey authentication \+ LOCKE/);
+ assert.match(js, /},2000\);/);
+ assert.match(css,/\.nbl-quick-selector\s*\{[^}]*position:absolute/s);
+ assert.match(css,/\.nbl-beans-card > \.nbl-chat-modes\{display:none!important\}/);
 });
