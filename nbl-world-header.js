@@ -639,6 +639,13 @@
           </div>
           <div class="nbl-beans-attachments" data-nbl-beans-attachments hidden></div>
           <div class="nbl-beans-knowledge" data-nbl-beans-knowledge hidden></div>
+          <section class="nbl-still-tools" data-nbl-still-tools hidden aria-label="Still visual tools within Beans">
+            <div class="nbl-still-tools-head"><strong>Beans · Still visual tools</strong><button type="button" data-nbl-still-close aria-label="Close Still visual tools">×</button></div>
+            <p class="nbl-still-note">Same Beans conversation. Use your own Canva account for designs; NBL image generation is a separate, metered tool.</p>
+            <p class="nbl-still-status" data-nbl-still-status role="status" aria-live="polite">Loading Canva connection…</p>
+            <div class="nbl-still-controls" data-nbl-still-controls></div>
+            <div class="nbl-still-designs" data-nbl-still-designs hidden></div>
+          </section>
           <div class="nbl-beans-composer">
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
@@ -646,13 +653,13 @@
                 <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
                 <button type="button" data-nbl-tool="still-camera"><strong>Still · Camera</strong><span>Take a picture to send to Beans · device permission on demand</span></button>
                 <button type="button" data-nbl-tool="attach"><strong>Photo / file · Still</strong><span>Choose a picture, PDF or document to share with Beans</span></button>
-                <button type="button" data-nbl-tool="still-canva"><strong>Still · Canva designs</strong><span>Create or edit designs in your own connected Canva account</span></button>
+                <button type="button" data-nbl-tool="still-canva"><strong>Still · Canva designs</strong><span>Work with your own Canva designs without leaving the Beans chat</span></button>
                 <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="artifact"><strong>Create a PDF / file</strong><span>Build a downloadable PDF, document, spreadsheet, CSV, or presentation · eligible membership required</span></button>
-                <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Still · Beans creates an image from your next prompt · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice with verified access; browser voice otherwise</span></button>
               </div>
@@ -765,6 +772,12 @@
   const chatDrawerTools=beansPanel.querySelector("[data-nbl-drawer-tools]");
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
   const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
+  const stillTools=beansPanel.querySelector("[data-nbl-still-tools]");
+  const stillStatus=beansPanel.querySelector("[data-nbl-still-status]");
+  const stillControls=beansPanel.querySelector("[data-nbl-still-controls]");
+  const stillDesigns=beansPanel.querySelector("[data-nbl-still-designs]");
+  const stillClose=beansPanel.querySelector("[data-nbl-still-close]");
+  let stillRequestVersion=0;
   const beansDisclaimer=beansPanel.querySelector("[data-nbl-beans-disclaimer]");
   let beansDisclaimerTimer=null;
   const brieflyShowBeansStatus=(text)=>{
@@ -1179,6 +1192,7 @@
   };
 
   const clearBeansTools=()=>{
+    if(!stillTools.hidden)setStillVisualTools(false);
     beansToolMode="auto";
     beansAttachments=[];
     beansFileInput.value="";
@@ -1228,6 +1242,127 @@
     if(!response.ok) throw new Error(payload?.message||"That Beans tool is temporarily unavailable.");
     return payload;
   };
+
+
+  // Still is a visual capability of Beans, never another public chat or model.
+  // It uses the same Clerk identity and server-side NBL Connect authorization as /account.html.
+  const stillConnect=async(payload)=>{
+    const token=await getNblBeansAuthToken();
+    if(!token)throw Error("Sign in with your NBL account to connect Canva.");
+    const response=await fetch(`${NBL_CORE_API}/connect`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:"Bearer "+token},
+      body:JSON.stringify(payload),
+      cache:"no-store"
+    });
+    const body=await response.json().catch(()=>({}));
+    if(!response.ok||body?.ok===false)throw Error(body?.message||"The Canva connection is unavailable.");
+    return body;
+  };
+  const stillEditorUrl=value=>{
+    const url=new URL(String(value||""));
+    if(url.protocol!=="https:"||url.hostname!=="www.canva.com"||
+       !(url.pathname.startsWith("/design/")||url.pathname.startsWith("/api/design/")))
+      throw Error("Canva returned an untrusted design link.");
+    return url.href;
+  };
+  const stillButton=(label,action,disabled=false)=>{
+    const el=document.createElement("button");
+    el.type="button";el.textContent=label;el.disabled=disabled;el.addEventListener("click",action);
+    return el;
+  };
+  const stillOpenCanvaAuth=async(button)=>{
+    button.disabled=true;
+    try{
+      const result=await stillConnect({operation:"canva_begin"});
+      const target=new URL(result.authorizationUrl);
+      if(target.protocol!=="https:"||target.hostname!=="www.canva.com")throw Error("Invalid Canva authorization destination.");
+      // OAuth redirects to the official NBL account callback, not to a second chatbot.
+      location.assign(target.href);
+    }catch(error){stillStatus.textContent=error.message||"Canva sign-in is unavailable.";button.disabled=false;}
+  };
+  const stillShowDesigns=async(button,identity,version)=>{
+    button.disabled=true;stillStatus.textContent="Beans is checking your Canva designs…";
+    stillDesigns.replaceChildren();stillDesigns.hidden=true;
+    try{
+      const data=await stillConnect({operation:"canva_designs"});
+      if(version!==stillRequestVersion||identity!==currentClerkUserId()||stillTools.hidden)return;
+      const items=Array.isArray(data.designs)?data.designs:[];
+      for(const item of items){
+        let link;
+        try{link=stillEditorUrl(item.editUrl);}catch{continue;}
+        const a=document.createElement("a");
+        a.href=link;a.target="_blank";a.rel="noopener noreferrer";
+        a.textContent=String(item.title||"Canva design").slice(0,140)+" · Open in Canva";
+        stillDesigns.append(a);
+      }
+      stillDesigns.hidden=!stillDesigns.childElementCount;
+      stillStatus.textContent=items.length?"Your own Canva designs are listed below.":"No accessible Canva designs yet.";
+    }catch(error){if(version===stillRequestVersion)stillStatus.textContent=error.message||"Canva designs aren't available.";}
+    finally{button.disabled=false;}
+  };
+  const stillCreateCanva=async(button,title,size,identity,version)=>{
+    button.disabled=true;stillStatus.textContent="Beans is creating a blank design in your Canva account…";
+    try{
+      const data=await stillConnect({operation:"canva_create_design",format:size.value,title:title.value.trim()||"Still · NBL design"});
+      if(version!==stillRequestVersion||identity!==currentClerkUserId()||stillTools.hidden)return;
+      const link=stillEditorUrl(data?.design?.editUrl);
+      const a=document.createElement("a");
+      a.href=link;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open your new Canva design";
+      stillDesigns.replaceChildren(a);stillDesigns.hidden=false;
+      const message='I created "'+String(data.design.title||"your design").slice(0,100)+'" in your own Canva account. Open it above to edit. Still is my visual tool, and NBL did not charge for this Canva action.';
+      appendBeansMessage("assistant",message);
+      beansHistory.push({role:"assistant",content:message});
+      stillStatus.textContent="Created in your Canva account. No NBL charge.";
+    }catch(error){if(version===stillRequestVersion)stillStatus.textContent=error.message||"Still could not create the Canva design.";}
+    finally{button.disabled=false;}
+  };
+  const loadStillVisualTools=async()=>{
+    const version=++stillRequestVersion,identity=currentClerkUserId();
+    stillControls.replaceChildren();stillDesigns.replaceChildren();stillDesigns.hidden=true;
+    stillStatus.textContent="Checking your Canva connection…";
+    try{
+      const state=await stillConnect({operation:"status"});
+      if(version!==stillRequestVersion||identity!==currentClerkUserId()||stillTools.hidden)return;
+      const configured=(state.providers||[]).some(x=>x.id==="canva"&&x.configured);
+      const connected=(state.connections||[]).find(x=>x.provider==="canva");
+      if(!configured){
+        stillStatus.textContent="Canva linking is not enabled for this account yet. You can still use Beans to create images.";
+        return;
+      }
+      if(!connected){
+        stillStatus.textContent="Connect your own Canva account once to use its designs with Beans.";
+        stillControls.append(stillButton("Connect my Canva",e=>stillOpenCanvaAuth(e.currentTarget)));
+        return;
+      }
+      stillStatus.textContent="Canva connected: "+String(connected.label||"Your Canva account").slice(0,90)+". You are still talking to Beans.";
+      stillControls.append(stillButton("Show my Canva designs",e=>stillShowDesigns(e.currentTarget,identity,version)));
+      if(state.canvaDesignWriteAvailable===true){
+        const label=document.createElement("label");label.textContent="New design title";
+        const title=document.createElement("input");title.type="text";title.maxLength=120;
+        title.placeholder="My NBL design";label.append(title);
+        const sizes=document.createElement("select");sizes.setAttribute("aria-label","New Canva design format");
+        for(const [val,name] of [["square","Square"],["portrait","Social portrait"],["story","Story"],["landscape","Landscape"],["book_cover","Book cover artwork"]]){
+          const option=document.createElement("option");option.value=val;option.textContent=name;sizes.append(option);
+        }
+        stillControls.append(label,sizes,stillButton("Create in my Canva",e=>stillCreateCanva(e.currentTarget,title,sizes,identity,version)));
+      }else{
+        const note=document.createElement("p");note.textContent="Canva creation is held until its NBL authorization checks pass. You can view your designs now.";
+        stillControls.append(note);
+      }
+    }catch(error){
+      if(version!==stillRequestVersion||identity!==currentClerkUserId()||stillTools.hidden)return;
+      stillStatus.textContent=error.message||"Canva connection couldn't be checked.";
+      const link=document.createElement("a");link.href="/account.html#nblConnectCard";link.textContent="Manage Canva in my NBL account";
+      stillControls.append(link);
+    }
+  };
+  const setStillVisualTools=open=>{
+    stillTools.hidden=!open;
+    if(open)void loadStillVisualTools();
+    else{stillRequestVersion++;stillControls.replaceChildren();stillDesigns.replaceChildren();stillDesigns.hidden=true;}
+  };
+  stillClose.addEventListener("click",()=>setStillVisualTools(false));
 
   const renderBeansKnowledge=state=>{
     beansKnowledgeState=state&&typeof state==="object"?state:null;
@@ -2030,7 +2165,7 @@
     }
     if(tool==="still-canva"){
       setBeansToolMenu(false);
-      location.assign("/account.html#nblConnectCard");
+      setStillVisualTools(true);
       return;
     }
     if(tool==="attach"){
@@ -2088,7 +2223,7 @@
           ?"Code / data analysis selected · verified membership."
           :tool==="artifact"
             ?"PDF / file creation selected · verified membership."
-            :"Image creation selected · verified membership.";
+            :"Still image creation selected · talk to Beans · verified membership.";
       beansInput.focus();
     }
   });
