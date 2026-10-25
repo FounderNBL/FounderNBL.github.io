@@ -24,3 +24,12 @@ test("No credential or extra public token handling embedded in HTML",()=>{
  assert.match(account,/CONNECT_API="https:\/\/tvypdakofcrlvnwporhh\.supabase\.co\/functions\/v1\/nbl-core\/connect"/);
  assert.match(account,/Authorization:"Bearer "\+t/);
 });
+
+test("NBL Image Maker Canva account linking is user-owned, optional and provider-verified",()=>{
+ assert.match(account,/operation:"canva_begin"/);
+ assert.match(account,/operation:"canva_disconnect"/);
+ assert.match(account,/operation:"canva_designs"/);
+ assert.match(account,/target.hostname!=="www.canva.com"/);
+ assert.match(account,/No additional NBL connection fee/);
+ assert.doesNotMatch(account,/CANVA_CLIENT_SECRET/);
+});
