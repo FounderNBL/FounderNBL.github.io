@@ -101,7 +101,7 @@
 
       <section class="card" id="nblConnectCard">
         <h2>Beans · Connected apps</h2>
-        <p class="status">Connect accounts you own. GitHub starts with read-only repository inspection; Canva starts with read-only design listings. NBL Image Maker inside Beans uses NBL image-generation allowances separately; connecting Canva does not share your paid Canva plan.</p>
+        <p class="status">Connect accounts you own. GitHub is for repository inspection; Still uses your connected Canva account to view and create your designs. Approve Canva design permission when prompted. NBL image-generation allowances stay separate; your account does not share the Founder’s Canva subscription.</p>
         <p id="nblConnectStatus" class="status">Checking connected apps…</p>
         <div id="nblConnectApps" class="fulfillment-list"></div>
         <div id="nblConnectRepos" class="fulfillment-list"></div>
@@ -388,7 +388,7 @@
         const canvaTitle=document.createElement("h3");canvaTitle.textContent="Canva · NBL Image Maker";
         const canvaDetails=document.createElement("p");canvaDetails.className="fulfillment-meta";
         canvaDetails.textContent=canvaConnected
-          ?"Your Canva account: "+canvaConnected.label+" · read-only design listings"
+          ?"Your Canva account: "+canvaConnected.label+" · designs and creation (reconnect if Canva asks for new permissions)"
           :canvaProvider?.configured
             ?"Connect your own Canva account. No additional NBL connection fee."
             :"Canva account linking is being prepared; your Beans image maker remains separate.";
@@ -415,6 +415,40 @@
             }catch(error){nblConnectStatus.textContent=error.message||"Canva designs are unavailable."}
             finally{view.disabled=false}
           };
+          // Still creates designs under the member's own Canva authorization, never the Founder's paid seat.
+          const stillForm=document.createElement("div");stillForm.className="fulfillment-item";
+          const stillHeading=document.createElement("h3");stillHeading.textContent="Still · Create in my Canva";
+          const stillHint=document.createElement("p");stillHint.className="fulfillment-meta";
+          stillHint.textContent="Start a design in your own Canva account. Canva features and credits depend on your plan; NBL does not charge for this connection.";
+          const stillTitle=document.createElement("input");stillTitle.type="text";stillTitle.maxLength=120;
+          stillTitle.placeholder="My NBL design";stillTitle.setAttribute("aria-label","New Canva design title");
+          const stillFormat=document.createElement("select");stillFormat.setAttribute("aria-label","Canva design size");
+          for(const [value,label] of [["square","Square · 1080 × 1080"],["portrait","Social post · 1080 × 1350"],["story","Story · 1080 × 1920"],["landscape","Landscape · 1920 × 1080"],["book_cover","Book cover art · 1800 × 2700"]]){
+            const opt=document.createElement("option");opt.value=value;opt.textContent=label;stillFormat.append(opt);
+          }
+          const stillCreate=document.createElement("button");stillCreate.type="button";stillCreate.textContent="Create with Still in Canva";
+          const reconnect=document.createElement("button");reconnect.type="button";reconnect.textContent="Reconnect Canva for design permission";
+          reconnect.onclick=async()=>{
+            reconnect.disabled=true;
+            try{const auth=await connectFetch({operation:"canva_begin"});const target=new URL(auth.authorizationUrl);
+              if(target.protocol!=="https:"||target.hostname!=="www.canva.com")throw Error("Invalid Canva authorization.");
+              location.assign(target.href);
+            }catch(error){nblConnectStatus.textContent=error.message;reconnect.disabled=false}
+          };
+          stillCreate.onclick=async()=>{
+            stillCreate.disabled=true;nblConnectStatus.textContent="Asking Still to create in your personal Canva account…";
+            try{
+              const result=await connectFetch({operation:"canva_create_design",format:stillFormat.value,title:stillTitle.value||"Still · NBL design"});
+              const u=new URL(result.design?.editUrl);
+              if(u.protocol!=="https:"||u.hostname!=="www.canva.com"||!u.pathname.startsWith("/design/"))throw Error("Canva returned an invalid edit link.");
+              const link=document.createElement("a");link.className="button";link.href=u.href;link.target="_blank";link.rel="noopener noreferrer";
+              link.textContent="Open my new Canva design";stillForm.append(link);
+              nblConnectStatus.textContent="Design created in your Canva account. No NBL charge.";
+            }catch(error){nblConnectStatus.textContent=error.message||"Still could not create your design."}
+            finally{stillCreate.disabled=false}
+          };
+          stillForm.append(stillHeading,stillHint,stillTitle,stillFormat,stillCreate,reconnect);
+          canvaCard.append(stillForm);
           const disconnect=document.createElement("button");
           disconnect.type="button";disconnect.className="danger";disconnect.textContent="Disconnect Canva";
           disconnect.onclick=async()=>{
