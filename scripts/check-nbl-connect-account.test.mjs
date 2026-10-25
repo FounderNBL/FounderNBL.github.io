@@ -33,3 +33,27 @@ test("NBL Image Maker Canva account linking is user-owned, optional and provider
  assert.match(account,/No additional NBL connection fee/);
  assert.doesNotMatch(account,/CANVA_CLIENT_SECRET/);
 });
+
+test("Still Canva design creation is held until the server confirms its separate write release",()=>{
+ assert.match(account,/operation:"canva_create_design"/);
+ assert.match(account,/canvaDesignWriteAvailable/);
+ assert.match(account,/stillCreate.disabled=!data.canvaDesignWriteAvailable/);
+ assert.match(account,/Create with Still in Canva/);
+ assert.match(account,/Reconnect Canva for design permission/);
+ assert.match(account,/No NBL charge/);
+});
+test("Still one-time $2 extra image offer is visible but payment remains gated",()=>{
+ assert.match(account,/id="stillImagePack"/);
+ assert.match(account,/Extra Image · \$2 one time/);
+ assert.match(account,/Checkout pending<\/button>/);
+ assert.doesNotMatch(account,/stillImagePack.*data-account-billing-plan="still"/);
+});
+test("Still camera and Canva are website-only tools; camera access is user initiated",()=>{
+ const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
+ assert.match(header,/data-nbl-tool="still-camera"/);
+ assert.match(header,/data-nbl-tool="still-canva"/);
+ assert.match(header,/data-nbl-still-camera/);
+ assert.match(header,/capture="environment"/);
+ assert.match(header,/if\(tool==="still-camera"\)/);
+ assert.match(header,/stillCameraInput.click\(\)/);
+});

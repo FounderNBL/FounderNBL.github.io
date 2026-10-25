@@ -644,7 +644,9 @@
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
                 <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
-                <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="still-camera"><strong>Still · Camera</strong><span>Take a picture to send to Beans · device permission on demand</span></button>
+                <button type="button" data-nbl-tool="attach"><strong>Photo / file · Still</strong><span>Choose a picture, PDF or document to share with Beans</span></button>
+                <button type="button" data-nbl-tool="still-canva"><strong>Still · Canva designs</strong><span>Create or edit designs in your own connected Canva account</span></button>
                 <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · eligible membership required</span></button>
@@ -655,6 +657,7 @@
                 <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice with verified access; browser voice otherwise</span></button>
               </div>
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
+              <input data-nbl-still-camera type="file" accept="image/*" capture="environment" hidden>
               <input data-nbl-beans-knowledge-file type="file" accept=".pdf,.txt,.md,.json,.html,.css,.js,.ts,.py,.doc,.docx,.pptx,.c,.cpp,.cs,.go,.java,.php,.rb,.sh,.tex,application/pdf,application/json,text/plain,text/markdown,text/html" hidden>
             </div>
             <button class="nbl-quick-toggle" type="button" data-nbl-quick-toggle aria-controls="nbl-quick-selector" aria-expanded="false" aria-label="Choose Beans, Professor Grey or University">⌕</button>
@@ -750,6 +753,7 @@
   const beansToolsToggle=beansPanel.querySelector("[data-nbl-tools-toggle]");
   const beansToolsMenu=beansPanel.querySelector("[data-nbl-tools-menu]");
   const beansFileInput=beansPanel.querySelector("[data-nbl-beans-file]");
+  const stillCameraInput=beansPanel.querySelector("[data-nbl-still-camera]");
   const beansKnowledgeFileInput=beansPanel.querySelector("[data-nbl-beans-knowledge-file]");
   const beansAttachmentsEl=beansPanel.querySelector("[data-nbl-beans-attachments]");
   const beansKnowledgeEl=beansPanel.querySelector("[data-nbl-beans-knowledge]");
@@ -1987,6 +1991,11 @@
   beansFileInput.addEventListener("change",async()=>{
     try{await addBeansFiles(beansFileInput.files);}catch(error){beansStatus.textContent=error?.message||"That upload could not be added.";}
   });
+  stillCameraInput.addEventListener("change",async()=>{
+    const chosen=stillCameraInput.files;
+    try{if(chosen?.length)await addBeansFiles(chosen);}catch(error){beansStatus.textContent=error?.message||"Still could not attach the photo.";}
+    finally{stillCameraInput.value="";}
+  });
   beansKnowledgeFileInput.addEventListener("change",async()=>{
     const file=beansKnowledgeFileInput.files?.[0]||null;
     beansKnowledgeFileInput.value="";
@@ -2012,6 +2021,16 @@
         if(!window.NblDevicePdf)throw new Error("Local reader unavailable.");
         window.NblDevicePdf.open();
       }catch(error){beansStatus.textContent=error?.message||"NBL PDF Reader could not open.";}
+      return;
+    }
+    if(tool==="still-camera"){
+      setBeansToolMenu(false);
+      stillCameraInput.click();
+      return;
+    }
+    if(tool==="still-canva"){
+      setBeansToolMenu(false);
+      location.assign("/account.html#nblConnectCard");
       return;
     }
     if(tool==="attach"){
