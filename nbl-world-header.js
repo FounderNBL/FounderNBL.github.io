@@ -2223,7 +2223,7 @@
           ?"Code / data analysis selected · verified membership."
           :tool==="artifact"
             ?"PDF / file creation selected · verified membership."
-            :"Still image creation selected · talk to Beans · verified membership.";
+            :"Image creation selected · verified membership. Still is Beans’ visual tool.";
       beansInput.focus();
     }
   });
