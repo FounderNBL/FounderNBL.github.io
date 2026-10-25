@@ -426,14 +426,17 @@
           const stillForm=document.createElement("div");stillForm.className="fulfillment-item";
           const stillHeading=document.createElement("h3");stillHeading.textContent="Still · Create in my Canva";
           const stillHint=document.createElement("p");stillHint.className="fulfillment-meta";
-          stillHint.textContent="Start a design in your own Canva account. Canva features and credits depend on your plan; NBL does not charge for this connection.";
+          stillHint.textContent="Create a blank design in your own Canva account; customize it there. Blank Canva designs may expire after 7 days without edits. Your Canva plan determines available features; NBL adds no connection fee.";
           const stillTitle=document.createElement("input");stillTitle.type="text";stillTitle.maxLength=120;
           stillTitle.placeholder="My NBL design";stillTitle.setAttribute("aria-label","New Canva design title");
           const stillFormat=document.createElement("select");stillFormat.setAttribute("aria-label","Canva design size");
           for(const [value,label] of [["square","Square · 1080 × 1080"],["portrait","Social post · 1080 × 1350"],["story","Story · 1080 × 1920"],["landscape","Landscape · 1920 × 1080"],["book_cover","Book cover art · 1800 × 2700"]]){
             const opt=document.createElement("option");opt.value=value;opt.textContent=label;stillFormat.append(opt);
           }
-          const stillCreate=document.createElement("button");stillCreate.type="button";stillCreate.textContent="Create with Still in Canva";
+          const stillCreate=document.createElement("button");stillCreate.type="button";
+          stillCreate.disabled=!data.canvaDesignWriteAvailable;
+          stillCreate.textContent=data.canvaDesignWriteAvailable?"Create with Still in Canva":"Still design creation · Verification pending";
+          stillCreate.title=stillCreate.disabled?"Canva design-write permission and NBL verification are pending.":"";
           const reconnect=document.createElement("button");reconnect.type="button";reconnect.textContent="Reconnect Canva for design permission";
           reconnect.onclick=async()=>{
             reconnect.disabled=true;
