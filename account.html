@@ -440,7 +440,7 @@
             try{
               const result=await connectFetch({operation:"canva_create_design",format:stillFormat.value,title:stillTitle.value||"Still · NBL design"});
               const u=new URL(result.design?.editUrl);
-              if(u.protocol!=="https:"||u.hostname!=="www.canva.com"||!u.pathname.startsWith("/design/"))throw Error("Canva returned an invalid edit link.");
+              if(u.protocol!=="https:"||u.hostname!=="www.canva.com"||!(u.pathname.startsWith("/design/")||u.pathname.startsWith("/api/design/")))throw Error("Canva returned an invalid edit link.");
               const link=document.createElement("a");link.className="button";link.href=u.href;link.target="_blank";link.rel="noopener noreferrer";
               link.textContent="Open my new Canva design";stillForm.append(link);
               nblConnectStatus.textContent="Design created in your Canva account. No NBL charge.";
