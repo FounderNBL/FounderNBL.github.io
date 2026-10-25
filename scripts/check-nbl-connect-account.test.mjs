@@ -44,8 +44,8 @@ test("Still Canva design creation is held until the server confirms its separate
 });
 test("Still one-time $2 extra image offer is visible but payment remains gated",()=>{
  assert.match(account,/id="stillImagePack"/);
- assert.match(account,/Extra Image · \\$2 one time/);
- assert.match(account,/Checkout pending<\\/button>/);
+ assert.match(account,/Extra Image · \$2 one time/);
+ assert.match(account,/Checkout pending<\/button>/);
  assert.doesNotMatch(account,/stillImagePack.*data-account-billing-plan="still"/);
 });
 test("Still camera and Canva are website-only tools; camera access is user initiated",()=>{
@@ -54,6 +54,6 @@ test("Still camera and Canva are website-only tools; camera access is user initi
  assert.match(header,/data-nbl-tool="still-canva"/);
  assert.match(header,/data-nbl-still-camera/);
  assert.match(header,/capture="environment"/);
- assert.match(header,/if\\(tool==="still-camera"\\)/);
- assert.match(header,/stillCameraInput.click\\(\\)/);
+ assert.match(header,/if\(tool==="still-camera"\)/);
+ assert.match(header,/stillCameraInput.click\(\)/);
 });
