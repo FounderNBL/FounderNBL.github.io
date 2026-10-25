@@ -57,3 +57,30 @@ test("Still camera and Canva are website-only tools; camera access is user initi
  assert.match(header,/if\(tool==="still-camera"\)/);
  assert.match(header,/stillCameraInput.click\(\)/);
 });
+
+test("Still is one visual feature inside the existing Beans conversation, never another chatbot",()=>{
+ const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
+ assert.match(header,/data-nbl-still-tools/);
+ assert.match(header,/Beans · Still visual tools/);
+ assert.match(header,/setStillVisualTools\(true\)/);
+ assert.match(header,/NBL_CORE_API}\/connect/);
+ assert.match(header,/operation:"canva_create_design"/);
+ assert.match(header,/operation:"canva_designs"/);
+ assert.match(header,/getNblBeansAuthToken\(\)/);
+ assert.match(header,/currentClerkUserId\(\)/);
+ assert.match(header,/canvaDesignWriteAvailable===true/);
+ assert.match(header,/beansHistory\.push\(\{role:"assistant",content:message\}\)/);
+ assert.match(header,/if\(!stillTools.hidden\)setStillVisualTools\(false\)/);
+ assert.doesNotMatch(header,/location\.assign\("\/account\.html#nblConnectCard"\)/);
+ assert.doesNotMatch(header,/\/agent-platform\/|\/agents\/still\/chat|NBL_STILL_GOOGLE_AGENT_KEY/);
+ assert.match(header,/mode:"beans"/);
+});
+test("Still cannot bypass its Canva write gate or the held $2 checkout",()=>{
+ const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
+ const css=fs.readFileSync(new URL("../nbl-world-header.css",import.meta.url),"utf8");
+ assert.match(header,/if\(state\.canvaDesignWriteAvailable===true\)/);
+ assert.match(header,/if\(url\.protocol!=="https:"\|\|url\.hostname!=="www\.canva\.com"/);
+ assert.match(css,/\.nbl-still-tools\[hidden\]/);
+ assert.match(account,/id="stillImagePack"/);
+ assert.match(account,/disabled aria-disabled="true" title="Checkout held until verified payment-to-image delivery"/);
+});
