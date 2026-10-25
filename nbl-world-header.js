@@ -2439,6 +2439,7 @@
         await clerk.signOut();
         cancelActiveBeansChat();
         beansAccountGeneration++;
+        setStillVisualTools(false);
         invalidateBeansHistoryLoad();
         plusAccessRequestGeneration++;
         beansIdentityUserId=null;
@@ -2499,6 +2500,7 @@
       beansIdentityUserId=nextUserId;
       cancelActiveBeansChat();
       beansAccountGeneration++;
+      setStillVisualTools(false);
       invalidateBeansHistoryLoad();
       drawerHistoryRequestGeneration++;
       plusAccessRequestGeneration++;
