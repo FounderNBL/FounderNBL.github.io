@@ -645,7 +645,7 @@
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
                 <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
                 <button type="button" data-nbl-tool="still-camera"><strong>Still · Camera</strong><span>Take a picture to send to Beans · device permission on demand</span></button>
-                <button type="button" data-nbl-tool="attach"><strong>Still · Photos / file</strong><span>Choose a picture, PDF or document to share with Beans</span></button>
+                <button type="button" data-nbl-tool="attach"><strong>Photo / file · Still</strong><span>Choose a picture, PDF or document to share with Beans</span></button>
                 <button type="button" data-nbl-tool="still-canva"><strong>Still · Canva designs</strong><span>Create or edit designs in your own connected Canva account</span></button>
                 <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · eligible membership required</span></button>
