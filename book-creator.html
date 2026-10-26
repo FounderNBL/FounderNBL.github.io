@@ -16,6 +16,9 @@ h2{color:#f3d28a}.intro{max-width:820px;color:#d8cdbb}.layout{display:grid;grid-
 label{display:block;font-size:.85rem;font-weight:bold;margin-top:15px;margin-bottom:7px}
 input,textarea{width:100%;border:1px solid #a58b5d;border-radius:9px;background:#041323;color:#fff;min-height:46px;padding:12px;font:1rem Arial,sans-serif}
 textarea{resize:vertical;min-height:290px;line-height:1.5}
+#print-blurb{min-height:100px}select{width:100%;border:1px solid #a58b5d;border-radius:9px;background:#041323;color:#fff;min-height:46px;padding:12px;font:1rem Arial,sans-serif}
+#print-prep{margin-top:26px}.print-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.print-printwarn{font-weight:800;color:#f1cf8e}
+@media(max-width:740px){.print-grid{grid-template-columns:1fr}}
 input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #f3d28a;outline-offset:2px}
 button,.action{display:inline-flex;justify-content:center;align-items:center;min-height:46px;border:1px solid #b89b65;border-radius:10px;background:#f0c875;color:#102033;padding:10px 17px;cursor:pointer;font-weight:800;text-decoration:none}
 button.alt,.action.alt{background:#172d41;color:#f7e8cd}
@@ -30,6 +33,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <script type="module" src="/nbl-book-creator.js"></script>
+<script type="module" src="/nbl-book-print-studio.mjs"></script>
 </head>
 <body>
 <header><a href="/books.html">← NBL Books</a><nav><a href="/reader.html">My NBL Reader</a><a href="/lulu/">Our Lulu books</a><a href="/">NBL Home</a></nav></header>
@@ -71,6 +75,30 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <p class="note">The PDF maker uses basic fonts and layout; special glyphs and illustrations need separate review before any commercial production. The reading draft is not guaranteed to meet Lulu specifications.</p>
 </aside>
 </div>
+<section class="panel" id="print-prep" aria-labelledby="print-prep-title">
+<p class="eyebrow">NBL Books · Original print studio preview</p>
+<h2 id="print-prep-title">Make your print edition with Beans</h2>
+<p>Your words, your cover, your choices. Prepare an interior and a complete front/spine/back-cover candidate right here. <strong>Our print jobs stay on hold until Lulu validates the exact final files, we calculate the real delivered price, and you approve checkout.</strong></p>
+<div class="print-grid">
+<div>
+<label for="print-package">Book format</label><select id="print-package"></select>
+<label for="print-blurb">Back-cover description</label><textarea id="print-blurb" maxlength="900" placeholder="Tell readers why this story matters…"></textarea>
+</div>
+<div>
+<label for="print-cover-color">Cover background</label><input type="color" id="print-cover-color" value="#0d3550">
+<label for="print-cover-image">Front-cover art (optional JPEG/PNG, max 6MB)</label><input id="print-cover-image" type="file" accept="image/png,image/jpeg">
+<p class="note">Use only artwork you own or have the right to print. Cover text and layout are original NBL controls. Images may require higher resolution for Lulu's print requirements.</p>
+</div></div>
+<div class="actions"><button type="button" id="print-ask-beans" class="alt">Ask Beans to help design my cover</button><button type="button" id="print-build">Prepare interior + cover candidates</button></div>
+<p class="status" role="status" aria-live="polite" id="print-status">Prepare your book before requesting Lulu's independent file checks. This local preview does not send files or accept money.</p>
+<div id="print-candidates" hidden>
+<p class="print-printwarn">Not Lulu approved · No customer printing enabled</p>
+<p>Interior pages: <strong id="print-pages"></strong>. Preliminary cover dimensions: <strong id="print-size"></strong>.</p>
+<div class="actions"><button type="button" id="download-interior" class="alt">Download interior proof</button><button type="button" id="download-cover" class="alt">Download wrap-cover proof</button></div>
+</div>
+<div class="step"><strong>What happens next?</strong><p>NBL will eventually hand Lulu its separately hosted final PDFs for official asynchronous validation, retrieve exact cover dimensions and error messages, and show you a verified delivered quote with NBL's disclosed service margin. Once payment and order controls are independently proven, Lulu prints and ships. Those remote steps are <strong>not active on this page today</strong>.</p></div>
+<p class="note">The local wrap-cover uses preliminary spine mathematics. Do not treat its dimensions as Lulu-certified or place paid print orders from these previews. Print-production typography, image DPI, bleed, spine, barcode, and embedded fonts need Lulu verification.</p>
+</section>
 </main>
 <footer>© 2026 New Beansland · NBL Books · <a href="/books.html">Bookstore</a></footer>
 </body></html>
