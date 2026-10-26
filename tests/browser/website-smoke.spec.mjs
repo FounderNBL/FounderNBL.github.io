@@ -96,22 +96,17 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(pdf).toBeHidden();
   });
 
-  test("Still Canva is a toolbox inside the single Beans chat, without leaving the page",async({page})=>{
+  test("Canva is paused while Beans image, camera and files remain available",async({page})=>{
     await open("/",page);
     await page.getByRole("button",{name:"Open Beans"}).click();
     const beans=page.locator("#nbl-beans-panel");
-    const urlBefore=new URL(page.url());
     await page.getByRole("button",{name:"Open Beans tools"}).click();
-    await page.locator('[data-nbl-tool="still-canva"]').click();
-    const still=beans.locator('[data-nbl-still-tools]');
-    await expect(still).toBeVisible();
-    await expect(still).toContainText("Beans · Still visual tools");
-    await expect(beans.locator("#nbl-beans-title")).toContainText("Beans");
-    await expect(page.locator('[data-nbl-still-tools] [data-nbl-still-status]')).toBeVisible();
-    await expect(page).toHaveURL(urlBefore.href);
-    await still.getByRole("button",{name:"Close Still visual tools"}).click();
-    await expect(still).toBeHidden();
+    await expect(page.locator('[data-nbl-tool="still-canva"]')).toHaveCount(0);
+    await expect(page.locator('[data-nbl-tool="image"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-tool="still-camera"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-tool="attach"]')).toBeVisible();
     await expect(beans.locator("#nbl-beans-input")).toBeVisible();
+    await expect(beans.locator("#nbl-beans-title")).toContainText("Beans");
   });
 
   test("Beans AI opens in a real browser", async ({ page }) => {
