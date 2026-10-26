@@ -191,7 +191,15 @@
     let authNavigationInProgress=false;
     const accountPortalUrl=(page="/sign-in")=>{
       if(window.NBLAuthFlow?.accountPortalUrl){
-        return window.NBLAuthFlow.accountPortalUrl(page,location.href);
+        const fromShared=window.NBLAuthFlow.accountPortalUrl(page,location.href);
+        // A cached older header only supported /sign-in and /user and quietly
+        // downgraded a requested /sign-up to /sign-in. Do not follow stale routing.
+        try{
+          const parsed=new URL(fromShared);
+          const wanted=page==="/sign-up"?"/sign-up":page==="/user"?"/user":"/sign-in";
+          if(parsed.origin==="https://accounts.newbeansland.org"&&parsed.pathname===wanted)
+            return parsed.href;
+        }catch{}
       }
       const safeReturn=new URL(location.href);
       safeReturn.hash="";
