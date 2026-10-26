@@ -6,6 +6,10 @@ const PUBLISHABLE="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT="https://accounts.newbeansland.org";
 const $=id=>document.getElementById(id);
 let clerk=null,busy=false,playingUrl=null;
+try{
+ const u=new URL(location.href);u.hash="";
+ $("audio-lab-sign-in").href=ACCOUNT+"/sign-in?redirect_url="+encodeURIComponent(u.href);
+}catch{ /* Ordinary sign-in URL remains. */ }
 function say(id,text){$(id).textContent=text;}
 function originFromKey(){
  const p=(PUBLISHABLE.split("_")[2]||"").replace(/-/g,"+").replace(/_/g,"/");
