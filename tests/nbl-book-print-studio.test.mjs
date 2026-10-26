@@ -59,6 +59,9 @@ test("website print UI is opt-in and does not include a print-job or checkout pa
   for(const field of ["print-prep","print-package","print-cover-image","print-build","print-ask-beans","download-cover","download-interior"])
     assert.match(html,new RegExp('id="'+field+'"'));
   assert.match(html,/Lulu validates/);
+  assert.match(html,/src="\/nbl-world-header\.js/);
+  assert.match(html,/src="\/nbl-book-print-studio\.mjs"/);
+  assert.match(html,/id="print-cover-preview"/);
   assert.match(js,/renderPrintInterior\(/);assert.match(js,/renderPrintCover\(/);
   assert.doesNotMatch(js,/api\.lulu\.com|\/print-jobs\/|checkout\.sessions|Authorization:\s*"Bearer/);
   assert.match(js,/NOT validated/);
