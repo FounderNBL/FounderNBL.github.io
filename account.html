@@ -102,7 +102,7 @@
 
       <section class="card" id="nblConnectCard">
         <h2>Beans · Connected apps</h2>
-        <p class="status">Connect accounts you own. GitHub supports authorized repository inspection. Canva linking and design creation are temporarily paused while Beans continues offering NBL image tools through OpenAI.</p>
+        <p class="status">Connect accounts you own. Google sign-in and optional Gmail inbox access are two different permissions. Gmail reading requires your separate consent, and Beans will never send or delete your mail from this read-only connection. GitHub supports repository inspection. Canva linking remains paused.</p>
         <p id="nblConnectStatus" class="status">Checking connected apps…</p>
         <div id="nblConnectApps" class="fulfillment-list"></div>
         <div id="nblConnectRepos" class="fulfillment-list"></div>
@@ -390,6 +390,75 @@
           card.append(connect);
         }
         nblConnectApps.append(card);
+
+        // Gmail is a separate, optional OAuth grant. Sign-in with Google never grants this.
+        const gmailProvider=(data.providers||[]).find(x=>x.id==="gmail");
+        const gmailConnected=(data.connections||[]).find(x=>x.provider==="gmail");
+        const gmailCard=document.createElement("article");gmailCard.className="fulfillment-item";
+        const gmailTitle=document.createElement("h3");gmailTitle.textContent="Gmail · Optional inbox access";
+        const gmailInfo=document.createElement("p");gmailInfo.className="fulfillment-meta";
+        gmailInfo.textContent=gmailConnected
+          ?"Connected: "+gmailConnected.label+" · read and search only; no sending, deleting or drafting in Gmail"
+          :gmailProvider?.configured
+            ?"Not connected. Beans can read your messages only after you choose to approve Gmail access."
+            :"Gmail inbox connection is being verified. Signing in with Google does not give Beans access to your mail.";
+        gmailCard.append(gmailTitle,gmailInfo);
+        if(gmailConnected){
+          const lookup=document.createElement("div");lookup.className="row";
+          const query=document.createElement("input");query.type="search";query.placeholder="Search my Gmail";query.maxLength=160;query.setAttribute("aria-label","Search connected Gmail");
+          const search=document.createElement("button");search.type="button";search.textContent="Find emails";
+          const found=document.createElement("div");found.className="fulfillment-list";
+          search.onclick=async()=>{
+            search.disabled=true;found.replaceChildren();nblConnectStatus.textContent="Checking your authorized Gmail…";
+            try{
+              const results=await connectFetch({operation:"gmail_search",query:query.value||"in:inbox"});
+              const emails=Array.isArray(results.messages)?results.messages:[];
+              for(const mail of emails){
+                const item=document.createElement("article");item.className="fulfillment-item";
+                const name=document.createElement("h4");name.textContent=String(mail.subject||"(No subject)");
+                const meta=document.createElement("p");meta.className="fulfillment-meta";
+                meta.textContent=String(mail.from||"")+" · "+String(mail.date||"")+" · "+String(mail.snippet||"");
+                const read=document.createElement("button");read.type="button";read.textContent="Read message";
+                const body=document.createElement("pre");body.style.whiteSpace="pre-wrap";body.style.overflowWrap="anywhere";
+                read.onclick=async()=>{
+                  read.disabled=true;
+                  try{
+                    const full=await connectFetch({operation:"gmail_read",messageId:mail.id});
+                    body.textContent=String(full.message?.body||"No plain text available.").slice(0,6000);
+                  }catch(error){body.textContent=error.message||"Cannot read that email."}
+                  finally{read.disabled=false}
+                };
+                item.append(name,meta,read,body);found.append(item);
+              }
+              nblConnectStatus.textContent=emails.length+" email previews from your connected Gmail. No messages were changed.";
+            }catch(error){nblConnectStatus.textContent=error.message||"Could not read Gmail."}
+            finally{search.disabled=false}
+          };
+          lookup.append(query,search);
+          const disconnect=document.createElement("button");disconnect.type="button";disconnect.className="danger";disconnect.textContent="Disconnect Gmail";
+          disconnect.onclick=async()=>{
+            if(!confirm("Disconnect Gmail from Beans? NBL will delete its stored access tokens."))return;
+            disconnect.disabled=true;
+            try{await connectFetch({operation:"gmail_disconnect"});await renderConnect();}
+            catch(error){nblConnectStatus.textContent=error.message||"Could not disconnect Gmail.";disconnect.disabled=false}
+          };
+          gmailCard.append(lookup,found,disconnect);
+        }else if(gmailProvider?.configured){
+          const connect=document.createElement("button");connect.type="button";connect.textContent="Connect my Gmail · Read only";
+          connect.onclick=async()=>{
+            connect.disabled=true;
+            try{
+              const result=await connectFetch({operation:"gmail_begin"});
+              const url=new URL(result.authorizationUrl);
+              if(url.protocol!=="https:"||url.hostname!=="accounts.google.com")
+                throw Error("Invalid Gmail authorization destination.");
+              location.assign(url.href);
+            }catch(error){nblConnectStatus.textContent=error.message;connect.disabled=false}
+          };
+          gmailCard.append(connect);
+        }
+        nblConnectApps.append(gmailCard);
+
         // Canva pause: preserve self-service revocation for existing OAuth grants.
         // No new Canva sign-in, design listing or design creation is offered here.
         const canvaConnected=(data.connections||[]).find(x=>x.provider==="canva");
@@ -408,7 +477,11 @@
           canvaCard.append(canvaTitle,canvaDetails,disconnect);
           nblConnectApps.append(canvaCard);
         }
-        nblConnectStatus.textContent=connectParam==="canva_connected"
+        nblConnectStatus.textContent=connectParam==="gmail_connected"
+          ?"Your Gmail is connected read-only. You may review your authorized email above."
+          :connectParam==="gmail_failed"||connectParam==="gmail_expired"||connectParam==="gmail_cancelled"
+            ?"Gmail authorization did not finish. No inbox permission was granted."
+          :connectParam==="canva_connected"
           ?"Canva integration is paused; existing connections can be disconnected below."
           :connectParam==="canva_failed"||connectParam==="canva_expired"
             ?"Canva authorization did not finish. Canva linking is paused; use Beans image tools instead."
