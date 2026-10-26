@@ -3,8 +3,8 @@
 import {prepareManuscript} from "./nbl-book-creator-core.mjs";
 
 export const NBL_PRINT_PACKAGES=Object.freeze([
-  Object.freeze({id:"bw_matte",name:"6 × 9 Paperback · Black & white · Matte",pod_package_id:"0600X0900BWSTDPB060UW444MXX",trimWidth:6,trimHeight:9,pagesPerInch:444}),
-  Object.freeze({id:"color_gloss",name:"6 × 9 Paperback · Full color · Gloss",pod_package_id:"0600X0900FCSTDPB080CW444GXX",trimWidth:6,trimHeight:9,pagesPerInch:444})
+  Object.freeze({id:"bw_matte",name:"6 × 9 Paperback · Black & white · Matte",pod_package_id:"0600X0900.BW.STD.PB.060UW444.MXX",trimWidth:6,trimHeight:9,pagesPerInch:444}),
+  Object.freeze({id:"color_gloss",name:"6 × 9 Paperback · Full color · Gloss",pod_package_id:"0600X0900.FC.STD.PB.080CW444.GXX",trimWidth:6,trimHeight:9,pagesPerInch:444})
 ]);
 const BLEED=0.125; // draft cover bleed in inches, not an official dimensions result
 const RENDER_MARGIN=0.7; // keep text in a comfortable live area, including gutter
