@@ -651,15 +651,14 @@
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
                 <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
-                <button type="button" data-nbl-tool="still-camera"><strong>Still · Camera</strong><span>Take a picture to send to Beans · device permission on demand</span></button>
-                <button type="button" data-nbl-tool="attach"><strong>Photo / file · Still</strong><span>Choose a picture, PDF or document to share with Beans</span></button>
-                <button type="button" data-nbl-tool="still-canva"><strong>Still · Canva designs</strong><span>Work with your own Canva designs without leaving the Beans chat</span></button>
+                <button type="button" data-nbl-tool="still-camera"><strong>Beans · Camera</strong><span>Take a picture to show Beans · device permission on demand</span></button>
+                <button type="button" data-nbl-tool="attach"><strong>Beans · Photo / file</strong><span>Choose a picture, PDF or document to share with Beans</span></button>
                 <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="artifact"><strong>Create a PDF / file</strong><span>Build a downloadable PDF, document, spreadsheet, CSV, or presentation · eligible membership required</span></button>
-                <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Still · Beans creates an image from your next prompt · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="image"><strong>Beans · Create an image</strong><span>Ask Beans to create an image with NBL’s existing OpenAI tool · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice with verified access; browser voice otherwise</span></button>
               </div>
@@ -2161,11 +2160,6 @@
     if(tool==="still-camera"){
       setBeansToolMenu(false);
       stillCameraInput.click();
-      return;
-    }
-    if(tool==="still-canva"){
-      setBeansToolMenu(false);
-      setStillVisualTools(true);
       return;
     }
     if(tool==="attach"){
