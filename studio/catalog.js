@@ -1,4 +1,9 @@
-// NBL Studio catalog.
+// NBL Music Productions catalog.
+// Add a future song by uploading its MP3 + cover, then copying one complete
+// release object into this array. The existing player automatically adds it to
+// the catalog, details, previous/next controls and same-site download handling.
+// Keep rights/credits explicit for every release; never guess ownership.
+// See ADDING_SONGS.md for the exact one-song checklist and copy/paste template.
 // Media stays still until the visitor chooses a track and presses Play.
 window.NBL_TRACKS = [
   {
