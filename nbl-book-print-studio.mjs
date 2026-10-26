@@ -9,22 +9,30 @@ for(const pack of NBL_PRINT_PACKAGES){
   const option=document.createElement("option");option.value=pack.id;option.textContent=pack.name;select.append(option);
 }
 let current=null,artworkDataUrl="";
+function updateCoverPreview(){
+  $("print-preview-title").textContent=$("title").value.trim()||"Your book title";
+  $("print-preview-author").textContent=$("author").value.trim()||"Your author name";
+  $("print-cover-preview").style.backgroundColor=$("print-cover-color").value;
+  $("print-cover-preview").style.backgroundImage=artworkDataUrl?'linear-gradient(#0009,#0002),url("'+artworkDataUrl+'")':"none";
+}
+updateCoverPreview();
 const notify=(text,kind="info")=>{$status.textContent=text;$status.dataset.kind=kind;};
 const invalidate=()=>{current=null;ready.hidden=true;notify("Print files need a fresh preparation before Lulu can review them.");};
 for(const id of ["title","author","manuscript","print-package","print-blurb","print-cover-color"]){
-  $(id)?.addEventListener("input",invalidate);
+  $(id)?.addEventListener("input",()=>{invalidate();updateCoverPreview();});
 }
 const art=$("print-cover-image");
 art.addEventListener("change",async()=>{
   invalidate();
   const file=art.files?.[0];
-  if(!file){artworkDataUrl="";return;}
+  if(!file){artworkDataUrl="";updateCoverPreview();return;}
   if(!/^image\/(png|jpeg)$/.test(file.type)||file.size>6*1024*1024){
-    artworkDataUrl="";art.value="";notify("Use a JPEG or PNG cover image no bigger than 6 MB.","error");return;
+    artworkDataUrl="";art.value="";updateCoverPreview();notify("Use a JPEG or PNG cover image no bigger than 6 MB.","error");return;
   }
   artworkDataUrl=await new Promise((resolve,reject)=>{
     const reader=new FileReader();reader.onerror=()=>reject(Error("Cover image could not be read."));reader.onload=()=>resolve(reader.result);reader.readAsDataURL(file);
   }).catch(e=>{notify(e.message,"error");return "";});
+  updateCoverPreview();
 });
 function manuscript(){
   return prepareManuscript({title:$("title").value,author:$("author").value,text:$("manuscript").value});
