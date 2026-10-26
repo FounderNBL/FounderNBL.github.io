@@ -20,6 +20,8 @@ test("Studios now has an independent film/video door and protected creator",()=>
  assert.match(home,/href="studios\.html"/);
  assert.match(studio,/<h1 id="studio-title">NBL Studios<\/h1>/);
  assert.match(studio,/NBL_Studio_Presents_The_City_Trailer\.mp4/);
+ assert.match(studio,/Coming Soon · NBL Studios Capability Preview/);
+ assert.match(studio,/The City itself is still coming soon/);
  assert.match(studio,/Identity%20isn%27t%20something%20you%20wear\.mp4/);
  assert.doesNotMatch(studio,/id="trackList"|id="audio"|Still Walking|You Hear It Too/);
  assert.match(studio,/href="\/studio\/creator\.html"/);
