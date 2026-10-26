@@ -27,6 +27,10 @@ requireText(header,'redirect_url=',"Sign-in does not preserve a safe return URL.
 requireText(header,'clerk.addListener?.(render)',"Header account state can go stale after sign-in/sign-out.");
 requireText(header,'clerk.addListener(()=>{',"Beans/Plus state is not refreshed when Clerk account state changes.");
 requireText(account,'id="passwordHelpButton"', "Forgot-password entry point is missing.");
+requireText(account,'id="createAccountButton"', "NBL Clerk create-account door is missing.");
+requireText(account,'createAccountButton.href=accountPortalUrl("/sign-up")', "NBL account creation is not routed through the safe Clerk sign-up portal.");
+requireText(header,'["/user","/sign-up"].includes(page)', "Shared Clerk portal does not allow account creation.");
+requireText(account,'Gmail inbox permission is', "Sign-up must not silently claim Gmail inbox access.");
 requireText(account,'Sign in / recover account', "Visible account recovery entry point is missing.");
 requireText(header,'window.NBLAuthFlow=Object.freeze({safeReturnUrl,accountPortalUrl})', "Shared website auth-flow helper is not exposed.");
 requireText(header,'existing.dataset.nblFailed==="true"', "Clerk loader does not remember a failed existing script.");
