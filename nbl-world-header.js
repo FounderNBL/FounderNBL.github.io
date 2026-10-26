@@ -75,7 +75,7 @@
   };
 
   const accountPortalUrl=(page="/sign-in",href=location.href)=>{
-    const portalPage=page==="/user"?"/user":"/sign-in";
+    const portalPage=["/user","/sign-up"].includes(page)?page:"/sign-in";
     const redirectUrl=encodeURIComponent(safeReturnUrl(href));
     return `${NBL_ACCOUNT_PORTAL}${portalPage}?redirect_url=${redirectUrl}`;
   };
