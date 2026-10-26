@@ -25,62 +25,31 @@ test("No credential or extra public token handling embedded in HTML",()=>{
  assert.match(account,/Authorization:"Bearer "\+t/);
 });
 
-test("NBL Image Maker Canva account linking is user-owned, optional and provider-verified",()=>{
- assert.match(account,/operation:"canva_begin"/);
+test("Canva linking is paused but customers can revoke existing authorizations",()=>{
+ assert.match(account,/Canva linking and design creation are temporarily paused/);
+ assert.match(account,/Canva connection · paused/);
  assert.match(account,/operation:"canva_disconnect"/);
- assert.match(account,/operation:"canva_designs"/);
- assert.match(account,/target.hostname!=="www.canva.com"/);
- assert.match(account,/No additional NBL connection fee/);
+ assert.doesNotMatch(account,/operation:"canva_begin"|operation:"canva_create_design"|operation:"canva_designs"/);
+ assert.doesNotMatch(account,/Connect my Canva|Reconnect Canva for design permission/);
  assert.doesNotMatch(account,/CANVA_CLIENT_SECRET/);
 });
-
-test("Still Canva design creation is held until the server confirms its separate write release",()=>{
- assert.match(account,/operation:"canva_create_design"/);
- assert.match(account,/canvaDesignWriteAvailable/);
- assert.match(account,/stillCreate.disabled=!data.canvaDesignWriteAvailable/);
- assert.match(account,/Create with Still in Canva/);
- assert.match(account,/Reconnect Canva for design permission/);
- assert.match(account,/No NBL charge/);
-});
-test("Still one-time $2 extra image offer is visible but payment remains gated",()=>{
+test("Beans image allowance stays held without Canva or an extra subscription",()=>{
  assert.match(account,/id="stillImagePack"/);
- assert.match(account,/Extra Image · \$2 one time/);
+ assert.match(account,/Beans · Extra Image · \$2 one time/);
  assert.match(account,/Checkout pending<\/button>/);
- assert.doesNotMatch(account,/stillImagePack.*data-account-billing-plan="still"/);
+ assert.match(account,/disabled aria-disabled="true" title="Checkout held until verified payment-to-image delivery"/);
 });
-test("Still camera and Canva are website-only tools; camera access is user initiated",()=>{
+test("Beans image, camera and attachments remain; Canva UI is no longer reachable",()=>{
  const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
  assert.match(header,/data-nbl-tool="still-camera"/);
- assert.match(header,/data-nbl-tool="still-canva"/);
+ assert.match(header,/data-nbl-tool="attach"/);
+ assert.match(header,/data-nbl-tool="image"/);
  assert.match(header,/data-nbl-still-camera/);
  assert.match(header,/capture="environment"/);
  assert.match(header,/if\(tool==="still-camera"\)/);
  assert.match(header,/stillCameraInput.click\(\)/);
-});
-
-test("Still is one visual feature inside the existing Beans conversation, never another chatbot",()=>{
- const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
- assert.match(header,/data-nbl-still-tools/);
- assert.match(header,/Beans · Still visual tools/);
- assert.match(header,/setStillVisualTools\(true\)/);
- assert.match(header,/NBL_CORE_API}\/connect/);
- assert.match(header,/operation:"canva_create_design"/);
- assert.match(header,/operation:"canva_designs"/);
- assert.match(header,/getNblBeansAuthToken\(\)/);
- assert.match(header,/currentClerkUserId\(\)/);
- assert.match(header,/canvaDesignWriteAvailable===true/);
- assert.match(header,/beansHistory\.push\(\{role:"assistant",content:message\}\)/);
- assert.match(header,/if\(!stillTools.hidden\)setStillVisualTools\(false\)/);
- assert.doesNotMatch(header,/location\.assign\("\/account\.html#nblConnectCard"\)/);
- assert.doesNotMatch(header,/\/agent-platform\/|\/agents\/still\/chat|NBL_STILL_GOOGLE_AGENT_KEY/);
+ assert.doesNotMatch(header,/data-nbl-tool="still-canva"/);
+ assert.doesNotMatch(header,/setStillVisualTools\(true\)/);
  assert.match(header,/mode:"beans"/);
-});
-test("Still cannot bypass its Canva write gate or the held $2 checkout",()=>{
- const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
- const css=fs.readFileSync(new URL("../nbl-world-header.css",import.meta.url),"utf8");
- assert.match(header,/if\(state\.canvaDesignWriteAvailable===true\)/);
- assert.match(header,/if\(url\.protocol!=="https:"\|\|url\.hostname!=="www\.canva\.com"/);
- assert.match(css,/\.nbl-still-tools\[hidden\]/);
- assert.match(account,/id="stillImagePack"/);
- assert.match(account,/disabled aria-disabled="true" title="Checkout held until verified payment-to-image delivery"/);
+ assert.doesNotMatch(header,/\/agent-platform\/|\/agents\/still\/chat|NBL_STILL_GOOGLE_AGENT_KEY/);
 });
