@@ -31,6 +31,14 @@ requireText(account,'id="createAccountButton"', "NBL Clerk create-account door i
 requireText(account,'createAccountButton.href=accountPortalUrl("/sign-up")', "NBL account creation is not routed through the safe Clerk sign-up portal.");
 requireText(header,'["/user","/sign-up"].includes(page)', "Shared Clerk portal does not allow account creation.");
 requireText(account,'does not connect your Gmail inbox', "Sign-up must not silently claim Gmail inbox access.");
+requireText(account,'Gmail · Optional inbox access',"Optional customer Gmail panel is missing.");
+requireText(account,'operation:"gmail_begin"',"Separate Gmail OAuth connection is missing.");
+requireText(account,'operation:"gmail_search"',"Authorized Gmail search action is missing.");
+requireText(account,'operation:"gmail_read"',"Authorized Gmail read action is missing.");
+requireText(account,'operation:"gmail_disconnect"',"Customer Gmail disconnect control is missing.");
+requireText(account,'gmailProvider?.configured',"Gmail must have a real server-reported release gate.");
+requireText(account,'url.hostname!=="accounts.google.com"',"Gmail authorization URL must have a fixed Google host.");
+requireText(account,'No messages were changed.',"Read-only customer messaging is missing.");
 requireText(account,'Sign in / recover account', "Visible account recovery entry point is missing.");
 requireText(header,'window.NBLAuthFlow=Object.freeze({safeReturnUrl,accountPortalUrl})', "Shared website auth-flow helper is not exposed.");
 requireText(header,'existing.dataset.nblFailed==="true"', "Clerk loader does not remember a failed existing script.");
