@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Founder Audiobook Voice Lab | NBL Books</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#06111d;color:#fff1d9;font:16px/1.6 Arial,sans-serif}
+main{max-width:700px;margin:25px auto;padding:22px}h1,h2{font-family:Georgia,serif}h1{color:#f3d28a}
+.card{background:#0c2133;border:1px solid #826d45;padding:22px;border-radius:14px;margin:17px 0}
+label{display:block;margin:14px 0 6px;font-weight:bold}
+textarea,select{width:100%;min-height:48px;padding:12px;border-radius:9px;border:1px solid #ac945e;background:#041323;color:white;font:inherit}
+textarea{min-height:125px}button{padding:13px 18px;margin:12px 8px 8px 0;background:#f0c875;color:#102033;border:0;border-radius:9px;font-weight:900;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}button:focus-visible,a:focus-visible{outline:3px solid #f3d28a;outline-offset:3px}
+.status{padding:14px;background:#03111e;border-left:3px solid #f3d28a;min-height:50px;margin-top:15px}
+a{color:#f3d28a}audio{width:100%}.warning{color:#edcfa0}
+</style>
+<script defer src="/nbl-audiobook-founder-lab.js"></script>
+</head><body><main>
+<p><a href="/book-creator.html">← NBL Books · Book Creator</a></p>
+<h1>Founder · Audiobook Voice Pilot</h1>
+<p>Private NBL production test for authorized provider credits; this page is unlisted, and the service verifies Founder access separately. No customer retail voice features, eBook deductions, or automatic provider top-ups are enabled.</p>
+<section class="card">
+<h2>Voice connections</h2>
+<p><a href="https://accounts.newbeansland.org/sign-in" id="audio-lab-sign-in">Sign in to your Founder NBL account</a></p>
+<button type="button" id="audio-lab-check">Check server providers</button>
+<div id="audio-lab-connections" class="status" role="status" aria-live="polite">Checking requires Founder sign-in.</div>
+<label for="audio-lab-provider">Choose voice engine</label>
+<select id="audio-lab-provider"><option value="elevenlabs">ElevenLabs</option><option value="azure_speech">Azure Speech</option><option value="google_cloud_tts">Google Cloud Text-to-Speech</option></select>
+<label for="audio-lab-text">Sample from your NBL book (10–220 characters)</label>
+<textarea id="audio-lab-text" maxlength="220">Welcome to New Beansland. This is an original NBL Books audiobook narration test, created by Beans.</textarea>
+<label><input type="checkbox" id="audio-lab-consent"> I authorize one paid speech-generation call using the selected provider's available balance.</label>
+<button type="button" id="audio-lab-generate">Generate one paid voice sample</button>
+<div id="audio-lab-status" class="status" role="status" aria-live="polite">No provider call yet.</div>
+<audio id="audio-lab-player" controls preload="none" aria-label="Listen to one generated audiobook sample"></audio>
+<p class="warning">Provider credits are not interchangeable. Google and Azure require their own verified service credentials inside NBL's backend. A configured status does not promise remaining credit.</p>
+</section></main></body></html>
