@@ -16,7 +16,7 @@ for(const file of required){
   if(!fs.existsSync(path.join(root,file)))errors.push("Missing migrated public frontend: "+file);
 }
 if(!errors.length){
-  const university=read("university.html");
+  const university=read("university-enrollment.html");
   const campus=read("university-campus.html");
   const campusJs=read("university-campus.js");
   const chat=read("member-chat.html");
@@ -25,7 +25,7 @@ if(!errors.length){
   const social=read("social-realtime.js");
   const terms=read("terms.html");
   const signIn="https://accounts.newbeansland.org";
-  need(university,'href="/university-campus.html#grey"',"University enrollment page must enter same-origin campus.");
+  need(university,'href="/campus.html#grey"',"University enrollment page must enter same-origin Grey campus.");
   need(university,'data-nbl-university-checkout="foundation" disabled',"University checkout must remain held.");
   need(university,'data-nbl-university-checkout="full_foundation" disabled',"Guided University checkout must remain held.");
   need(header,'href="/university-campus.html#grey"',"Talk to Grey must use the same-origin campus.");
