@@ -7,10 +7,10 @@ const routeInspection = workflow.split("  deep-browser-inspection:")[0];
 
 test("runner route recovery cannot close live route incidents", () => {
   assert.doesNotMatch(routeInspection, /name: Confirm route recovery/);
-  assert.deepEqual(
-    routeInspection.match(/^\s+gh issue close .+$/gm),
-    ['            gh issue close "$old" --repo "$GITHUB_REPOSITORY"'],
-  );
+  // A bot-challenged runner must neither create nor close a customer incident.
+  assert.equal(routeInspection.match(/^\s+gh issue close .+$/gm), null);
+  assert.match(routeInspection, /Report unverified runner routes without reopening stale incidents/);
+  assert.match(routeInspection, /Open or update route incident/);
 });
 
 test("Cloudflare preflight must precede ALL external Inspector visits",()=>{
