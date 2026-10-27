@@ -33,11 +33,12 @@ test("Canva linking is paused but customers can revoke existing authorizations",
  assert.doesNotMatch(account,/Connect my Canva|Reconnect Canva for design permission/);
  assert.doesNotMatch(account,/CANVA_CLIENT_SECRET/);
 });
-test("Beans image allowance stays held without Canva or an extra subscription",()=>{
+test("Beans tools use included membership allowances; no public per-image checkout",()=>{
  assert.match(account,/id="stillImagePack"/);
- assert.match(account,/Beans · Extra Image · \$2 one time/);
- assert.match(account,/Checkout pending<\/button>/);
- assert.match(account,/disabled aria-disabled="true" title="Checkout held until verified payment-to-image delivery"/);
+ assert.match(account,/Beans tools · Included with membership/);
+ assert.match(account,/href="\\/vault.html#pricing"/);
+ assert.doesNotMatch(account,/Beans · Extra Image · \\$2 one time/);
+ assert.doesNotMatch(account,/Extra image · \\$2/);
 });
 test("Beans image, camera and attachments remain; Canva UI is no longer reachable",()=>{
  const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
