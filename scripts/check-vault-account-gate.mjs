@@ -114,12 +114,15 @@ test("NBL service currencies stay separate; no extra fee or leaked operating res
 test("NBL website hides long offer menus inside three accessible categories",()=>{
  const pricing=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
  const account=readFileSync(new URL("../account.html",import.meta.url),"utf8");
- const university=readFileSync(new URL("../university.html",import.meta.url),"utf8");
+ const university=readFileSync(new URL("../university-enrollment.html",import.meta.url),"utf8");
+ const arrival=readFileSync(new URL("../university.html",import.meta.url),"utf8");
  const header=readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
  const styles=readFileSync(new URL("../nbl-world-header.css",import.meta.url),"utf8");
  assert.equal((pricing.match(/<details class="nbl-category" data-nbl-category/g)||[]).length,3);
  assert.equal((account.match(/<details class="account-category">/g)||[]).length,3);
  assert.equal((university.match(/<details class="university-category">/g)||[]).length,3);
+ assert.equal((arrival.match(/<details class="university-category">/g)||[]).length,0);
+ assert.match(arrival,/href="\/university-enrollment\.html#enroll"/);
  assert.equal((header.match(/<details class="nbl-drawer-category">/g)||[]).length,3);
  assert.match(styles,/\.nbl-drawer-category>summary/);
  assert.equal((account.match(/data-account-billing-plan="/g)||[]).length,11);
