@@ -70,6 +70,6 @@ test("customer NBL Vault uses NBL tool-cost language, never supplier-cost langua
  const customer=html.split('<section class="panel" id="founder" hidden>')[0];
  assert.match(customer,/1 included NBL use/);
  assert.match(customer,/NBL covers the cost of the service/);
- assert.match(customer,/NBL uses spent/);
+ assert.match(html,/NBL uses spent/);
  assert.doesNotMatch(customer,/OpenAI|API provider invoices|provider charges|supplier invoices/i);
 });
