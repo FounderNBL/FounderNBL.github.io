@@ -52,9 +52,9 @@ test("University stays under construction with all existing prices and 100 perce
 });
 test("NBL navigation shares pricing, Studios and music without duplicating authenticated domains",()=>{
  assert.match(header,/\["studios","NBL Studios","\/studios\.html",false\]/);
- assert.match(header,/\["pricing","Pricing","\/pricing\.html",false\]/);
+ assert.ok(header.includes('["pricing","Vault & Pricing","/vault.html#pricing",false]'));
  assert.match(header,/\["studio","NBL Music Productions","\/studio\/",false\]/);
- assert.match(home,/href="pricing\.html"/);
+ assert.match(home,/href="vault.html#pricing"/);
  assert.doesNotMatch(studio+pricing,/nblworld\.com|sk_live_/);
 });
 
