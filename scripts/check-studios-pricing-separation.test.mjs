@@ -4,7 +4,7 @@ import {readFileSync} from "node:fs";
 const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
 const home=read("index.html"),music=read("studio/index.html"),studio=read("studios.html"),creator=read("studio/creator.html");
 const catalog=read("studio/catalog.js"),pricing=read("pricing.html"),plans=read("nbl-product-plans.js");
-const campus=read("university.html"),header=read("nbl-world-header.js"),studioClient=read("studio/creator.js");
+const campus=read("university-enrollment.html"),header=read("nbl-world-header.js"),studioClient=read("studio/creator.js");
 test("music remains a standalone free NBL playlist, with no Studios film-room or paid music product",()=>{
  assert.match(home,/href="studio\/".*NBL Music Productions/);
  assert.match(music,/<h1>NBL Music Productions<\/h1>/);
