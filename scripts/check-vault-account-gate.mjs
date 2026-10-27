@@ -73,3 +73,40 @@ test("customer NBL Vault uses NBL tool-cost language, never supplier-cost langua
  assert.match(html,/NBL uses spent/);
  assert.doesNotMatch(customer,/OpenAI|API provider invoices|provider charges|supplier invoices/i);
 });
+
+test("Vault, public catalog and Beans drawer preserve every approved Founder price",()=>{
+ const planSource=readFileSync(new URL("../nbl-product-plans.js",import.meta.url),"utf8");
+ const publicCatalog=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
+ const header=readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
+ const approved=[
+  ["beans","$4.99/month"],["nblPlus","$29.99/month"],["beansUniversity","$14.99/month"],
+  ["foundationStudentContinuation","$9.99/month"],["getMore","$9.99 one-time"],
+  ["nblUsage","$7.00 one-time"],["studiosCredits","$8.99 one-time"],
+  ["foundationProgram","$29.99 one-time"],["foundationUniversity","$34.99 one-time"],
+  ["guidedFoundation","$54.99 one-time"],["fullNbluDiy","$184.99 one-time"],
+  ["fullNblu","$449.99 one-time"],["nbluContinuation","$14.99/month"]
+ ];
+ for(const [key,price] of approved){
+   const row=planSource.split(key+":Object.freeze({")[1]?.split("\n")[0]||"";
+   assert.ok(row.includes('price:"'+price+'"'),key+" changed its approved rate");
+   assert.ok(html.includes('data-nbl-plan-value="'+key+'.price"'),"Vault missing canonical "+key);
+   assert.ok(publicCatalog.includes('data-nbl-plan-value="'+key+'.price"'),"Catalog missing canonical "+key);
+ }
+ assert.match(header,/NBL_PRODUCT_PLANS\.nblUsage\?\.price/);
+ assert.match(header,/NBL_PRODUCT_PLANS\.studiosCredits\?\.price/);
+ assert.match(html,/id="university-prices"/);
+ assert.match(html,/full refund of that advance-enrollment payment/);
+ assert.match(html,/December 2026/);
+ assert.match(html,/\$184\.99.*no physical books/is);
+ assert.match(html,/\$449\.99.*physical stage-release books/is);
+});
+
+test("NBL service currencies stay separate; no extra fee or leaked operating reserve",()=>{
+ const customer=html.split('<section class="panel" id="founder" hidden>')[0];
+ assert.match(customer,/not.*deduction from purchased NBL Usage or NBL Studios credits/i);
+ assert.match(customer,/NBL Usage credits.*not.*monthly Beans tool-use counter/is);
+ assert.match(customer,/NBL Studios quotes the required.*NBL Studios Credits/is);
+ assert.match(customer,/NBL replies, monthly tool allowances, NBL Usage credits and NBL Studios Credits each have distinct terms/);
+ assert.doesNotMatch(customer,/\$5(?:\.00)? (?:provider|service) reserve|internal operating profit|supplier invoices/i);
+ assert.doesNotMatch(customer,/data-nbl-university-checkout=|data-account-billing-plan=|data-nbl-billing-plan=/);
+});
