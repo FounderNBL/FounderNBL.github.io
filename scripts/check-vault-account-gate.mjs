@@ -65,3 +65,11 @@ test("NBL Vault is the inclusive Beans pricing and per-tool allowance center",()
  checks(/data-nbl-plan-value="getMore.price"/);
  assert.doesNotMatch(html,/Get More[^<]*\$2/);
 });
+
+test("customer NBL Vault uses NBL tool-cost language, never supplier-cost language",()=>{
+ const customer=html.split('<section class="panel" id="founder" hidden>')[0];
+ assert.match(customer,/1 included NBL use/);
+ assert.match(customer,/NBL covers the cost of the service/);
+ assert.match(customer,/NBL uses spent/);
+ assert.doesNotMatch(customer,/OpenAI|API provider invoices|provider charges|supplier invoices/i);
+});
