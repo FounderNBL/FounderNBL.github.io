@@ -44,7 +44,7 @@ test("Vault never renders untrusted balances as HTML or initiates payments",()=>
 
 test("Vault prevents premature claims of live financial integration",()=>{
   checks(/No reconciled settlements yet; actual cash\/profit is not established/);
-  checks(/Automated provider refills and Founder payouts are off/);
+  checks(/Automated refills and Founder payouts are off/);
   checks(/Vault records cannot be read right now/);
 });
 
