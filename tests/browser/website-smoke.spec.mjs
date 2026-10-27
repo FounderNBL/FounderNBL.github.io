@@ -168,7 +168,8 @@ test.describe("New Beansland web app browser smoke", () => {
       await expect(page.getByRole("button", { name: "Guided Foundation checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Full NBLU checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Full NBLU continuation checkout pending", exact: true })).toBeDisabled();
-      await expect(page.getByRole("button", { name: /Plus checkout pending/i })).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "NBL Plus checkout pending", exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Digital DIY checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: /Get \+500 replies/i })).toBeVisible();
     }
   });
