@@ -19,6 +19,17 @@ assert.ok(arrival.includes('function forwardLegacyLink()'));
 assert.match(tuition,/rel="canonical" href="https:\/\/newbeansland\.org\/university-enrollment\.html"/);
 for(const value of ['id="early-registration"','id="enroll"','data-nbl-university-interest-form','data-nbl-university-checkout="foundation" disabled','data-nbl-university-checkout="full_foundation" disabled','src="/nbl-university-checkout.js"'])assert.ok(tuition.includes(value),value);
 assert.ok(early.includes("newbeansland.org/university-enrollment.html#early-registration"));
+const universityPages=[["Frontier arrival",arrival],["Enrollment & Tuition",tuition],["Free Founder preview",free]];
+for(const [name,html] of universityPages){
+ assert.ok(html.includes('class="nblu-scope"'),name+" must be a University-scoped page");
+ assert.ok(html.includes(".nblu-scope .nbl-world-chat-launch")&&html.includes(".nblu-scope .nbl-world-beans-toggle"),name+" must not expose the active Beans conversation overlay");
+ assert.ok(html.includes("Switch to Beans"),name+" must offer a deliberate exit back to the lower-cost NBL assistant");
+}
+assert.ok(tuition.includes("Professor Grey</strong> is the separate University AI assistant and instructor"),"Tuition must distinguish free Beans information from protected Grey instruction");
+assert.ok(tuition.includes("deeper learning requires verified University access"),"Paid Grey services must not be represented as freely available");
+assert.ok(arrival.includes('href="/campus.html#grey"'),"Academic doorway must route to protected Grey campus");
+assert.ok(!tuition.includes('data-nbl-university-checkout="foundation">'),"University enrollment checkout cannot be enabled");
+
 for(const page of [campus,alias]){
  assert.ok(page.includes('data-campus-gate')&&page.includes('data-campus hidden')&&page.includes('id="grey"'));
  assert.ok(page.includes('href="/university-enrollment.html#enroll"')&&page.includes('href="/"'));
