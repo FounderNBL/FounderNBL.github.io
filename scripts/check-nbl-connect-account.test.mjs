@@ -36,7 +36,7 @@ test("Canva linking is paused but customers can revoke existing authorizations",
 test("Beans tools use included membership allowances; no public per-image checkout",()=>{
  assert.match(account,/id="stillImagePack"/);
  assert.match(account,/Beans tools · Included with membership/);
- assert.match(account,/href="\\/vault.html#pricing"/);
+ assert.ok(account.includes('href="/vault.html#pricing"'));
  assert.doesNotMatch(account,/Beans · Extra Image · \\$2 one time/);
  assert.doesNotMatch(account,/Extra image · \\$2/);
 });
