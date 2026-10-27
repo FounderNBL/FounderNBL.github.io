@@ -2,13 +2,16 @@
   "use strict";
   const plans=Object.freeze({
     beans:Object.freeze({name:"Beans",price:"$4.99/month",replies:"300 successful replies",renewal:"Renews at $4.99/month until cancelled or changed."}),
+    nblPlus:Object.freeze({name:"NBL Plus",price:"$29.99/month"}),
     beansUniversity:Object.freeze({name:"Beans + University",price:"$14.99/month"}),
     foundationStudentContinuation:Object.freeze({name:"Foundation Student Continuation",price:"$9.99/month"}),
     foundationUniversity:Object.freeze({name:"Foundation + University (first month)",price:"$34.99 one-time"}),
     getMore:Object.freeze({name:"Get More",price:"$9.99 one-time",replies:"+500 successful replies",expiry:"Purchased reply balance does not expire."}),
+    nblUsage:Object.freeze({name:"NBL Usage — 500 Credits",price:"$7.00 one-time",credits:"500 NBL Usage credits",expiry:"Purchased usage credits do not expire."}),
     foundationProgram:Object.freeze({name:"Foundation Materials + First Month of Beans",price:"$29.99 one-time",renewal:"Beans renews at $4.99/month after the included first month until cancelled or upgraded with recurring-payment consent."}),
     guidedFoundation:Object.freeze({name:"Guided Foundation",price:"$54.99 one-time"}),
     fullFoundation:Object.freeze({name:"Guided Foundation",price:"$54.99 one-time"}),
+    fullNbluDiy:Object.freeze({name:"Full NBLU Experience — Digital DIY",price:"$184.99 one-time"}),
     fullNblu:Object.freeze({name:"Full NBLU Experience",price:"$449.99 one-time"}),
     nbluContinuation:Object.freeze({name:"Full NBLU Owner Continuation",price:"$14.99/month"}),
     studiosCredits:Object.freeze({name:"NBL Studios Credits",price:"$8.99 one-time",credits:"500 NBL Studios Credits"}),
