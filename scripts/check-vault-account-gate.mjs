@@ -110,3 +110,26 @@ test("NBL service currencies stay separate; no extra fee or leaked operating res
  assert.doesNotMatch(customer,/\$5(?:\.00)? (?:provider|service) reserve|internal operating profit|supplier invoices/i);
  assert.doesNotMatch(customer,/data-nbl-university-checkout=|data-account-billing-plan=|data-nbl-billing-plan=/);
 });
+
+test("NBL website hides long offer menus inside three accessible categories",()=>{
+ const pricing=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
+ const account=readFileSync(new URL("../account.html",import.meta.url),"utf8");
+ const university=readFileSync(new URL("../university.html",import.meta.url),"utf8");
+ const header=readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
+ const styles=readFileSync(new URL("../nbl-world-header.css",import.meta.url),"utf8");
+ assert.equal((pricing.match(/<details class="nbl-category" data-nbl-category/g)||[]).length,3);
+ assert.equal((account.match(/<details class="account-category">/g)||[]).length,3);
+ assert.equal((university.match(/<details class="university-category">/g)||[]).length,3);
+ assert.equal((header.match(/<details class="nbl-drawer-category">/g)||[]).length,3);
+ assert.match(styles,/\.nbl-drawer-category>summary/);
+ assert.equal((account.match(/data-account-billing-plan="/g)||[]).length,11);
+ assert.equal((university.match(/<article class="panel">/g)||[]).length>=9,true);
+ assert.match(account,/data-account-billing-plan="beans"/);
+ assert.match(account,/data-account-billing-plan="topup_500"/);
+ assert.match(pricing,/addEventListener\("hashchange",reveal\)/);
+ assert.match(html,/addEventListener\("hashchange",revealVaultCategory\)/);
+ assert.match(html,/id="pricing"/);
+ assert.match(html,/id="university-prices"/);
+ for(const source of [pricing,account,university,html])assert.match(source,/<details/);
+ for(const source of [pricing,account,university])assert.match(source,/refund|renew/i);
+});
