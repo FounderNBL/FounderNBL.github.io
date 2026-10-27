@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>NBL Vault · New Beansland</title>
+<title>NBL Vault · Usage & Pricing · New Beansland</title>
 <meta name="theme-color" content="#07131f">
 <link rel="stylesheet" href="/nbl-world-header.css">
 <script defer src="/nbl-product-plans.js"></script>
@@ -32,16 +32,26 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .progress-status{margin-top:6px;color:var(--muted);font-size:.82rem}
 .action-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .action-grid a{display:inline-block}
+.rate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+.rate-card{background:#081826;border:1px solid var(--line);border-radius:14px;padding:17px}
+.rate-card h3{margin:0 0 4px;color:var(--gold)}
+.rate-card strong{font-size:1.4rem;display:block;margin:3px 0 7px}
+.rate-card p{color:var(--muted);margin:0 0 8px}
+.rate-card .note{font-size:.85rem}
+.tool-usage{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:13px 0}
+.tool-usage .progress-item{margin:0}
+.link-quiet{color:var(--gold)}
 @media(prefers-reduced-motion:reduce){.progress-fill{transition:none}}
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
 </style>
 </head>
 <body>
 <main>
-<p class="note">New Beansland · Private account services</p>
+<p class="note">New Beansland · Customer account & pricing center</p>
 <h1>NBL Vault</h1>
+<p class="note"><a href="#pricing">Pricing &amp; what's included</a> · <a href="#my-usage">My usage</a> · <a href="/pricing.html">All NBL services</a></p>
 <p class="note">Your balances, in one place. Beans replies and Studios credits are service allowances, not cash or withdrawals.</p>
-<section class="panel" aria-label="Your NBL Vault">
+<section class="panel" id="my-usage" aria-label="Your NBL Vault">
 <h2>My Vault</h2>
 <div class="grid">
   <div class="metric"><strong id="free">—</strong>Free Beans replies</div>
@@ -55,6 +65,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <div class="progress-item"><div class="progress-heading"><strong>Purchased Get More</strong><span class="progress-detail" id="topups-breakdown">—</span></div><div class="progress-status">Remaining purchased replies; this balance is separate from your monthly plan.</div></div>
   <div class="progress-item"><div class="progress-heading"><strong>NBL Studios</strong><span class="progress-detail" id="studio-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Studios credits used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="studio-track"><div class="progress-fill" id="studio-fill"></div></div></div>
 </div>
+<h3>Your NBL tool usage · Included with Beans</h3>
+<p class="note">Each tool request costs one included NBL tool use. These are NBL allowance units, not extra dollars billed to you. NBL covers the cost of the service. Chat replies use their separate allowance above.</p>
+<div class="tool-usage" id="tool-usage" aria-live="polite"><p class="note">Sign in to check your six tool allowances.</p></div>
+<p class="note" id="tool-period"></p>
 <div class="action-grid" aria-label="Manage your NBL allowances">
   <a class="action" href="/account.html#membershipCard">Upgrade Beans</a>
   <a class="action" href="/account.html#membershipCard">Get More · pay as you go</a>
@@ -64,13 +78,24 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <p id="status" class="note" role="status" aria-live="polite">Checking your signed-in account…</p>
 <div class="controls"><button type="button" id="refresh">Refresh balances</button><a class="action" href="https://accounts.newbeansland.org/sign-in?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fvault.html" id="signin" hidden>Sign in / Create account</a></div>
 </section>
+<section class="panel" id="pricing" aria-label="NBL Services and Pricing">
+<h2>Pricing &amp; what Beans includes</h2>
+<p>Beans has <strong>one membership price</strong>, not an extra fee for each NBL tool. Your membership provides NBL tool uses each month, with the cost of each tool request shown as <strong>1 included NBL use</strong>. NBL covers the operating expense within its own service budget.</p>
+<div class="rate-grid">
+ <article class="rate-card"><h3>Beans</h3><strong data-nbl-plan-value="beans.price">$4.99/month</strong><p data-nbl-plan-value="beans.replies">300 successful replies</p><p>Includes web search (12), file understanding (8), code/data (3), PDF/file creation (3), image creation (2), and Beans voice (12) recorded NBL tool uses each calendar month. Each request consumes 1 included NBL use. Included tools have separate limits from chat replies.</p><p class="note">Recurring monthly until cancelled. NBL pays to run Beans. You see your NBL uses, not external supplier prices. Previous paid plans may have different allowances.</p></article>
+ <article class="rate-card"><h3>Get More · Beans replies</h3><strong data-nbl-plan-value="getMore.price">$9.99 one-time</strong><p data-nbl-plan-value="getMore.replies">500 additional successful replies</p><p>Optional pay-as-you-go reply balance. This is not a second membership or an extra tool charge. You pay only when you choose to buy more replies. Adding replies does not reset the monthly tool limits.</p></article>
+ <article class="rate-card"><h3>NBL Books &amp; Music</h3><strong>Free local tools</strong><p>Native ebook/PDF reading and personal MP3/MP4 playback are free of NBL usage charges. Live radio is optional and uses network data; stations may carry ads.</p></article>
+ <article class="rate-card"><h3>NBL Studios Credits</h3><strong data-nbl-plan-value="studiosCredits.price">$8.99 one-time</strong><p data-nbl-plan-value="studiosCredits.credits">500 NBL Studios credits</p><p>Separate creative-production credits, <strong>not</strong> Beans replies. Checkout remains held; the provider's per-generation credit rate is shown in the creator interface before any creation.</p></article>
+</div>
+<p class="note">University programs, physical books, clothing and custom services keep their existing separate terms. Their current public catalog is at <a href="/pricing.html">all NBL services &amp; pricing</a>. Nothing in this Vault enrolls anyone in the University or bills an account automatically.</p>
+</section>
 <section class="panel" id="founder" hidden>
 <h2>Founder · NBL Operating Vault</h2>
 <p id="money" class="note"></p>
-<h3>Verified provider resources</h3><div id="resources"></div>
+<h3>Verified NBL operating resources</h3><div id="resources"></div>
 <h3>Customer balances</h3><div id="accounts"></div>
 <div class="controls"><button type="button" id="prev">Previous</button><button type="button" id="next">Next</button><span id="page" class="note"></span></div>
-<p class="note">Provider promotional credits aren't cash. Unverified balances remain unknown. Automated provider refills and Founder payouts are off.</p>
+<p class="note">Founder-only operating reserves are separate from customer NBL allowances. Unverified balances remain unknown. Automated refills and Founder payouts are off.</p>
 </section>
 <p class="note"><a href="/account.html">Back to my NBL account</a></p>
 </main>
@@ -89,6 +114,8 @@ function clearPrivateDisplay(){
  $("page").textContent="";
  for(const key of ["free","paid","studio"]){$(key+"-breakdown").textContent="—";$(key+"-fill").style.width="0%";$(key+"-track").setAttribute("aria-valuenow","0");}
  $("topups-breakdown").textContent="—";$("renewal").textContent="";
+ $("tool-usage").replaceChildren();$("tool-usage").append(node("Tool usage","Sign in for your current allowances."));
+ $("tool-period").textContent="";
 }
 
 function node(label,value){
@@ -118,6 +145,37 @@ function renderProgress(key,used,remaining,privileged=false){
  detail.textContent=used.toLocaleString()+" used · "+remaining.toLocaleString()+" left";
  fill.style.width=percent+"%";track.setAttribute("aria-valuenow",String(percent));
 }
+function renderToolUsage(source){
+ const panel=$("tool-usage");panel.replaceChildren();
+ const rows=source?.customer?.tools?.entries;
+ if(!Array.isArray(rows)||rows.length!==6){panel.append(node("Tool usage","Breakdown temporarily unavailable."));$("tool-period").textContent="";return;}
+ for(const item of rows){
+  const key=String(item.key||"");
+  if(!["web","file","code","artifact","image","voice"].includes(key))continue;
+  const box=document.createElement("div");box.className="progress-item";
+  const heading=document.createElement("div");heading.className="progress-heading";
+  const title=document.createElement("strong");title.textContent=String(item.label||key);
+  const usage=document.createElement("span");usage.className="progress-detail";
+  const used=Number(item.used),limit=item.limit,remaining=item.remaining;
+  const valid=Number.isSafeInteger(used)&&used>=0&&Number.isSafeInteger(limit)&&limit>0&&
+    Number.isSafeInteger(remaining)&&remaining>=0;
+  const privileged=source.customer.tools.unlimitedByPrivilege===true;
+  usage.textContent=privileged?"Founder access":valid?used+" NBL uses spent · "+remaining+" NBL uses left of "+limit:
+    "Not included in the current plan";
+  heading.append(title,usage);box.append(heading);
+  if(valid){
+   const track=document.createElement("div");track.className="progress-track";
+   track.setAttribute("role","progressbar");track.setAttribute("aria-label",String(item.label||key)+" used");
+   track.setAttribute("aria-valuemin","0");track.setAttribute("aria-valuemax","100");
+   const pct=Math.min(100,Math.round(100*used/limit));
+   track.setAttribute("aria-valuenow",String(pct));
+   const fill=document.createElement("div");fill.className="progress-fill";fill.style.width=pct+"%";
+   track.append(fill);box.append(track);
+  }
+  panel.append(box);
+ }
+ $("tool-period").textContent="Tool accounting period: "+String(source.customer.tools.periodStart||"Current UTC month")+".";
+}
 function renderPersonal(data){
  const beans=data?.customer?.beans||{},studios=data?.customer?.studios||{};
  $("free").textContent=beans.freeRepliesRemaining??"—";
@@ -128,6 +186,7 @@ function renderPersonal(data){
  renderProgress("paid",beans.paidRepliesUsed,beans.paidRepliesRemaining,beans.unlimitedByPrivilege);
  $("topups-breakdown").textContent=Number.isSafeInteger(beans.purchasedTopupRepliesRemaining)?beans.purchasedTopupRepliesRemaining.toLocaleString()+" left":"Balance unavailable";
  renderProgress("studio",studios.lifetimeSpentCredits,studios.creditsRemaining);
+ renderToolUsage(data);
  const renewal=beans.billingPeriodEnd?new Date(beans.billingPeriodEnd):null;
  $("renewal").textContent=renewal&&!Number.isNaN(renewal.getTime())?"Current membership period ends "+renewal.toLocaleDateString()+".":"Your membership period is shown when available.";
  $("status").textContent="Read directly from your account's existing Beans meter and Studios wallet.";

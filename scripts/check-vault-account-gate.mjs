@@ -44,8 +44,32 @@ test("Vault never renders untrusted balances as HTML or initiates payments",()=>
 
 test("Vault prevents premature claims of live financial integration",()=>{
   checks(/No reconciled settlements yet; actual cash\/profit is not established/);
-  checks(/Automated provider refills and Founder payouts are off/);
+  checks(/Automated refills and Founder payouts are off/);
   checks(/Vault records cannot be read right now/);
 });
 
 console.log("Vault browser source gate only; NOT proof of deployed nbl-vault, DB migration, cross-account isolation or financial reconciliation.");
+
+test("NBL Vault is the inclusive Beans pricing and per-tool allowance center",()=>{
+ checks(/id="pricing"/);
+ checks(/id="tool-usage"/);
+ checks(/function renderToolUsage\(source\)/);
+ checks(/source\?\.customer\?\.tools\?\.entries/);
+ checks(/renderToolUsage\(data\)/);
+ checks(/12\), file understanding \(8\), code\/data \(3\), PDF\/file creation \(3\), image creation \(2\), and Beans voice \(12\)/);
+ checks(/\$4\.99\/month/);
+ checks(/\$9\.99 one-time/);
+ checks(/not an extra fee for each NBL tool/);
+ checks(/NBL pays to run Beans/);
+ checks(/data-nbl-plan-value="beans.price"/);
+ checks(/data-nbl-plan-value="getMore.price"/);
+ assert.doesNotMatch(html,/Get More[^<]*\$2/);
+});
+
+test("customer NBL Vault uses NBL tool-cost language, never supplier-cost language",()=>{
+ const customer=html.split('<section class="panel" id="founder" hidden>')[0];
+ assert.match(customer,/1 included NBL use/);
+ assert.match(customer,/NBL covers the cost of the service/);
+ assert.match(html,/NBL uses spent/);
+ assert.doesNotMatch(customer,/OpenAI|API provider invoices|provider charges|supplier invoices/i);
+});
