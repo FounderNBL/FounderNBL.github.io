@@ -56,6 +56,10 @@ test("University stays under construction with all existing prices and 100 perce
  assert.match(pricing,/opening dates will be confirmed/i);
  assert.doesNotMatch(pricing,/pay\.stripe\.com|checkout\.stripe\.com|data-nbl-university-checkout=/);
 });
+test("new priced tiers render safely when returning visitors have an older cached catalog",()=>{
+ assert.match(header,/NBL_PRODUCT_PLANS\.nblPlus\?\.name\|\|"NBL Plus"/);
+ assert.match(header,/NBL_PRODUCT_PLANS\.fullNbluDiy\?\.name\|\|"Full NBLU Experience/);
+});
 test("NBL navigation shares pricing, Studios and music without duplicating authenticated domains",()=>{
  assert.match(header,/\["studios","NBL Studios","\/studios\.html",false\]/);
  assert.ok(header.includes('["pricing","Vault & Pricing","/vault.html#pricing",false]'));
