@@ -43,6 +43,17 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .link-quiet{color:var(--gold)}
 @media(prefers-reduced-motion:reduce){.progress-fill{transition:none}}
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+
+.vault-category{margin-top:15px;border:1px solid rgba(239,198,111,.4);border-radius:17px;overflow:hidden;background:#102237;scroll-margin-top:94px}
+.vault-category>summary{min-height:86px;padding:19px 22px;display:grid;gap:4px;cursor:pointer;list-style:none;color:var(--gold)}
+.vault-category>summary strong{font-size:1.2rem}.vault-category>summary small{color:var(--muted);font-size:.84rem}
+.vault-category>summary::-webkit-details-marker,.vault-breakdown>summary::-webkit-details-marker,.vault-fine-print>summary::-webkit-details-marker{display:none}
+.vault-category>.panel{margin:0;border:0;border-top:1px solid var(--line);border-radius:0}
+.vault-breakdown{border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:#081826;margin:16px 0}
+.vault-breakdown>summary{cursor:pointer;color:var(--gold);font-weight:800;padding:4px;min-height:32px}
+.vault-fine-print{margin:11px 0;color:var(--muted);font-size:.84rem}
+.vault-fine-print>summary{display:inline-block;cursor:pointer;color:var(--gold);padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+.vault-category>summary:focus-visible,.vault-breakdown>summary:focus-visible,.vault-fine-print>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
 </style>
 </head>
 <body>
@@ -50,7 +61,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <p class="note">New Beansland · Customer account & pricing center</p>
 <h1>NBL Vault</h1>
 <p class="note"><a href="#pricing">NBL pricing &amp; credits</a> · <a href="#university-prices">University prices</a> · <a href="#my-usage">My usage</a> · <a href="/pricing.html">Full service catalog</a></p>
-<p class="note">Your balances, in one place. Beans replies and Studios credits are service allowances, not cash or withdrawals.</p>
+<details class="vault-fine-print"><summary>What balances and credits mean</summary><p class="note">Your balances, in one place. Beans replies and Studios credits are service allowances, not cash or withdrawals.</p></details>
 <section class="panel" id="my-usage" aria-label="Your NBL Vault">
 <h2>My Vault</h2>
 <div class="grid">
@@ -65,20 +76,21 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <div class="progress-item"><div class="progress-heading"><strong>Purchased Get More</strong><span class="progress-detail" id="topups-breakdown">—</span></div><div class="progress-status">Remaining purchased replies; this balance is separate from your monthly plan.</div></div>
   <div class="progress-item"><div class="progress-heading"><strong>NBL Studios</strong><span class="progress-detail" id="studio-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Studios credits used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="studio-track"><div class="progress-fill" id="studio-fill"></div></div></div>
 </div>
-<h3>Your NBL tool usage · Included with Beans</h3>
+<details class="vault-breakdown"><summary>View included NBL tool usage</summary><h3>Your NBL tool usage · Included with Beans</h3>
 <p class="note">Each tool request costs one included NBL tool use. These are NBL allowance units, not extra dollars billed to you. NBL covers the cost of the service. Chat replies use their separate allowance above.</p>
 <div class="tool-usage" id="tool-usage" aria-live="polite"><p class="note">Sign in to check your six tool allowances.</p></div>
 <p class="note" id="tool-period"></p>
+</details>
 <div class="action-grid" aria-label="Manage your NBL allowances">
   <a class="action" href="/account.html#membershipCard">Upgrade Beans</a>
   <a class="action" href="/account.html#membershipCard">Get More · pay as you go</a>
   <a class="action" href="/account.html">Manage billing</a>
 </div>
-<p class="note">Purchases use NBL’s existing verified checkout and LOCKE entitlements. No automatic top-ups or charges are enabled by this Vault.</p>
+<details class="vault-fine-print"><summary>About purchases, usage &amp; automatic charges</summary><p class="note">Purchases use NBL’s existing verified checkout and LOCKE entitlements. No automatic top-ups or charges are enabled by this Vault.</p></details>
 <p id="status" class="note" role="status" aria-live="polite">Checking your signed-in account…</p>
 <div class="controls"><button type="button" id="refresh">Refresh balances</button><a class="action" href="https://accounts.newbeansland.org/sign-in?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fvault.html" id="signin" hidden>Sign in / Create account</a></div>
 </section>
-<section class="panel" id="pricing" aria-label="NBL Services and Pricing">
+<details class="vault-category" data-vault-category id="vault-plans"><summary><strong>Beans &amp; Add-ons</strong><small>Beans plans · extra replies · NBL Usage and Studios credits</small></summary><section class="panel" id="pricing" aria-label="NBL Services and Pricing">
 <h2>Official NBL pricing &amp; what's included</h2>
 <p><strong>Standard Beans is $4.99/month.</strong> Its tools use included monthly NBL allowances, <strong>not an extra fee for each NBL tool</strong>. Each tool request is recorded as <strong>1 included NBL use</strong>; that measures a tool allowance, <em>not</em> a deduction from purchased NBL Usage or NBL Studios credits. NBL covers the cost of the service within its own budget. Premium NBL Plus is a separate offer.</p>
 <h3 id="beans-prices">Beans &amp; NBL credits</h3>
@@ -92,7 +104,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
 </div>
 <p class="note">NBL replies, monthly tool allowances, NBL Usage credits and NBL Studios Credits each have distinct terms and balances. No invented exchange rate or combined wallet. NBL Studios support contributions are not purchases of personal credits. Nothing in this Vault creates a charge, automatically refills a balance, or deducts a University payment.</p>
 </section>
-<section class="panel" id="university-prices" aria-label="New Beansland University approved prices">
+</details>
+<details class="vault-category" data-vault-category id="vault-university"><summary><strong>University &amp; Teachers</strong><small>Foundation · Professor Grey · Full NBLU options</small></summary><section class="panel" id="university-prices" aria-label="New Beansland University approved prices">
 <h2>New Beansland University · Approved offers</h2>
 <p class="note">December 2026 is the current target opening month, subject to readiness. Protected classes, Professor Grey and University checkouts are still held. Free early registration is not paid enrollment. The following are distinct approved offers, with their own fulfillment and renewal rules.</p>
 <div class="rate-grid">
@@ -107,6 +120,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 </div>
 <p class="note"><strong>Advance-enrollment refund promise:</strong> If NBL cannot deliver the University program or access promised for an advance payment, the student receives a <strong>full refund of that advance-enrollment payment</strong>. If a planned start is delayed, prepaid students can wait or request the full refund. No University checkout is active from this Vault. See <a class="link-quiet" href="/university.html#enroll">University registration</a> and <a class="link-quiet" href="/pricing.html#early-enrollment">full enrollment terms</a>.</p>
 </section>
+</details>
 <section class="panel" id="founder" hidden>
 <h2>Founder · NBL Operating Vault</h2>
 <p id="money" class="note"></p>
@@ -272,5 +286,9 @@ $("next").addEventListener("click",()=>{if(!state.loading){state.page++;refresh(
  await refresh();
 })();
 })();
+</script>
+<script>
+(()=>{function revealVaultCategory(){const id=decodeURIComponent(location.hash.slice(1));if(!id)return;const target=document.getElementById(id);if(!target)return;for(const details of [target.closest("details[data-vault-category]"),target.closest("details.vault-breakdown")])if(details)details.open=true;}
+addEventListener("hashchange",revealVaultCategory);revealVaultCategory();})();
 </script>
 </body></html>
