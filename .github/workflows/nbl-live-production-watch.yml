@@ -24,6 +24,9 @@ jobs:
       - name: Check out Inspector configuration
         uses: actions/checkout@v7
 
+      - name: Check Inspector challenge incident policy
+        run: node --test scripts/check-inspector-challenge-policy.test.mjs
+
       - name: Ask Cloudflare for live zone status before website tests
         env:
           CLOUDFLARE_NBL_INSPECTOR_TOKEN: ${{ secrets.NBL_CLOUDFLARE_INSPECTOR_TOKEN || secrets.CLOUDFLARE_NBL_INSPECTOR_TOKEN }}
@@ -160,25 +163,21 @@ jobs:
             gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
           fi
 
-      - name: Reclassify unverified routes without claiming customer outage
+      # An automated GitHub runner can receive a Cloudflare bot challenge even
+      # when the website is reachable by a normal visitor. Record this evidence
+      # in Actions, but do not recreate an obsolete website-outage issue hourly.
+      - name: Report unverified runner routes without reopening stale incidents
         if: success() && steps.routes.outputs.all_verified == 'false'
-        env:
-          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          title="[Health Inspector] Live routes unverified"
-          existing="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] Live routes unverified") | .number' | head -n 1)"
-          body="$(printf 'Automated route inspection was inconclusive because the runner was denied or could not reach some URLs. This does NOT prove customers see an outage. Obtain independent browser evidence.\n\nRun: %s/%s/actions/runs/%s\n\nResults:\n~~~text\n%s\n~~~' "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" "$(cat health-route-results.txt 2>/dev/null)")"
-          if [ -n "$existing" ]; then
-            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "$body"
-          else
-            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"
-          fi
-          old="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --json number,title --jq '.[] | select(.title=="[Health Inspector] Live route failure") | .number' | head -n 1)"
-          if [ -n "$old" ]; then
-            gh issue comment "$old" --repo "$GITHUB_REPOSITORY" --body "Reclassified: the latest runner evidence is UNVERIFIED rather than a confirmed route failure. See the separate unverified issue; we have NOT proven customer reachability. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-            gh issue close "$old" --repo "$GITHUB_REPOSITORY"
-          fi
+          {
+            echo "### Automated runner challenge — UNVERIFIED, not a site outage"
+            echo
+            echo "Some routes could not be independently verified by this GitHub runner."
+            echo "Cloudflare 403/challenge and network denials stay visible in the route log above."
+            echo "The Health Inspector must not open/reopen a GitHub incident on this evidence alone."
+            echo "Confirmed non-challenge HTTP failures still fail the job and open the normal incident."
+          } >> "$GITHUB_STEP_SUMMARY"
 
   deep-browser-inspection:
     name: Health Inspector · external desktop + mobile
