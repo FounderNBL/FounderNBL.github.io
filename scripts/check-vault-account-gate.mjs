@@ -49,3 +49,19 @@ test("Vault prevents premature claims of live financial integration",()=>{
 });
 
 console.log("Vault browser source gate only; NOT proof of deployed nbl-vault, DB migration, cross-account isolation or financial reconciliation.");
+
+test("NBL Vault is the inclusive Beans pricing and per-tool allowance center",()=>{
+ checks(/id="pricing"/);
+ checks(/id="tool-usage"/);
+ checks(/function renderToolUsage\(source\)/);
+ checks(/source\?\.customer\?\.tools\?\.entries/);
+ checks(/renderToolUsage\(data\)/);
+ checks(/12\), file understanding \(8\), code\/data \(3\), PDF\/file creation \(3\), image creation \(2\), and OpenAI voice \(12\)/);
+ checks(/\$4\.99\/month/);
+ checks(/\$9\.99 one-time/);
+ checks(/not an extra fee for each AI tool/);
+ checks(/No separate fee for those included tools/);
+ checks(/data-nbl-plan-value="beans.price"/);
+ checks(/data-nbl-plan-value="getMore.price"/);
+ assert.doesNotMatch(html,/Get More[^<]*\$2/);
+});
