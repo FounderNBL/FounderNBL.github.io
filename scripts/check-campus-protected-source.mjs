@@ -1,6 +1,7 @@
 import fs from "node:fs";
 
 const html=fs.readFileSync(new URL("../campus.html",import.meta.url),"utf8");
+const enrollment=fs.readFileSync(new URL("../university-enrollment.html",import.meta.url),"utf8");
 const js=fs.readFileSync(new URL("../university.js",import.meta.url),"utf8");
 const css=fs.readFileSync(new URL("../university.css",import.meta.url),"utf8");
 const studyLab=fs.readFileSync(new URL("../study-lab.mjs",import.meta.url),"utf8");
@@ -46,18 +47,19 @@ forbid(socialRealtime,'service_role',"Service keys cannot appear in public Realt
 forbid(socialRealtime,'realtime.send',"Clients must only listen, not broadcast unverified messages.");
 forbid(memberChatJs,"localStorage.setItem","Member Chat must not persist session or backend token to localStorage.");
 forbid(memberChatJs,"RUNWAY_API_KEY","Provider credentials must never be in the browser.");
-need(html,"Checkout is under controlled verification.","University checkout verification hold must remain visible.");
+need(html,"under controlled verification","University checkout verification hold must remain visible.");
 need(html,"LOCKE opens the classroom only when that account has University enrollment.","Campus enrollment gate is missing.");
-need(html,'id="enroll"',"Campus enrollment information is missing.");
-need(html,'data-nblu-checkout="foundation"',"Foundation checkout is missing from NBL World.");
-need(html,'data-nblu-checkout="full_foundation"',"Guided Foundation checkout is missing from NBL World.");
-need(html,'data-nblu-checkout="full_nblu" disabled',"Full NBLU checkout must remain disabled pending proof.");
-need(html,'data-nblu-checkout="nblu_continuation"',"Full NBLU owner continuation control is missing.");
-need(html,"$449.99","Full NBLU price is missing from the campus.");
-need(html,"$14.99/month","Owner continuation price is missing from the campus.");
-need(html,"data-release-proof-notice","University release-proof notice is missing.");
-need(html,"shipping charged separately","Staged physical-book shipping disclosure is missing.");
-need(html,'href="/university.html#enroll"',"Campus enrollment must stay on the .org University checkout page.");
+need(html,'id="enroll"',"Campus should show its admissions-office route.");
+need(html,'href="/university-enrollment.html#enroll"',"Campus must route paid choices to the separate .org enrollment page.");
+need(html,'href="/"',"The University must offer an obvious return to Beans.");
+for(const source of [html,fs.readFileSync(new URL("../university-campus.html",import.meta.url),"utf8")])
+  forbid(source,'data-nblu-checkout="foundation"',"A protected classroom page must not show a duplicate tuition checkout menu.");
+need(enrollment,'data-nbl-university-checkout="foundation" disabled',"Foundation checkout must remain held on admissions page.");
+need(enrollment,'data-nbl-university-checkout="full_foundation" disabled',"Guided Foundation checkout must remain held on admissions page.");
+need(enrollment,"$449.99","Full NBLU price must remain on the separate tuition page.");
+need(enrollment,"Owner continuation · $14.99/month","Owner continuation terms must remain on admissions page.");
+need(html,"data-release-proof-notice","University release-proof notice must remain.");
+need(enrollment,"shipping may be charged separately","Staged physical-book shipping disclosure must remain.");
 need(html,"Your digital materials","Student library is missing.");
 need(html,"Professor Grey","Professor Grey faculty panel is missing.");
 need(html,"Course assessment","Protected assessment panel is missing.");

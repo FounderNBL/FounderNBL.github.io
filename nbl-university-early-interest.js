@@ -9,7 +9,7 @@ const select=form.querySelector('[name="interestKind"]');
 const updates=form.querySelector('[name="emailOptIn"]');
 const endpoint="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-university-early-interest";
 const signin=()=> "https://accounts.newbeansland.org/sign-in?redirect_url="+
- encodeURIComponent("https://newbeansland.org/university.html#early-registration");
+ encodeURIComponent("https://newbeansland.org/university-enrollment.html#early-registration");
 const setStatus=text=>{status.textContent=text;};
 let running=false;
 const setRunning=value=>{

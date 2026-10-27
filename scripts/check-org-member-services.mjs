@@ -1,7 +1,7 @@
 import fs from "node:fs";
 const read=name=>fs.readFileSync(new URL("../"+name,import.meta.url),"utf8");
 const files={
-  landing:read("university.html"),campus:read("campus.html"),university:read("university.js"),
+  landing:read("university-enrollment.html"),campus:read("campus.html"),university:read("university.js"),
   chat:read("chat.html"),messages:read("chat.js"),voice:read("voice-lab.html"),
   voiceJs:read("voice-lab.js"),realtime:read("social-realtime.js"),lab:read("study-lab.mjs"),
   header:read("nbl-world-header.js"),account:read("account.html")

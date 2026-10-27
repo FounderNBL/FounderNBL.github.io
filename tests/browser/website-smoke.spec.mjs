@@ -195,20 +195,23 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
   });
 
-  test("University enrollment and protected classroom are both on .org", async ({ page }) => {
+  test("University visitors explore first, then choose enrollment on a distinct .org page", async ({ page }) => {
     await open("/university.html", page);
-
     await expect(page).toHaveTitle(/New Beansland University/i);
-    await expect(page.locator("body")).toContainText("NBL University lives in New Beansland.");
-    await expect(page.locator("body")).toContainText("Beans, the AI assistant");
-    await expect(page.getByRole("heading", { name: "University enrollment and payment" })).toBeVisible();
+    await expect(page.getByRole("heading",{name:/Welcome to.*the Frontier/i})).toBeVisible();
+    await expect(page.locator('.nbl-world-beans-toggle')).toBeHidden();
+    await expect(page.locator('.nblu-doors a[href="/"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toHaveCount(0);
+    await expect(page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first()).toHaveAttribute("href","/university-enrollment.html#enroll");
+    await page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first().click();
+    await expect(page).toHaveURL(/\/university-enrollment\.html#enroll/);
+    await expect(page.locator('.nbl-world-beans-toggle')).toBeHidden();
+    await expect(page.getByRole("link",{name:"Switch to Beans"})).toBeVisible();
+    await expect(page.getByRole("heading",{name:/University enrollment and payment/i})).toBeVisible();
     await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
     await expect(page.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
-    await expect(page.getByRole("link", { name: "Enter the University classroom" })).toHaveAttribute(
-      "href",
-      "/campus.html",
-    );
-    await expect(page.locator('a[href="https://nblworld.com/university.html#enroll"]')).toHaveCount(0);
+    await expect(page.getByRole("link",{name:"Enter the University classroom"})).toHaveAttribute("href","/campus.html");
+    await expect(page.getByRole("link",{name:"Switch to Beans"})).toHaveAttribute("href","/");
   });
 
   test("same-origin campus remains protected and sign-in points to verified .org", async ({ page }) => {
