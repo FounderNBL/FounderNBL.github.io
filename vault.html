@@ -65,8 +65,8 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <div class="progress-item"><div class="progress-heading"><strong>Purchased Get More</strong><span class="progress-detail" id="topups-breakdown">—</span></div><div class="progress-status">Remaining purchased replies; this balance is separate from your monthly plan.</div></div>
   <div class="progress-item"><div class="progress-heading"><strong>NBL Studios</strong><span class="progress-detail" id="studio-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Studios credits used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="studio-track"><div class="progress-fill" id="studio-fill"></div></div></div>
 </div>
-<h3>Beans tool usage · Included with membership</h3>
-<p class="note">This month, by tool. These are recorded tool claims—not individual charges or an invoice. Reply counts are separate. Some tools may use both allowances.</p>
+<h3>Your NBL tool usage · Included with Beans</h3>
+<p class="note">Each tool request costs one included NBL tool use. These are NBL allowance units, not extra dollars billed to you. NBL covers the cost of the service. Chat replies use their separate allowance above.</p>
 <div class="tool-usage" id="tool-usage" aria-live="polite"><p class="note">Sign in to check your six tool allowances.</p></div>
 <p class="note" id="tool-period"></p>
 <div class="action-grid" aria-label="Manage your NBL allowances">
@@ -80,10 +80,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 </section>
 <section class="panel" id="pricing" aria-label="NBL Services and Pricing">
 <h2>Pricing &amp; what Beans includes</h2>
-<p>Beans has <strong>one membership price</strong>, not an extra fee for each AI tool. Its monthly tool-use allowances are included in that membership. NBL pays the AI providers; provider charges are not passed to customers as separate per-tool bills.</p>
+<p>Beans has <strong>one membership price</strong>, not an extra fee for each NBL tool. Your membership provides NBL tool uses each month, with the cost of each tool request shown as <strong>1 included NBL use</strong>. NBL covers the operating expense within its own service budget.</p>
 <div class="rate-grid">
- <article class="rate-card"><h3>Beans</h3><strong data-nbl-plan-value="beans.price">$4.99/month</strong><p data-nbl-plan-value="beans.replies">300 successful replies</p><p>Includes web search (12), file understanding (8), code/data (3), PDF/file creation (3), image creation (2), and OpenAI voice (12) recorded tool uses each calendar month. Included tools have separate limits from chat replies.</p><p class="note">Recurring monthly until cancelled. No separate fee for those included tools; previous paid plans may have different allowances.</p></article>
- <article class="rate-card"><h3>Get More · Beans replies</h3><strong data-nbl-plan-value="getMore.price">$9.99 one-time</strong><p data-nbl-plan-value="getMore.replies">500 additional successful replies</p><p>Optional pay-as-you-go reply balance. This is not a second membership or individual tool charge. Adding replies does not reset the monthly tool limits.</p></article>
+ <article class="rate-card"><h3>Beans</h3><strong data-nbl-plan-value="beans.price">$4.99/month</strong><p data-nbl-plan-value="beans.replies">300 successful replies</p><p>Includes web search (12), file understanding (8), code/data (3), PDF/file creation (3), image creation (2), and Beans voice (12) recorded NBL tool uses each calendar month. Each request consumes 1 included NBL use. Included tools have separate limits from chat replies.</p><p class="note">Recurring monthly until cancelled. NBL pays to run Beans. You see your NBL uses, not external supplier prices. Previous paid plans may have different allowances.</p></article>
+ <article class="rate-card"><h3>Get More · Beans replies</h3><strong data-nbl-plan-value="getMore.price">$9.99 one-time</strong><p data-nbl-plan-value="getMore.replies">500 additional successful replies</p><p>Optional pay-as-you-go reply balance. This is not a second membership or an extra tool charge. You pay only when you choose to buy more replies. Adding replies does not reset the monthly tool limits.</p></article>
  <article class="rate-card"><h3>NBL Books &amp; Music</h3><strong>Free local tools</strong><p>Native ebook/PDF reading and personal MP3/MP4 playback are free of NBL usage charges. Live radio is optional and uses network data; stations may carry ads.</p></article>
  <article class="rate-card"><h3>NBL Studios Credits</h3><strong data-nbl-plan-value="studiosCredits.price">$8.99 one-time</strong><p data-nbl-plan-value="studiosCredits.credits">500 NBL Studios credits</p><p>Separate creative-production credits, <strong>not</strong> Beans replies. Checkout remains held; the provider's per-generation credit rate is shown in the creator interface before any creation.</p></article>
 </div>
@@ -92,10 +92,10 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <section class="panel" id="founder" hidden>
 <h2>Founder · NBL Operating Vault</h2>
 <p id="money" class="note"></p>
-<h3>Verified provider resources</h3><div id="resources"></div>
+<h3>Verified NBL operating resources</h3><div id="resources"></div>
 <h3>Customer balances</h3><div id="accounts"></div>
 <div class="controls"><button type="button" id="prev">Previous</button><button type="button" id="next">Next</button><span id="page" class="note"></span></div>
-<p class="note">Provider promotional credits aren't cash. Unverified balances remain unknown. Automated provider refills and Founder payouts are off.</p>
+<p class="note">Founder-only operating reserves are separate from customer NBL allowances. Unverified balances remain unknown. Automated refills and Founder payouts are off.</p>
 </section>
 <p class="note"><a href="/account.html">Back to my NBL account</a></p>
 </main>
@@ -160,7 +160,7 @@ function renderToolUsage(source){
   const valid=Number.isSafeInteger(used)&&used>=0&&Number.isSafeInteger(limit)&&limit>0&&
     Number.isSafeInteger(remaining)&&remaining>=0;
   const privileged=source.customer.tools.unlimitedByPrivilege===true;
-  usage.textContent=privileged?"Founder access":valid?used+" used · "+remaining+" left of "+limit:
+  usage.textContent=privileged?"Founder access":valid?used+" NBL uses spent · "+remaining+" NBL uses left of "+limit:
     "Not included in the current plan";
   heading.append(title,usage);box.append(heading);
   if(valid){
