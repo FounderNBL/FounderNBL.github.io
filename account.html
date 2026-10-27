@@ -33,7 +33,7 @@
   </style>
   <script defer src="/nbl-product-plans.js?v=20261027-founder-pricing"></script>
   <script defer src="/nbl-world-header.js?v=20261024-v12-final-parity"></script>
-</head>
+<style id="nbl-account-categories-style">.account-categories{display:grid;gap:10px;margin:14px 0}.account-category{border:1px solid rgba(214,161,75,.40);border-radius:13px;padding:0;overflow:clip;background:rgba(6,19,32,.65)}.account-category>summary{cursor:pointer;padding:16px 18px;list-style:none;display:grid;gap:4px;min-height:56px;color:#f0c56f}.account-category>summary::-webkit-details-marker,.account-fine-print>summary::-webkit-details-marker{display:none}.account-category>summary strong{font-size:1rem}.account-category>summary small{font-size:.78rem;color:#cfc3ad}.account-category[open]>summary{border-bottom:1px solid rgba(214,161,75,.3)}.account-category>.row{padding:14px;display:flex;flex-wrap:wrap;gap:9px}.account-fine-print{margin:10px 0;font-size:.84rem;color:#bba98f}.account-fine-print>summary{cursor:pointer;display:inline-flex;border-bottom:1px dashed #d6a14b;padding:5px 0;color:#efc66f}.account-fine-print .status{line-height:1.6}.account-category>summary:focus-visible,.account-fine-print>summary:focus-visible{outline:2px solid #f0c56f;outline-offset:2px}</style></head>
 <body>
   <main>
     <section class="hero">
@@ -88,25 +88,26 @@
           <div class="card metric"><strong id="replyRemaining">—</strong><span>successful replies remaining</span></div>
           <div class="card metric"><strong id="topUpRemaining">—</strong><span>Get More replies remaining</span></div>
         </div>
-        <div class="row">
-          <button type="button" data-account-billing-plan="beans">Beans · $4.99/month</button>
-          <button type="button" data-account-billing-plan="nbl_plus" disabled aria-disabled="true" title="Premium Beans checkout held pending LOCKE verification">NBL Plus premium Beans · $29.99/month (not University)</button>
-          <button type="button" data-account-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout pending">Beans + University · $14.99/month</button>
-          <button type="button" data-account-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Qualified Foundation Student Continuation · $9.99/month</button>
-          <button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button>
-          <button type="button" data-account-billing-plan="foundation" disabled aria-disabled="true" title="Renewal consent and fulfillment checkout pending">Foundation Materials + first month Beans · $29.99 once</button>
-          <button type="button" data-account-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout pending">Foundation + University first month · $34.99 once</button>
-          <button type="button" data-account-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation · $54.99 one-time</button>
-          <button type="button" data-account-billing-plan="full_nblu_diy" disabled aria-disabled="true" title="Digital DIY University checkout pending">Full NBLU · Digital DIY · $184.99 once (no physical books)</button>
-          <button type="button" data-account-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Experience · Physical Books · $449.99 one-time</button>
-          <button type="button" data-account-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Owner Continuation · $14.99/month</button>
-        </div>
-        <p class="status">Every monthly membership renews at its own price until cancelled or changed. Foundation Materials is $29.99 once with the first month of Beans; Beans then renews at $4.99/month with customer consent. The $34.99 Foundation + University offer includes its first month and only qualified purchasers can continue at $9.99/month without an extra Beans subscription. University and Foundation checkouts remain held pending verified payment, fulfillment, renewal consent and account isolation. December 2026 is the current University opening target, subject to readiness; Grey and protected courses remain closed. Full NBLU is available in two planned variants: $184.99 digital DIY or $449.99 with physical stage books. The early-enrollment and full-refund promise applies to advance enrollment.</p>
+        <div class="account-categories" aria-label="Membership categories">
+<details class="account-category"><summary><strong>Beans & add-ons</strong><small>Chat plans and additional replies</small></summary><div class="row"><button type="button" data-account-billing-plan="beans">Beans · $4.99/month</button>
+<button type="button" data-account-billing-plan="nbl_plus" disabled aria-disabled="true" title="Premium Beans checkout held pending LOCKE verification">NBL Plus premium Beans · $29.99/month (not University)</button>
+<button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button></div></details>
+<details class="account-category"><summary><strong>University & teachers</strong><small>Student plans, Professor Grey and Full NBLU</small></summary><div class="row"><button type="button" data-account-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout pending">Beans + University · $14.99/month</button>
+<button type="button" data-account-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Qualified Foundation Student Continuation · $9.99/month</button>
+<button type="button" data-account-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout pending">Foundation + University first month · $34.99 once</button>
+<button type="button" data-account-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation · $54.99 one-time</button>
+<button type="button" data-account-billing-plan="full_nblu_diy" disabled aria-disabled="true" title="Digital DIY University checkout pending">Full NBLU · Digital DIY · $184.99 once (no physical books)</button>
+<button type="button" data-account-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Experience · Physical Books · $449.99 one-time</button>
+<button type="button" data-account-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Owner Continuation · $14.99/month</button></div></details>
+<details class="account-category"><summary><strong>Books & materials</strong><small>Foundation physical books and Beans</small></summary><div class="row"><button type="button" data-account-billing-plan="foundation" disabled aria-disabled="true" title="Renewal consent and fulfillment checkout pending">Foundation Materials + first month Beans · $29.99 once</button></div></details>
+</div>
+<p class="status">Prices and renewal terms appear with each plan. University checkout is held; <a href="/university.html">University information</a> is available.</p>
+        <details class="account-fine-print"><summary>Plan terms, renewal dates &amp; refund information</summary>        <p class="status">Every monthly membership renews at its own price until cancelled or changed. Foundation Materials is $29.99 once with the first month of Beans; Beans then renews at $4.99/month with customer consent. The $34.99 Foundation + University offer includes its first month and only qualified purchasers can continue at $9.99/month without an extra Beans subscription. University and Foundation checkouts remain held pending verified payment, fulfillment, renewal consent and account isolation. December 2026 is the current University opening target, subject to readiness; Grey and protected courses remain closed. Full NBLU is available in two planned variants: $184.99 digital DIY or $449.99 with physical stage books. The early-enrollment and full-refund promise applies to advance enrollment.</p></details>
       </section>
 
       <section class="card" id="nblConnectCard">
         <h2>Beans · Connected apps</h2>
-        <p class="status">Connect accounts you own. Google sign-in and optional Gmail inbox access are two different permissions. Gmail reading requires your separate consent, and Beans will never send or delete your mail from this read-only connection. GitHub supports repository inspection. Canva linking and design creation are temporarily paused.</p>
+        <p class="status">Connect only accounts you choose.</p><details class="account-fine-print"><summary>How connected accounts and permissions work</summary><p class="status">Connect accounts you own. Google sign-in and optional Gmail inbox access are two different permissions. Gmail reading requires your separate consent, and Beans will never send or delete your mail from this read-only connection. GitHub supports repository inspection. Canva linking and design creation are temporarily paused.</p></details>
         <p id="nblConnectStatus" class="status">Checking connected apps…</p>
         <div id="nblConnectApps" class="fulfillment-list"></div>
         <div id="nblConnectRepos" class="fulfillment-list"></div>
@@ -114,7 +115,7 @@
 
       <section class="card" id="stillImagePack" aria-labelledby="stillImagePackTitle">
         <h2 id="stillImagePackTitle">Beans tools · Included with membership</h2>
-        <p class="status">Web search, file understanding, code/data work, PDF/file creation, images, and Beans voice use NBL's included monthly tool allowances—not six separate fees. Every tool request costs one included NBL use; NBL covers the service expense. See the exact used-and-left totals and all Beans prices in your NBL Vault.</p>
+        <details class="account-fine-print"><summary>How NBL tool allowances work</summary><p class="status">Web search, file understanding, code/data work, PDF/file creation, images, and Beans voice use NBL's included monthly tool allowances—not six separate fees. Every tool request costs one included NBL use; NBL covers the service expense. See the exact used-and-left totals and all Beans prices in your NBL Vault.</p></details>
         <p><a class="button" href="/vault.html#pricing">Open NBL Vault pricing &amp; tool usage</a></p>
       </section>
 
