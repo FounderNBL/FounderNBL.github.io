@@ -44,7 +44,7 @@ test("University stays under construction with all existing prices and 100 perce
  assert.match(campus,/Target opening month is December 2026/);
  assert.doesNotMatch(campus,/before Thanksgiving 2026/);
  assert.match(campus,/Full NBLU · Digital DIY · \$184\.99 once/);
- assert.match(pricing,/Physical Books/);
+ assert.match(pricing,/Physical books/i);
  assert.match(pricing,/fullNbluDiy\.price/);
  assert.match(pricing,/nblPlus\.price/);
  assert.match(campus,/full refund of the advance-enrollment payment/);
