@@ -8,11 +8,11 @@ test("University campus loads with a protected enrollment gate",async({page})=>{
   await expect(page.locator("[data-study-lab]")).toBeHidden();
   await expect(page.locator("[data-study-save]")).toBeHidden();
   await expect(page.locator("#enroll")).toBeVisible();
-  await expect(page.locator("[data-nblu-checkout=\"full_nblu\"]")).toBeVisible();
-  await expect(page.locator("[data-nblu-checkout=\"full_nblu\"]")).toBeDisabled();
+  await expect(page.locator('[data-nblu-checkout="full_nblu"]')).toHaveCount(0);
   await expect(page.locator("[data-release-proof-notice]")).toBeVisible();
-  await expect(page.locator("body")).toContainText("$449.99");
-  await expect(page.locator("body")).toContainText("$14.99/month");
+  await expect(page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first()).toHaveAttribute("href","/university-enrollment.html#enroll");
+  await expect(page.getByRole("link",{name:"Switch back to Beans"})).toHaveAttribute("href","/");
+  await expect(page.locator("body")).not.toContainText("$449.99");
   await expect(page.locator("[data-campus-gate]")).toBeVisible();
   await expect(page.locator("body")).toContainText("LOCKE opens the classroom only when that account has University enrollment");
   await expect(page.locator("[data-campus]")).toBeHidden();
