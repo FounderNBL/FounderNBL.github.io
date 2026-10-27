@@ -92,13 +92,13 @@ test("Vault, public catalog and Beans drawer preserve every approved Founder pri
    assert.ok(html.includes('data-nbl-plan-value="'+key+'.price"'),"Vault missing canonical "+key);
    assert.ok(publicCatalog.includes('data-nbl-plan-value="'+key+'.price"'),"Catalog missing canonical "+key);
  }
- assert.match(header,/NBL_PRODUCT_PLANS\\.nblUsage\\?\\.price/);
- assert.match(header,/NBL_PRODUCT_PLANS\\.studiosCredits\\?\\.price/);
+ assert.match(header,/NBL_PRODUCT_PLANS\.nblUsage\?\.price/);
+ assert.match(header,/NBL_PRODUCT_PLANS\.studiosCredits\?\.price/);
  assert.match(html,/id="university-prices"/);
  assert.match(html,/full refund of that advance-enrollment payment/);
  assert.match(html,/December 2026/);
- assert.match(html,/\$184\\.99.*no physical books/is);
- assert.match(html,/\$449\\.99.*physical stage-release books/is);
+ assert.match(html,/\$184\.99.*no physical books/is);
+ assert.match(html,/\$449\.99.*physical stage-release books/is);
 });
 
 test("NBL service currencies stay separate; no extra fee or leaked operating reserve",()=>{
@@ -107,6 +107,6 @@ test("NBL service currencies stay separate; no extra fee or leaked operating res
  assert.match(customer,/NBL Usage credits.*not.*monthly Beans tool-use counter/is);
  assert.match(customer,/NBL Studios quotes the required.*NBL Studios Credits/is);
  assert.match(customer,/NBL replies, monthly tool allowances, NBL Usage credits and NBL Studios Credits each have distinct terms/);
- assert.doesNotMatch(customer,/\$5(?:\\.00)? (?:provider|service) reserve|internal operating profit|supplier invoices/i);
+ assert.doesNotMatch(customer,/\$5(?:\.00)? (?:provider|service) reserve|internal operating profit|supplier invoices/i);
  assert.doesNotMatch(customer,/data-nbl-university-checkout=|data-account-billing-plan=|data-nbl-billing-plan=/);
 });
