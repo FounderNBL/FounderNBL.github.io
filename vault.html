@@ -22,6 +22,17 @@ h2{margin:0 0 10px;color:var(--gold)}
 button,a.action{padding:11px 18px;border-radius:999px;background:#9c773d;color:white;border:1px solid var(--gold);text-decoration:none;cursor:pointer}
 button:disabled{opacity:.45;cursor:not-allowed}
 [hidden]{display:none!important}
+.progress-list{display:grid;gap:14px;margin:18px 0}
+.progress-item{padding:13px;border-radius:12px;background:#081826;border:1px solid var(--line)}
+.progress-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.progress-heading strong{color:#f2eadc}
+.progress-detail{color:var(--muted);font-size:.88rem}
+.progress-track{height:11px;overflow:hidden;border-radius:999px;background:#364457;margin-top:10px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#b88d42,#efc66f);border-radius:999px;transition:width .25s ease}
+.progress-status{margin-top:6px;color:var(--muted);font-size:.82rem}
+.action-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.action-grid a{display:inline-block}
+@media(prefers-reduced-motion:reduce){.progress-fill{transition:none}}
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
 </style>
 </head>
@@ -38,6 +49,18 @@ button:disabled{opacity:.45;cursor:not-allowed}
   <div class="metric"><strong id="topups">—</strong>Get More replies</div>
   <div class="metric"><strong id="studio">—</strong>Studios credits</div>
 </div>
+<div class="progress-list" aria-label="Your usage and remaining balance">
+  <div class="progress-item"><div class="progress-heading"><strong>Free Beans</strong><span class="progress-detail" id="free-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Free Beans used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="free-track"><div class="progress-fill" id="free-fill"></div></div></div>
+  <div class="progress-item"><div class="progress-heading"><strong>Beans membership</strong><span class="progress-detail" id="paid-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Membership replies used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="paid-track"><div class="progress-fill" id="paid-fill"></div></div><div class="progress-status" id="renewal"></div></div>
+  <div class="progress-item"><div class="progress-heading"><strong>Purchased Get More</strong><span class="progress-detail" id="topups-breakdown">—</span></div><div class="progress-status">Remaining purchased replies; this balance is separate from your monthly plan.</div></div>
+  <div class="progress-item"><div class="progress-heading"><strong>NBL Studios</strong><span class="progress-detail" id="studio-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Studios credits used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="studio-track"><div class="progress-fill" id="studio-fill"></div></div></div>
+</div>
+<div class="action-grid" aria-label="Manage your NBL allowances">
+  <a class="action" href="/account.html#membershipCard">Upgrade Beans</a>
+  <a class="action" href="/account.html#membershipCard">Get More · pay as you go</a>
+  <a class="action" href="/account.html">Manage billing</a>
+</div>
+<p class="note">Purchases use NBL’s existing verified checkout and LOCKE entitlements. No automatic top-ups or charges are enabled by this Vault.</p>
 <p id="status" class="note" role="status" aria-live="polite">Checking your signed-in account…</p>
 <div class="controls"><button type="button" id="refresh">Refresh balances</button><a class="action" href="https://accounts.newbeansland.org/sign-in?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fvault.html" id="signin" hidden>Sign in / Create account</a></div>
 </section>
@@ -64,6 +87,8 @@ function clearPrivateDisplay(){
  $("founder").hidden=true;$("money").textContent="";
  $("resources").replaceChildren();$("accounts").replaceChildren();
  $("page").textContent="";
+ for(const key of ["free","paid","studio"]){$(key+"-breakdown").textContent="—";$(key+"-fill").style.width="0%";$(key+"-track").setAttribute("aria-valuenow","0");}
+ $("topups-breakdown").textContent="—";$("renewal").textContent="";
 }
 
 function node(label,value){
@@ -84,12 +109,27 @@ async function api(view,epoch){
  if(!response.ok)throw new Error(response.status===401?"Please sign in again.":"Vault records cannot be read right now.");
  return data;
 }
+function renderProgress(key,used,remaining,privileged=false){
+ const detail=$(key+"-breakdown"),fill=$(key+"-fill"),track=$(key+"-track");
+ if(privileged){detail.textContent="Founder access · no reply limit";fill.style.width="0%";track.setAttribute("aria-valuenow","0");return;}
+ const valid=n=>Number.isSafeInteger(n)&&n>=0;
+ if(!valid(used)||!valid(remaining)){detail.textContent="Usage breakdown unavailable";fill.style.width="0%";track.setAttribute("aria-valuenow","0");return;}
+ const total=used+remaining,percent=total>0?Math.min(100,Math.round(100*used/total)):0;
+ detail.textContent=used.toLocaleString()+" used · "+remaining.toLocaleString()+" left";
+ fill.style.width=percent+"%";track.setAttribute("aria-valuenow",String(percent));
+}
 function renderPersonal(data){
  const beans=data?.customer?.beans||{},studios=data?.customer?.studios||{};
  $("free").textContent=beans.freeRepliesRemaining??"—";
  $("paid").textContent=beans.unlimitedByPrivilege?"∞":beans.paidRepliesRemaining??"—";
  $("topups").textContent=beans.purchasedTopupRepliesRemaining??"—";
  $("studio").textContent=studios.creditsRemaining??"—";
+ renderProgress("free",beans.freeRepliesUsed,beans.freeRepliesRemaining,beans.unlimitedByPrivilege);
+ renderProgress("paid",beans.paidRepliesUsed,beans.paidRepliesRemaining,beans.unlimitedByPrivilege);
+ $("topups-breakdown").textContent=Number.isSafeInteger(beans.purchasedTopupRepliesRemaining)?beans.purchasedTopupRepliesRemaining.toLocaleString()+" left":"Balance unavailable";
+ renderProgress("studio",studios.lifetimeSpentCredits,studios.creditsRemaining);
+ const renewal=beans.billingPeriodEnd?new Date(beans.billingPeriodEnd):null;
+ $("renewal").textContent=renewal&&!Number.isNaN(renewal.getTime())?"Current membership period ends "+renewal.toLocaleDateString()+".":"Your membership period is shown when available.";
  $("status").textContent="Read directly from your account's existing Beans meter and Studios wallet.";
 }
 function renderFounder(result){
