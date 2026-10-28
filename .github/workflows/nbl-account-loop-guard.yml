@@ -10,6 +10,7 @@ on:
       - "nbl-portal.js"
       - "nbl-product-plans.js"
       - "tests/browser/account-signin-billing-loop.spec.mjs"
+      - "tests/security/nbl-account-clerk-hydration.test.mjs"
       - "playwright.config.mjs"
       - ".github/workflows/nbl-account-loop-guard.yml"
   push:
@@ -20,6 +21,7 @@ on:
       - "nbl-portal.js"
       - "nbl-product-plans.js"
       - "tests/browser/account-signin-billing-loop.spec.mjs"
+      - "tests/security/nbl-account-clerk-hydration.test.mjs"
       - "playwright.config.mjs"
       - ".github/workflows/nbl-account-loop-guard.yml"
   workflow_dispatch:
@@ -42,6 +44,8 @@ jobs:
         run: |
           npm install --no-save @playwright/test@latest
           npx playwright install --with-deps chromium
+      - name: Verify stable Clerk user identity while session hydrates
+        run: node --test tests/security/nbl-account-clerk-hydration.test.mjs
       - name: Verify NBL Account sign-in loop guard on desktop and mobile against local source
         run: npx playwright test tests/browser/account-signin-billing-loop.spec.mjs --project=chromium --project=mobile-chromium
       - name: Preserve failure evidence
