@@ -17,7 +17,7 @@ test("Cloudflare preflight must precede ALL external Inspector visits",()=>{
   assert.match(workflow,/jobs:\s*\n  cloudflare-preflight:/);
   assert.equal((workflow.match(/needs: cloudflare-preflight/g)||[]).length,2);
   assert.match(workflow,/node scripts\/nbl-cloudflare-handshake\.mjs/);
-  assert.match(workflow,/actions\/download-artifact@v7/);
+  assert.match(workflow,/actions\/download-artifact@v[78]/);
   assert.match(workflow,/CLOUDFLARE_HANDSHAKE/);
   assert.doesNotMatch(workflow,/cloudflare\.request\(|skip_waf|bypass_challenge|security_level:.*off/i);
 });
