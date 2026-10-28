@@ -35,6 +35,12 @@ on:
       - "tests/voice-lab-source.test.mjs"
       - "studio/creator.js"
       - "studio/creator.css"
+      - "studio/live-video/**"
+      - "studios-live.*"
+      - "assets/nbl-studios-live-*"
+      - "docs/studios-live-mvp.md"
+      - "tests/studios-live-source.test.mjs"
+      - "tests/browser/studios-live.spec.mjs"
       - "tests/security/studios-creator.test.mjs"
       - ".github/workflows/nbl-website-chat-parity.yml"
   pull_request:
@@ -70,6 +76,12 @@ on:
       - "tests/voice-lab-source.test.mjs"
       - "studio/creator.js"
       - "studio/creator.css"
+      - "studio/live-video/**"
+      - "studios-live.*"
+      - "assets/nbl-studios-live-*"
+      - "docs/studios-live-mvp.md"
+      - "tests/studios-live-source.test.mjs"
+      - "tests/browser/studios-live.spec.mjs"
       - "tests/security/studios-creator.test.mjs"
       - ".github/workflows/nbl-website-chat-parity.yml"
 
@@ -108,6 +120,12 @@ jobs:
         run: |
           node --check studio/creator.js
           node --test tests/security/studios-creator.test.mjs
+      - name: Build and check NBL Studios LIVE preview
+        run: |
+          npm --prefix studio/live-video ci
+          npm --prefix studio/live-video run build
+          node --check studios-live.js
+          node --test tests/studios-live-source.test.mjs
       - name: Install Playwright test runner
         run: npm install --no-save @playwright/test@latest
       - name: Install Chromium for browser checks
