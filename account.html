@@ -119,6 +119,14 @@
         <p><a class="button" href="/vault.html#pricing">Open NBL Vault pricing &amp; tool usage</a></p>
       </section>
 
+      <section class="card hidden" id="founder-azure" aria-labelledby="founderAzureTitle">
+        <h2 id="founderAzureTitle">Beans · Azure connections (Founder)</h2>
+        <p class="status">Read-only server wiring check. No Azure calls, credits, or customer data are used.</p>
+        <div class="row"><button id="founderAzureCheck" type="button">Check Azure connection setup</button></div>
+        <p id="founderAzureStatus" class="status" role="status" aria-live="polite">Checking secure Founder access…</p>
+        <div id="founderAzureResults" class="fulfillment-list"></div>
+      </section>
+
       <section class="card hidden" id="founder-actions">
         <h2>LOCKE needs Founder approval</h2>
         <p id="founderActionsStatus" class="status">Checking the Founder queue…</p>
@@ -180,6 +188,11 @@
     const replyRemaining=document.getElementById("replyRemaining");
     const topUpRemaining=document.getElementById("topUpRemaining");
     const membershipButtons=[...document.querySelectorAll("[data-account-billing-plan]")];
+    const founderAzureCard=document.getElementById("founder-azure");
+    const founderAzureCheck=document.getElementById("founderAzureCheck");
+    const founderAzureStatus=document.getElementById("founderAzureStatus");
+    const founderAzureResults=document.getElementById("founderAzureResults");
+    const AZURE_DIAG_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core/azure/status";
     const founderActionsCard=document.getElementById("founder-actions");
     const founderActionsStatus=document.getElementById("founderActionsStatus");
     const founderActions=document.getElementById("founderActions");
@@ -616,6 +629,46 @@
       }
     };
 
+    const renderFounderAzure=async()=>{
+      // Only the signed-in Founder may see missing server configuration names.
+      // The gateway and Foundation both verify Clerk/LOCKE again; UI is never authority.
+      founderAzureResults.replaceChildren();
+      founderAzureStatus.textContent="Checking safe Azure configuration names…";
+      founderAzureCheck.disabled=true;
+      try{
+        const t=await token();
+        if(!t)throw new Error("Sign in to your NBL account first.");
+        const response=await fetch(AZURE_DIAG_API,{method:"POST",
+          headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:"Bearer "+t},
+          body:"{}",cache:"no-store"});
+        const report=await response.json().catch(()=>({}));
+        if(response.status===401||response.status===403){
+          founderAzureCard.classList.add("hidden");
+          return;
+        }
+        if(!response.ok||report?.ok!==true||!Array.isArray(report.capabilities))
+          throw new Error("Azure setup check is not ready. No credentials or usage were changed.");
+        founderAzureCard.classList.remove("hidden");
+        const connected=report.capabilities.filter(row=>row.configuredNames===true).length;
+        founderAzureStatus.textContent=connected+" of "+report.capabilities.length+
+          " server configuration sets detected. This does not verify Azure API calls or credit.";
+        for(const row of report.capabilities){
+          const card=document.createElement("article");card.className="fulfillment-item";
+          const title=document.createElement("h3");title.textContent=String(row.label||row.id||"Azure service");
+          const info=document.createElement("p");info.className="fulfillment-meta";
+          const missing=Array.isArray(row.missingNames)?row.missingNames.map(String):[];
+          info.textContent=row.configuredNames
+            ?"Server variable names detected · live Azure call not yet verified"
+            :"Missing from this server: "+missing.join(", ");
+          card.append(title,info);founderAzureResults.append(card);
+        }
+      }catch{
+        if(!founderAzureCard.classList.contains("hidden"))
+          founderAzureStatus.textContent="Azure connection check unavailable. No provider call was made.";
+      }finally{founderAzureCheck.disabled=false;}
+    };
+    founderAzureCheck.onclick=()=>{void renderFounderAzure();};
+
     const renderFounderActions=async()=>{
       founderActions.replaceChildren();
       try{
@@ -825,7 +878,7 @@
     };
 
     try{
-      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderFounderActions(),renderConnect()]);
+      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderFounderActions(),renderFounderAzure(),renderConnect()]);
       if(checkoutParams.get("checkout")==="success"){
         for(let attempt=0;attempt<3;attempt++){
           await new Promise(resolve=>setTimeout(resolve,1500));
