@@ -263,10 +263,22 @@
     const renderAuthState=()=>{
       if(authNavigationInProgress) return;
       const signedIn=Boolean(clerk.isSignedIn&&clerk.session);
-      const accountId=String(clerk.user?.id||clerk.session?.user?.id||clerk.session?.id||"");
+      // Identity is a stable Clerk USER id, never a mutable session id.
+      // A session can appear before Clerk hydrates its user. Initializing
+      // against session.id and then receiving user.id looks like an account
+      // switch and can falsely hide the account after successful sign-in.
+      const accountId=String(clerk.user?.id||clerk.session?.user?.id||"");
       if(!signedIn){
         signedOut.classList.add("show");
         accountBody.classList.add("hidden");
+        return;
+      }
+      if(!accountId){
+        // Wait for Clerk's auth listener to supply a verified user id.
+        // Do not redirect, reload, initialize account data, or make a paid call.
+        signedOut.classList.add("show");
+        accountBody.classList.add("hidden");
+        signedOut.querySelector("p").textContent="Your NBL account is connecting. If this stays here, refresh once.";
         return;
       }
       if(accountInitializationStarted&&accountId!==initializedAccountId){
