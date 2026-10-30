@@ -2051,7 +2051,7 @@
       if(currentClerkUserId()!==requestedUserId) throw new Error("Your NBL account changed while Beans was preparing the reply. Please send again.");
       if(accountToken) headers.Authorization=`Bearer ${String(accountToken).trim()}`;
       const requestId=(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-      const requestBody={action:"chat",mode:"beans",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),toolMode:beansToolMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
+      const requestBody={action:"chat",mode:"beans",walkMode:"beans-web-v13",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-50),toolMode:beansToolMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
       const endpoint=NBL_BEANS_WEB_API;
       const response=await fetch(endpoint,{
         method:"POST",
