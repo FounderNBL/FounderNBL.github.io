@@ -84,7 +84,10 @@ withdraw.addEventListener("click",async()=>{
  if(running)return;setRunning(true);setStatus("Updating your registration…");
  try{
   const data=await request("POST",{action:"withdraw"},{redirect:false});
-  if(data)updateUi({status:"withdrawn"},null);
+  if(data){
+    const refreshed=await request("GET",null,{redirect:false});
+    if(refreshed)updateUi(refreshed.registration,refreshed.identity);
+  }
  }catch(error){setStatus(error.message||"Registration could not be changed.");}
  finally{setRunning(false);}
 });
