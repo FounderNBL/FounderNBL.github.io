@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Welcome to the Frontier | New Beansland University</title>
-<meta name="description" content="Step inside New Beansland University. Discover the Frontier, explore the Foundation, try a free reasoning sample, and visit the protected student campus.">
+<meta name="description" content="Welcome to the Frontier at NBL University. Explore programs and prices, create your NBL student account, choose a username and receive your student ID.">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#02070d">
 <link rel="canonical" href="https://newbeansland.org/university.html">
@@ -17,6 +17,30 @@
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 0,rgba(42,78,111,.24),transparent 40%),linear-gradient(180deg,#02060b,#06111d 60%,#02060b);color:var(--cream);font-family:Arial,Helvetica,sans-serif}
 main{width:min(1260px,calc(100% - 24px));margin:0 auto;padding:clamp(120px,14vw,170px) 0 70px}.card{padding:clamp(26px,6vw,60px);border:1px solid var(--line);border-radius:24px;background:linear-gradient(180deg,rgba(9,28,43,.94),rgba(4,15,25,.98));box-shadow:0 30px 90px rgba(0,0,0,.42);text-align:center}.eyebrow{margin:0;color:var(--gold2);font-size:.72rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase}h1{margin:12px auto;color:var(--gold2);font:700 clamp(2.5rem,8vw,5.2rem)/.95 Georgia,"Times New Roman",serif}.lead{max-width:760px;margin:0 auto;color:#eee3d2;font:600 clamp(1rem,2vw,1.25rem)/1.6 Georgia,serif}.split{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:28px;text-align:left}.panel{padding:18px;border:1px solid rgba(255,255,255,.10);border-radius:15px;background:rgba(0,0,0,.18)}.panel strong{color:var(--gold2)}.panel p{margin:7px 0 0;color:var(--soft);font-size:.86rem;line-height:1.5}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;margin-top:26px;padding:12px 20px;border:1px solid var(--gold2);border-radius:999px;background:linear-gradient(180deg,#f3d994,#cf9630);color:#111;font-weight:900;text-decoration:none}.small{margin:16px 0 0;color:#8e8578;font-size:.78rem;line-height:1.5}.small a{color:#a99c8b}
 @media(max-width:700px){.split{grid-template-columns:1fr}.btn{width:100%}}
+</style>
+<style id="nblu-single-frontier-admissions-style">
+/* All admissions steps live on this Welcome to the Frontier page. */
+.nblu-frontier-admissions{max-width:1110px;margin:62px auto 0;padding:clamp(24px,5vw,52px);border:1px solid rgba(214,161,75,.48);border-radius:20px;background:linear-gradient(150deg,#09263b,#071622 70%,#07111d);scroll-margin-top:95px}
+.nblu-frontier-admissions h2{color:#f1d18b;font:700 clamp(1.8rem,4.5vw,2.8rem)/1.18 Georgia,serif}
+.nblu-frontier-admissions h3{color:#f0c56f;font:700 clamp(1.2rem,3vw,1.6rem) Georgia,serif}
+.nblu-frontier-admissions p{line-height:1.65}
+.nblu-student-registration{padding:clamp(18px,3vw,34px);margin:25px 0;border:1px solid rgba(240,197,111,.3);border-radius:16px;background:rgba(3,12,21,.68);scroll-margin-top:95px}
+.nblu-student-registration label{display:block;font-weight:700;color:#f1d18b;margin:14px 0 7px}
+.nblu-field-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.nblu-field-row input{flex:1 1 220px;min-height:48px;border:1px solid #ba9557;border-radius:10px;background:#0a2234;color:white;padding:12px 14px;font-size:1rem;min-width:0}
+.nblu-field-row .nblu-button{cursor:pointer}
+.nblu-student-card{border:1px solid #d6a14b;border-radius:13px;padding:18px 21px;background:#0c2535;display:grid;gap:9px;margin:22px 0}
+.nblu-student-card>span{color:#f0c56f;font-weight:800;font-size:.75rem;text-transform:uppercase;letter-spacing:.12em}
+.nblu-student-card strong{font-size:1.1rem;word-break:break-word;color:#fff3d7}
+.nblu-student-card small{color:#d5ddd9;line-height:1.6}
+.nblu-student-prices{margin-top:34px}
+.nblu-frontier-admissions .university-categories{text-align:left}
+.nblu-frontier-admissions .panel{background:rgba(0,0,0,.25)}
+.nblu-frontier-admissions .panel strong{color:#f0c56f}
+.nblu-frontier-admissions .small,.nblu-frontier-admissions .nblu-small{color:#d3d8da}
+.nblu-frontier-admissions .small a,.nblu-frontier-admissions .nblu-small a{color:#f0c56f}
+.nblu-frontier-admissions .btn[disabled]{opacity:.7;cursor:not-allowed}
+@media(max-width:620px){.nblu-frontier-admissions{padding:20px 15px}.nblu-field-row .nblu-button{width:100%}}
 </style>
 <style id="nbl-university-categories-style">
 .university-categories{display:grid;gap:12px;margin:18px 0}.university-category{border:1px solid rgba(214,161,75,.45);border-radius:14px;overflow:hidden;background:#091b28}
@@ -73,14 +97,14 @@ document.addEventListener("DOMContentLoaded",function(){
 <div class="nblu-arrival">
   <div class="nblu-masthead">
     <div class="nblu-university-id"><img src="/NBL-New-Official-Seal.png?v=c52ddcff" width="58" height="58" alt="Official New Beansland seal"><span><strong>New Beansland University</strong><small>Knowledge · Judgment · Discernment</small></span></div>
-    <nav class="nblu-doors" aria-label="University destinations"><a href="#welcome">The Frontier</a><a href="#academics">Academics</a><a href="/campus.html">Student Campus</a><a href="/university-enrollment.html#enroll">Admissions</a><a href="/" aria-label="Switch from NBL University back to Beans">Switch to Beans</a></nav>
+    <nav class="nblu-doors" aria-label="University destinations"><a href="#welcome">The Frontier</a><a href="#academics">Academics</a><a href="/campus.html">Student Campus</a><a href="#enroll">Admissions & Tuition</a><a href="/" aria-label="Switch from NBL University back to Beans">Switch to Beans</a></nav>
   </div>
   <section class="nblu-gateway" aria-labelledby="nblu-gateway-title">
     <div class="nblu-gateway-text">
       <p class="nblu-overline">A different kind of university · The Frontier</p>
       <h1 id="nblu-gateway-title">Welcome to<br><em>the Frontier.</em></h1>
       <p class="nblu-intro">You don't come here to be told what to think. You come here to learn how to examine what you think, what somebody tells you, and what the evidence actually proves.</p>
-      <div class="nblu-actions"><a class="nblu-button" href="#welcome">Step inside the University</a><a class="nblu-button nblu-outline" href="/campus.html#grey">Student entrance · Professor Grey</a><a class="nblu-button nblu-outline" href="https://university.newbeansland.org/">Visit the NBL University website</a></div>
+      <div class="nblu-actions"><a class="nblu-button" href="#early-registration">Create student account</a><a class="nblu-button nblu-outline" href="#enroll">Programs &amp; tuition</a></div>
       <p class="nblu-small">The University is preparing for its opening. This public entrance is free to explore; the enrolled campus remains protected.</p>
     </div>
     <div class="nblu-gateway-art"><img src="/NBL_University.png?v=5fa210ae" alt="Official NBL University entrance artwork"></div>
@@ -99,7 +123,7 @@ document.addEventListener("DOMContentLoaded",function(){
   </section>
   <section class="nblu-grounds" aria-labelledby="nblu-grounds-title">
     <div class="nblu-section-marker"><span>02</span> Explore the grounds</div>
-    <h2 id="nblu-grounds-title">This is a university, not a checkout page.</h2>
+    <h2 id="nblu-grounds-title">A university first. Registration and tuition in one place.</h2>
     <p class="nblu-description">Take a look around. There's a learning path, a student campus, and a little something from the Founder's way of thinking. Find out what we're building before anybody asks you to buy anything.</p>
     <div class="nblu-halls">
       <article class="nblu-hall nblu-hall-featured"><span class="nblu-number">OPEN TO EVERYONE · FREE</span><h3>The Dickitry Clause</h3><p>A three-page trip into words, context and evidence—with a small reasoning exercise at the end. This is a public sample, not a course exam or the enrolled Frontier Check.</p><a href="/nblu-dickitry-clause.html">Try a little something <span aria-hidden="true">→</span></a></article>
@@ -115,29 +139,68 @@ document.addEventListener("DOMContentLoaded",function(){
     <p class="nblu-courses-note">These are the currently prepared Foundation courses. The wider University and future courses are unfinished; nothing here represents an accreditation claim or an official degree program.</p>
   </section>
   <section class="nblu-steps" aria-label="Entering the NBL University">
-    <div><span>01</span><strong>Explore</strong><p>Get a feel for the thinking and the place.</p></div><div><span>02</span><strong>Register free</strong><p>Join the early interest list with your NBL account.</p></div><div><span>03</span><strong>Enter when open</strong><p>Enrollment and verified access unlock protected coursework when the University opens.</p></div>
+    <div><span>01</span><strong>Explore</strong><p>Get a feel for the thinking and the place.</p></div><div><span>02</span><strong>Register free</strong><p>Create your student identity and get your NBLU student number.</p></div><div><span>03</span><strong>Enter when open</strong><p>Enrollment and verified access unlock protected coursework when the University opens.</p></div>
   </section>
-  <section class="nblu-join" aria-labelledby="nblu-join-title"><p class="nblu-overline">Your future campus</p><h2 id="nblu-join-title">There's more here than a price tag.</h2><p>Take the free sample, read our original Frontier statement and see what we're building. If you want to be here when the doors open, early registration is free. No charge and no false promise of early classroom access.</p><div class="nblu-actions"><a class="nblu-button" href="/university-enrollment.html#early-registration">Join free early registration</a><a class="nblu-button nblu-outline" href="/university-enrollment.html#enroll">View enrollment information</a></div><p class="nblu-small">Target opening: December 2026, subject to readiness. Paid checkout and protected classes remain closed.</p></section>
+  <section class="nblu-join" aria-labelledby="nblu-join-title"><p class="nblu-overline">Your future campus</p><h2 id="nblu-join-title">There's more here than a price tag.</h2><p>Take the free sample, read our original Frontier statement and see what we're building. If you want to be here when the doors open, early registration is free. No charge and no false promise of early classroom access.</p><div class="nblu-actions"><a class="nblu-button" href="#early-registration">Create student account / register free</a><a class="nblu-button nblu-outline" href="#enroll">View tuition &amp; programs</a></div><p class="nblu-small">Target opening: December 2026, subject to readiness. Paid checkout and protected classes remain closed.</p></section>
 </div>
 
-<section class="nblu-enrollment-door" aria-labelledby="nblu-tuition-door-title">
-  <p class="nblu-overline">Admissions · a separate University destination</p>
-  <h2 id="nblu-tuition-door-title">Ready to explore enrollment?</h2>
-  <p>Now you know what the University is about, here's where you can look at registration, tuition and the available program options. It's a separate step, and nothing charges you when you enter.</p>
-  <div class="nblu-actions"><a class="nblu-button" href="/university-enrollment.html#enroll">Explore Enrollment &amp; Tuition</a><a class="nblu-button nblu-outline" href="/university-enrollment.html#early-registration">Free early registration</a></div>
-  <p class="nblu-small">Professor Grey takes over the University student experience only after LOCKE confirms the right enrollment. To return to the general NBL assistant, you can always <a href="/">switch back to Beans</a>.</p>
+<section class="nblu-frontier-admissions" id="enroll" aria-labelledby="nblu-frontier-admissions-title">
+  <div class="nblu-section-marker"><span>04</span> University Admissions & Student Identity</div>
+  <h2 id="nblu-frontier-admissions-title">Prices, registration, and your NBLU student account.</h2>
+  <p class="nblu-description">Everything starts here on the Frontier: create your free NBL account, choose your NBLU username, receive your permanent student number when you register, and explore the published tuition options. Classes and paid enrollment have not begun.</p>
+  <section id="early-registration" class="nblu-student-registration" aria-labelledby="nblu-student-account-title">
+    <h3 id="nblu-student-account-title">Create your NBLU student account</h3>
+    <p>Your student identity uses the same secure NBL account as Beans. No second password. Free registration reserves a student number; LOCKE will still require a verified paid enrollment before opening protected coursework.</p>
+    <div class="nblu-actions">
+      <a class="nblu-button" href="https://accounts.newbeansland.org/sign-up?redirect_url=https%3A%2F%2Fnewbeansland.org%2Funiversity.html%23early-registration">Create free NBL / student account</a>
+      <a class="nblu-button nblu-outline" href="https://accounts.newbeansland.org/sign-in?redirect_url=https%3A%2F%2Fnewbeansland.org%2Funiversity.html%23early-registration">Already have an account? Sign in</a>
+    </div>
+    <form data-nbl-university-username-form class="nblu-student-username-form">
+      <label for="nblu-student-username">Your NBLU username</label>
+      <div class="nblu-field-row"><input id="nblu-student-username" name="username" autocomplete="username" minlength="3" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}" placeholder="Choose a username" required><button class="nblu-button" type="submit">Save my username</button></div>
+      <p class="nblu-small" data-nbl-university-username-status role="status" aria-live="polite">Your username belongs to your existing NBL account and carries into the University.</p>
+    </form>
+    <div class="nblu-student-card" aria-live="polite">
+      <span>Student registration</span>
+      <strong data-nbl-university-student-id>Sign in and register to receive your NBLU student ID</strong>
+      <small>Username: <span data-nbl-university-username>Not chosen yet</span> · <span data-nbl-university-student-status>Enrollment pending</span></small>
+    </div>
+    <h3>Free early registration</h3>
+    <p>Choose a program of interest. This creates a prospective student record and permanent NBLU student ID; it does not charge your card, reserve a paid benefit, or unlock classes.</p>
+    <form data-nbl-university-interest-form>
+        <label for="nbl-university-interest-kind">Which program are you interested in?</label>
+        <select id="nbl-university-interest-kind" name="interestKind" required style="display:block;width:100%;max-width:580px;padding:12px;border-radius:9px;background:#0a2334;color:#fff;border:1px solid var(--line);margin-top:8px">
+          <option value="foundation_university">Foundation + University (planned $34.99)</option>
+          <option value="beans_university">Beans + University (planned $14.99/month)</option>
+          <option value="full_nblu">Full NBLU: Digital DIY $184.99 / Physical Books $449.99 (choose later)</option>
+        </select>
+        <label style="display:block;margin-top:13px;font-size:.9rem"><input type="checkbox" name="emailOptIn" value="yes"> Email me University launch updates through my NBL account (optional).</label>
+        <button type="submit" class="btn" data-nbl-university-interest-submit style="cursor:pointer">Join early registration</button>
+        <button type="button" class="btn" data-nbl-university-interest-withdraw style="display:none;background:none;color:var(--gold2);margin-left:8px;cursor:pointer">Leave waiting list</button>
+        <p class="small" data-nbl-university-interest-status role="status" aria-live="polite">Choose your NBLU username and register free. Your permanent student ID appears here when registration is saved.</p>
+      </form>
+    <p class="nblu-small">Target opening: December 2026, subject to readiness. If NBL collects advance tuition and cannot deliver the promised instruction, the published advance-enrollment refund promise applies. <a href="/pricing.html#early-enrollment">Refund information</a>.</p>
+  </section>
+  <section class="nblu-student-prices" aria-labelledby="nblu-frontier-prices-title">
+    <h3 id="nblu-frontier-prices-title">Programs and tuition</h3>
+    <p class="nblu-small">Published program prices appear below. Payment buttons remain disabled until their existing checkout and LOCKE account checks are verified. Free student registration is available now.</p>
+    <div class="university-categories" aria-label="University program categories">
+<details class="university-category"><summary><strong>Foundation & materials</strong><small>Physical books · Foundation access · first month</small></summary><div class="split"><article class="panel"><strong>Foundation Materials + First Month of Beans · $29.99 once</strong><p>Two physical books and one month of regular Beans. No ebooks, coursework or University access are included. Beans then renews at $4.99/month until cancelled or upgraded, with customer recurring-payment consent. No University enrollment.</p><button class="btn" type="button" data-nbl-university-checkout="foundation" disabled title="Checkout verification pending">Checkout verification pending</button></article>
+<article class="panel"><strong>Foundation + University · $34.99 once — planned</strong><p>Two physical books, eBooks/coursework and the first month of Beans plus University student access when campus opens. Qualifying continuation renews at $9.99/month after the included month, until cancelled or changed, with no extra $4.99 Beans charge.</p><span class="small">Checkout verification pending; no payment accepted here yet.</span></article></div></details>
+<details class="university-category"><summary><strong>University & teachers</strong><small>Beans + University · student continuation · Professor Grey</small></summary><div class="split"><article class="panel"><strong>NBL Plus · $29.99/month — premium Beans only, checkout held</strong><p>Separate from the $29.99 Foundation Materials offer. NBL Plus is a premium Beans membership, not University enrollment and does not grant Grey or protected academic access.</p></article>
+<article class="panel"><strong>Beans + University · $14.99/month — planned</strong><p>One combined membership. Renews at $14.99/month until cancelled or changed. Not an extra charge on top of Beans; enrollment checkout held.</p></article>
+<article class="panel"><strong>Foundation student continuation · $9.99/month — planned</strong><p>For verified $34.99 package purchasers after their first included month. Renews at $9.99/month until cancelled or changed, without a separate Beans charge. Checkout held.</p></article>
+<article class="panel"><strong>Guided Foundation · $54.99 once</strong><p>Foundation with guided Professor Grey / Virgo learning.</p><button class="btn" type="button" data-nbl-university-checkout="full_foundation" disabled title="Checkout verification pending">Checkout verification pending</button></article></div></details>
+<details class="university-category"><summary><strong>Full NBLU experiences</strong><small>Digital DIY · stage-release physical books · continuation</small></summary><div class="split"><article class="panel"><strong>Full NBLU · Digital DIY · $184.99 once</strong><p>Same planned Full NBLU academic program, digital course books and six months of guided-service eligibility as the physical tier, without physical books. Study at your own pace; the University and Grey remain closed until opening and LOCKE authorization.</p><span class="small">Pre-enrollment checkout pending; no payment accepted here yet.</span></article>
+<article class="panel"><strong>Full NBLU · Physical Books · $449.99 once</strong><p>Same planned Full NBLU digital program and six-month guided service as the $184.99 DIY option, plus physical stage-release books (shipping may be charged separately).</p><button class="btn" type="button" disabled title="Checkout verification pending">Checkout verification pending</button></article>
+<article class="panel"><strong>Owner continuation · $14.99/month</strong><p>Guided learning continuation for verified Full NBLU owners.</p><button class="btn" type="button" disabled title="Checkout verification pending">Checkout verification pending</button></article></div></details>
+</div>
+
+    <p class="nblu-small">Professor Grey Harte and Virgo's protected classes open only for verified eligible students when the University begins instruction. <a href="/campus.html">Existing student campus</a> · <a href="/account.html">NBL account</a>.</p>
+  </section>
 </section>
-<script>
-(function(){
-  "use strict";
-  const oldEnrollmentFragments=new Set(["enroll","early-registration","enrollment-title","admissions-details"]);
-  function forwardLegacyLink(){
-    const fragment=decodeURIComponent(location.hash.slice(1));
-    if(oldEnrollmentFragments.has(fragment))location.replace("/university-enrollment.html#"+encodeURIComponent(fragment==="admissions-details"?"enroll":fragment));
-  }
-  forwardLegacyLink();window.addEventListener("hashchange",forwardLegacyLink);
-})();
-</script>
+<script defer src="/nbl-university-early-interest.js?v=20261031-frontier-student"></script>
+<script defer src="/nbl-university-checkout.js?v=20261019"></script>
 
 </main>
 </body>
