@@ -3,6 +3,8 @@
 
 // Independent human-messaging runtime. Beans remains on its own AI endpoint.
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
+const PUSH_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-messenger-push";
+const PUSH_OWNER_KEY="nbl-messenger-push-clerk-user-v1";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const INVITE_URL="https://newbeansland.org/messenger/";
@@ -10,6 +12,7 @@ const $=selector=>document.querySelector(selector);
 const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:false,realtimeThread:null,realtimeStop:null,inboxStop:null};
 let activeAuthUserId;
 let authSyncGeneration=0;
+let pushConfig=null;
 const status=message=>{const el=$("[data-chat-status]");if(el)el.textContent=message;};
 const lastSeenMessages=new Map();
 function rememberIncoming(threadId,messages,{announce=false}={}){
@@ -85,6 +88,167 @@ async function social(body){
   }
   return payload;
 }
+
+function supportsPhonePush(){
+ return Boolean(window.isSecureContext!==false
+   &&typeof window.Notification!=="undefined"
+   &&"serviceWorker" in navigator
+   &&"PushManager" in window);
+}
+function setPushStatus(message){
+ const element=$("[data-chat-notify-status]");
+ if(element)element.textContent=message;
+}
+function base64UrlBytes(text){
+ const normalized=String(text||"").replace(/-/g,"+").replace(/_/g,"/");
+ const padded=normalized.padEnd(Math.ceil(normalized.length/4)*4,"=");
+ const value=atob(padded);
+ const bytes=new Uint8Array(value.length);
+ for(let i=0;i<value.length;i++)bytes[i]=value.charCodeAt(i);
+ return bytes;
+}
+async function pushApi(body){
+ // Use the SAME signed-in Clerk account isolation as normal NBL Messenger.
+ const userId=state.clerk?.user?.id||null,generation=authSyncGeneration;
+ const token=await authToken();
+ const current=()=>Boolean(userId&&generation===authSyncGeneration&&state.clerk?.user?.id===userId&&state.clerk?.isSignedIn);
+ if(!current())throw Error("NBL account changed. Retry from your current account.");
+ const res=await fetch(PUSH_API,{
+  method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+token},
+  cache:"no-store",body:JSON.stringify(body)
+ });
+ const payload=await res.json().catch(()=>({}));
+ if(!current())throw Error("NBL account changed. Retry from your current account.");
+ if(!res.ok||payload?.ok!==true)throw Error(payload?.reason||"Phone notification service unavailable.");
+ return payload;
+}
+async function messengerWorker(){
+ if(!("serviceWorker" in navigator))throw Error("This browser does not support NBL phone notifications.");
+ return await navigator.serviceWorker.register("/messenger/sw.js",{scope:"/messenger/"});
+}
+function updatePhoneButtons(enabled){
+ $("[data-chat-notify-enable]").hidden=enabled;
+ $("[data-chat-notify-disable]").hidden=!enabled;
+}
+async function subscription(){
+ if(!supportsPhonePush())return null;
+ const reg=await messengerWorker();
+ return await reg.pushManager.getSubscription();
+}
+async function loadPhoneSettings(){
+ const card=$("[data-chat-notification-settings]");
+ card.hidden=false;
+ if(!supportsPhonePush()){
+  updatePhoneButtons(false);
+  $("[data-chat-notify-enable]").disabled=true;
+  setPushStatus("Your browser cannot receive background web push. The existing NBL Infinity in-app sound still works.");
+  return;
+ }
+ $("[data-chat-notify-enable]").disabled=false;
+ try{
+  const config=await pushApi({action:"push_config"});
+  pushConfig=config;
+  const panel=$("[data-chat-notification-founder]");
+  panel.hidden=config.founderControls!==true;
+  if(config.founderControls===true){
+   $("[data-chat-notify-title]").value=config.title||"NBL Messenger";
+   $("[data-chat-notify-body]").value=config.body||"You have a new message.";
+   $("[data-chat-notify-sender]").checked=config.showSender===true;
+  }
+  const current=await subscription();
+  const enabled=Boolean(current&&window.Notification.permission==="granted");
+  updatePhoneButtons(enabled);
+  setPushStatus(enabled
+   ?"Phone alerts enabled on this browser. The phone controls background sound and appearance."
+   :"Phone alerts are off on this browser. Enable them to receive messages when Messenger is closed.");
+ }catch(error){
+  updatePhoneButtons(false);
+  $("[data-chat-notification-founder]").hidden=true;
+  setPushStatus(error.message||"Phone notification service unavailable.");
+ }
+}
+async function enablePhonePush(){
+ if(!supportsPhonePush()){setPushStatus("Background web push is unavailable in this browser.");return;}
+ try{
+  // Ask on the click itself, not on boot. Browser notification consent is optional.
+  const permission=await window.Notification.requestPermission();
+  if(permission!=="granted"){setPushStatus("Phone alerts were not enabled. You can allow notifications in your browser settings.");return;}
+  const config=pushConfig||await pushApi({action:"push_config"});
+  const reg=await messengerWorker();
+  const existing=await reg.pushManager.getSubscription();
+  // The VAPID application-server key is stable. A stale subscription can be
+  // safely replaced and then bound only to this verified Clerk identity.
+  if(existing)await existing.unsubscribe();
+  const sub=await reg.pushManager.subscribe({
+   userVisibleOnly:true,applicationServerKey:base64UrlBytes(config.publicKey)
+  });
+  try{
+   await pushApi({action:"push_subscribe",subscription:sub.toJSON()});
+  }catch(error){await sub.unsubscribe().catch(()=>{});throw error;}
+  try{localStorage.setItem(PUSH_OWNER_KEY,state.clerk.user.id);}catch{}
+  updatePhoneButtons(true);
+  setPushStatus("Phone alerts enabled. Tap Preview to see a real phone notification.");
+ }catch(error){setPushStatus(error.message||"Could not enable phone alerts.");}
+}
+async function disablePhonePush(){
+ if(!supportsPhonePush())return;
+ try{
+  const sub=await subscription();
+  if(sub){
+   try{await pushApi({action:"push_unsubscribe",endpoint:sub.endpoint});}catch{}
+   await sub.unsubscribe();
+  }
+  try{localStorage.removeItem(PUSH_OWNER_KEY);}catch{}
+  updatePhoneButtons(false);
+  setPushStatus("Phone alerts off on this device. In-app NBL Infinity sound remains available.");
+ }catch(error){setPushStatus(error.message||"Could not disable phone alerts.");}
+}
+async function forgetPushForDifferentAccount(newId){
+ let owner="";
+ try{owner=localStorage.getItem(PUSH_OWNER_KEY)||"";}catch{}
+ if(!owner||owner===newId)return;
+ // Prevent another account on this browser receiving the previous owner's
+ // phone notifications. Unsubscribe the browser endpoint before showing UI.
+ try{
+  if("serviceWorker" in navigator){
+   const reg=await navigator.serviceWorker.getRegistration("/messenger/");
+   const old=await reg?.pushManager?.getSubscription();
+   await old?.unsubscribe();
+  }
+ }catch{}
+ try{localStorage.removeItem(PUSH_OWNER_KEY);}catch{}
+}
+async function previewPhoneNotification(){
+ if(typeof window.Notification==="undefined"||!("serviceWorker" in navigator)){
+  setPushStatus("Your browser does not support phone notification previews.");return;
+ }
+ try{
+  const permission=await window.Notification.requestPermission();
+  if(permission!=="granted"){setPushStatus("Allow notifications to see a phone preview.");return;}
+  const reg=await messengerWorker();
+  const conf=pushConfig||{title:"NBL Messenger",body:"You have a new message.",showSender:true};
+  await reg.showNotification(conf.title||"NBL Messenger",{
+   body:conf.body||"You have a new message.",
+   icon:"/messenger/icon.svg",badge:"/messenger/icon.svg",
+   tag:"nbl-messenger-preview",data:{url:"/messenger/"}
+  });
+  setPushStatus("Phone preview shown. Your phone controls its system sound; Test ♾️ sound plays the original NBL audio inside Messenger.");
+ }catch(error){setPushStatus(error.message||"Phone preview unavailable.");}
+}
+async function saveFounderPhoneTemplate(event){
+ event.preventDefault();
+ if(state.me?.role!=="founder")return;
+ const title=$("[data-chat-notify-title]").value.trim();
+ const body=$("[data-chat-notify-body]").value.trim();
+ if(title.length<3||body.length<5){setPushStatus("Please enter a heading and message preview.");return;}
+ try{
+  pushConfig=await pushApi({
+   action:"push_template_set",title,body,showSender:$("[data-chat-notify-sender]").checked===true
+  });
+  setPushStatus("NBL phone notification template saved for future messages. Preview it on this phone.");
+ }catch(error){setPushStatus(error.message||"Notification template could not be saved.");}
+}
+
 function displayThread(row){
   if(row.thread_type==="direct")return row.peer?.handle?"@"+row.peer.handle:"Direct message";
   return row.title||"NBL conversation";
@@ -229,6 +393,7 @@ async function refresh(){
       $("[data-chat-messages]").replaceChildren(node("p","hint","Choose a conversation."));
     }
     renderThreads();
+    await loadPhoneSettings();
     if(state.selectedId)await openThread(state.selectedId);
     else status("NBL Messenger is ready. Open a DM or select a conversation.");
   }catch(error){status(error.message||"NBL Messenger could not refresh.");}
@@ -349,6 +514,9 @@ async function syncClerkSession(){
   lastSeenMessages.clear();
   $("[data-chat-userbar]").hidden=true;
   $("[data-chat-app]").hidden=true;
+  $("[data-chat-notification-settings]").hidden=true;
+  $("[data-chat-notification-founder]").hidden=true;
+  pushConfig=null;
   $("[data-chat-myhandle]").textContent="@NBL member";
   $("[data-chat-founder-marker]").hidden=true;
   $("[data-chat-handle-setup]").hidden=true;
@@ -362,6 +530,8 @@ async function syncClerkSession(){
   $("[data-chat-find-input]").value="";
   $("[data-chat-dm-handle]").value="";
   resetComposer();
+  await forgetPushForDifferentAccount(userId);
+  if(generation!==authSyncGeneration)return;
   if(!userId){
     $("[data-chat-guest]").hidden=false;
     $("[data-chat-auth-status]").textContent="Sign in to send and read human-to-human messages. University enrollment is not required for direct messages.";
@@ -378,6 +548,10 @@ async function syncClerkSession(){
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
   $("[data-nbl-infinity-preview]")?.addEventListener("click",()=>{window.NBLInfinitySound?.play("people");});
+  $("[data-chat-notify-enable]").addEventListener("click",()=>{void enablePhonePush();});
+  $("[data-chat-notify-disable]").addEventListener("click",()=>{void disablePhonePush();});
+  $("[data-chat-notify-preview]").addEventListener("click",()=>{void previewPhoneNotification();});
+  $("[data-chat-notification-founder]").addEventListener("submit",saveFounderPhoneTemplate);
   $("[data-chat-share-invite]").addEventListener("click",()=>{void shareInvite();});
   $("[data-chat-copy-invite]").addEventListener("click",()=>{void copyInvite();});
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
@@ -388,7 +562,7 @@ async function boot(){
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
   $("[data-chat-unblock]").addEventListener("click",()=>{void unblockPeer();});
   $("[data-chat-signout]").addEventListener("click",async()=>{
-    try{state.realtimeStop?.();state.inboxStop?.();await(await clerk()).signOut();window.location.reload();}
+    try{state.realtimeStop?.();state.inboxStop?.();await disablePhonePush();await(await clerk()).signOut();window.location.reload();}
     catch{window.location.href=ACCOUNT_PORTAL;}
   });
   try{
