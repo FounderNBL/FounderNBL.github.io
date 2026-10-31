@@ -55,7 +55,7 @@ assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261031-neighborhood/);
+assert.match(sw, /nbl-messenger-shell-20261031-phone-alert/);
 
 
 for(const item of [
