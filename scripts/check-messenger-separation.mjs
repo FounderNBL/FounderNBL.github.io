@@ -57,4 +57,35 @@ assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
 assert.doesNotMatch(app, /type="file"/);
 assert.match(sw, /nbl-messenger-shell-20261031-neighborhood/);
 
-console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites preserved.");
+
+for(const item of [
+ "data-chat-notification-settings",
+ "data-chat-notify-enable",
+ "data-chat-notify-disable",
+ "data-chat-notify-preview",
+ "data-chat-notification-founder",
+ "data-chat-notify-title",
+ "data-chat-notify-body",
+ "data-chat-notify-sender",
+ "nbl-infinity-sound.js"
+])assert.ok(app.includes(item),"Phone notification UI lost: "+item);
+for(const item of [
+ 'action:"push_config"',
+ 'action:"push_subscribe"',
+ 'action:"push_unsubscribe"',
+ 'action:"push_template_set"',
+ 'reg.pushManager.subscribe({',
+ 'await reg.showNotification(',
+ 'window.Notification.requestPermission()',
+ 'await forgetPushForDifferentAccount(userId)',
+ 'await disablePhonePush()'
+])assert.ok(js.includes(item),"Phone push workflow lost: "+item);
+assert.match(js,/state.me\?\.role!=="founder"/);
+assert.match(js,/window.NBLInfinitySound\?\.play\("people"\)/);
+assert.match(sw,/self.addEventListener\("push"/);
+assert.match(sw,/self.addEventListener\("notificationclick"/);
+assert.match(sw,/new URL\("\/messenger\/",self.location.origin\)/);
+assert.doesNotMatch(sw,/event\.data\?\.json\(\)[\s\S]*token/);
+assert.doesNotMatch(app,/type="file"/);
+
+console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and phone notification controls preserved.");
