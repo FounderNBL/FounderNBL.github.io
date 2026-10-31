@@ -10,10 +10,10 @@
   <meta name="application-name" content="NBL Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
-  <link rel="stylesheet" href="/messenger/app.css?v=20261031-neighborhood">
+  <link rel="stylesheet" href="/messenger/app.css?v=20261031-phone-alert">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
-  <script defer src="/messenger/app.js?v=20261031-neighborhood"></script>
+  <script defer src="/messenger/app.js?v=20261031-phone-alert"></script>
 </head>
 <body>
   <header class="topbar">
@@ -100,6 +100,31 @@
           <button class="btn primary" type="submit" disabled>Send message</button>
         </form>
       </article>
+    </section>
+    <section class="notification-settings" data-chat-notification-settings hidden aria-label="NBL Messenger phone notifications">
+      <div class="notification-heading">
+        <div>
+          <p class="eyebrow">NBL Infinity ♾️ · Phone alerts</p>
+          <h2>Message notifications</h2>
+          <p>Choose whether this device shows phone alerts when you receive a message. The existing NBL Infinity sound still plays inside Messenger. Background alert sounds follow your phone settings.</p>
+        </div>
+      </div>
+      <div class="notification-actions">
+        <button class="btn primary" type="button" data-chat-notify-enable>Enable phone alerts</button>
+        <button class="btn" type="button" data-chat-notify-disable hidden>Turn off phone alerts</button>
+        <button class="btn" type="button" data-chat-notify-preview>Preview on this phone</button>
+      </div>
+      <p class="hint" data-chat-notify-status aria-live="polite">Phone alerts require permission from your device.</p>
+      <form class="notification-founder" data-chat-notification-founder hidden>
+        <p class="eyebrow">Founder controls · Phone notification wording</p>
+        <p>Set what members see in a phone alert. Your approved message bubbles and Infinity sound are unchanged. Your phone decides the outer notification layout.</p>
+        <label for="nbl-notify-title">Notification heading</label>
+        <input id="nbl-notify-title" data-chat-notify-title maxlength="55" required placeholder="NBL Messenger">
+        <label for="nbl-notify-body">Notification text (never shows private messages)</label>
+        <input id="nbl-notify-body" data-chat-notify-body maxlength="140" required placeholder="You have a new message.">
+        <label class="checkbox-label"><input type="checkbox" data-chat-notify-sender> Show sender's public @NBL handle</label>
+        <button class="btn primary" type="submit">Save NBL phone notification</button>
+      </form>
     </section>
     <p class="status" data-chat-status role="status" aria-live="polite">NBL Messenger uses your existing NBL account. Private messages are visible only to participants.</p>
     <section class="campus-link">
