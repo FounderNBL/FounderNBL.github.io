@@ -39,4 +39,22 @@ assert.match(university, /study.hall/i);
 assert.match(oldHumanChat, /data-chat-send-form/); // old bookmarks still work
 assert.match(website, /href="\/messenger\//); // discoverable without Beans
 
-console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing preserved.");
+// A zero-thread inbox is NOT proof that nobody else has registered.
+// Welcome existing verified Founder without inventing fake member profiles.
+assert.match(app, /data-chat-invite hidden/);
+assert.match(app, /data-chat-share-invite/);
+assert.match(app, /data-chat-copy-invite/);
+assert.match(app, /data-chat-handle-setup hidden/);
+assert.match(app, /data-chat-founder-marker hidden/);
+assert.match(app, /href="\/account\.html"/);
+assert.match(js, /const INVITE_URL="https:\/\/newbeansland\.org\/messenger\/"/);
+assert.match(js, /const founder=state\.me\?\.role==="founder"/);
+assert.match(js, /if\(invite\)invite\.hidden=!empty/);
+assert.match(js, /await navigator\.share\(/);
+assert.match(js, /navigator\.clipboard\?\.writeText/);
+assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
+assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
+assert.doesNotMatch(app, /type="file"/);
+assert.match(sw, /nbl-messenger-shell-20261031-neighborhood/);
+
+console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites preserved.");

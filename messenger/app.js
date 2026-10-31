@@ -5,6 +5,7 @@
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
+const INVITE_URL="https://newbeansland.org/messenger/";
 const $=selector=>document.querySelector(selector);
 const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:false,realtimeThread:null,realtimeStop:null,inboxStop:null};
 let activeAuthUserId;
@@ -102,15 +103,43 @@ function renderIdentity(me){
   state.me=me||{};
   const label=$("[data-chat-myhandle]");
   label.textContent=me?.handle?"@"+me.handle:"Your NBL account";
+  const founder=me?.role==="founder";
+  const marker=$("[data-chat-founder-marker]");
+  if(marker)marker.hidden=!founder;
+  const setup=$("[data-chat-handle-setup]");
+  if(setup)setup.hidden=Boolean(me?.handle);
   const entry=$(".campus-link a");
   if(entry&&me?.university!==true){
     entry.textContent="See University";
   }
 }
+function renderInviteState(){
+  const empty=state.threads.length===0;
+  const founder=state.me?.role==="founder";
+  const invite=$("[data-chat-invite]");
+  if(invite)invite.hidden=!empty;
+  if(empty){
+    const title=$("[data-chat-invite-title]");
+    if(title)title.textContent=founder?"Welcome, Founder. The neighborhood starts here.":"You're early. Bring a friend!";
+    const description=$("[data-chat-invite-description]");
+    if(description)description.textContent=founder
+      ?"Your official NBL Messenger inbox is ready. Invite a real member to join the neighborhood and start talking."
+      :"Your inbox is ready. Invite a real NBL member, then find each other by your NBL usernames.";
+  }
+  if(!state.selectedId){
+    const title=$("[data-chat-thread-title]");
+    if(title)title.textContent=empty?"Welcome to your NBL neighborhood":"Choose a conversation";
+    const messages=$("[data-chat-messages]");
+    if(messages)messages.replaceChildren(node("p","hint",empty
+      ?"Your messages will appear here after you start chatting with another NBL member."
+      :"Select one of your conversations to read or send messages."));
+  }
+}
 function renderThreads(){
   const area=$("[data-chat-threads]");
   area.replaceChildren();
-  if(!state.threads.length){area.append(node("p","hint","No chats yet. Start one by handle."));return;}
+  renderInviteState();
+  if(!state.threads.length){area.append(node("p","hint","No conversations yet. Invite someone to join you."));return;}
   for(const row of state.threads){
     const item=node("button","thread"+(row.id===state.selectedId?" selected":""),displayThread(row));
     item.type="button";
@@ -216,6 +245,32 @@ async function openDM(handle){
   }catch(error){status(error.message||"That member could not be reached.");}
   finally{state.busy=false;resetComposer();}
 }
+async function copyInvite(){
+  try{
+    if(!navigator.clipboard?.writeText)throw new Error("Clipboard unavailable");
+    await navigator.clipboard.writeText(INVITE_URL);
+    status("NBL Messenger invite link copied. Share it with someone you know.");
+  }catch{
+    status("You can copy the invitation address shown in the welcome card.");
+  }
+}
+async function shareInvite(){
+  // The visitor controls sharing. NBL never reads contacts or messages anyone automatically.
+  if(typeof navigator.share==="function"){
+    try{
+      await navigator.share({
+        title:"NBL Messenger",
+        text:"Come join me on New Beansland! Sign in or create your NBL account and let's chat.",
+        url:INVITE_URL
+      });
+      status("Invite shared from your device.");
+      return;
+    }catch(error){
+      if(error?.name==="AbortError")return;
+    }
+  }
+  await copyInvite();
+}
 async function searchMembers(event){
   event.preventDefault();
   const q=$("[data-chat-find-input]").value.trim();
@@ -295,6 +350,9 @@ async function syncClerkSession(){
   $("[data-chat-userbar]").hidden=true;
   $("[data-chat-app]").hidden=true;
   $("[data-chat-myhandle]").textContent="@NBL member";
+  $("[data-chat-founder-marker]").hidden=true;
+  $("[data-chat-handle-setup]").hidden=true;
+  $("[data-chat-invite]").hidden=true;
   $("[data-chat-messages]").replaceChildren(node("p","hint","Choose a conversation."));
   $("[data-chat-threads]").replaceChildren();
   $("[data-chat-search-results]").replaceChildren();
@@ -320,6 +378,8 @@ async function syncClerkSession(){
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
   $("[data-nbl-infinity-preview]")?.addEventListener("click",()=>{window.NBLInfinitySound?.play("people");});
+  $("[data-chat-share-invite]").addEventListener("click",()=>{void shareInvite();});
+  $("[data-chat-copy-invite]").addEventListener("click",()=>{void copyInvite();});
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
   $("[data-chat-dm-form]").addEventListener("submit",event=>{event.preventDefault();void openDM($("[data-chat-dm-handle]").value.trim());});
   $("[data-chat-send-form]").addEventListener("submit",sendMessage);
