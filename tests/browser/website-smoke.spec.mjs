@@ -195,43 +195,35 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
   });
 
-  test("University visitors explore first, then choose enrollment on a distinct .org page", async ({ page }) => {
-    await open("/university.html", page);
-    await expect(page).toHaveTitle(/New Beansland University/i);
+  test("one University World Card leads to Frontier with prices, signup, username and student ID", async ({ page }) => {
+    await open("/",page);
+    const universityCard=page.locator('.world-grid .world-card[href="university.html"]');
+    await expect(universityCard).toHaveCount(1);
+    await universityCard.click();
+    await expect(page).toHaveURL(/\/university\.html$/);
+    await expect(page).toHaveTitle(/Welcome to the Frontier/i);
     await expect(page.getByRole("heading",{name:/Welcome to.*the Frontier/i})).toBeVisible();
-    await expect(page.locator('.nbl-world-beans-toggle')).toBeHidden();
-    await expect(page.locator('.nblu-doors a[href="/"]')).toBeVisible();
-    await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toHaveCount(0);
-    await expect(page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first()).toHaveAttribute("href","/university-enrollment.html#enroll");
-    // A GitHub Actions runner can receive an explicit Cloudflare challenge
-    // while following the otherwise working Admissions link. Distinguish it
-    // from a missing or broken University page; never classify 403 as PASS.
-    let enrollmentResponse=null;
-    const watchEnrollment=response=>{
-      if(response.request().isNavigationRequest() &&
-         new URL(response.url()).pathname==="/university-enrollment.html")
-        enrollmentResponse=response;
-    };
-    page.on("response",watchEnrollment);
-    try {
-      await page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first().click();
-      await expect(page).toHaveURL(/\/university-enrollment\.html#enroll/);
-    } finally {
-      page.off("response",watchEnrollment);
-    }
-    if(checkingLive && enrollmentResponse?.status()===403 &&
-       String(enrollmentResponse.headers()["cf-mitigated"]||"").toLowerCase()==="challenge"){
-      console.log("NBL_EXTERNAL_UNVERIFIED university-enrollment http=403 cf-mitigated=challenge cf-ray="+
-        String(enrollmentResponse.headers()["cf-ray"]||"unknown"));
-      test.skip(true,"UNVERIFIED: Cloudflare challenged GitHub's University enrollment navigation, not proof the NBL website failed.");
-    }
-    await expect(page.locator('.nbl-world-beans-toggle')).toBeHidden();
-    await expect(page.getByRole("link",{name:"Switch to Beans"})).toBeVisible();
-    await expect(page.getByRole("heading",{name:/University enrollment and payment/i})).toBeVisible();
-    await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
-    await expect(page.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
-    await expect(page.getByRole("link",{name:"Enter the University classroom"})).toHaveAttribute("href","/campus.html");
-    await expect(page.getByRole("link",{name:"Switch to Beans"})).toHaveAttribute("href","/");
+    await expect(page.locator(".nbl-world-beans-toggle")).toBeHidden();
+
+    const registration=page.locator("#early-registration");
+    const admissions=page.locator("#enroll");
+    await expect(registration).toHaveCount(1);
+    await expect(admissions).toHaveCount(1);
+    await expect(registration.getByRole("link",{name:/Create free NBL \/ student account/i})).toHaveAttribute(
+      "href",/accounts\.newbeansland\.org\/sign-up\?redirect_url=/
+    );
+    await expect(registration.locator('[data-nbl-university-username-form] input[name="username"]')).toHaveCount(1);
+    await expect(registration.locator('[data-nbl-university-interest-form]')).toHaveCount(1);
+    await expect(registration.locator("[data-nbl-university-student-id]")).toBeVisible();
+    await expect(admissions.getByText(/Foundation \+ University · \$34\.99/i).first()).toBeVisible();
+    await expect(admissions.getByText(/Guided Foundation · \$54\.99/i).first()).toBeVisible();
+    await expect(admissions.getByText(/Full NBLU · Digital DIY · \$184\.99/i).first()).toBeVisible();
+    await expect(admissions.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
+    await expect(admissions.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
+
+    await page.getByRole("link",{name:/Programs & tuition/i}).first().click();
+    await expect(page).toHaveURL(/\/university\.html#enroll$/);
+    await expect(page.locator('a[href="/university-enrollment.html#enroll"]')).toHaveCount(0);
   });
 
   test("same-origin campus remains protected and sign-in points to verified .org", async ({ page }) => {
