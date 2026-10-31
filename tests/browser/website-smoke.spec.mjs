@@ -203,8 +203,28 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator('.nblu-doors a[href="/"]')).toBeVisible();
     await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toHaveCount(0);
     await expect(page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first()).toHaveAttribute("href","/university-enrollment.html#enroll");
-    await page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first().click();
-    await expect(page).toHaveURL(/\/university-enrollment\.html#enroll/);
+    // A GitHub Actions runner can receive an explicit Cloudflare challenge
+    // while following the otherwise working Admissions link. Distinguish it
+    // from a missing or broken University page; never classify 403 as PASS.
+    let enrollmentResponse=null;
+    const watchEnrollment=response=>{
+      if(response.request().isNavigationRequest() &&
+         new URL(response.url()).pathname==="/university-enrollment.html")
+        enrollmentResponse=response;
+    };
+    page.on("response",watchEnrollment);
+    try {
+      await page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first().click();
+      await expect(page).toHaveURL(/\/university-enrollment\.html#enroll/);
+    } finally {
+      page.off("response",watchEnrollment);
+    }
+    if(checkingLive && enrollmentResponse?.status()===403 &&
+       String(enrollmentResponse.headers()["cf-mitigated"]||"").toLowerCase()==="challenge"){
+      console.log("NBL_EXTERNAL_UNVERIFIED university-enrollment http=403 cf-mitigated=challenge cf-ray="+
+        String(enrollmentResponse.headers()["cf-ray"]||"unknown"));
+      test.skip(true,"UNVERIFIED: Cloudflare challenged GitHub's University enrollment navigation, not proof the NBL website failed.");
+    }
     await expect(page.locator('.nbl-world-beans-toggle')).toBeHidden();
     await expect(page.getByRole("link",{name:"Switch to Beans"})).toBeVisible();
     await expect(page.getByRole("heading",{name:/University enrollment and payment/i})).toBeVisible();
