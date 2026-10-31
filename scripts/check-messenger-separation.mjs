@@ -52,7 +52,7 @@ assert.match(js, /const founder=state\.me\?\.role==="founder"/);
 assert.match(js, /if\(invite\)invite\.hidden=!empty/);
 assert.match(js, /await navigator\.share\(/);
 assert.match(js, /navigator\.clipboard\?\.writeText/);
-assert.match(js, /\["data-chat-invite"\]\)\.hidden=true/);
+assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
 assert.doesNotMatch(app, /type="file"/);
 assert.match(sw, /nbl-messenger-shell-20261031-neighborhood/);
