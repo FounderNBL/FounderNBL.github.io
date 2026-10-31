@@ -215,6 +215,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(registration.locator('[data-nbl-university-username-form] input[name="username"]')).toHaveCount(1);
     await expect(registration.locator('[data-nbl-university-interest-form]')).toHaveCount(1);
     await expect(registration.locator("[data-nbl-university-student-id]")).toBeVisible();
+    for(const summary of await admissions.locator("details.university-category > summary").all()) await summary.click();
     await expect(admissions.getByText(/Foundation \+ University · \$34\.99/i).first()).toBeVisible();
     await expect(admissions.getByText(/Guided Foundation · \$54\.99/i).first()).toBeVisible();
     await expect(admissions.getByText(/Full NBLU · Digital DIY · \$184\.99/i).first()).toBeVisible();
