@@ -10,10 +10,10 @@
   <meta name="application-name" content="NBL Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
-  <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
+  <link rel="stylesheet" href="/messenger/app.css?v=20261031-neighborhood">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
-  <script defer src="/messenger/app.js?v=20261024-account-isolation"></script>
+  <script defer src="/messenger/app.js?v=20261031-neighborhood"></script>
 </head>
 <body>
   <header class="topbar">
@@ -34,7 +34,7 @@
         <a class="btn primary" data-chat-signin href="https://newbeansland.org/account.html">Sign in / create account</a>
       </div>
       <div class="userbar" data-chat-userbar hidden>
-        <span>Signed in as <strong data-chat-myhandle>@NBL member</strong></span>
+        <span>Signed in as <strong data-chat-myhandle>@NBL member</strong> <span class="founder-marker" data-chat-founder-marker hidden>Verified Founder</span></span>
         <button class="btn small" type="button" data-nbl-infinity-preview aria-label="Test NBL Infinity notification sound">Test ♾️ sound</button>
         <button class="btn small" type="button" data-chat-signout>Sign out</button>
       </div>
@@ -62,6 +62,17 @@
           <button class="btn small" type="button" data-chat-refresh>Refresh</button>
         </div>
         <div data-chat-threads aria-label="Your conversations"></div>
+        <section class="invite-card" data-chat-invite hidden aria-label="Invite friends to NBL Messenger">
+          <p class="eyebrow">Welcome to the neighborhood</p>
+          <h3 data-chat-invite-title>You're early. Bring a friend!</h3>
+          <p data-chat-invite-description>Your inbox is ready. When another NBL member joins, you can message each other using your NBL handles.</p>
+          <div class="invite-actions">
+            <button class="btn primary" type="button" data-chat-share-invite>Invite a friend</button>
+            <button class="btn" type="button" data-chat-copy-invite>Copy invite link</button>
+          </div>
+          <a class="invite-url" data-chat-invite-url href="https://newbeansland.org/messenger/">newbeansland.org/messenger/</a>
+          <p class="invite-note">Real people only. No fake accounts, no extra Messenger registration, and no Beans AI credits.</p>
+        </section>
       </aside>
       <article class="conversation" aria-label="Current conversation">
         <div class="conversation-head">
@@ -76,7 +87,7 @@
           </div>
         </div>
         <div class="messages" data-chat-messages role="log" aria-live="polite" aria-label="Messages">
-          <p class="hint">Choose a conversation or open a DM by handle.</p>
+          <p class="hint">Choose a conversation or invite someone to join NBL Messenger.</p>
         </div>
         <form data-chat-send-form class="composer">
           <label for="chat-compose">Message</label>
