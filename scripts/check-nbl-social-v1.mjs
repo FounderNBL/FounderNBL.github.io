@@ -27,6 +27,13 @@ assert.match(ui,/Message an author through the existing NBL Messenger/);
 assert.match(js,/secured\(STREAM_BRIDGE,\{action:"session"\}\)/);
 assert.match(js,/secured\(SOCIAL_API,\{action:"me"\}\)/);
 assert.match(js,/const jwt=await c\.session\.getToken\(\)/);
+assert.match(js,/c\.addListener\?\.\(handleNBLAccountChange\)/);
+assert.match(js,/state\.unsubscribe\?\.\(\);state\.unsubscribe=null/);
+assert.match(js,/state\.client=null;state\.feed=null;state\.user=null;state\.me=null/);
+assert.match(js,/assertCurrentAccount\(actorId\)/);
+assert.match(js,/if\(api\.user\?\.id!==actorId\)/);
+assert.match(js,/location\.reload\(\)/);
+
 assert.match(js,/client\.connectUser\(\{id:api\.user\.id/);
 assert.match(js,/new FeedsClient\(api\.key/);
 assert.match(js,/getOrCreate\(\{watch:true,limit:20\}\)/);
