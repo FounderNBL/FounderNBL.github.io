@@ -17,6 +17,13 @@ assert.match(ui,/id="postForm"/);
 assert.match(js,/@stream-io\/feeds-client@2\.9\.0/);
 assert.match(js,/functions\/v1\/nbl-stream/);
 assert.match(js,/functions\/v1\/nbl-social/);
+assert.match(js,/action:"social_profile",userId:authorId/);
+assert.match(js,/new URL\("\/messenger\/".location.origin\)/);
+assert.match(js,/url.searchParams.set\("dm",handle\)/);
+assert.match(js,/location.assign\(url.pathname\+url.search\)/);
+assert.doesNotMatch(js,/StreamChat|connectStreamChat|channel\.sendMessage/);
+assert.match(ui,/Message an author through the existing NBL Messenger/);
+
 assert.match(js,/secured\(STREAM_BRIDGE,\{action:"session"\}\)/);
 assert.match(js,/secured\(SOCIAL_API,\{action:"me"\}\)/);
 assert.match(js,/const jwt=await c\.session\.getToken\(\)/);
