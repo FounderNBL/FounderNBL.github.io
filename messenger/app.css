@@ -53,3 +53,26 @@ input::placeholder,textarea::placeholder{color:#938774}
 footer{padding:0 16px 30px;text-align:center;font-size:.77rem;color:var(--soft)}
 @media(max-width:790px){.chat-app{grid-template-columns:1fr}.sidebar{max-height:none;border-right:0;border-bottom:1px solid rgba(255,255,255,.1)}.messages{min-height:240px;max-height:500px}.thread-actions{justify-content:flex-start}.conversation-head{align-items:flex-start;flex-direction:column}}
 @media(max-width:520px){.topbar{align-items:flex-start;flex-direction:column}.form-row{flex-wrap:wrap}.form-row .btn{width:100%}.message{max-width:96%}main{padding:26px 12px 45px}}
+
+/* Genuine early-neighborhood onboarding. No simulated accounts or contact discovery. */
+.founder-marker{display:inline-block;vertical-align:middle;margin-left:6px;border:1px solid var(--gold2);border-radius:999px;padding:3px 9px;background:rgba(214,161,75,.12);color:var(--gold2);font-size:.7rem;font-weight:800;letter-spacing:.02em}
+.profile-setup,.invite-card{border:1px solid var(--line);border-radius:14px;background:linear-gradient(155deg,rgba(214,161,75,.13),rgba(4,17,29,.9));padding:16px;margin:16px 0}
+.profile-setup strong{color:var(--gold2)}
+.profile-setup p,.invite-card>p:not(.eyebrow){margin:9px 0 14px;color:var(--soft);font-size:.86rem}
+.invite-card h3{font:700 1.3rem/1.2 Georgia,"Times New Roman",serif;color:var(--cream);margin:9px 0 10px}
+.invite-actions{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin:14px 0}
+.invite-actions .btn{flex:1 1 140px;min-width:0;white-space:normal}
+.invite-url{display:block;overflow-wrap:anywhere;font-size:.8rem}
+.invite-card .invite-note{font-size:.73rem!important;line-height:1.45;margin-bottom:0!important}
+@media(max-width:520px){.invite-actions{flex-direction:column}.invite-actions .btn{width:100%}}
+
+/* NBL Infinity phone alerts: Founder controls the copy, OS controls its shell. */
+.notification-settings{margin:18px 0 0;border:1px solid var(--line);border-radius:15px;padding:18px;background:linear-gradient(145deg,#0c2434,#071421)}
+.notification-settings h2{margin:6px 0 8px}
+.notification-heading p:not(.eyebrow),.notification-founder p:not(.eyebrow){font-size:.86rem;color:var(--soft);margin:8px 0;max-width:820px}
+.notification-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:16px 0 10px}
+.notification-founder{padding:16px;margin-top:20px;border-top:1px solid var(--line);background:rgba(0,0,0,.09);border-radius:12px}
+.notification-founder input:not([type=checkbox]){display:block;max-width:650px;margin:4px 0 13px}
+.notification-founder .checkbox-label{display:flex;align-items:center;gap:10px;margin:12px 0 18px;font-weight:600}
+.notification-founder .checkbox-label input{width:auto;min-width:0;accent-color:var(--gold2)}
+@media(max-width:520px){.notification-actions .btn{flex:1 1 100%}}

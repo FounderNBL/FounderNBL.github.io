@@ -8,6 +8,12 @@ const withdraw=form.querySelector("[data-nbl-university-interest-withdraw]");
 const select=form.querySelector('[name="interestKind"]');
 const updates=form.querySelector('[name="emailOptIn"]');
 const endpoint="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-university-early-interest";
+const studentId=document.querySelector("[data-nbl-university-student-id]");
+const studentStatus=document.querySelector("[data-nbl-university-student-status]");
+const currentUsername=document.querySelector("[data-nbl-university-username]");
+const usernameForm=document.querySelector("[data-nbl-university-username-form]");
+const usernameInput=usernameForm?.querySelector('[name="username"]');
+const usernameStatus=usernameForm?.querySelector("[data-nbl-university-username-status]");
 const signin=()=> "https://accounts.newbeansland.org/sign-in?redirect_url="+
  encodeURIComponent("https://newbeansland.org/university.html#early-registration");
 const setStatus=text=>{status.textContent=text;};
@@ -43,7 +49,18 @@ async function request(method,body,{redirect=false}={}){
  }
  return data;
 }
-function updateUi(record){
+function showStudentIdentity(identity){
+ const name=String(identity?.username||"").trim();
+ const number=String(identity?.student_number||"").trim();
+ if(studentId)studentId.textContent=number||"Register free to receive your permanent NBLU student ID";
+ if(currentUsername)currentUsername.textContent=name?"@"+name:"Not chosen yet";
+ if(studentStatus)studentStatus.textContent=identity?.student_status==="prospective"
+   ?"Prospective student · Classes not yet open"
+   :number?"Student record verified · LOCKE controls course access":"Registration not yet complete";
+ if(usernameInput&&name&&document.activeElement!==usernameInput)usernameInput.value=name;
+}
+function updateUi(record,identity){
+ showStudentIdentity(identity);
  const registered=record?.status==="waiting";
  if(registered){
   if(record.interest_kind&&[...select.options].some(x=>x.value===record.interest_kind))select.value=record.interest_kind;
@@ -59,7 +76,7 @@ form.addEventListener("submit",async event=>{
  event.preventDefault();if(running)return;setRunning(true);setStatus("Saving your early registration…");
  try{
   const data=await request("POST",{action:"join",interestKind:select.value,emailOptIn:updates.checked},{redirect:true});
-  if(data)updateUi(data.registration);
+  if(data)updateUi(data.registration,data.identity);
  }catch(error){setStatus(error.message||"Registration could not be saved.");}
  finally{setRunning(false);}
 });
@@ -67,14 +84,47 @@ withdraw.addEventListener("click",async()=>{
  if(running)return;setRunning(true);setStatus("Updating your registration…");
  try{
   const data=await request("POST",{action:"withdraw"},{redirect:false});
-  if(data)updateUi({status:"withdrawn"});
+  if(data){
+    const refreshed=await request("GET",null,{redirect:false});
+    if(refreshed)updateUi(refreshed.registration,refreshed.identity);
+  }
  }catch(error){setStatus(error.message||"Registration could not be changed.");}
  finally{setRunning(false);}
 });
+if(usernameForm&&usernameInput&&usernameStatus){
+ usernameForm.addEventListener("submit",async event=>{
+   event.preventDefault();
+   const desired=usernameInput.value.trim();
+   if(!/^[A-Za-z0-9_-]{3,30}$/.test(desired)){
+     usernameStatus.textContent="Use 3–30 letters, numbers, underscores, or hyphens.";
+     return;
+   }
+   const save=usernameForm.querySelector('button[type="submit"]');
+   save.disabled=true;
+   usernameStatus.textContent="Saving your NBLU username…";
+   try{
+     const token=await authToken({redirect:true});
+     if(!token)return;
+     const accountApi=window.NBLAccountBridge?.api;
+     if(!accountApi)throw new Error("NBL account connection is unavailable.");
+     const response=await fetch(accountApi+"?action=profile",{
+       method:"POST",headers:{accept:"application/json","content-type":"application/json",authorization:"Bearer "+token},
+       body:JSON.stringify({username:desired}),cache:"no-store"
+     });
+     const payload=await response.json().catch(()=>({}));
+     if(!response.ok)throw new Error(payload.message||"Unable to save username.");
+     usernameInput.value=payload.profile.username;
+     usernameStatus.textContent="Your NBLU username is saved to your NBL account.";
+     const result=await request("GET",null,{redirect:false});
+     if(result)updateUi(result.registration,result.identity);
+   }catch(error){usernameStatus.textContent=error.message||"Unable to save username.";}
+   finally{save.disabled=false;}
+ });
+}
 (async()=>{
  try{
   const data=await request("GET",null,{redirect:false});
-  if(data)updateUi(data.registration);
+  if(data)updateUi(data.registration,data.identity);
  }catch{ /* Signed-in account may still be connecting. Explicit submit retries. */ }
 })();
 })();

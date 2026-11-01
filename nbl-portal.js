@@ -195,45 +195,6 @@
     }
   }
 
-  function activateLuluDirectBuy(){
-    if(!/\/books\.html$/.test(location.pathname)) return;
-    if(document.querySelector('[data-nbl-lulu-direct]')) return;
-
-    const bookGrid=document.querySelector('.book-grid');
-    if(!bookGrid) return;
-
-    const direct=document.createElement('div');
-    direct.dataset.nblLuluDirect='true';
-    direct.style.margin='0 0 24px';
-    direct.style.padding='20px';
-    direct.style.border='1px solid rgba(214,161,74,.34)';
-    direct.style.borderRadius='14px';
-    direct.style.background='linear-gradient(145deg,rgba(11,27,43,.96),rgba(3,11,19,.98))';
-
-    const kicker=document.createElement('p');
-    kicker.className='kicker';
-    kicker.textContent='Buy Direct';
-
-    const heading=document.createElement('h3');
-    heading.style.margin='6px 0 10px';
-    heading.style.color='var(--gold-light,#f0c873)';
-    heading.textContent='New Beansland™ Books';
-
-    const note=document.createElement('p');
-    note.style.margin='0 0 16px';
-    note.style.color='var(--muted,#cfc3ad)';
-    note.style.font='0.92rem/1.5 Arial,sans-serif';
-    note.textContent='Shop New Beansland™ Books and choose the edition you want.';
-
-    const button=document.createElement('a');
-    button.className='request-btn';
-    button.href='https://books.newbeansland.org/';
-    button.textContent='Shop NBL Books';
-
-    direct.append(kicker,heading,note,button);
-    bookGrid.before(direct);
-  }
-
   function initMediaPerformance(){
     if(root.dataset.nblMediaOptimized==='true') return;
     root.dataset.nblMediaOptimized='true';
@@ -259,13 +220,12 @@
   refreshCurrentAssets();
   refreshContactEmail();
   if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateClothingLiveFixes();activateIdentityDrop();activateLuluDirectBuy()},{once:true});
+    document.addEventListener('DOMContentLoaded',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateClothingLiveFixes();activateIdentityDrop()},{once:true});
   }else{
     refreshContactEmail();
     applyTrademark();
     activateClothingLiveFixes();
     activateIdentityDrop();
-    activateLuluDirectBuy();
   }
 
   if(!document.querySelector('link[data-nbl-portal-style]')){
@@ -296,7 +256,6 @@
     applyTrademark();
     activateClothingLiveFixes();
     activateIdentityDrop();
-    activateLuluDirectBuy();
     initMediaPerformance();
     let gateMask=document.getElementById('nbl-gate-mask');
     if(!gateMask){
@@ -342,7 +301,7 @@
       },reduceMotion.matches?0:PORTAL_MS);
     });
 
-    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateClothingLiveFixes();activateIdentityDrop();activateLuluDirectBuy();hidePortal();});
+    window.addEventListener('pageshow',()=>{refreshCurrentAssets();refreshContactEmail();applyTrademark();activateClothingLiveFixes();activateIdentityDrop();hidePortal();});
   }
 
   if(document.readyState==='loading'){

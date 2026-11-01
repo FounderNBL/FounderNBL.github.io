@@ -28,9 +28,9 @@ test.describe("New Beansland web app browser smoke", () => {
     await page.goto("/", {waitUntil:"load"});
     const cards=[
       ["clothing.html","NBL_Clothing_Co.png"],
-      ["books.html","NBL_Books_New.png"],
+      ["books.html","NBL_Books.png"],
       ["games.html","NBL_Games.png"],
-      ["studio/","NBL_Music_Productions.png"],
+      ["studio/","NBL_Music_Productions%20(1).png"],
       ["studios.html","NBL_Studios.png"],
       ["university.html","NBL_University.png"]
     ];
@@ -64,6 +64,51 @@ test.describe("New Beansland web app browser smoke", () => {
     }
   });
 
+  test("Beans PDF Reader opens a local PDF without an AI or upload request",async({page})=>{
+    let pdfUploads=0;
+    await page.route("**/functions/v1/**",route=>{
+      if(route.request().method()==="POST")pdfUploads++;
+      return route.fulfill({status:200,contentType:"application/json",body:"{}"});
+    });
+    await page.route("**/pdf.js/3.11.174/pdf.min.js",route=>route.fulfill({
+      status:200,contentType:"application/javascript",
+      body:"window.pdfjsLib={GlobalWorkerOptions:{},getDocument:()=>({promise:Promise.resolve({numPages:2,destroy:async()=>{},getPage:async()=>({getViewport:()=>({width:400,height:520}),render:()=>({promise:Promise.resolve()}),getTextContent:async()=>({items:[{str:'Local NBL PDF page',transform:[1,0,0,1,20,100]}]})})})})};"
+    }));
+    await page.route("**/tesseract.js@5.1.1/**",route=>route.fulfill({
+      status:200,contentType:"application/javascript",
+      body:"window.Tesseract={createWorker:async()=>({recognize:async()=>({data:{text:'Scanned NBL page'}}),terminate:async()=>{}})};"
+    }));
+    await open("/",page);
+    await page.getByRole("button",{name:"Open Beans"}).click();
+    await page.getByRole("button",{name:"Open Beans tools"}).click();
+    await page.locator('[data-nbl-tool="pdf-local"]').click();
+    const pdf=page.getByRole("dialog",{name:"NBL PDF Reader"});
+    await expect(pdf).toBeVisible();
+    await pdf.locator('[data-file]').setInputFiles({name:"local.pdf",mimeType:"application/pdf",buffer:Buffer.from("%PDF-1.7\n"+" ".repeat(1000))});
+    await expect(pdf.locator('[data-count]')).toContainText("1 / 2");
+    await expect(pdf.locator('[data-text]')).toContainText("Local NBL PDF page");
+    await pdf.getByRole("button",{name:"Next →"}).click();
+    await expect(pdf.locator('[data-count]')).toContainText("2 / 2");
+    await pdf.getByRole("button",{name:"OCR this page"}).click();
+    await expect(pdf.locator('[data-text]')).toContainText("Scanned NBL page");
+    expect(pdfUploads).toBe(0);
+    await pdf.getByRole("button",{name:"Close"}).click();
+    await expect(pdf).toBeHidden();
+  });
+
+  test("Canva is paused while Beans image, camera and files remain available",async({page})=>{
+    await open("/",page);
+    await page.getByRole("button",{name:"Open Beans"}).click();
+    const beans=page.locator("#nbl-beans-panel");
+    await page.getByRole("button",{name:"Open Beans tools"}).click();
+    await expect(page.locator('[data-nbl-tool="still-canva"]')).toHaveCount(0);
+    await expect(page.locator('[data-nbl-tool="image"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-tool="still-camera"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-tool="attach"]')).toBeVisible();
+    await expect(beans.locator("#nbl-beans-input")).toBeVisible();
+    await expect(beans.locator("#nbl-beans-title")).toContainText("Beans");
+  });
+
   test("Beans AI opens in a real browser", async ({ page }) => {
     await open("/", page);
 
@@ -80,14 +125,28 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-head .nbl-beans-people-link")).toHaveCount(0);
     await page.getByRole("button",{name:"Open Beans menu"}).click();
     await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to Grey/})).toHaveAttribute("href","/campus.html#grey");
-    await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to People/})).toHaveAttribute("href","/chat.html");
+    await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to People/})).toHaveAttribute("href","/messenger/");
     await expect(page.getByRole("link",{name:/Privacy & AI notice/})).toHaveAttribute("href","/privacy.html");
     await page.getByRole("button",{name:"Close Beans menu"}).click();
     await expect(page.locator("[data-nbl-beans-disclaimer]")).toBeHidden({timeout:4500});
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src", "/NBLChat_Beans.png");
     await expect.poll(async () => page.locator(".nbl-beans-avatar").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
-    await expect(page.getByRole("tab", { name: "Beans" })).toBeVisible();
+    await expect(page.getByRole("tab", { name: "Beans" })).toBeHidden();
+    const quickToggle=page.getByRole("button",{name:"Choose Beans, Professor Grey or University"});
+    await expect(quickToggle).toBeVisible();
+    const quickMenu=page.locator("[data-nbl-quick-selector]");
+    await expect(quickMenu).toBeHidden();
+    await quickToggle.click();
+    await expect(quickMenu).toBeVisible();
+    await expect(page.locator('[data-nbl-quick="beans"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-quick="grey"]')).toBeVisible();
+    await expect(page.locator('[data-nbl-quick="university"]')).toHaveAttribute("href","/university.html");
+    await expect(quickMenu).toBeHidden({timeout:4500});
+    await quickToggle.click();
+    await page.locator('[data-nbl-quick="beans"]').click();
+    await expect(quickMenu).toBeHidden();
+    await expect(page.locator("[data-nbl-beans-regular]")).toBeVisible();
     await expect(page.getByRole("tab", { name: /NBL University Professor Grey™/i })).toBeHidden();
     await expect(page.getByRole("button", { name: "Open Beans tools" })).toBeVisible();
     await page.getByRole("button", { name: "Open Beans tools" }).click();
@@ -101,7 +160,10 @@ test.describe("New Beansland web app browser smoke", () => {
     if (expectBillingReleaseUi) {
       await page.getByRole("button", { name: /Open Beans menu/i }).click();
       await page.getByRole("button", { name: /Membership & plans/i }).click();
-      await expect(page.getByRole("button", { name: "Choose Beans" })).toBeVisible();
+      const planGroups=page.locator("details.nbl-drawer-category");
+      await expect(planGroups).toHaveCount(3);
+      for(const category of await planGroups.all())await category.locator("summary").click();
+      await expect(page.getByRole("button", { name: "Choose Beans", exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: "University membership checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Student continuation checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Foundation checkout pending", exact: true })).toBeDisabled();
@@ -109,7 +171,8 @@ test.describe("New Beansland web app browser smoke", () => {
       await expect(page.getByRole("button", { name: "Guided Foundation checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Full NBLU checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: "Full NBLU continuation checkout pending", exact: true })).toBeDisabled();
-      await expect(page.getByRole("button", { name: /Plus checkout pending/i })).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "NBL Plus checkout pending", exact: true })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Digital DIY checkout pending", exact: true })).toBeDisabled();
       await expect(page.getByRole("button", { name: /Get \+500 replies/i })).toBeVisible();
     }
   });
@@ -132,20 +195,36 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
   });
 
-  test("University enrollment and protected classroom are both on .org", async ({ page }) => {
-    await open("/university.html", page);
+  test("one University World Card leads to Frontier with prices, signup, username and student ID", async ({ page }) => {
+    await open("/",page);
+    const universityCard=page.locator('.world-grid .world-card[href="university.html"]');
+    await expect(universityCard).toHaveCount(1);
+    await universityCard.click();
+    await expect(page).toHaveURL(/\/university\.html$/);
+    await expect(page).toHaveTitle(/Welcome to the Frontier/i);
+    await expect(page.getByRole("heading",{name:/Welcome to.*the Frontier/i})).toBeVisible();
+    await expect(page.locator(".nbl-world-beans-toggle")).toBeHidden();
 
-    await expect(page).toHaveTitle(/New Beansland University/i);
-    await expect(page.locator("body")).toContainText("NBL University lives in New Beansland.");
-    await expect(page.locator("body")).toContainText("Beans, the AI assistant");
-    await expect(page.getByRole("heading", { name: "University enrollment and payment" })).toBeVisible();
-    await expect(page.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
-    await expect(page.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
-    await expect(page.getByRole("link", { name: "Enter the University classroom" })).toHaveAttribute(
-      "href",
-      "/campus.html",
+    const registration=page.locator("#early-registration");
+    const admissions=page.locator("#enroll");
+    await expect(registration).toHaveCount(1);
+    await expect(admissions).toHaveCount(1);
+    await expect(registration.getByRole("link",{name:/Create free NBL \/ student account/i})).toHaveAttribute(
+      "href",/accounts\.newbeansland\.org\/sign-up\?redirect_url=/
     );
-    await expect(page.locator('a[href="https://nblworld.com/university.html#enroll"]')).toHaveCount(0);
+    await expect(registration.locator('[data-nbl-university-username-form] input[name="username"]')).toHaveCount(1);
+    await expect(registration.locator('[data-nbl-university-interest-form]')).toHaveCount(1);
+    await expect(registration.locator("[data-nbl-university-student-id]")).toBeVisible();
+    for(const summary of await admissions.locator("details.university-category > summary").all()) await summary.click();
+    await expect(admissions.getByText(/Foundation \+ University · \$34\.99/i).first()).toBeVisible();
+    await expect(admissions.getByText(/Guided Foundation · \$54\.99/i).first()).toBeVisible();
+    await expect(admissions.getByText(/Full NBLU · Digital DIY · \$184\.99/i).first()).toBeVisible();
+    await expect(admissions.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
+    await expect(admissions.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
+
+    await page.getByRole("link",{name:/Programs & tuition/i}).first().click();
+    await expect(page).toHaveURL(/\/university\.html#enroll$/);
+    await expect(page.locator('a[href="/university-enrollment.html#enroll"]')).toHaveCount(0);
   });
 
   test("same-origin campus remains protected and sign-in points to verified .org", async ({ page }) => {

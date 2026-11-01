@@ -1,0 +1,31 @@
+name: NBL Vault — source hold check
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "vault.html"
+      - "scripts/check-vault-account-gate.mjs"
+      - "scripts/check-vault-live-negative.mjs"
+      - ".github/workflows/nbl-vault-source-gate.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Inspect static Vault safety invariants
+        run: |
+          node --test scripts/check-vault-account-gate.mjs
+      - name: Verify deployed Vault denies guests and mutations (no credentials)
+        run: |
+          node --test scripts/check-vault-live-negative.mjs
+      - name: Record environment verification HOLD
+        if: always()
+        run: |
+          echo "Vault source checks and live negative-path smoke only. Database/function are deployed; real signed-in customer isolation, Founder access, financial reconciliation and any funds movement remain unverified/disabled." >> "$GITHUB_STEP_SUMMARY"

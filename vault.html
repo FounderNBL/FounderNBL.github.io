@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,follow">
+<title>NBL Vault · Usage & Pricing · New Beansland</title>
+<meta name="theme-color" content="#07131f">
+<link rel="stylesheet" href="/nbl-world-header.css">
+<script defer src="/nbl-product-plans.js"></script>
+<script defer src="/nbl-world-header.js"></script>
+<style>
+:root{--gold:#efc66f;--panel:#102237;--line:rgba(239,198,111,.22);--muted:#b9c6cf}
+*{box-sizing:border-box}
+body{background:#07131f;color:#f2eadc;font:16px/1.5 system-ui,sans-serif;margin:0}
+main{max-width:1050px;margin:auto;padding:130px 18px 70px}
+h1{font-size:clamp(2.2rem,6vw,4rem);color:var(--gold);margin:0 0 8px}
+h2{margin:0 0 10px;color:var(--gold)}
+.panel,.metric{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:20px;margin-top:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.metric{margin:0}.metric strong{display:block;color:var(--gold);font-size:2rem}
+.note{color:var(--muted)}.item{padding:11px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+button,a.action{padding:11px 18px;border-radius:999px;background:#9c773d;color:white;border:1px solid var(--gold);text-decoration:none;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+[hidden]{display:none!important}
+.progress-list{display:grid;gap:14px;margin:18px 0}
+.progress-item{padding:13px;border-radius:12px;background:#081826;border:1px solid var(--line)}
+.progress-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.progress-heading strong{color:#f2eadc}
+.progress-detail{color:var(--muted);font-size:.88rem}
+.progress-track{height:11px;overflow:hidden;border-radius:999px;background:#364457;margin-top:10px}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#b88d42,#efc66f);border-radius:999px;transition:width .25s ease}
+.progress-status{margin-top:6px;color:var(--muted);font-size:.82rem}
+.action-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.action-grid a{display:inline-block}
+.rate-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:14px}
+.rate-card{background:#081826;border:1px solid var(--line);border-radius:14px;padding:17px}
+.rate-card h3{margin:0 0 4px;color:var(--gold)}
+.rate-card strong{font-size:1.4rem;display:block;margin:3px 0 7px}
+.rate-card p{color:var(--muted);margin:0 0 8px}
+.rate-card .note{font-size:.85rem}
+.tool-usage{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin:13px 0}
+.tool-usage .progress-item{margin:0}
+.link-quiet{color:var(--gold)}
+@media(prefers-reduced-motion:reduce){.progress-fill{transition:none}}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+
+.vault-category{margin-top:15px;border:1px solid rgba(239,198,111,.4);border-radius:17px;overflow:hidden;background:#102237;scroll-margin-top:94px}
+.vault-category>summary{min-height:86px;padding:19px 22px;display:grid;gap:4px;cursor:pointer;list-style:none;color:var(--gold)}
+.vault-category>summary strong{font-size:1.2rem}.vault-category>summary small{color:var(--muted);font-size:.84rem}
+.vault-category>summary::-webkit-details-marker,.vault-breakdown>summary::-webkit-details-marker,.vault-fine-print>summary::-webkit-details-marker{display:none}
+.vault-category>.panel{margin:0;border:0;border-top:1px solid var(--line);border-radius:0}
+.vault-breakdown{border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:#081826;margin:16px 0}
+.vault-breakdown>summary{cursor:pointer;color:var(--gold);font-weight:800;padding:4px;min-height:32px}
+.vault-fine-print{margin:11px 0;color:var(--muted);font-size:.84rem}
+.vault-fine-print>summary{display:inline-block;cursor:pointer;color:var(--gold);padding:6px 0;text-decoration:underline;text-underline-offset:3px}
+.vault-category>summary:focus-visible,.vault-breakdown>summary:focus-visible,.vault-fine-print>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+</style>
+</head>
+<body>
+<main>
+<p class="note">New Beansland · Customer account & pricing center</p>
+<h1>NBL Vault</h1>
+<p class="note"><a href="#pricing">NBL pricing &amp; credits</a> · <a href="#university-prices">University prices</a> · <a href="#my-usage">My usage</a> · <a href="/pricing.html">Full service catalog</a></p>
+<details class="vault-fine-print"><summary>What balances and credits mean</summary><p class="note">Your balances, in one place. Beans replies and Studios credits are service allowances, not cash or withdrawals.</p></details>
+<section class="panel" id="my-usage" aria-label="Your NBL Vault">
+<h2>My Vault</h2>
+<div class="grid">
+  <div class="metric"><strong id="free">—</strong>Free Beans replies</div>
+  <div class="metric"><strong id="paid">—</strong>Member Beans replies</div>
+  <div class="metric"><strong id="topups">—</strong>Get More replies</div>
+  <div class="metric"><strong id="studio">—</strong>Studios credits</div>
+</div>
+<div class="progress-list" aria-label="Your usage and remaining balance">
+  <div class="progress-item"><div class="progress-heading"><strong>Free Beans</strong><span class="progress-detail" id="free-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Free Beans used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="free-track"><div class="progress-fill" id="free-fill"></div></div></div>
+  <div class="progress-item"><div class="progress-heading"><strong>Beans membership</strong><span class="progress-detail" id="paid-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Membership replies used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="paid-track"><div class="progress-fill" id="paid-fill"></div></div><div class="progress-status" id="renewal"></div></div>
+  <div class="progress-item"><div class="progress-heading"><strong>Purchased Get More</strong><span class="progress-detail" id="topups-breakdown">—</span></div><div class="progress-status">Remaining purchased replies; this balance is separate from your monthly plan.</div></div>
+  <div class="progress-item"><div class="progress-heading"><strong>NBL Studios</strong><span class="progress-detail" id="studio-breakdown">—</span></div><div class="progress-track" role="progressbar" aria-label="Studios credits used" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="studio-track"><div class="progress-fill" id="studio-fill"></div></div></div>
+</div>
+<details class="vault-breakdown"><summary>View included NBL tool usage</summary><h3>Your NBL tool usage · Included with Beans</h3>
+<p class="note">Each tool request costs one included NBL tool use. These are NBL allowance units, not extra dollars billed to you. NBL covers the cost of the service. Chat replies use their separate allowance above.</p>
+<div class="tool-usage" id="tool-usage" aria-live="polite"><p class="note">Sign in to check your six tool allowances.</p></div>
+<p class="note" id="tool-period"></p>
+</details>
+<div class="action-grid" aria-label="Manage your NBL allowances">
+  <a class="action" href="/account.html#membershipCard">Upgrade Beans</a>
+  <a class="action" href="/account.html#membershipCard">Get More · pay as you go</a>
+  <a class="action" href="/account.html">Manage billing</a>
+</div>
+<details class="vault-fine-print"><summary>About purchases, usage &amp; automatic charges</summary><p class="note">Purchases use NBL’s existing verified checkout and LOCKE entitlements. No automatic top-ups or charges are enabled by this Vault.</p></details>
+<p id="status" class="note" role="status" aria-live="polite">Checking your signed-in account…</p>
+<div class="controls"><button type="button" id="refresh">Refresh balances</button><a class="action" href="https://accounts.newbeansland.org/sign-in?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fvault.html" id="signin" hidden>Sign in / Create account</a></div>
+</section>
+<details class="vault-category" data-vault-category id="vault-plans"><summary><strong>Beans &amp; Add-ons</strong><small>Beans plans · extra replies · NBL Usage and Studios credits</small></summary><section class="panel" id="pricing" aria-label="NBL Services and Pricing">
+<h2>Official NBL pricing &amp; what's included</h2>
+<p><strong>Standard Beans is $4.99/month.</strong> Its tools use included monthly NBL allowances, <strong>not an extra fee for each NBL tool</strong>. Each tool request is recorded as <strong>1 included NBL use</strong>; that measures a tool allowance, <em>not</em> a deduction from purchased NBL Usage or NBL Studios credits. NBL covers the cost of the service within its own budget. Premium NBL Plus is a separate offer.</p>
+<h3 id="beans-prices">Beans &amp; NBL credits</h3>
+<div class="rate-grid">
+ <article class="rate-card"><h3 data-nbl-plan-value="beans.name">Beans</h3><strong data-nbl-plan-value="beans.price">$4.99/month</strong><p data-nbl-plan-value="beans.replies">300 successful replies</p><p>Includes web search (12), file understanding (8), code/data (3), PDF/file creation (3), image creation (2), and Beans voice (12) recorded NBL tool uses each calendar month. Each request consumes 1 included NBL use; tools and chat replies have separate limits.</p><p class="note">Renews monthly until cancelled or changed. NBL pays to run Beans. You see your NBL usage, not outside supplier rates. Older plans may have different allowances.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="nblPlus.name">NBL Plus</h3><strong data-nbl-plan-value="nblPlus.price">$29.99/month</strong><p>Premium Beans membership. Separate from the $29.99 one-time Foundation Materials package; no protected University or Grey access. <strong>Checkout held</strong> until premium entitlement and allowance verification.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="getMore.name">Get More</h3><strong data-nbl-plan-value="getMore.price">$9.99 one-time</strong><p data-nbl-plan-value="getMore.replies">+500 successful replies</p><p data-nbl-plan-value="getMore.expiry">Purchased reply balance does not expire.</p><p>Optional additional Beans replies, not another membership and not NBL Studios generation credits. Buying replies does not reset monthly tool allowances.</p><a class="link-quiet" href="/account.html#membershipCard">Account &amp; top-ups</a></article>
+ <article class="rate-card" id="credits"><h3 data-nbl-plan-value="nblUsage.name">NBL Usage — 500 Credits</h3><strong data-nbl-plan-value="nblUsage.price">$7.00 one-time</strong><p data-nbl-plan-value="nblUsage.credits">500 NBL Usage credits</p><p data-nbl-plan-value="nblUsage.expiry">Purchased usage credits do not expire.</p><p>This is the separately approved NBL AI-usage package, <strong>not</strong> the monthly Beans tool-use counter, Get More replies, or Studios credits. <strong>Checkout held</strong> until an eligible wallet and debit rules are verified; no unverified shared balance is shown.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="studiosCredits.name">NBL Studios Credits</h3><strong data-nbl-plan-value="studiosCredits.price">$8.99 one-time</strong><p data-nbl-plan-value="studiosCredits.credits">500 NBL Studios Credits</p><p>Separate visual creation balance. NBL Studios quotes the required <strong>NBL Studios Credits</strong> for each generation before submission; it does not display NBL's internal costs. <strong>New credit checkout held.</strong></p><p class="note">Examples from NBL's current model catalog: Nano Banana image — 5 credits; Nano Banana 2 (1K) image — 7 credits; Grok Imagine Video 1.5 Lite (5 sec) — 15 credits. Prices may change; always check the creator's current quote.</p><a class="link-quiet" href="/studio/creator.html">View creator prices</a></article>
+ <article class="rate-card"><h3>NBL Books &amp; Music</h3><strong>Free local tools</strong><p>Reading your ebooks/PDFs and playing your personal MP3/MP4 files are free of NBL usage charges. Live radio is optional and uses network data; stations may carry ads. Books sold in the store have their own published prices.</p></article>
+</div>
+<p class="note">NBL replies, monthly tool allowances, NBL Usage credits and NBL Studios Credits each have distinct terms and balances. No invented exchange rate or combined wallet. NBL Studios support contributions are not purchases of personal credits. Nothing in this Vault creates a charge, automatically refills a balance, or deducts a University payment.</p>
+</section>
+</details>
+<details class="vault-category" data-vault-category id="vault-university"><summary><strong>University &amp; Teachers</strong><small>Foundation · Professor Grey · Full NBLU options</small></summary><section class="panel" id="university-prices" aria-label="New Beansland University approved prices">
+<h2>New Beansland University · Approved offers</h2>
+<p class="note">December 2026 is the current target opening month, subject to readiness. Protected classes, Professor Grey and University checkouts are still held. Free early registration is not paid enrollment. The following are distinct approved offers, with their own fulfillment and renewal rules.</p>
+<div class="rate-grid">
+ <article class="rate-card"><h3 data-nbl-plan-value="beansUniversity.name">Beans + University</h3><strong data-nbl-plan-value="beansUniversity.price">$14.99/month</strong><p>Combined Beans and University membership, not NBL Plus. Renews at $14.99/month until cancelled or changed. Enrollment checkout held.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="foundationProgram.name">Foundation Materials + First Month of Beans</h3><strong data-nbl-plan-value="foundationProgram.price">$29.99 one-time</strong><p>Two physical books and the first month of standard Beans. <strong>No ebooks, coursework or University access.</strong> Beans renews at $4.99/month after the included month, with recurring-payment consent. Materials checkout held pending fulfillment and billing verification.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="foundationUniversity.name">Foundation + University (first month)</h3><strong data-nbl-plan-value="foundationUniversity.price">$34.99 one-time</strong><p>Physical books, Foundation ebooks/coursework, and the first month of Beans plus University student access when available. Eligible continuation is $9.99/month after the included month, not $9.99 on top of Beans. Advance-enrollment checkout held.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="foundationStudentContinuation.name">Foundation Student Continuation</h3><strong data-nbl-plan-value="foundationStudentContinuation.price">$9.99/month</strong><p>Only for verified $34.99 Foundation + University purchasers after the first included month. Combined Beans + University; no additional $4.99 Beans subscription. Renews until cancelled or changed. Checkout held.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="guidedFoundation.name">Guided Foundation</h3><strong data-nbl-plan-value="guidedFoundation.price">$54.99 one-time</strong><p>Foundation physical and digital learning materials with planned Professor Grey / Virgo guided learning when opened. Checkout held; this does not unlock Grey today.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="fullNbluDiy.name">Full NBLU Experience — Digital DIY</h3><strong data-nbl-plan-value="fullNbluDiy.price">$184.99 one-time</strong><p>Full planned NBLU digital academic path and ebooks/workbooks with six months of guided-service eligibility, <strong>no physical books</strong>. This is not a lower price for the physical-book package. Checkout held.</p></article>
+ <article class="rate-card"><h3>Full NBLU Experience · Physical Books</h3><strong data-nbl-plan-value="fullNblu.price">$449.99 one-time</strong><p>The same planned full digital University path and six-month guided period as Digital DIY, <strong>plus physical stage-release books</strong>. Shipping may be charged separately if disclosed. Checkout held.</p></article>
+ <article class="rate-card"><h3 data-nbl-plan-value="nbluContinuation.name">Full NBLU Owner Continuation</h3><strong data-nbl-plan-value="nbluContinuation.price">$14.99/month</strong><p>Optional recurring guided access only for eligible Full NBLU owners after their included six-month period. Enrollment/continuation held until verified.</p></article>
+</div>
+<p class="note"><strong>Advance-enrollment refund promise:</strong> If NBL cannot deliver the University program or access promised for an advance payment, the student receives a <strong>full refund of that advance-enrollment payment</strong>. If a planned start is delayed, prepaid students can wait or request the full refund. No University checkout is active from this Vault. See <a class="link-quiet" href="/university.html#enroll">University registration</a> and <a class="link-quiet" href="/pricing.html#early-enrollment">full enrollment terms</a>.</p>
+</section>
+</details>
+<section class="panel" id="founder" hidden>
+<h2>Founder · NBL Operating Vault</h2>
+<p id="money" class="note"></p>
+<h3>Verified NBL operating resources</h3><div id="resources"></div>
+<h3>Customer balances</h3><div id="accounts"></div>
+<div class="controls"><button type="button" id="prev">Previous</button><button type="button" id="next">Next</button><span id="page" class="note"></span></div>
+<p class="note">Founder-only operating reserves are separate from customer NBL allowances. Unverified balances remain unknown. Automated refills and Founder payouts are off.</p>
+</section>
+<p class="note"><a href="/account.html">Back to my NBL account</a></p>
+</main>
+<script>
+(()=>{
+"use strict";
+const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-vault";
+const $=id=>document.getElementById(id);
+const state={bridge:null,clerk:null,page:0,loading:false,identity:"",epoch:0};
+function identity(){return state.clerk?.isSignedIn?String(state.clerk.user?.id||""):"";}
+function isCurrent(epoch){return epoch===state.epoch&&Boolean(state.clerk?.isSignedIn&&state.clerk.session)&&identity()===state.identity;}
+function clearPrivateDisplay(){
+ for(const id of ["free","paid","topups","studio"])$(id).textContent="—";
+ $("founder").hidden=true;$("money").textContent="";
+ $("resources").replaceChildren();$("accounts").replaceChildren();
+ $("page").textContent="";
+ for(const key of ["free","paid","studio"]){$(key+"-breakdown").textContent="—";$(key+"-fill").style.width="0%";$(key+"-track").setAttribute("aria-valuenow","0");}
+ $("topups-breakdown").textContent="—";$("renewal").textContent="";
+ $("tool-usage").replaceChildren();$("tool-usage").append(node("Tool usage","Sign in for your current allowances."));
+ $("tool-period").textContent="";
+}
+
+function node(label,value){
+ const p=document.createElement("p");p.className="item";
+ const b=document.createElement("strong");b.textContent=label+": ";
+ const s=document.createElement("span");s.textContent=String(value);
+ p.append(b,s);return p;
+}
+const cash=cents=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number(cents)/100);
+async function api(view,epoch){
+ const token=await state.bridge.getToken();
+ if(!isCurrent(epoch))return null;
+ if(!token)throw new Error("Your NBL session is still connecting.");
+ const url=API+"?view="+encodeURIComponent(view)+(view==="founder"?"&page="+state.page:"");
+ const response=await fetch(url,{headers:{Authorization:"Bearer "+token,Accept:"application/json"},cache:"no-store"});
+ const data=await response.json().catch(()=>({}));
+ if(!isCurrent(epoch))return null;
+ if(!response.ok)throw new Error(response.status===401?"Please sign in again.":"Vault records cannot be read right now.");
+ return data;
+}
+function renderProgress(key,used,remaining,privileged=false){
+ const detail=$(key+"-breakdown"),fill=$(key+"-fill"),track=$(key+"-track");
+ if(privileged){detail.textContent="Founder access · no reply limit";fill.style.width="0%";track.setAttribute("aria-valuenow","0");return;}
+ const valid=n=>Number.isSafeInteger(n)&&n>=0;
+ if(!valid(used)||!valid(remaining)){detail.textContent="Usage breakdown unavailable";fill.style.width="0%";track.setAttribute("aria-valuenow","0");return;}
+ const total=used+remaining,percent=total>0?Math.min(100,Math.round(100*used/total)):0;
+ detail.textContent=used.toLocaleString()+" used · "+remaining.toLocaleString()+" left";
+ fill.style.width=percent+"%";track.setAttribute("aria-valuenow",String(percent));
+}
+function renderToolUsage(source){
+ const panel=$("tool-usage");panel.replaceChildren();
+ const rows=source?.customer?.tools?.entries;
+ if(!Array.isArray(rows)||rows.length!==6){panel.append(node("Tool usage","Breakdown temporarily unavailable."));$("tool-period").textContent="";return;}
+ for(const item of rows){
+  const key=String(item.key||"");
+  if(!["web","file","code","artifact","image","voice"].includes(key))continue;
+  const box=document.createElement("div");box.className="progress-item";
+  const heading=document.createElement("div");heading.className="progress-heading";
+  const title=document.createElement("strong");title.textContent=String(item.label||key);
+  const usage=document.createElement("span");usage.className="progress-detail";
+  const used=Number(item.used),limit=item.limit,remaining=item.remaining;
+  const valid=Number.isSafeInteger(used)&&used>=0&&Number.isSafeInteger(limit)&&limit>0&&
+    Number.isSafeInteger(remaining)&&remaining>=0;
+  const privileged=source.customer.tools.unlimitedByPrivilege===true;
+  usage.textContent=privileged?"Founder access":valid?used+" NBL uses spent · "+remaining+" NBL uses left of "+limit:
+    "Not included in the current plan";
+  heading.append(title,usage);box.append(heading);
+  if(valid){
+   const track=document.createElement("div");track.className="progress-track";
+   track.setAttribute("role","progressbar");track.setAttribute("aria-label",String(item.label||key)+" used");
+   track.setAttribute("aria-valuemin","0");track.setAttribute("aria-valuemax","100");
+   const pct=Math.min(100,Math.round(100*used/limit));
+   track.setAttribute("aria-valuenow",String(pct));
+   const fill=document.createElement("div");fill.className="progress-fill";fill.style.width=pct+"%";
+   track.append(fill);box.append(track);
+  }
+  panel.append(box);
+ }
+ $("tool-period").textContent="Tool accounting period: "+String(source.customer.tools.periodStart||"Current UTC month")+".";
+}
+function renderPersonal(data){
+ const beans=data?.customer?.beans||{},studios=data?.customer?.studios||{};
+ $("free").textContent=beans.freeRepliesRemaining??"—";
+ $("paid").textContent=beans.unlimitedByPrivilege?"∞":beans.paidRepliesRemaining??"—";
+ $("topups").textContent=beans.purchasedTopupRepliesRemaining??"—";
+ $("studio").textContent=studios.creditsRemaining??"—";
+ renderProgress("free",beans.freeRepliesUsed,beans.freeRepliesRemaining,beans.unlimitedByPrivilege);
+ renderProgress("paid",beans.paidRepliesUsed,beans.paidRepliesRemaining,beans.unlimitedByPrivilege);
+ $("topups-breakdown").textContent=Number.isSafeInteger(beans.purchasedTopupRepliesRemaining)?beans.purchasedTopupRepliesRemaining.toLocaleString()+" left":"Balance unavailable";
+ renderProgress("studio",studios.lifetimeSpentCredits,studios.creditsRemaining);
+ renderToolUsage(data);
+ const renewal=beans.billingPeriodEnd?new Date(beans.billingPeriodEnd):null;
+ $("renewal").textContent=renewal&&!Number.isNaN(renewal.getTime())?"Current membership period ends "+renewal.toLocaleDateString()+".":"Your membership period is shown when available.";
+ $("status").textContent="Read directly from your account's existing Beans meter and Studios wallet.";
+}
+function renderFounder(result){
+ const f=result.founder;
+ if(!f){$("founder").hidden=true;return;}
+ $("founder").hidden=false;
+ const r=f.financials;
+ $("money").textContent=r?.verified?
+   "Verified net surplus: "+cash(r.netSurplusCents)+" · 5% Founder allocation: "+cash(r.founderProfitCents)+" · NBL operating reserve: "+cash(r.nblOperatingReserveCents):
+   "Founder allocation is 5% of reconciled net surplus. No reconciled settlements yet; actual cash/profit is not established.";
+ $("resources").replaceChildren();
+ for(const v of f.resources||[])$("resources").append(node(v.provider_key+" · "+v.funding_kind,
+   v.verified_available===null?"Not yet verified":String(v.verified_available)+" "+v.resource_unit));
+ if(!$("resources").children.length)$("resources").append(node("Resources","No verified provider balances recorded yet."));
+ $("accounts").replaceChildren();
+ for(const v of f.accounts||[]){
+  const b=v.beans||{},s=v.studios||{};
+  $("accounts").append(node(v.accountId,
+    "Beans free "+b.freeRepliesRemaining+", member "+(b.unlimitedByPrivilege?"∞":b.paidRepliesRemaining)+
+    ", Get More "+b.purchasedTopupRepliesRemaining+", Studios "+s.creditsRemaining));
+ }
+ if(!$("accounts").children.length)$("accounts").append(node("Customer accounts","No accounts on this page."));
+ const count=Number(f.accountCount||0),limit=Number(f.accountsPerPage||25);
+ $("prev").disabled=state.page===0;$("next").disabled=(state.page+1)*limit>=count;
+ $("page").textContent="Showing "+(count?state.page*limit+1:0)+"–"+Math.min(count,(state.page+1)*limit)+" of "+count;
+}
+async function refresh(){
+ if(state.loading||!state.bridge)return;
+ const epoch=state.epoch;
+ if(!isCurrent(epoch)){
+  clearPrivateDisplay();$("signin").hidden=false;
+  $("status").textContent="Sign in to see your Vault.";return;
+ }
+ state.loading=true;$("status").textContent="Loading verified balances…";$("signin").hidden=true;
+ try{
+  const personal=await api("mine",epoch);
+  if(!isCurrent(epoch))return;
+  if(!personal?.ok||!personal.customer?.beans||!personal.customer?.studios)throw new Error("Vault account response is unavailable.");
+  renderPersonal(personal);
+  try{
+   const company=await api("founder",epoch);
+   if(isCurrent(epoch)&&company?.ok)renderFounder(company);
+  }catch{if(isCurrent(epoch))$("founder").hidden=true;}
+ }catch(e){if(isCurrent(epoch))$("status").textContent=e?.message||"Vault temporarily unavailable.";}
+ finally{if(epoch===state.epoch)state.loading=false;}
+}
+$("refresh").addEventListener("click",refresh);
+$("prev").addEventListener("click",()=>{if(!state.loading&&state.page>0){state.page--;refresh();}});
+$("next").addEventListener("click",()=>{if(!state.loading){state.page++;refresh();}});
+(async()=>{
+ for(let i=0;i<60;i++){if(window.NBLAccountBridge){state.bridge=window.NBLAccountBridge;break;}
+  await new Promise(resolve=>setTimeout(resolve,100));}
+ if(!state.bridge){$("status").textContent="NBL account connection is unavailable.";return;}
+ try{state.clerk=await state.bridge.getClerk();}catch{$("status").textContent="NBL sign-in is unavailable.";return;}
+ state.identity=identity();
+ state.clerk.addListener(()=>{
+  const next=identity();
+  if(next!==state.identity){
+   state.epoch++;state.identity=next;state.page=0;state.loading=false;
+   clearPrivateDisplay();refresh();
+  }
+ });
+ await refresh();
+})();
+})();
+</script>
+<script>
+(()=>{function revealVaultCategory(){const id=decodeURIComponent(location.hash.slice(1));if(!id)return;const target=document.getElementById(id);if(!target)return;for(const details of [target.closest("details[data-vault-category]"),target.closest("details.vault-breakdown")])if(details)details.open=true;}
+addEventListener("hashchange",revealVaultCategory);revealVaultCategory();})();
+</script>
+</body></html>

@@ -6,7 +6,7 @@ const read=p=>fs.readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const pricing=read("pricing.html");
 const campus=read("campus.html");
 const campusAlias=read("university-campus.html");
-const university=read("university.html");
+const university=read("university-enrollment.html");
 const header=read("nbl-world-header.js");
 const terms=read("terms.html");
 const books=read("books.html");
@@ -23,16 +23,15 @@ test("$29.99 Foundation Materials contains only 2 physical books and first month
  assert.doesNotMatch(header,/Two books, course materials and one month of Beans/);
 });
 
-test("University course ebooks are for verified students, not stand-alone Foundation Materials buyers",()=>{
+test("University course ebooks stay behind enrolled Grey while public tuition is separate",()=>{
  for(const content of [campus,campusAlias]){
-  assert.match(content,/Foundation \+ University · planned/);
-  assert.match(content,/\$34\.99 <small>one time<\/small>/);
-  assert.match(content,/enrolled-student access to the protected Foundation ebooks and coursework/);
-  assert.match(content,/separate \$29\.99 Foundation Materials offer is two physical books plus the first month of Beans only/);
-  assert.match(content,/data-nblu-checkout="foundation" disabled/);
-  assert.doesNotMatch(content,/the existing first-month NBL Chat Plus benefit/);
+  assert.match(content,/href="\/university-enrollment\.html#enroll"/);
+  assert.match(content,/LOCKE opens the classroom only when that account has University enrollment/);
+  assert.doesNotMatch(content,/class="enrollment-grid"/);
  }
- assert.match(university,/\$34\.99 once — planned/);
+ assert.match(university,/Foundation \+ University · \$34\.99 once — planned/);
+ assert.match(university,/Two physical books and one month of regular Beans\. No ebooks, coursework or University access are included/);
+ assert.match(university,/data-nbl-university-checkout="foundation" disabled/);
  assert.match(header,/University checkout verification pending/);
 });
 

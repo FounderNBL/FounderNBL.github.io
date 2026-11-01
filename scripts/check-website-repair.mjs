@@ -15,12 +15,14 @@ const legal=read("nbl-chat-legal.html");
 const terms=read("terms.html");
 const privacy=read("privacy.html");
 const deletion=read("account-deletion.html");
-const university=read("university.html");
+const university=read("university-enrollment.html");
+const universityArrival=read("university.html");
 const account=read("account.html");
 const universityCheckout=read("nbl-university-checkout.js");
 const portal=read("nbl-portal.js");
 const home=read("index.html");
 const books=read("books.html");
+const lulu=read("lulu/index.html");
 let failed=false;
 
 function requireText(source,text,message){
@@ -120,7 +122,7 @@ requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"The AI dialog title mu
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
 requireText(header,'href="/campus.html#grey"',"Talk to Grey must stay on the .org campus.");
-requireText(header,'href="/chat.html"',"Talk to People must stay on .org.");
+requireText(header,'href="/messenger/"',"Talk to People must stay on the independent NBL Messenger.");
 forbidText(header,'Beans is the New Beansland AI assistant. NBL Chat is where people message people',"Removed promotional copy has returned.");
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
@@ -152,7 +154,7 @@ requireText(home,"Under Construction · Early Enrollment Information","Homepage 
 requireText(home,"checkout remains held pending verification","Homepage must preserve the University checkout hold.");
 requireText(home,"full-refund promise","Homepage must disclose the advance-enrollment refund policy.");
 requireText(university,"full refund of the advance-enrollment payment","University must explain the full-refund promise when prepaid access cannot be delivered.");
-requireText(portal,"https://books.newbeansland.org/","Connected NBL Books custom domain is missing from the public portal.");
+requireText(books,"https://books.newbeansland.org/","Connected NBL Books Payhip custom domain is missing from the bookstore.");
 requireText(books,"Digital · Payhip","Books no longer states the digital Payhip route.");
 requireText(books,"Physical · Lulu","Books no longer states the physical Lulu route.");
 requireText(books,"https://books.newbeansland.org/b/jIEUZ","Doctor/Rocketship Standard Edition Payhip link is missing.");
@@ -165,23 +167,26 @@ requireText(books,"https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-
 requireText(books,"https://www.lulu.com/shop/jamel-hawkins/the-doctorrocketship-test/hardcover/product-q6qv49m.html","Islamic Dilemma deluxe Lulu link is missing.");
 requireText(books,"https://svc.lulu.com/?items=dc35ccd4-bdc1-497d-ba69-fa4316fc16a6","Tree That Grew Lulu purchase button is missing.");
 requireText(books,"Physical · Lulu link pending verification","People Zoo physical ACORN is not being held pending a verified Lulu URL.");
+requireText(books,"Digital · Payhip link pending verification","People Zoo digital ACORN is not being held pending a verified Payhip URL.");
 forbidText(books,"https://buy.stripe.com/","Books returned to duplicate Stripe checkout instead of Payhip/Lulu routing.");
 forbidText(books,"https://cash.app/","Books returned to the manual Cash App backup.");
 forbidText(books,'id="direct-order"',"Manual book-order form returned.");
 forbidText(books,'payhip-embed-page',"Oversized Payhip product embed returned to Books.");
 forbidText(books,"https://payhip.com/embed-page.js","Payhip embed loader returned to Books.");
-requireText(books,'<script defer src="https://js.lulu.com/lulu-buy.js"></script>',"Lulu preview loader is missing.");
-requireText(books,'<lulu-buy-button buy-button-id="7cc013d3-dd8e-469d-8c75-fc11b81c7584" variant="product-preview"></lulu-buy-button>',"Approved compact Lulu product preview is missing or has changed.");
-requireText(books,'data-nbl-lulu-direct="true"',"Compact Lulu preview must replace the extra dynamic Buy Direct banner.");
-forbidText(books,'variant="product-showcase"',"Oversized Lulu product showcase returned to Books.");
+forbidText(books,"<lulu-buy-button","Embedded Lulu widget returned to Books.");
+forbidText(lulu,"<lulu-buy-button","Embedded Lulu widget returned to the Lulu shelf.");
+forbidText(books,"https://js.lulu.com/lulu-buy.js","Lulu widget loader returned to Books.");
+forbidText(lulu,"https://js.lulu.com/lulu-buy.js","Lulu widget loader returned to the Lulu shelf.");
+forbidText(portal,"activateLuluDirectBuy","Dynamic duplicate Books purchase banner returned.");
+forbidText(books,"new-beansland.myshopify.com/collections/nbl-books","Books returned to Shopify checkout/catalog routing.");
+forbidText(books,"amazon.com/People-Zoo-Jamel-Hawkins-ebook","People Zoo digital checkout drifted away from Payhip.");
 forbidText(books,'<div class="store-cover">', "Oversized duplicate decorative book-cover panels returned to Books.");
-if((books.match(/<lulu-buy-button\b/g)||[]).length!==1){console.error("[website-repair] FAIL: Lulu preview must appear exactly once.");failed=true;}
 
 
-for(const value of ['$4.99/month','300 successful replies','$9.99/month','$9.99 one-time','+500 successful replies','$29.99 one-time','$34.99 one-time','$54.99 one-time','$449.99 one-time','$14.99/month']){
+for(const value of ['$4.99/month','300 successful replies','$9.99/month','$9.99 one-time','+500 successful replies','$29.99 one-time','$34.99 one-time','$54.99 one-time','$184.99 one-time','$449.99 one-time','$14.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
-const planFields=["beans.price","beans.replies","beans.renewal","beansUniversity.price","foundationStudentContinuation.price","foundationUniversity.price","getMore.price","getMore.replies","foundationProgram.price","foundationProgram.renewal","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
+const planFields=["beans.price","nblPlus.price","nblUsage.price","fullNbluDiy.price","beans.replies","beans.renewal","beansUniversity.price","foundationStudentContinuation.price","foundationUniversity.price","getMore.price","getMore.replies","foundationProgram.price","foundationProgram.renewal","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
 const planContext={window:{},document:{querySelectorAll:()=>planFields}};
 vm.runInNewContext(plans,planContext);
 for(const field of planFields){
@@ -195,15 +200,21 @@ requireText(header,"NBL_PRODUCT_PLANS.getMore.expiry","Drawer does not use the c
 requireText(header,"NBL_PRODUCT_PLANS.foundationProgram.price","Public search does not use the canonical Foundation Program price.");
 requireText(terms,'data-nbl-plan-value="foundationProgram.price"',"Terms do not use the canonical Foundation Program price.");
 requireText(terms,'data-nbl-plan-value="guidedFoundation.price"',"Terms do not use the canonical Guided Foundation price.");
+requireText(terms,'data-nbl-plan-value="fullNbluDiy.price"',"Terms omit the $184.99 DIY Full NBLU offer.");
+requireText(terms,'data-nbl-plan-value="nblPlus.price"',"Terms omit the distinct $29.99 NBL Plus offer.");
 requireText(terms,'data-nbl-plan-value="fullNblu.price"',"Terms do not use the canonical Full NBLU price.");
 requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not use the canonical Full NBLU owner continuation price.");
 requireText(terms,"University checkout is offered on NewBeansland.org only after payment/account verification passes; the protected classroom now runs on NewBeansland.org.","Terms must keep University payments and classroom on .org.");
 requireText(university,'id="enroll"',"University enrollment section is missing from .org.");
 requireText(university,'href="/campus.html"',"University enrollment must link to same-origin protected campus.");
 forbidText(university,'https://nblworld.com/university.html#enroll',"University enrollment must remain on .org, not return to the old .com payment route.");
-requireText(university,"Beans, the AI assistant","Public University handoff must identify Beans as the AI assistant.");
-requireText(university,'Human-to-human <a href="/chat.html">NBL Chat</a> is here on NewBeansland.org too', "University must link to same-origin person-to-person Chat.");
-requireText(university,"Combined Beans + University is $14.99/month","University must show combined $14.99 membership.");
+requireText(university,"Professor Grey","Enrollment page must explain the Grey teaching boundary.");
+requireText(universityArrival,'href="/university-enrollment.html#enroll"',"University arrival must lead to a separate tuition page.");
+requireText(university,'href="/chat.html"',"University must link to same-origin person-to-person Chat.");
+requireText(university,"Target opening month is December 2026","University must show the latest December opening target.");
+requireText(university,"Full NBLU · Digital DIY · $184.99 once","University must show the $184.99 full digital DIY tier.");
+requireText(university,"full refund of the advance-enrollment payment","University must preserve the advance-enrollment refund promise.");
+requireText(university,"Beans + University · $14.99/month","University enrollment must show combined $14.99 membership.");
 requireText(university,'data-nbl-university-checkout="foundation" disabled',"Foundation checkout on .org must stay disabled until payment/isolation verification.");
 requireText(university,'data-nbl-university-checkout="full_foundation" disabled',"Guided Foundation checkout on .org must stay disabled until payment/isolation verification.");
 requireText(university,'src="/nbl-university-checkout.js"',"The .org University page does not load the authenticated checkout bridge.");

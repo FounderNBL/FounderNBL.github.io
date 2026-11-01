@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 const source=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const approved=[
- ["NBL_Books_New.png","4da94563","books.html"],
+ ["NBL_Books.png","e7397f38","books.html"],
  ["NBL_Clothing_Co.png","f06b568f","clothing.html"],
  ["NBL_Games.png","1ff58013","games.html"],
- ["NBL_Music_Productions.png","d5b9a023","studio/"],
+ ["NBL_Music_Productions%20(1).png","32e2b3ba","studio/"],
  ["NBL_Studios.png","c342a8ee","studios.html"],
  ["NBL_University.png","5fa210ae","university.html"]
 ];
@@ -49,6 +49,8 @@ test("Founder's six homepage destinations preserve the approved order with Unive
  assert.ok(grid.includes('href="studio/"'),"Music remains a separate free showcase");
  assert.ok(source.includes('.world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))'),"desktop grid must be three columns for the 3-by-2 cards");
  assert.ok(grid.includes('href="games.html"'),"existing Games homepage destination must remain");
+ assert.match(grid,/href="games\.html"[\s\S]*?<span class="status">Coming Soon<\/span>[\s\S]*?All NBL Games experiences, including Founder’s Office and Block Boss, are coming soon\./,"Games card must state that every listed game is coming soon");
+ assert.doesNotMatch(grid,/Founder’s Office is open/,"homepage must not claim any NBL game is open");
  assert.ok(!source.includes("nbl-kidz-kayes-cubs"));
 });
 

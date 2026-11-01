@@ -39,4 +39,53 @@ assert.match(university, /study.hall/i);
 assert.match(oldHumanChat, /data-chat-send-form/); // old bookmarks still work
 assert.match(website, /href="\/messenger\//); // discoverable without Beans
 
-console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing preserved.");
+// A zero-thread inbox is NOT proof that nobody else has registered.
+// Welcome existing verified Founder without inventing fake member profiles.
+assert.match(app, /data-chat-invite hidden/);
+assert.match(app, /data-chat-share-invite/);
+assert.match(app, /data-chat-copy-invite/);
+assert.match(app, /data-chat-handle-setup hidden/);
+assert.match(app, /data-chat-founder-marker hidden/);
+assert.match(app, /href="\/account\.html"/);
+assert.match(js, /const INVITE_URL="https:\/\/newbeansland\.org\/messenger\/"/);
+assert.match(js, /const founder=state\.me\?\.role==="founder"/);
+assert.match(js, /if\(invite\)invite\.hidden=!empty/);
+assert.match(js, /await navigator\.share\(/);
+assert.match(js, /navigator\.clipboard\?\.writeText/);
+assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
+assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
+assert.doesNotMatch(app, /type="file"/);
+assert.match(sw, /nbl-messenger-shell-20261031-phone-alert/);
+
+
+for(const item of [
+ "data-chat-notification-settings",
+ "data-chat-notify-enable",
+ "data-chat-notify-disable",
+ "data-chat-notify-preview",
+ "data-chat-notification-founder",
+ "data-chat-notify-title",
+ "data-chat-notify-body",
+ "data-chat-notify-sender",
+ "nbl-infinity-sound.js"
+])assert.ok(app.includes(item),"Phone notification UI lost: "+item);
+for(const item of [
+ 'action:"push_config"',
+ 'action:"push_subscribe"',
+ 'action:"push_unsubscribe"',
+ 'action:"push_template_set"',
+ 'reg.pushManager.subscribe({',
+ 'await reg.showNotification(',
+ 'window.Notification.requestPermission()',
+ 'await forgetPushForDifferentAccount(userId)',
+ 'await disablePhonePush()'
+])assert.ok(js.includes(item),"Phone push workflow lost: "+item);
+assert.match(js,/state.me\?\.role!=="founder"/);
+assert.match(js,/window.NBLInfinitySound\?\.play\("people"\)/);
+assert.match(sw,/self.addEventListener\("push"/);
+assert.match(sw,/self.addEventListener\("notificationclick"/);
+assert.match(sw,/new URL\("\/messenger\/",self.location.origin\)/);
+assert.doesNotMatch(sw,/event\.data\?\.json\(\)[\s\S]*token/);
+assert.doesNotMatch(app,/type="file"/);
+
+console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and phone notification controls preserved.");

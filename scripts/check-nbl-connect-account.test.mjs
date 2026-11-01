@@ -24,3 +24,33 @@ test("No credential or extra public token handling embedded in HTML",()=>{
  assert.match(account,/CONNECT_API="https:\/\/tvypdakofcrlvnwporhh\.supabase\.co\/functions\/v1\/nbl-core\/connect"/);
  assert.match(account,/Authorization:"Bearer "\+t/);
 });
+
+test("Canva linking is paused but customers can revoke existing authorizations",()=>{
+ assert.match(account,/Canva linking and design creation are temporarily paused/);
+ assert.match(account,/Canva connection · paused/);
+ assert.match(account,/operation:"canva_disconnect"/);
+ assert.doesNotMatch(account,/operation:"canva_begin"|operation:"canva_create_design"|operation:"canva_designs"/);
+ assert.doesNotMatch(account,/Connect my Canva|Reconnect Canva for design permission/);
+ assert.doesNotMatch(account,/CANVA_CLIENT_SECRET/);
+});
+test("Beans tools use included membership allowances; no public per-image checkout",()=>{
+ assert.match(account,/id="stillImagePack"/);
+ assert.match(account,/Beans tools · Included with membership/);
+ assert.ok(account.includes('href="/vault.html#pricing"'));
+ assert.doesNotMatch(account,/Beans · Extra Image · \\$2 one time/);
+ assert.doesNotMatch(account,/Extra image · \\$2/);
+});
+test("Beans image, camera and attachments remain; Canva UI is no longer reachable",()=>{
+ const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
+ assert.match(header,/data-nbl-tool="still-camera"/);
+ assert.match(header,/data-nbl-tool="attach"/);
+ assert.match(header,/data-nbl-tool="image"/);
+ assert.match(header,/data-nbl-still-camera/);
+ assert.match(header,/capture="environment"/);
+ assert.match(header,/if\(tool==="still-camera"\)/);
+ assert.match(header,/stillCameraInput.click\(\)/);
+ assert.doesNotMatch(header,/data-nbl-tool="still-canva"/);
+ assert.doesNotMatch(header,/setStillVisualTools\(true\)/);
+ assert.match(header,/mode:"beans"/);
+ assert.doesNotMatch(header,/\/agent-platform\/|\/agents\/still\/chat|NBL_STILL_GOOGLE_AGENT_KEY/);
+});

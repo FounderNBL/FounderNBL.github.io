@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>My Account · New Beansland</title>
   <meta name="description" content="Manage your New Beansland account, Beans history, usage and account data.">
-  <link rel="stylesheet" href="/nbl-world-header.css?v=20261020-v12-beans-backdrop">
+  <link rel="stylesheet" href="/nbl-world-header.css?v=20261024-v12-final-parity">
   <style>
     :root{--ink:#eef4f8;--muted:#aebdca;--gold:#efc66f;--panel:rgba(9,24,38,.94);--line:rgba(239,198,111,.25);--danger:#f4a1a1}
     body{margin:0;background:radial-gradient(circle at top,#153047 0,#07131f 42%,#040b12 100%);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
@@ -31,9 +31,9 @@
     .coupon-code{display:inline-block;margin:.5rem 0;padding:8px 11px;border-radius:10px;background:#06111b;border:1px solid var(--line);color:var(--gold);font:800 .95rem ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em}
     @media(max-width:720px){main{padding-top:96px}.grid{grid-template-columns:1fr}.card{padding:17px}}
   </style>
-  <script defer src="/nbl-product-plans.js?v=20261009-final-prices"></script>
-  <script defer src="/nbl-world-header.js?v=20261020-v12-plus-menu"></script>
-</head>
+  <script defer src="/nbl-product-plans.js?v=20261027-founder-pricing"></script>
+  <script defer src="/nbl-world-header.js?v=20261024-v12-final-parity"></script>
+<style id="nbl-account-categories-style">.account-categories{display:grid;gap:10px;margin:14px 0}.account-category{border:1px solid rgba(214,161,75,.40);border-radius:13px;padding:0;overflow:clip;background:rgba(6,19,32,.65)}.account-category>summary{cursor:pointer;padding:16px 18px;list-style:none;display:grid;gap:4px;min-height:56px;color:#f0c56f}.account-category>summary::-webkit-details-marker,.account-fine-print>summary::-webkit-details-marker{display:none}.account-category>summary strong{font-size:1rem}.account-category>summary small{font-size:.78rem;color:#cfc3ad}.account-category[open]>summary{border-bottom:1px solid rgba(214,161,75,.3)}.account-category>.row{padding:14px;display:flex;flex-wrap:wrap;gap:9px}.account-fine-print{margin:10px 0;font-size:.84rem;color:#bba98f}.account-fine-print>summary{cursor:pointer;display:inline-flex;border-bottom:1px dashed #d6a14b;padding:5px 0;color:#efc66f}.account-fine-print .status{line-height:1.6}.account-category>summary:focus-visible,.account-fine-print>summary:focus-visible{outline:2px solid #f0c56f;outline-offset:2px}</style></head>
 <body>
   <main>
     <section class="hero">
@@ -52,9 +52,10 @@
       <p>This page only shows data for the account that is currently signed in. Use the secure NBL account portal to sign in, create an account, or reset a forgotten password.</p>
       <div class="row">
         <button id="signInButton" type="button">Sign in / recover account</button>
+        <a class="button" id="createAccountButton" href="https://accounts.newbeansland.org/sign-up">Create account</a>
         <a class="button" id="passwordHelpButton" href="https://accounts.newbeansland.org/sign-in">Forgot password?</a>
       </div>
-      <p class="status">After changing your password, return to Beans and sign in with the new password.</p>
+      <p class="status">You can create an NBL account with Google when that option is enabled in Clerk. This signs you into NBL; it does not connect your Gmail inbox. After changing your password, return to Beans and sign in with the new password.</p>
     </section>
 
     <div id="accountBody" class="hidden">
@@ -79,32 +80,51 @@
 
       <section class="card" id="membershipCard">
         <h2>Membership &amp; billing</h2>
+        <p class="status">Track what you've used and what remains across Beans and NBL Studios in your private NBL Vault.</p>
+        <p><a class="button" href="/vault.html">Open NBL Vault · Usage & credits</a></p>
         <p id="membershipStatus" class="status">Checking your Beans membership…</p>
         <div class="grid" aria-label="Membership usage">
           <div class="card metric"><strong id="membershipPlan">—</strong><span>current plan</span></div>
           <div class="card metric"><strong id="replyRemaining">—</strong><span>successful replies remaining</span></div>
           <div class="card metric"><strong id="topUpRemaining">—</strong><span>Get More replies remaining</span></div>
         </div>
-        <div class="row">
-          <button type="button" data-account-billing-plan="beans">Beans · $4.99/month</button>
-          <button type="button" data-account-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout pending">Beans + University · $14.99/month</button>
-          <button type="button" data-account-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Qualified Foundation Student Continuation · $9.99/month</button>
-          <button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button>
-          <button type="button" data-account-billing-plan="foundation" disabled aria-disabled="true" title="Renewal consent and fulfillment checkout pending">Foundation Materials + first month Beans · $29.99 once</button>
-          <button type="button" data-account-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout pending">Foundation + University first month · $34.99 once</button>
-          <button type="button" data-account-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation · $54.99 one-time</button>
-          <button type="button" data-account-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Experience · $449.99 one-time</button>
-          <button type="button" data-account-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Owner Continuation · $14.99/month</button>
-        </div>
-        <p class="status">Every monthly membership renews at its own price until cancelled or changed. Foundation Materials is $29.99 once with the first month of Beans; Beans then renews at $4.99/month with customer consent. The $34.99 Foundation + University offer includes its first month and only qualified purchasers can continue at $9.99/month without an extra Beans subscription. University and Foundation checkouts remain held pending verified payment, fulfillment, renewal consent and account isolation.</p>
+        <div class="account-categories" aria-label="Membership categories">
+<details class="account-category"><summary><strong>Beans & add-ons</strong><small>Chat plans and additional replies</small></summary><div class="row"><button type="button" data-account-billing-plan="beans">Beans · $4.99/month</button>
+<button type="button" data-account-billing-plan="nbl_plus" disabled aria-disabled="true" title="Premium Beans checkout held pending LOCKE verification">NBL Plus premium Beans · $29.99/month (not University)</button>
+<button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button></div></details>
+<details class="account-category"><summary><strong>University & teachers</strong><small>Student plans, Professor Grey and Full NBLU</small></summary><div class="row"><button type="button" data-account-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout pending">Beans + University · $14.99/month</button>
+<button type="button" data-account-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Qualified Foundation Student Continuation · $9.99/month</button>
+<button type="button" data-account-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout pending">Foundation + University first month · $34.99 once</button>
+<button type="button" data-account-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation · $54.99 one-time</button>
+<button type="button" data-account-billing-plan="full_nblu_diy" disabled aria-disabled="true" title="Digital DIY University checkout pending">Full NBLU · Digital DIY · $184.99 once (no physical books)</button>
+<button type="button" data-account-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Experience · Physical Books · $449.99 one-time</button>
+<button type="button" data-account-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU Owner Continuation · $14.99/month</button></div></details>
+<details class="account-category"><summary><strong>Books & materials</strong><small>Foundation physical books and Beans</small></summary><div class="row"><button type="button" data-account-billing-plan="foundation" disabled aria-disabled="true" title="Renewal consent and fulfillment checkout pending">Foundation Materials + first month Beans · $29.99 once</button></div></details>
+</div>
+<p class="status">Prices and renewal terms appear with each plan. University checkout is held; <a href="/university.html">University information</a> is available.</p>
+        <details class="account-fine-print"><summary>Plan terms, renewal dates &amp; refund information</summary>        <p class="status">Every monthly membership renews at its own price until cancelled or changed. Foundation Materials is $29.99 once with the first month of Beans; Beans then renews at $4.99/month with customer consent. The $34.99 Foundation + University offer includes its first month and only qualified purchasers can continue at $9.99/month without an extra Beans subscription. University and Foundation checkouts remain held pending verified payment, fulfillment, renewal consent and account isolation. December 2026 is the current University opening target, subject to readiness; Grey and protected courses remain closed. Full NBLU is available in two planned variants: $184.99 digital DIY or $449.99 with physical stage books. The early-enrollment and full-refund promise applies to advance enrollment.</p></details>
       </section>
 
       <section class="card" id="nblConnectCard">
         <h2>Beans · Connected apps</h2>
-        <p class="status">Connect supported accounts so Beans can work with what you authorize. GitHub begins with read-only repository inspection.</p>
+        <p class="status">Connect only accounts you choose.</p><details class="account-fine-print"><summary>How connected accounts and permissions work</summary><p class="status">Connect accounts you own. Google sign-in and optional Gmail inbox access are two different permissions. Gmail reading requires your separate consent, and Beans will never send or delete your mail from this read-only connection. GitHub supports repository inspection. Canva linking and design creation are temporarily paused.</p></details>
         <p id="nblConnectStatus" class="status">Checking connected apps…</p>
         <div id="nblConnectApps" class="fulfillment-list"></div>
         <div id="nblConnectRepos" class="fulfillment-list"></div>
+      </section>
+
+      <section class="card" id="stillImagePack" aria-labelledby="stillImagePackTitle">
+        <h2 id="stillImagePackTitle">Beans tools · Included with membership</h2>
+        <details class="account-fine-print"><summary>How NBL tool allowances work</summary><p class="status">Web search, file understanding, code/data work, PDF/file creation, images, and Beans voice use NBL's included monthly tool allowances—not six separate fees. Every tool request costs one included NBL use; NBL covers the service expense. See the exact used-and-left totals and all Beans prices in your NBL Vault.</p></details>
+        <p><a class="button" href="/vault.html#pricing">Open NBL Vault pricing &amp; tool usage</a></p>
+      </section>
+
+      <section class="card hidden" id="founder-azure" aria-labelledby="founderAzureTitle">
+        <h2 id="founderAzureTitle">Beans · Azure connections (Founder)</h2>
+        <p class="status">Read-only server wiring check. No Azure calls, credits, or customer data are used.</p>
+        <div class="row"><button id="founderAzureCheck" type="button">Check Azure connection setup</button></div>
+        <p id="founderAzureStatus" class="status" role="status" aria-live="polite">Checking secure Founder access…</p>
+        <div id="founderAzureResults" class="fulfillment-list"></div>
       </section>
 
       <section class="card hidden" id="founder-actions">
@@ -122,7 +142,7 @@
       <section class="grid" aria-label="Account usage">
         <div class="card metric"><strong id="conversationCount">0</strong><span>saved conversations</span></div>
         <div class="card metric"><strong id="messageCount">0</strong><span>saved messages</span></div>
-        <div class="card metric"><strong id="modelCount">0</strong><span>OpenAI responses used</span></div>
+        <div class="card metric"><strong id="modelCount">0</strong><span>Beans answers generated</span></div>
       </section>
 
       <section class="card">
@@ -168,6 +188,11 @@
     const replyRemaining=document.getElementById("replyRemaining");
     const topUpRemaining=document.getElementById("topUpRemaining");
     const membershipButtons=[...document.querySelectorAll("[data-account-billing-plan]")];
+    const founderAzureCard=document.getElementById("founder-azure");
+    const founderAzureCheck=document.getElementById("founderAzureCheck");
+    const founderAzureStatus=document.getElementById("founderAzureStatus");
+    const founderAzureResults=document.getElementById("founderAzureResults");
+    const AZURE_DIAG_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core/azure/status";
     const founderActionsCard=document.getElementById("founder-actions");
     const founderActionsStatus=document.getElementById("founderActionsStatus");
     const founderActions=document.getElementById("founderActions");
@@ -183,15 +208,25 @@
     let authNavigationInProgress=false;
     const accountPortalUrl=(page="/sign-in")=>{
       if(window.NBLAuthFlow?.accountPortalUrl){
-        return window.NBLAuthFlow.accountPortalUrl(page,location.href);
+        const fromShared=window.NBLAuthFlow.accountPortalUrl(page,location.href);
+        // A cached older header only supported /sign-in and /user and quietly
+        // downgraded a requested /sign-up to /sign-in. Do not follow stale routing.
+        try{
+          const parsed=new URL(fromShared);
+          const wanted=page==="/sign-up"?"/sign-up":page==="/user"?"/user":"/sign-in";
+          if(parsed.origin==="https://accounts.newbeansland.org"&&parsed.pathname===wanted)
+            return parsed.href;
+        }catch{}
       }
       const safeReturn=new URL(location.href);
       safeReturn.hash="";
       safeReturn.searchParams.delete("session_id");
-      const portalPage=page==="/user"?"/user":"/sign-in";
+      const portalPage=["/user","/sign-up"].includes(page)?page:"/sign-in";
       return "https://accounts.newbeansland.org"+portalPage+"?redirect_url="+encodeURIComponent(safeReturn.href);
     };
     const signInPortal=accountPortalUrl("/sign-in");
+    const createAccountButton=document.getElementById("createAccountButton");
+    if(createAccountButton) createAccountButton.href=accountPortalUrl("/sign-up");
     signInButton.onclick=()=>{
       authNavigationInProgress=true;
       location.assign(signInPortal);
@@ -228,10 +263,22 @@
     const renderAuthState=()=>{
       if(authNavigationInProgress) return;
       const signedIn=Boolean(clerk.isSignedIn&&clerk.session);
-      const accountId=String(clerk.user?.id||clerk.session?.user?.id||clerk.session?.id||"");
+      // Identity is a stable Clerk USER id, never a mutable session id.
+      // A session can appear before Clerk hydrates its user. Initializing
+      // against session.id and then receiving user.id looks like an account
+      // switch and can falsely hide the account after successful sign-in.
+      const accountId=String(clerk.user?.id||clerk.session?.user?.id||"");
       if(!signedIn){
         signedOut.classList.add("show");
         accountBody.classList.add("hidden");
+        return;
+      }
+      if(!accountId){
+        // Wait for Clerk's auth listener to supply a verified user id.
+        // Do not redirect, reload, initialize account data, or make a paid call.
+        signedOut.classList.add("show");
+        accountBody.classList.add("hidden");
+        signedOut.querySelector("p").textContent="Your NBL account is connecting. If this stays here, refresh once.";
         return;
       }
       if(accountInitializationStarted&&accountId!==initializedAccountId){
@@ -380,7 +427,102 @@
           card.append(connect);
         }
         nblConnectApps.append(card);
-        nblConnectStatus.textContent=connectParam==="github_connected"
+
+        // Gmail is a separate, optional OAuth grant. Sign-in with Google never grants this.
+        const gmailProvider=(data.providers||[]).find(x=>x.id==="gmail");
+        const gmailConnected=(data.connections||[]).find(x=>x.provider==="gmail");
+        const gmailCard=document.createElement("article");gmailCard.className="fulfillment-item";
+        const gmailTitle=document.createElement("h3");gmailTitle.textContent="Gmail · Optional inbox access";
+        const gmailInfo=document.createElement("p");gmailInfo.className="fulfillment-meta";
+        gmailInfo.textContent=gmailConnected
+          ?"Connected: "+gmailConnected.label+" · read and search only; no sending, deleting or drafting in Gmail"
+          :gmailProvider?.configured
+            ?"Not connected. Beans can read your messages only after you choose to approve Gmail access."
+            :"Gmail inbox connection is being verified. Signing in with Google does not give Beans access to your mail.";
+        gmailCard.append(gmailTitle,gmailInfo);
+        if(gmailConnected){
+          const lookup=document.createElement("div");lookup.className="row";
+          const query=document.createElement("input");query.type="search";query.placeholder="Search my Gmail";query.maxLength=160;query.setAttribute("aria-label","Search connected Gmail");
+          const search=document.createElement("button");search.type="button";search.textContent="Find emails";
+          const found=document.createElement("div");found.className="fulfillment-list";
+          search.onclick=async()=>{
+            search.disabled=true;found.replaceChildren();nblConnectStatus.textContent="Checking your authorized Gmail…";
+            try{
+              const results=await connectFetch({operation:"gmail_search",query:query.value||"in:inbox"});
+              const emails=Array.isArray(results.messages)?results.messages:[];
+              for(const mail of emails){
+                const item=document.createElement("article");item.className="fulfillment-item";
+                const name=document.createElement("h4");name.textContent=String(mail.subject||"(No subject)");
+                const meta=document.createElement("p");meta.className="fulfillment-meta";
+                meta.textContent=String(mail.from||"")+" · "+String(mail.date||"")+" · "+String(mail.snippet||"");
+                const read=document.createElement("button");read.type="button";read.textContent="Read message";
+                const body=document.createElement("pre");body.style.whiteSpace="pre-wrap";body.style.overflowWrap="anywhere";
+                read.onclick=async()=>{
+                  read.disabled=true;
+                  try{
+                    const full=await connectFetch({operation:"gmail_read",messageId:mail.id});
+                    body.textContent=String(full.message?.body||"No plain text available.").slice(0,6000);
+                  }catch(error){body.textContent=error.message||"Cannot read that email."}
+                  finally{read.disabled=false}
+                };
+                item.append(name,meta,read,body);found.append(item);
+              }
+              nblConnectStatus.textContent=emails.length+" email previews from your connected Gmail. No messages were changed.";
+            }catch(error){nblConnectStatus.textContent=error.message||"Could not read Gmail."}
+            finally{search.disabled=false}
+          };
+          lookup.append(query,search);
+          const disconnect=document.createElement("button");disconnect.type="button";disconnect.className="danger";disconnect.textContent="Disconnect Gmail";
+          disconnect.onclick=async()=>{
+            if(!confirm("Disconnect Gmail from Beans? NBL will delete its stored access tokens."))return;
+            disconnect.disabled=true;
+            try{await connectFetch({operation:"gmail_disconnect"});await renderConnect();}
+            catch(error){nblConnectStatus.textContent=error.message||"Could not disconnect Gmail.";disconnect.disabled=false}
+          };
+          gmailCard.append(lookup,found,disconnect);
+        }else if(gmailProvider?.configured){
+          const connect=document.createElement("button");connect.type="button";connect.textContent="Connect my Gmail · Read only";
+          connect.onclick=async()=>{
+            connect.disabled=true;
+            try{
+              const result=await connectFetch({operation:"gmail_begin"});
+              const url=new URL(result.authorizationUrl);
+              if(url.protocol!=="https:"||url.hostname!=="accounts.google.com")
+                throw Error("Invalid Gmail authorization destination.");
+              location.assign(url.href);
+            }catch(error){nblConnectStatus.textContent=error.message;connect.disabled=false}
+          };
+          gmailCard.append(connect);
+        }
+        nblConnectApps.append(gmailCard);
+
+        // Canva pause: preserve self-service revocation for existing OAuth grants.
+        // No new Canva sign-in, design listing or design creation is offered here.
+        const canvaConnected=(data.connections||[]).find(x=>x.provider==="canva");
+        if(canvaConnected){
+          const canvaCard=document.createElement("article");canvaCard.className="fulfillment-item";
+          const canvaTitle=document.createElement("h3");canvaTitle.textContent="Canva connection · paused";
+          const canvaDetails=document.createElement("p");canvaDetails.className="fulfillment-meta";
+          canvaDetails.textContent="Canva is paused in Beans. Disconnect your existing authorization here if you wish; Beans image creation remains available separately.";
+          const disconnect=document.createElement("button");disconnect.type="button";disconnect.className="danger";disconnect.textContent="Disconnect Canva";
+          disconnect.onclick=async()=>{
+            if(!confirm("Disconnect your Canva account from NBL?"))return;
+            disconnect.disabled=true;
+            try{await connectFetch({operation:"canva_disconnect"});await renderConnect();}
+            catch(error){nblConnectStatus.textContent=error.message;disconnect.disabled=false}
+          };
+          canvaCard.append(canvaTitle,canvaDetails,disconnect);
+          nblConnectApps.append(canvaCard);
+        }
+        nblConnectStatus.textContent=connectParam==="gmail_connected"
+          ?"Your Gmail is connected read-only. You may review your authorized email above."
+          :connectParam==="gmail_failed"||connectParam==="gmail_expired"||connectParam==="gmail_cancelled"
+            ?"Gmail authorization did not finish. No inbox permission was granted."
+          :connectParam==="canva_connected"
+          ?"Canva integration is paused; existing connections can be disconnected below."
+          :connectParam==="canva_failed"||connectParam==="canva_expired"
+            ?"Canva authorization did not finish. Canva linking is paused; use Beans image tools instead."
+          :connectParam==="github_connected"
           ?"Your GitHub connection was saved. You may inspect the repositories you approved."
           :connectParam==="github_failed"||connectParam==="github_expired"
             ?"GitHub sign-in did not finish. You can try again.":connected?"Connected apps are ready for your review.":"No customer GitHub connection is active yet.";
@@ -498,6 +640,46 @@
         deliveryCard.classList.add("hidden");
       }
     };
+
+    const renderFounderAzure=async()=>{
+      // Only the signed-in Founder may see missing server configuration names.
+      // The gateway and Foundation both verify Clerk/LOCKE again; UI is never authority.
+      founderAzureResults.replaceChildren();
+      founderAzureStatus.textContent="Checking safe Azure configuration names…";
+      founderAzureCheck.disabled=true;
+      try{
+        const t=await token();
+        if(!t)throw new Error("Sign in to your NBL account first.");
+        const response=await fetch(AZURE_DIAG_API,{method:"POST",
+          headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:"Bearer "+t},
+          body:"{}",cache:"no-store"});
+        const report=await response.json().catch(()=>({}));
+        if(response.status===401||response.status===403){
+          founderAzureCard.classList.add("hidden");
+          return;
+        }
+        if(!response.ok||report?.ok!==true||!Array.isArray(report.capabilities))
+          throw new Error("Azure setup check is not ready. No credentials or usage were changed.");
+        founderAzureCard.classList.remove("hidden");
+        const connected=report.capabilities.filter(row=>row.configuredNames===true).length;
+        founderAzureStatus.textContent=connected+" of "+report.capabilities.length+
+          " server configuration sets detected. This does not verify Azure API calls or credit.";
+        for(const row of report.capabilities){
+          const card=document.createElement("article");card.className="fulfillment-item";
+          const title=document.createElement("h3");title.textContent=String(row.label||row.id||"Azure service");
+          const info=document.createElement("p");info.className="fulfillment-meta";
+          const missing=Array.isArray(row.missingNames)?row.missingNames.map(String):[];
+          info.textContent=row.configuredNames
+            ?"Server variable names detected · live Azure call not yet verified"
+            :"Missing from this server: "+missing.join(", ");
+          card.append(title,info);founderAzureResults.append(card);
+        }
+      }catch{
+        if(!founderAzureCard.classList.contains("hidden"))
+          founderAzureStatus.textContent="Azure connection check unavailable. No provider call was made.";
+      }finally{founderAzureCheck.disabled=false;}
+    };
+    founderAzureCheck.onclick=()=>{void renderFounderAzure();};
 
     const renderFounderActions=async()=>{
       founderActions.replaceChildren();
@@ -708,7 +890,7 @@
     };
 
     try{
-      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderFounderActions(),renderConnect()]);
+      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderFounderActions(),renderFounderAzure(),renderConnect()]);
       if(checkoutParams.get("checkout")==="success"){
         for(let attempt=0;attempt<3;attempt++){
           await new Promise(resolve=>setTimeout(resolve,1500));

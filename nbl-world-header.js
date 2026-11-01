@@ -18,7 +18,7 @@
     if(/\/stories\.html$/.test(path)) return {label:"TV & Film",key:"stories"};
     if(/\/studio\/?(?:index\.html)?$/.test(path)) return {label:"NBL Music Productions",key:"studio"};
     if(/\/studios\.html$/.test(path)||/\/studio\/creator\.html$/.test(path)) return {label:"NBL Studios",key:"studios"};
-    if(/\/pricing\.html$/.test(path)) return {label:"NBL Services & Pricing",key:"pricing"};
+    if(/\/(?:pricing|vault)\.html$/.test(path)) return {label:"NBL Vault & Pricing",key:"pricing"};
     if(/\/founder-office\.html$/.test(path)) return {label:"Founder’s Office",key:"office"};
     if(/\/about\.html$/.test(path)||/\/jamel-hawkins\.html$/.test(path)) return {label:"About NBL",key:"about"};
     if(/\/account\.html$/.test(path)) return {label:"My NBL Account",key:"account"};
@@ -37,7 +37,7 @@
     ["stories","TV & Film","/stories.html",false],
     ["studio","NBL Music Productions","/studio/",false],
     ["studios","NBL Studios","/studios.html",false],
-    ["pricing","Pricing","/pricing.html",false],
+    ["pricing","Vault & Pricing","/vault.html#pricing",false],
     ["office","Founder’s Office","/founder-office.html",false],
     ["search","Search","#nbl-search",false]
   ];
@@ -75,7 +75,7 @@
   };
 
   const accountPortalUrl=(page="/sign-in",href=location.href)=>{
-    const portalPage=page==="/user"?"/user":"/sign-in";
+    const portalPage=["/user","/sign-up"].includes(page)?page:"/sign-in";
     const redirectUrl=encodeURIComponent(safeReturnUrl(href));
     return `${NBL_ACCOUNT_PORTAL}${portalPage}?redirect_url=${redirectUrl}`;
   };
@@ -547,7 +547,7 @@
               <span class="nbl-chat-drawer-fallback" aria-hidden="true">G</span>
               <span><strong>Talk to Grey</strong><small>Protected NBL University</small></span>
             </a>
-            <a class="nbl-chat-drawer-item nbl-beans-people-link" href="/chat.html">
+            <a class="nbl-chat-drawer-item nbl-beans-people-link" href="/messenger/">
               <span class="nbl-chat-drawer-fallback" aria-hidden="true">P</span>
               <span><strong>Talk to People</strong><small>Your NBL member messages</small></span>
             </a>
@@ -571,16 +571,20 @@
             <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.foundationProgram.price} Foundation Materials · ${NBL_PRODUCT_PLANS.beansUniversity.price} Beans + University (held) · Get More</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
-            <article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.beansUniversity.name} · ${NBL_PRODUCT_PLANS.beansUniversity.price}</strong><span>Combined Beans + University membership. Renews at $14.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout verification pending">University membership checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.foundationStudentContinuation.name} · ${NBL_PRODUCT_PLANS.foundationStudentContinuation.price}</strong><span>Only for verified $34.99 purchasers, beginning after their included first month. Renews at $9.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Student continuation checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>Two physical books and one month of Beans; no ebooks or University materials included. Then Beans renews at $4.99/month until cancelled or upgraded, with customer consent. No University enrollment.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation" disabled aria-disabled="true" title="Fulfillment and recurring-billing verification pending">Foundation checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.foundationUniversity.name} · ${NBL_PRODUCT_PLANS.foundationUniversity.price}</strong><span>Foundation materials and the first month of Beans + University. Qualifying continuation: $9.99/month. Enrollment held.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout verification pending">Foundation + University pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.guidedFoundation.name} · ${NBL_PRODUCT_PLANS.guidedFoundation.price}</strong><span>Foundation physical + digital materials plus one month of the full University guided experience with Professor Grey™ / Virgo System™.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.fullNblu.name} · ${NBL_PRODUCT_PLANS.fullNblu.price}</strong><span>Six months of the full University experience plus the staged physical-book and ebook entitlement across the planned program as material is completed and released. Shipping may be charged separately for physical stage packs.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU checkout pending</button></article>
-            <article><strong>${NBL_PRODUCT_PLANS.nbluContinuation.name} · ${NBL_PRODUCT_PLANS.nbluContinuation.price}</strong><span>Owner-only continuation after the included six-month Full NBLU guided period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU continuation checkout pending</button></article>
-            <button class="nbl-billing-manage" type="button" data-nbl-billing-portal>Manage billing</button>
+<details class="nbl-drawer-category"><summary><strong>Beans & add-ons</strong><small>Beans · Plus · extra replies · NBL credits</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.nblPlus?.name||"NBL Plus"} · ${NBL_PRODUCT_PLANS.nblPlus?.price||"$29.99/month"}</strong><span>Premium Beans only; not the $29.99 Foundation materials offer and not protected University/Grey access. Entitlement checkout pending.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nbl_plus" disabled aria-disabled="true" title="Premium Beans entitlement verification pending">NBL Plus checkout pending</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.nblUsage?.name||"NBL Usage — 500 Credits"} · ${NBL_PRODUCT_PLANS.nblUsage?.price||"$7.00 one-time"}</strong><span>500 purchased NBL Usage credits; separate from Beans reply top-ups, included monthly NBL tool uses and NBL Studios Credits. Checkout held pending verified wallet/debit rules.</span><a href="/vault.html#credits">NBL credit details</a></article></div></details>
+<details class="nbl-drawer-category"><summary><strong>University & teachers</strong><small>Campus packages · Professor Grey · continuation</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.beansUniversity.name} · ${NBL_PRODUCT_PLANS.beansUniversity.price}</strong><span>Combined Beans + University membership. Renews at $14.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout verification pending">University membership checkout pending</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.foundationStudentContinuation.name} · ${NBL_PRODUCT_PLANS.foundationStudentContinuation.price}</strong><span>Only for verified $34.99 purchasers, beginning after their included first month. Renews at $9.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Student continuation checkout pending</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.foundationUniversity.name} · ${NBL_PRODUCT_PLANS.foundationUniversity.price}</strong><span>Foundation materials and the first month of Beans + University. Qualifying continuation: $9.99/month. Enrollment held.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout verification pending">Foundation + University pending</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.guidedFoundation.name} · ${NBL_PRODUCT_PLANS.guidedFoundation.price}</strong><span>Foundation physical + digital materials plus one month of the full University guided experience with Professor Grey™ / Virgo System™.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation checkout pending</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.fullNbluDiy?.name||"Full NBLU Experience — Digital DIY"} · ${NBL_PRODUCT_PLANS.fullNbluDiy?.price||"$184.99 one-time"}</strong><span>Same planned Full NBLU digital academic program as the physical-books option, without printed books. Six-month guided access begins only after University opening and LOCKE verification.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu_diy" disabled aria-disabled="true" title="University checkout verification pending">Digital DIY checkout pending</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.fullNblu.name} · ${NBL_PRODUCT_PLANS.fullNblu.price}</strong><span>Six months of the full University experience plus the staged physical-book and ebook entitlement across the planned program as material is completed and released. Shipping may be charged separately for physical stage packs.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU checkout pending</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.nbluContinuation.name} · ${NBL_PRODUCT_PLANS.nbluContinuation.price}</strong><span>Owner-only continuation after the included six-month Full NBLU guided period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU continuation checkout pending</button></article></div></details>
+<details class="nbl-drawer-category"><summary><strong>NBL Services</strong><small>Books, Studios and separate creator credits</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.studiosCredits?.name||"NBL Studios Credits"} · ${NBL_PRODUCT_PLANS.studiosCredits?.price||"$8.99 one-time"}</strong><span>500 NBL Studios Credits for separately quoted creative generations. New credit checkout held; see the quote before creating.</span><a href="/studio/creator.html">View creator pricing</a></article>
+<article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>Two physical books and one month of Beans; no ebooks or University materials included. Then Beans renews at $4.99/month until cancelled or upgraded, with customer consent. No University enrollment.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation" disabled aria-disabled="true" title="Fulfillment and recurring-billing verification pending">Foundation checkout pending</button></article></div></details>
+<button class="nbl-billing-manage" type="button" data-nbl-billing-portal>Manage billing</button>
             <p class="nbl-billing-status" data-nbl-billing-status role="status">Foundation and University checkouts are held pending verified renewal consent, fulfillment, payment and LOCKE identity binding.</p>
           </div>
 
@@ -613,6 +617,11 @@
         </div>
       </aside>
 
+      <div class="nbl-quick-selector" id="nbl-quick-selector" data-nbl-quick-selector role="group" aria-label="Choose NBL conversation" hidden>
+        <button type="button" data-nbl-quick="beans" aria-label="Chat with Beans"><img src="/Beans.png" alt="" aria-hidden="true"><strong>Beans</strong><small>AI assistant</small></button>
+        <button type="button" data-nbl-quick="grey" aria-label="Talk to Professor Grey, LOCKE authorization required"><img src="/Professor_Grey.png" alt="" aria-hidden="true"><strong>Grey</strong><small>Teaching · LOCKE</small></button>
+        <a href="/university.html" data-nbl-quick="university" aria-label="NBL University entrance, enrollment and LOCKE approval required"><img src="/NBL_University.png" alt="" aria-hidden="true"><strong>University</strong><small>Locked · enrollment</small></a>
+      </div>
       <div class="nbl-chat-modes" role="tablist" aria-label="Beans mode">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
         <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden>University</button>
@@ -634,23 +643,34 @@
           </div>
           <div class="nbl-beans-attachments" data-nbl-beans-attachments hidden></div>
           <div class="nbl-beans-knowledge" data-nbl-beans-knowledge hidden></div>
+          <section class="nbl-still-tools" data-nbl-still-tools hidden aria-label="Still visual tools within Beans">
+            <div class="nbl-still-tools-head"><strong>Beans · Still visual tools</strong><button type="button" data-nbl-still-close aria-label="Close Still visual tools">×</button></div>
+            <p class="nbl-still-note">Same Beans conversation. Use your own Canva account for designs; NBL image generation is a separate, metered tool.</p>
+            <p class="nbl-still-status" data-nbl-still-status role="status" aria-live="polite">Loading Canva connection…</p>
+            <div class="nbl-still-controls" data-nbl-still-controls></div>
+            <div class="nbl-still-designs" data-nbl-still-designs hidden></div>
+          </section>
           <div class="nbl-beans-composer">
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
-                <button type="button" data-nbl-tool="attach"><strong>Photo / file</strong><span>Analyze an image, PDF, text, CSV, or JSON file · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
+                <button type="button" data-nbl-tool="still-camera"><strong>Beans · Camera</strong><span>Take a picture to show Beans · device permission on demand</span></button>
+                <button type="button" data-nbl-tool="attach"><strong>Beans · Photo / file</strong><span>Choose a picture, PDF or document to share with Beans</span></button>
                 <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="web"><strong>Search the live web</strong><span>Force a current web search · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="artifact"><strong>Create a PDF / file</strong><span>Build a downloadable PDF, document, spreadsheet, CSV, or presentation · eligible membership required</span></button>
-                <button type="button" data-nbl-tool="image"><strong>Create an image</strong><span>Generate an image from your next prompt · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="image"><strong>Beans · Create an image</strong><span>Ask Beans to create an image with NBL’s existing OpenAI tool · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice with verified access; browser voice otherwise</span></button>
               </div>
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
+              <input data-nbl-still-camera type="file" accept="image/*" capture="environment" hidden>
               <input data-nbl-beans-knowledge-file type="file" accept=".pdf,.txt,.md,.json,.html,.css,.js,.ts,.py,.doc,.docx,.pptx,.c,.cpp,.cs,.go,.java,.php,.rb,.sh,.tex,application/pdf,application/json,text/plain,text/markdown,text/html" hidden>
             </div>
+            <button class="nbl-quick-toggle" type="button" data-nbl-quick-toggle aria-controls="nbl-quick-selector" aria-expanded="false" aria-label="Choose Beans, Professor Grey or University">⌕</button>
             <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
             <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans">🎙</button>
             <button class="nbl-beans-stop" type="button" data-nbl-beans-stop aria-label="Stop Beans response" hidden>Stop</button>
@@ -743,6 +763,7 @@
   const beansToolsToggle=beansPanel.querySelector("[data-nbl-tools-toggle]");
   const beansToolsMenu=beansPanel.querySelector("[data-nbl-tools-menu]");
   const beansFileInput=beansPanel.querySelector("[data-nbl-beans-file]");
+  const stillCameraInput=beansPanel.querySelector("[data-nbl-still-camera]");
   const beansKnowledgeFileInput=beansPanel.querySelector("[data-nbl-beans-knowledge-file]");
   const beansAttachmentsEl=beansPanel.querySelector("[data-nbl-beans-attachments]");
   const beansKnowledgeEl=beansPanel.querySelector("[data-nbl-beans-knowledge]");
@@ -754,6 +775,12 @@
   const chatDrawerTools=beansPanel.querySelector("[data-nbl-drawer-tools]");
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
   const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
+  const stillTools=beansPanel.querySelector("[data-nbl-still-tools]");
+  const stillStatus=beansPanel.querySelector("[data-nbl-still-status]");
+  const stillControls=beansPanel.querySelector("[data-nbl-still-controls]");
+  const stillDesigns=beansPanel.querySelector("[data-nbl-still-designs]");
+  const stillClose=beansPanel.querySelector("[data-nbl-still-close]");
+  let stillRequestVersion=0;
   const beansDisclaimer=beansPanel.querySelector("[data-nbl-beans-disclaimer]");
   let beansDisclaimerTimer=null;
   const brieflyShowBeansStatus=(text)=>{
@@ -763,6 +790,9 @@
   const regularBeansShell=beansPanel.querySelector("[data-nbl-beans-regular]");
   const plusShell=beansPanel.querySelector("[data-nbl-plus]");
   const modeButtons=[...beansPanel.querySelectorAll("[data-nbl-chat-mode]")];
+  const nblQuickSelector=beansPanel.querySelector("[data-nbl-quick-selector]");
+  const nblQuickToggle=beansPanel.querySelector("[data-nbl-quick-toggle]");
+  let nblQuickTimer=null;
   const plusAccess=beansPanel.querySelector("[data-nbl-plus-access]");
   const plusAccessCopy=beansPanel.querySelector("[data-nbl-plus-access-copy]");
   const plusSignIn=beansPanel.querySelector("[data-nbl-plus-signin]");
@@ -1125,6 +1155,15 @@
     }
   };
 
+  const setNblQuickMenu=open=>{
+    if(nblQuickTimer!==null){window.clearTimeout(nblQuickTimer);nblQuickTimer=null;}
+    nblQuickSelector.hidden=!open;
+    nblQuickToggle.setAttribute("aria-expanded",open?"true":"false");
+    if(open)nblQuickTimer=window.setTimeout(()=>{
+      nblQuickTimer=null;
+      if(!nblQuickSelector.matches(":focus-within")&&!nblQuickSelector.matches(":hover"))setNblQuickMenu(false);
+    },2000);
+  };
   const setBeansToolMenu=open=>{
     beansToolsMenu.hidden=!open;
     beansToolsToggle.setAttribute("aria-expanded",open?"true":"false");
@@ -1156,6 +1195,7 @@
   };
 
   const clearBeansTools=()=>{
+    if(!stillTools.hidden)setStillVisualTools(false);
     beansToolMode="auto";
     beansAttachments=[];
     beansFileInput.value="";
@@ -1205,6 +1245,127 @@
     if(!response.ok) throw new Error(payload?.message||"That Beans tool is temporarily unavailable.");
     return payload;
   };
+
+
+  // Still is a visual capability of Beans, never another public chat or model.
+  // It uses the same Clerk identity and server-side NBL Connect authorization as /account.html.
+  const stillConnect=async(payload)=>{
+    const token=await getNblBeansAuthToken();
+    if(!token)throw Error("Sign in with your NBL account to connect Canva.");
+    const response=await fetch(`${NBL_CORE_API}/connect`,{
+      method:"POST",
+      headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:"Bearer "+token},
+      body:JSON.stringify(payload),
+      cache:"no-store"
+    });
+    const body=await response.json().catch(()=>({}));
+    if(!response.ok||body?.ok===false)throw Error(body?.message||"The Canva connection is unavailable.");
+    return body;
+  };
+  const stillEditorUrl=value=>{
+    const url=new URL(String(value||""));
+    if(url.protocol!=="https:"||url.hostname!=="www.canva.com"||
+       !(url.pathname.startsWith("/design/")||url.pathname.startsWith("/api/design/")))
+      throw Error("Canva returned an untrusted design link.");
+    return url.href;
+  };
+  const stillButton=(label,action,disabled=false)=>{
+    const el=document.createElement("button");
+    el.type="button";el.textContent=label;el.disabled=disabled;el.addEventListener("click",action);
+    return el;
+  };
+  const stillOpenCanvaAuth=async(button)=>{
+    button.disabled=true;
+    try{
+      const result=await stillConnect({operation:"canva_begin"});
+      const target=new URL(result.authorizationUrl);
+      if(target.protocol!=="https:"||target.hostname!=="www.canva.com")throw Error("Invalid Canva authorization destination.");
+      // OAuth redirects to the official NBL account callback, not to a second chatbot.
+      location.assign(target.href);
+    }catch(error){stillStatus.textContent=error.message||"Canva sign-in is unavailable.";button.disabled=false;}
+  };
+  const stillShowDesigns=async(button,identity,version)=>{
+    button.disabled=true;stillStatus.textContent="Beans is checking your Canva designs…";
+    stillDesigns.replaceChildren();stillDesigns.hidden=true;
+    try{
+      const data=await stillConnect({operation:"canva_designs"});
+      if(version!==stillRequestVersion||identity!==currentClerkUserId()||stillTools.hidden)return;
+      const items=Array.isArray(data.designs)?data.designs:[];
+      for(const item of items){
+        let link;
+        try{link=stillEditorUrl(item.editUrl);}catch{continue;}
+        const a=document.createElement("a");
+        a.href=link;a.target="_blank";a.rel="noopener noreferrer";
+        a.textContent=String(item.title||"Canva design").slice(0,140)+" · Open in Canva";
+        stillDesigns.append(a);
+      }
+      stillDesigns.hidden=!stillDesigns.childElementCount;
+      stillStatus.textContent=items.length?"Your own Canva designs are listed below.":"No accessible Canva designs yet.";
+    }catch(error){if(version===stillRequestVersion)stillStatus.textContent=error.message||"Canva designs aren't available.";}
+    finally{button.disabled=false;}
+  };
+  const stillCreateCanva=async(button,title,size,identity,version)=>{
+    button.disabled=true;stillStatus.textContent="Beans is creating a blank design in your Canva account…";
+    try{
+      const data=await stillConnect({operation:"canva_create_design",format:size.value,title:title.value.trim()||"Still · NBL design"});
+      if(version!==stillRequestVersion||identity!==currentClerkUserId()||stillTools.hidden)return;
+      const link=stillEditorUrl(data?.design?.editUrl);
+      const a=document.createElement("a");
+      a.href=link;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open your new Canva design";
+      stillDesigns.replaceChildren(a);stillDesigns.hidden=false;
+      const message='I created "'+String(data.design.title||"your design").slice(0,100)+'" in your own Canva account. Open it above to edit. Still is my visual tool, and NBL did not charge for this Canva action.';
+      appendBeansMessage("assistant",message);
+      beansHistory.push({role:"assistant",content:message});
+      stillStatus.textContent="Created in your Canva account. No NBL charge.";
+    }catch(error){if(version===stillRequestVersion)stillStatus.textContent=error.message||"Still could not create the Canva design.";}
+    finally{button.disabled=false;}
+  };
+  const loadStillVisualTools=async()=>{
+    const version=++stillRequestVersion,identity=currentClerkUserId();
+    stillControls.replaceChildren();stillDesigns.replaceChildren();stillDesigns.hidden=true;
+    stillStatus.textContent="Checking your Canva connection…";
+    try{
+      const state=await stillConnect({operation:"status"});
+      if(version!==stillRequestVersion||identity!==currentClerkUserId()||stillTools.hidden)return;
+      const configured=(state.providers||[]).some(x=>x.id==="canva"&&x.configured);
+      const connected=(state.connections||[]).find(x=>x.provider==="canva");
+      if(!configured){
+        stillStatus.textContent="Canva linking is not enabled for this account yet. You can still use Beans to create images.";
+        return;
+      }
+      if(!connected){
+        stillStatus.textContent="Connect your own Canva account once to use its designs with Beans.";
+        stillControls.append(stillButton("Connect my Canva",e=>stillOpenCanvaAuth(e.currentTarget)));
+        return;
+      }
+      stillStatus.textContent="Canva connected: "+String(connected.label||"Your Canva account").slice(0,90)+". You are still talking to Beans.";
+      stillControls.append(stillButton("Show my Canva designs",e=>stillShowDesigns(e.currentTarget,identity,version)));
+      if(state.canvaDesignWriteAvailable===true){
+        const label=document.createElement("label");label.textContent="New design title";
+        const title=document.createElement("input");title.type="text";title.maxLength=120;
+        title.placeholder="My NBL design";label.append(title);
+        const sizes=document.createElement("select");sizes.setAttribute("aria-label","New Canva design format");
+        for(const [val,name] of [["square","Square"],["portrait","Social portrait"],["story","Story"],["landscape","Landscape"],["book_cover","Book cover artwork"]]){
+          const option=document.createElement("option");option.value=val;option.textContent=name;sizes.append(option);
+        }
+        stillControls.append(label,sizes,stillButton("Create in my Canva",e=>stillCreateCanva(e.currentTarget,title,sizes,identity,version)));
+      }else{
+        const note=document.createElement("p");note.textContent="Canva creation is held until its NBL authorization checks pass. You can view your designs now.";
+        stillControls.append(note);
+      }
+    }catch(error){
+      if(version!==stillRequestVersion||identity!==currentClerkUserId()||stillTools.hidden)return;
+      stillStatus.textContent=error.message||"Canva connection couldn't be checked.";
+      const link=document.createElement("a");link.href="/account.html#nblConnectCard";link.textContent="Manage Canva in my NBL account";
+      stillControls.append(link);
+    }
+  };
+  const setStillVisualTools=open=>{
+    stillTools.hidden=!open;
+    if(open)void loadStillVisualTools();
+    else{stillRequestVersion++;stillControls.replaceChildren();stillDesigns.replaceChildren();stillDesigns.hidden=true;}
+  };
+  stillClose.addEventListener("click",()=>setStillVisualTools(false));
 
   const renderBeansKnowledge=state=>{
     beansKnowledgeState=state&&typeof state==="object"?state:null;
@@ -1801,6 +1962,7 @@
   };
 
   const closeBeans=({fromPopState=false}={})=>{
+    setNblQuickMenu(false);
     setBeansToolMenu(false); // Reopening Beans must NEVER leave quick actions visible.
     const shouldConsumeHistory=!fromPopState&&Boolean(chatHistoryEntry)&&window.history.state?.nblChatOverlay===chatHistoryEntry;
     setChatDrawerOpen(false);
@@ -1967,6 +2129,11 @@
   beansFileInput.addEventListener("change",async()=>{
     try{await addBeansFiles(beansFileInput.files);}catch(error){beansStatus.textContent=error?.message||"That upload could not be added.";}
   });
+  stillCameraInput.addEventListener("change",async()=>{
+    const chosen=stillCameraInput.files;
+    try{if(chosen?.length)await addBeansFiles(chosen);}catch(error){beansStatus.textContent=error?.message||"Still could not attach the photo.";}
+    finally{stillCameraInput.value="";}
+  });
   beansKnowledgeFileInput.addEventListener("change",async()=>{
     const file=beansKnowledgeFileInput.files?.[0]||null;
     beansKnowledgeFileInput.value="";
@@ -1977,6 +2144,28 @@
     const button=event.target.closest("[data-nbl-tool]");
     if(!button) return;
     const tool=button.dataset.nblTool;
+    if(tool==="pdf-local"){
+      setBeansToolMenu(false);
+      try{
+        if(!window.NblDevicePdf){
+          await new Promise((resolve,reject)=>{
+            const tag=document.createElement("script");
+            tag.src="/nbl-device-pdf.js?v=20261023";
+            tag.onload=resolve;
+            tag.onerror=()=>reject(new Error("NBL PDF Reader script could not load."));
+            document.head.appendChild(tag);
+          });
+        }
+        if(!window.NblDevicePdf)throw new Error("Local reader unavailable.");
+        window.NblDevicePdf.open();
+      }catch(error){beansStatus.textContent=error?.message||"NBL PDF Reader could not open.";}
+      return;
+    }
+    if(tool==="still-camera"){
+      setBeansToolMenu(false);
+      stillCameraInput.click();
+      return;
+    }
     if(tool==="attach"){
       setBeansToolMenu(false);
       beansFileInput.click();
@@ -2032,7 +2221,7 @@
           ?"Code / data analysis selected · verified membership."
           :tool==="artifact"
             ?"PDF / file creation selected · verified membership."
-            :"Image creation selected · verified membership.";
+            :"Image creation selected · verified membership. Still is Beans’ visual tool.";
       beansInput.focus();
     }
   });
@@ -2248,6 +2437,7 @@
         await clerk.signOut();
         cancelActiveBeansChat();
         beansAccountGeneration++;
+        setStillVisualTools(false);
         invalidateBeansHistoryLoad();
         plusAccessRequestGeneration++;
         beansIdentityUserId=null;
@@ -2266,6 +2456,22 @@
     location.href=accountPortalUrl("/sign-in");
   });
 
+  nblQuickToggle.addEventListener("click",()=>setNblQuickMenu(nblQuickSelector.hidden));
+  nblQuickSelector.querySelector('[data-nbl-quick="beans"]').addEventListener("click",()=>{
+    setNblQuickMenu(false);setChatMode("beans");
+  });
+  nblQuickSelector.querySelector('[data-nbl-quick="grey"]').addEventListener("click",()=>{
+    setNblQuickMenu(false);setChatMode("plus"); // Existing Grey authentication + LOCKE
+  });
+  nblQuickSelector.addEventListener("keydown",event=>{
+    if(event.key==="Escape"){setNblQuickMenu(false);nblQuickToggle.focus();}
+  });
+  nblQuickSelector.addEventListener("focusout",()=>{
+    if(!nblQuickSelector.matches(":focus-within"))setNblQuickMenu(false);
+  });
+  nblQuickSelector.addEventListener("mouseleave",()=>{
+    if(nblQuickTimer===null&&!nblQuickSelector.matches(":focus-within"))setNblQuickMenu(false);
+  });
   for(const button of modeButtons){
     button.addEventListener("click",()=>setChatMode(button.dataset.nblChatMode));
   }
@@ -2292,6 +2498,7 @@
       beansIdentityUserId=nextUserId;
       cancelActiveBeansChat();
       beansAccountGeneration++;
+      setStillVisualTools(false);
       invalidateBeansHistoryLoad();
       drawerHistoryRequestGeneration++;
       plusAccessRequestGeneration++;
@@ -2438,13 +2645,16 @@
       if(/\b(price|pricing|prices|cost|costs|plan|plans|membership|how much)\b/i.test(query)&&["results","not_found"].includes(payload?.status)){
         const catalogText=[
           `${NBL_PRODUCT_PLANS.beans.name}: ${NBL_PRODUCT_PLANS.beans.price}, ${NBL_PRODUCT_PLANS.beans.replies}.`,
+          `${NBL_PRODUCT_PLANS.nblPlus?.name||"NBL Plus"}: ${NBL_PRODUCT_PLANS.nblPlus?.price||"$29.99/month"}; premium Beans without University access; checkout held.`,
           `${NBL_PRODUCT_PLANS.beansUniversity.name}: ${NBL_PRODUCT_PLANS.beansUniversity.price}; renews monthly; University checkout held.`,
           `${NBL_PRODUCT_PLANS.foundationStudentContinuation.name}: ${NBL_PRODUCT_PLANS.foundationStudentContinuation.price}; eligible $34.99 purchasers only, renewal after first included month.`,
           `${NBL_PRODUCT_PLANS.foundationUniversity.name}: ${NBL_PRODUCT_PLANS.foundationUniversity.price}; University enrollment held.`,
           `${NBL_PRODUCT_PLANS.getMore.name}: ${NBL_PRODUCT_PLANS.getMore.price}, ${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}`,
+          `${NBL_PRODUCT_PLANS.nblUsage?.name||"NBL Usage — 500 Credits"}: ${NBL_PRODUCT_PLANS.nblUsage?.price||"$7.00 one-time"} for 500 separate NBL Usage credits; checkout held.`,
+          `${NBL_PRODUCT_PLANS.studiosCredits?.name||"NBL Studios Credits"}: ${NBL_PRODUCT_PLANS.studiosCredits?.price||"$8.99 one-time"} for 500 separate creative credits; checkout held.`,
           `${NBL_PRODUCT_PLANS.foundationProgram.name}: ${NBL_PRODUCT_PLANS.foundationProgram.price}.`,
           `${NBL_PRODUCT_PLANS.fullFoundation.name}: ${NBL_PRODUCT_PLANS.fullFoundation.price}.`,
-          `${NBL_PRODUCT_PLANS.fullNblu.name}: ${NBL_PRODUCT_PLANS.fullNblu.price}.`,
+          `${NBL_PRODUCT_PLANS.fullNbluDiy?.name||"Full NBLU Experience — Digital DIY"}: ${NBL_PRODUCT_PLANS.fullNbluDiy?.price||"$184.99 one-time"} (no physical books); ${NBL_PRODUCT_PLANS.fullNblu.name}: ${NBL_PRODUCT_PLANS.fullNblu.price} (physical books).`,
           `${NBL_PRODUCT_PLANS.nbluContinuation.name}: ${NBL_PRODUCT_PLANS.nbluContinuation.price}.`,
           "These catalog prices do not mean website checkout is available."
         ].join(" ");
@@ -2622,4 +2832,12 @@
     searchTrigger=searchLink;
     openSearch();
   });
+
+  // Android Beans can open this same zero-API-cost local reader via an in-app
+  // browser tab. This query parameter never attaches/uploads a document.
+  if(new URLSearchParams(window.location.search).get("nblpdf")==="1"){
+    window.setTimeout(()=>{
+      beansToolsMenu.querySelector('[data-nbl-tool="pdf-local"]')?.click();
+    },0);
+  }
 })();
