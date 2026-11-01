@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06111d">
+<title>NBL Social — Stream Feeds integration preview | New Beansland</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
+<link rel="stylesheet" href="/messenger/social-v1.css?v=20261021">
+<script type="module" src="/messenger/social-v1.mjs?v=20261021"></script>
+</head><body>
+<header class="topbar">
+  <a class="brand" href="/messenger/">NBL Messenger</a>
+  <nav aria-label="New Beansland navigation"><a href="/messenger/">Messages</a><a href="/studios.html">NBL Studios</a><a href="/">New Beansland</a></nav>
+</header>
+<main class="social-shell">
+  <div class="preview-bar" role="note">SOCIAL INTEGRATION PREVIEW · Not a public NBL launch · Stream API tests pending</div>
+  <div class="social-intro">
+    <div><p class="eyebrow">Human connections · Free NBL messaging</p><h1>NBL Social</h1>
+    <p class="social-subtitle">Posts, people and conversations built around New Beansland. Message an author through the existing NBL Messenger; Beans AI remains separate.</p></div>
+    <div class="social-identity" id="identity" hidden><span id="identityHandle">NBL member</span><button id="signOut" type="button" class="btn small">Sign out</button></div>
+  </div>
+  <p class="status" id="socialStatus" role="status" aria-live="polite">Checking your NBL account…</p>
+  <div class="signin-panel" id="guest"><p>Sign in with your existing NBL account to see and create posts. Private Messenger and University rooms remain separate.</p><a class="btn primary" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in to NBL</a></div>
+  <section id="socialApp" hidden aria-label="NBL Social activity feeds">
+    <nav class="social-tabs" aria-label="Choose an activity feed">
+      <button data-feed="foryou" type="button" aria-pressed="true">For You</button>
+      <button data-feed="timeline" type="button" aria-pressed="false">Following</button>
+      <button data-feed="user" type="button" aria-pressed="false">My Posts</button>
+      <button data-feed="notification" type="button" aria-pressed="false">Notifications</button>
+      <a href="/messenger/">Messages ↗</a>
+    </nav>
+    <section class="social-compose" aria-labelledby="composeTitle">
+      <h2 id="composeTitle">Share with NBL</h2>
+      <form id="postForm"><label for="postText">Your post</label>
+        <textarea id="postText" rows="3" maxlength="1500" placeholder="What's happening in New Beansland?" required></textarea>
+        <div class="compose-bottom"><small id="postCount">0 / 1500</small><button class="btn primary" type="submit">Post</button></div>
+      </form>
+    </section>
+    <section class="social-list" aria-labelledby="feedTitle">
+      <div class="social-list-head"><h2 id="feedTitle">For You</h2><button id="refreshFeed" class="btn small" type="button">Refresh</button></div>
+      <div id="feedItems" aria-live="polite"><p class="hint">Loading Stream Feeds…</p></div>
+    </section>
+  </section>
+</main>
+<footer>NBL Social integration preview · <a href="/messenger/">NBL Messenger (existing messages)</a> · <a href="/university-campus.html#nbl-social">Protected University</a></footer>
+</body></html>
