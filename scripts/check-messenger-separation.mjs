@@ -21,6 +21,12 @@ assert.equal(manifest.scope, "/messenger/");
 assert.equal(manifest.display, "standalone");
 
 assert.match(js, /functions\/v1\/nbl-social/);
+assert.match(js,/searchParams\.get\("dm"\)/);
+assert.match(js,/const socialHandle=socialDMIntent\(\)/);
+assert.match(js,/\$\("\[data-chat-dm-handle\]"\)\.value="@"\+socialHandle/);
+assert.match(js,/Press Open to start a conversation/);
+assert.doesNotMatch(js,/social\(\{action:"direct",handle:socialHandle\}\)/); // no auto-DM from a URL
+
 assert.doesNotMatch(js, /const NBL_CORE_API/);
 assert.doesNotMatch(js, /nbl-chat-gateway|beans-public|\bcredit\.debit\b/);
 for(const action of ['"list_threads"','"list_messages"','"find_users"','"direct"','"send"','"block"','"report"']){
