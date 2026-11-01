@@ -26,3 +26,12 @@ Date: 2026-10-21. Related issue #448. **Review-only; NOT merged or released.**
 ## Acceptance / gate
 `node --check messenger/social-v1.mjs && node scripts/check-nbl-social-v1.mjs`.
 Check browser signed-out; 2 actual accounts; server-scoped identity and role, per-account feed access, blocked actors, moderated posts, billing alert thresholds. Only with Founder approval: bundle SDK, merge site changes, link Messenger landing, deploy and activate. **No Play Store build or V12 changes.**
+
+
+## 2026-11-01 — Founder-approved NBL Social → native NBL Messenger handoff (SOURCE ONLY)
+- **Decision:** NBL Social uses **existing NBL Messenger** for all private person-to-person chat. Stream Feeds remains the supplier for public activity only; Stream Chat is NOT the DM store or a new customer chat identity.
+- The preview shows a **Message** control only for another signed NBL creator with a provider activity actor ID. On click it calls the Clerk-authenticated `nbl-social` `action:social_profile` server lookup, never a Stream display name, and navigates to `/messenger/?dm=<verifiedHandle>`.
+- Existing Messenger on website main has an independently staged DM-intent update: it only **prefills** the verified handle in the existing direct-message form; the member must click Open. No automatic thread creation, message, email/SMS delivery, subscription charge, or separate messaging provider.
+- The backend social_profile action is staged independently in private NBL-Chat: validates server-side Clerk identity, real NBL profile, student-to-student gate, and blocks. Existing `direct`, `send`, message history, push, University, and security rules are unchanged.
+- **SOURCE EXISTS / STAGED, NOT DEPLOYED OR TESTED LIVE.** Companion PRs must be merged and deployed in order before the social preview is activated: NBL-Chat protected profile lookup; website Messenger intent; Stream Feeds preview. No mobile native build; social mobile app remains LATER.
+- Still require authenticated 2-account author-to-DM proof, blocked/student edge cases, message privacy, SDK & moderation testing before public feed launch. Do not claim this source gate is an E2E pass.
