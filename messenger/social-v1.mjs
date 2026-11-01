@@ -158,6 +158,25 @@ function renderActivity(activity){
       finally{follow.disabled=false;}
     });
     actions.append(follow);
+    // Stream Feeds is PUBLIC social activity only. Look up the author's actual
+    // NBL handle through the protected NBL backend, then open our existing
+    // Messenger. No Stream Chat, new inbox, automatic DM, or credit usage.
+    const message=element("button",null,"Message");message.type="button";
+    message.setAttribute("aria-label","Message this NBL creator");
+    message.addEventListener("click",async()=>{
+      message.disabled=true;
+      try{
+        const result=await secured(SOCIAL_API,{action:"social_profile",userId:authorId});
+        const handle=String(result.profile?.handle||"");
+        if(!/^[A-Za-z0-9_-]{2,64}$/.test(handle))
+          throw new Error("This creator cannot receive messages.");
+        const url=new URL("/messenger/",location.origin);
+        url.searchParams.set("dm",handle);
+        location.assign(url.pathname+url.search);
+      }catch(error){feedback.textContent="Messenger could not open: "+safeError(error);}
+      finally{message.disabled=false;}
+    });
+    actions.append(message);
   }
   card.append(head,time,text,meta,actions,feedback,form,commentsArea);
   return card;
