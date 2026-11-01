@@ -1,6 +1,6 @@
 # New Beansland — Meta Facebook Login / Messenger / Social legal setup
 
-**Draft prepared:** November 1, 2026. **Not published or merged.** Founder approval required before release or Meta submission.
+**Prepared for the NBL Messenger + Social launch:** November 1, 2026. Canonical privacy, terms, and deletion URLs remain unchanged; these full-coverage documents are staged on the legal review branch.
 
 ## Meta App Basic fields
 - Display name: New Beansland (existing app).
@@ -21,10 +21,10 @@
 - Do not request personal timeline, friends, photos, videos, likes, or birthday just to run NBL's own social features.
 - Separate permissions, approval, and actual engineering required for Facebook Page/Instagram Professional cross-posting. User selection must be explicit; Facebook personal profile auto-publishing is not a supported promise.
 
-## Draft legal pages updated in THIS branch
-1. `privacy.html` — Messenger and future Social data, Facebook-linked info, possible providers, audience and sharing choices, deletion/retention, and 13+ disclosures.
-2. `terms.html` — Messenger/Social behavior, safety/UGC, connected account publishing, user ownership, age and access rules.
-3. `account-deletion.html` — publicly readable instructions covering Facebook-linked data and separately requested Messenger/Social deletion; correct distinction from existing Beans-only self-service and external Meta copies.
+## Launch-ready legal coverage in THIS branch
+1. `privacy.html` — All account services: Messenger messages, Social profile/posts/media/feeds, Meta-linked data, actual/optional providers, user rights, retention/deletion, audience controls, safety, cookies, and 13+ access.
+2. `terms.html` — Messenger/Social behavior, user-generated-content licenses and rights, moderation, appeals, reporting, connected publishing, account ownership, age and access rules.
+3. `account-deletion.html` — Publicly readable deletion and disconnection instructions for Facebook-linked data, messages, social content, and all accounts, with unauthenticated email submission, verification, vendor coordination, and external-copy limitations.
 
 ## Must confirm before Meta submission / public access
 - Review final legal text for legal sufficiency and accuracy; do not claim a feature is live or safety controls enforced if still only planned.
@@ -41,4 +41,4 @@
 - Terms: https://newbeansland.org/terms.html
 - Deletion: https://newbeansland.org/account-deletion.html
 
-**Status:** Draft legal/source updates only. No Meta dashboard action, Facebook publication, GitHub merge, or NBL Social deployment performed here.
+**Prepared:** Complete NBL legal-page revisions are staged for an approved website update. Meta authentication settings and the separate Social feature launch follow their respective release steps.
