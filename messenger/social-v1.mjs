@@ -21,7 +21,7 @@ function handleNBLAccountChange(){
   if(now===initialNBLUserId||accountChanged)return;
   accountChanged=true;
   state.unsubscribe?.();state.unsubscribe=null;
-  state.client?.disconnectUser?.().catch(()=>{});
+  void Promise.resolve(state.client?.disconnectUser?.()).catch(()=>{});
   state.client=null;state.feed=null;state.user=null;state.me=null;
   $("#socialApp").hidden=true;$("#identity").hidden=true;$("#guest").hidden=true;
   status("Your NBL account changed. Refreshing to protect your feeds.");
@@ -100,7 +100,7 @@ async function session(){
   $("#identityHandle").textContent=handle?"@"+handle:"Signed in to New Beansland";
   const client=new FeedsClient(api.key,{timeout:6500});
   await client.connectUser({id:api.user.id,name:api.user.name||"NBL member"},api.token);
-  try{assertCurrentAccount(actorId);}catch(error){await client.disconnectUser?.().catch(()=>{});throw error;}
+  try{assertCurrentAccount(actorId);}catch(error){await Promise.resolve(client.disconnectUser?.()).catch(()=>{});throw error;}
   state.client=client;
   state.timeline=client.feed("timeline",api.user.id);
 }
