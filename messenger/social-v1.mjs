@@ -9,6 +9,24 @@ const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const LABELS={foryou:"For You",timeline:"Following",user:"My Posts",notification:"Notifications"};
 const state={clerk:null,client:null,user:null,me:null,selected:"foryou",feed:null,unsubscribe:null,busy:false,timeline:null};
+let initialNBLUserId=null,accountChanged=false;
+function assertCurrentAccount(userId){
+  if(accountChanged||!userId||state.clerk?.user?.id!==userId||!state.clerk?.isSignedIn||!state.clerk?.session)
+    throw new Error("Your NBL account changed. Reload Social to continue securely.");
+}
+// A Clerk account switch must retire feeds and hide private notifications
+// immediately. Stream never supplies or replaces NBL Messenger identity.
+function handleNBLAccountChange(){
+  const now=state.clerk?.isSignedIn&&state.clerk?.session?state.clerk?.user?.id:null;
+  if(now===initialNBLUserId||accountChanged)return;
+  accountChanged=true;
+  state.unsubscribe?.();state.unsubscribe=null;
+  state.client?.disconnectUser?.().catch(()=>{});
+  state.client=null;state.feed=null;state.user=null;state.me=null;
+  $("#socialApp").hidden=true;$("#identity").hidden=true;$("#guest").hidden=true;
+  status("Your NBL account changed. Refreshing to protect your feeds.");
+  location.reload();
+}
 const $=s=>document.querySelector(s);
 function element(tag,className,text){
   const el=document.createElement(tag);
@@ -53,21 +71,28 @@ async function authToken(){
   return jwt;
 }
 async function secured(url,body){
+  const userId=state.clerk?.user?.id;
   const token=await authToken();
+  assertCurrentAccount(userId);
   const response=await fetch(url,{
     method:"POST",headers:{"authorization":"Bearer "+token,"content-type":"application/json"},
     body:JSON.stringify(body),cache:"no-store"
   });
   const data=await response.json().catch(()=>({}));
+  assertCurrentAccount(userId);
   if(!response.ok||data.ok!==true)throw new Error(data.message||data.reason||"NBL service unavailable");
   return data;
 }
 async function session(){
+  const actorId=state.clerk?.user?.id;
+  assertCurrentAccount(actorId);
   const [api,identity]=await Promise.all([
     secured(STREAM_BRIDGE,{action:"session"}),
     secured(SOCIAL_API,{action:"me"})
   ]);
   // Only the server chooses the Stream user ID and official Founder status.
+  assertCurrentAccount(actorId);
+  if(api.user?.id!==actorId)throw new Error("Social identity mismatch.");
   if(!api.user?.id||!api.key||!api.token)throw new Error("Stream identity was not verified.");
   state.user=api.user;
   state.me=identity.me;
@@ -75,6 +100,7 @@ async function session(){
   $("#identityHandle").textContent=handle?"@"+handle:"Signed in to New Beansland";
   const client=new FeedsClient(api.key,{timeout:6500});
   await client.connectUser({id:api.user.id,name:api.user.name||"NBL member"},api.token);
+  try{assertCurrentAccount(actorId);}catch(error){await client.disconnectUser?.().catch(()=>{});throw error;}
   state.client=client;
   state.timeline=client.feed("timeline",api.user.id);
 }
@@ -207,8 +233,11 @@ async function loadFeed(){
   $("#feedItems").replaceChildren(element("p","social-meta","Loading "+LABELS[selected]+"…"));
   status("Refreshing "+LABELS[selected]+"…");
   try{
-    const feed=state.client.feed(selected,state.user.id);
+    const actorId=state.user.id;
+    assertCurrentAccount(actorId);
+    const feed=state.client.feed(selected,actorId);
     const response=await feed.getOrCreate({watch:true,limit:20});
+    assertCurrentAccount(actorId);
     if(selected!==state.selected)return;
     state.feed=feed;
     const first=feed.state?.getLatestValue()?.activities||response.activities||[];
@@ -216,11 +245,13 @@ async function loadFeed(){
     if(feed.state?.subscribeWithSelector){
       state.unsubscribe=feed.state.subscribeWithSelector(
         s=>({activities:s.activities}), current=>{
-          if(state.selected===selected)renderFeed(current.activities||[]);
+          if(!accountChanged&&state.selected===selected&&state.clerk?.user?.id===actorId)
+            renderFeed(current.activities||[]);
         });
     }
     status(LABELS[selected]+" ready. Direct messages still live at NBL Messenger.");
   }catch(error){
+    if(accountChanged)return;
     $("#feedItems").replaceChildren(element("p","social-feedback",safeError(error)));
     status("Stream Feeds could not load. Existing NBL messages remain available.");
   }
@@ -260,8 +291,11 @@ async function boot(){
   });
   try{
     const c=await clerk();
-    if(!c.isSignedIn||!c.session){status("Sign in to connect your NBL profile.");return;}
+    initialNBLUserId=c.isSignedIn&&c.session?c.user?.id:null;
+    c.addListener?.(handleNBLAccountChange);
+    if(!initialNBLUserId){status("Sign in to connect your NBL profile.");return;}
     await session();
+    assertCurrentAccount(initialNBLUserId);
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
     selectTab();await loadFeed();
   }catch(error){status("Social integration not available: "+safeError(error));}
