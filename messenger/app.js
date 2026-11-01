@@ -35,6 +35,14 @@ function signInUrl(){
   if(!["https:","http:"].includes(dest.protocol))return ACCOUNT_PORTAL+"/sign-in";
   return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(dest.href);
 }
+// A link from NBL Social may suggest a public handle, never create or send a DM.
+// Resolve the recipient through existing server-controlled Messenger permissions
+// only AFTER the member explicitly presses Open.
+function socialDMIntent(){
+  const raw=new URL(window.location.href).searchParams.get("dm")||"";
+  const handle=raw.replace(/^@/,"");
+  return /^[A-Za-z0-9_-]{2,64}$/.test(handle)?handle:null;
+}
 function clerkDomain(){
   const encoded=(CLERK_PUBLISHABLE_KEY.split("_")[2]||"").replace(/-/g,"+").replace(/_/g,"/");
   return atob(encoded.padEnd(Math.ceil(encoded.length/4)*4,"=")).replace(/\$/,"");
@@ -544,6 +552,11 @@ async function syncClerkSession(){
   watchInbox();
   await refresh();
   if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
+  const socialHandle=socialDMIntent();
+  if(socialHandle){
+    $("[data-chat-dm-handle]").value="@"+socialHandle;
+    status("NBL Social opened the message form for @"+socialHandle+". Press Open to start a conversation.");
+  }
 }
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
