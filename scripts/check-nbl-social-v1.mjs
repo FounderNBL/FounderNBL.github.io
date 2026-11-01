@@ -18,7 +18,7 @@ assert.match(js,/@stream-io\/feeds-client@2\.9\.0/);
 assert.match(js,/functions\/v1\/nbl-stream/);
 assert.match(js,/functions\/v1\/nbl-social/);
 assert.match(js,/action:"social_profile",userId:authorId/);
-assert.match(js,/new URL\("\/messenger\/".location.origin\)/);
+assert.ok(js.includes('new URL("/messenger/",location.origin)'));
 assert.match(js,/url.searchParams.set\("dm",handle\)/);
 assert.match(js,/location.assign\(url.pathname\+url.search\)/);
 assert.doesNotMatch(js,/StreamChat|connectStreamChat|channel\.sendMessage/);
