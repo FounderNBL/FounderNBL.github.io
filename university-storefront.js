@@ -6,7 +6,7 @@
 // Never infer that equal prices mean identical entitlements.
 const PLANS=Object.freeze({
   foundation:{title:"Foundation Materials + First Month of Beans",price:"$29.99 once",
-    desc:"Two physical books, digital course materials, and the first month of regular Beans. This is NOT University enrollment.",
+    desc:"Two physical books and the first month of regular Beans. This package does not include University enrollment or protected digital coursework.",
     terms:"Beans renews at $4.99/month after the included month with your recurring-payment consent.",plan:"foundation",
     product:"prod_VPTRLvKDm7V5We",priceId:"price_1UOeUBB8jr0ZIsSbopkO6zn6"},
   foundation_university:{title:"Foundation + NBL University — First Month",price:"$34.99 once",
@@ -17,6 +17,10 @@ const PLANS=Object.freeze({
     desc:"Guided Foundation learning with Professor Grey/Virgo; the current product specifies 31 days of guided eligibility.",
     terms:"University teaching services activate only after the school opens and eligibility is verified.",plan:"full_foundation",
     product:"prod_VPYLNUOOVaAjCm",priceId:"price_1UOjEVB8jr0ZIsSburX83EuO"},
+  full_nblu_diy:{title:"Full NBLU Experience — Digital DIY",price:"$184.99 once",
+    desc:"The complete planned full University academic and digital program, without physical books. Self-paced learning and the same six-month guided-service eligibility as the physical Full NBLU package.",
+    terms:"Digital delivery only: no books or shipping. Checkout is not connected to the separate Digital DIY entitlement yet. No charge will be started.",plan:null,
+    product:"prod_VYZh9w6INqKvIi",priceId:"price_1UXSXxB8jr0ZIsSbIayXWHSL"},
   full_nblu:{title:"Full NBLU Experience",price:"$449.99 once",
     desc:"The physical-books Full University experience, including six months of guided access under the published offer.",
     terms:"Physical-book fulfillment and University instruction follow the package terms; eligible continuation is separate.",plan:"full_nblu",
