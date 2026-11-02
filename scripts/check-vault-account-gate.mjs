@@ -26,9 +26,9 @@ test("customer data only requested for the authenticated identity",()=>{
 });
 
 test("Public Vault never requests or renders the internal operating vault",()=>{
-  assert.doesNotMatch(html,/api\\("founder",epoch\\)|renderFounder\\(|id="founder" hidden|view="founder"/);
-  checks(/api\\("mine",epoch\\)/);
-  assert.doesNotMatch(html,/role\\s*[:=]\\s*["']founder["']|\\?founder=true|isFounder=true/);
+  assert.doesNotMatch(html,/api\("founder",epoch\)|renderFounder\(|id="founder" hidden|view="founder"/);
+  checks(/api\("mine",epoch\)/);
+  assert.doesNotMatch(html,/role\s*[:=]\s*["']founder["']|\?founder=true|isFounder=true/);
 });
 
 test("Vault never renders untrusted balances as HTML or initiates payments",()=>{
