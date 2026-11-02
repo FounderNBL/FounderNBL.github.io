@@ -23,12 +23,12 @@ test("Grey stays locked while official artwork is displayed only behind protecte
  assert.match(css,/\[data-nbl-plus-live\]::before\s*\{[^}]*Professor_Grey\.png/s);
  const campus=read("university-campus.css");
  assert.match(campus,/#grey > \.panel:first-child::before\s*\{[^}]*Professor_Grey\.png/s);
- assert.match(read("university-campus.html"),/data-grey-log/);
+ assert.match(read("university-campus.html"),/url=https:\/\/nblschool\.com\//);
 });
 test("fresh cache keys load new styles and scripts on real entry pages",()=>{
  assert.match(read("index.html"),/nbl-world-header\.css\?v=20261024-v12-final-parity/);
  assert.match(read("index.html"),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
- assert.match(read("university-campus.html"),/20261020-grey-backdrop/);
+ assert.match(read("university-campus.html"),/url=https:\/\/nblschool\.com\//);
 });
 
 test("website Beans matches V12 native 2-second chooser while retaining free PDF and LOCKE rails",()=>{
@@ -46,9 +46,10 @@ test("website Beans matches V12 native 2-second chooser while retaining free PDF
  assert.match(js,/data-nbl-tool="pdf-local"/);
  assert.match(js,/NblDevicePdf/);
  assert.match(js,/nblpdf/);
- for(const page of ["index.html","account.html","books.html","clothing.html","nbl-kids.html","pricing.html","stories.html","studios.html","university.html"]){
+ for(const page of ["index.html","account.html","books.html","clothing.html","nbl-kids.html","pricing.html","stories.html","studios.html"]){
    assert.match(read(page),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
  }
+ assert.match(read("university.html"),/src="\/university-storefront\.js/);
  const appParity=read("nbl-world-header.js");
  assert.doesNotMatch(appParity,/lockeOverride|bypassLocker|universityUnlocked=true/);
 });
