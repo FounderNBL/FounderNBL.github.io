@@ -30,3 +30,21 @@ test("Confirmed route and browser failures still open actionable incidents",()=>
   assert.ok(workflow.includes("gh issue create"));
   assert.ok(workflow.includes('exit "$failed"'));
 });
+
+test("Cloudflare-first handoff reaches desktop/mobile and genuine challenge is not called a site failure",()=>{
+  const browser=readFileSync(new URL("../tests/browser/website-smoke.spec.mjs",import.meta.url),"utf8");
+  const deep=workflow.slice(workflow.indexOf("  deep-browser-inspection:"));
+  assert.ok(deep.includes("Receive Cloudflare-first handshake evidence"));
+  assert.ok(deep.includes("nbl-cloudflare-handshake"));
+  assert.ok(deep.includes("CLOUDFLARE_HANDSHAKE_BROWSER"));
+  assert.ok(deep.includes("Classify external browser challenge evidence"));
+  assert.ok(deep.includes("UNVERIFIED, not proven outages or visitor passes"));
+  assert.ok(browser.includes("universityResponse.status() === 403"));
+  assert.ok(browser.includes('universityResponse.headers()["cf-mitigated"]'));
+  assert.ok(browser.includes('=== "challenge"'));
+  assert.ok(browser.includes("NBL_EXTERNAL_UNVERIFIED university-arrival"));
+  assert.ok(browser.includes("test.skip(true"));
+  assert.ok(browser.includes("await expect(page).toHaveTitle(/Welcome to the Frontier/i);"));
+  assert.ok(browser.includes('page.waitForResponse(response =>'));
+  assert.ok(browser.includes('response.request().isNavigationRequest()'));
+});

@@ -199,7 +199,21 @@ test.describe("New Beansland web app browser smoke", () => {
     await open("/",page);
     const universityCard=page.locator('.world-grid .world-card[href="university.html"]');
     await expect(universityCard).toHaveCount(1);
-    await universityCard.click();
+    // Classify only an explicit Cloudflare managed challenge as UNVERIFIED.
+    // A real 404/500, unexpected HTML, or ordinary test failure must still fail.
+    const [universityResponse] = await Promise.all([
+      page.waitForResponse(response =>
+        response.request().isNavigationRequest() &&
+        new URL(response.url()).pathname === "/university.html"
+      ),
+      universityCard.click()
+    ]);
+    if (checkingLive && universityResponse.status() === 403 &&
+        String(universityResponse.headers()["cf-mitigated"] || "").toLowerCase() === "challenge") {
+      console.log("NBL_EXTERNAL_UNVERIFIED university-arrival http=403 cf-mitigated=challenge cf-ray=" +
+        String(universityResponse.headers()["cf-ray"] || "unknown"));
+      test.skip(true, "UNVERIFIED: Cloudflare challenged the external Inspector; independent visitor/device proof required.");
+    }
     await expect(page).toHaveURL(/\/university\.html$/);
     await expect(page).toHaveTitle(/Welcome to the Frontier/i);
     await expect(page.getByRole("heading",{name:/Welcome to.*the Frontier/i})).toBeVisible();
