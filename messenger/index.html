@@ -4,22 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>NBL Messenger | New Beansland</title>
-  <meta name="description" content="NBL Messenger is the independent people-to-people messaging app for New Beansland. Student spaces stay protected inside NBL University.">
+  <meta name="description" content="NBL Messenger is the people-to-people messaging app for New Beansland.">
   <link rel="canonical" href="https://newbeansland.org/messenger/">
   <meta name="theme-color" content="#06111d">
   <meta name="application-name" content="NBL Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
-  <link rel="stylesheet" href="/messenger/app.css?v=20261102-private-surface">
+  <link rel="stylesheet" href="/messenger/app.css?v=20261102-account-controls">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
-  <script defer src="/messenger/app.js?v=20261102-private-surface"></script>
+  <script defer src="/messenger/app.js?v=20261102-account-controls"></script>
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="/">New Beansland</a>
     <nav aria-label="NBL World navigation">
-      <a href="/university-campus.html">University</a>
       <a href="/chat.html">NBL World</a>
       <a href="https://newbeansland.org/">Explore New Beansland</a>
     </nav>
@@ -28,16 +27,57 @@
     <section class="intro">
       <p class="eyebrow">New Beansland · Humans talking to humans</p>
       <h1>NBL Messenger</h1>
-      <p>Talk with real New Beansland members. <strong>NBL Messenger is separate from Beans AI</strong> and does not spend Beans credits. Free direct messages do not require University enrollment. Class Chat and Study Hall remain on the protected student campus.</p>
+      <p>Talk with real New Beansland members. <strong>NBL Messenger is separate from Beans AI</strong>, and direct messages do not spend Beans credits.</p>
       <div class="signin-panel" data-chat-guest>
         <p data-chat-auth-status>Sign in with your NBL account to see your conversations.</p>
         <a class="btn primary" data-chat-signin href="https://newbeansland.org/account.html">Sign in / create account</a>
       </div>
       <div class="userbar" data-chat-userbar hidden>
         <span>Signed in as <strong data-chat-myhandle>@NBL member</strong> <span class="founder-marker" data-chat-founder-marker hidden>Verified Founder</span></span>
-        <button class="btn small" type="button" data-nbl-infinity-preview aria-label="Test NBL Infinity notification sound">Test ♾️ sound</button>
-        <button class="btn small" type="button" data-chat-signout>Sign out</button>
+        <div class="userbar-actions">
+          <button class="btn small" type="button" data-chat-account-toggle aria-expanded="false" aria-controls="messenger-account-settings">My account</button>
+          <button class="btn small" type="button" data-nbl-infinity-preview aria-label="Test NBL Infinity notification sound">Test ♾️ sound</button>
+          <button class="btn small" type="button" data-chat-signout>Sign out</button>
+        </div>
       </div>
+      <section id="messenger-account-settings" class="account-settings" data-chat-account-settings hidden aria-label="My Messenger account">
+        <div class="account-heading">
+          <div>
+            <p class="eyebrow">Your NBL account</p>
+            <h2>Profile and settings</h2>
+            <p class="hint" data-chat-account-email></p>
+          </div>
+          <button class="btn small" type="button" data-chat-account-close>Close</button>
+        </div>
+        <div class="account-grid">
+          <div>
+            <h3>Your username</h3>
+            <form data-chat-profile-form>
+              <label for="messenger-username">NBL username</label>
+              <div class="form-row">
+                <input id="messenger-username" data-chat-profile-username name="username" type="text" minlength="3" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}" autocomplete="username" required>
+                <button class="btn" type="submit">Save</button>
+              </div>
+            </form>
+            <p class="hint" data-chat-profile-status role="status" aria-live="polite">Letters, numbers, _ and - only.</p>
+          </div>
+          <div>
+            <h3>Facebook and sign-in</h3>
+            <p class="hint">Review connected login methods, email addresses, and account security.</p>
+            <button class="btn" type="button" data-chat-open-clerk>Manage connections</button>
+          </div>
+          <div>
+            <h3>Your information</h3>
+            <p class="hint">See your NBL account, history and other data controls.</p>
+            <div class="account-links">
+              <a class="btn" href="/account.html">View my NBL data</a>
+              <button class="btn" type="button" data-chat-download-messages>Download recent messages</button>
+            </div>
+            <p class="hint">The Messenger download includes up to the 100 most recent messages in each of your latest 200 direct conversations. It is not a complete data archive.</p>
+            <p class="hint" data-chat-export-status role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
     </section>
     <section class="chat-app" data-chat-app hidden aria-label="NBL Messenger">
       <aside class="sidebar">
@@ -117,13 +157,8 @@
       <p class="hint" data-chat-notify-status aria-live="polite">Phone alerts require permission from your device.</p>
     </section>
     <p class="status" data-chat-status role="status" aria-live="polite">NBL Messenger uses your existing NBL account. Private messages are visible only to participants.</p>
-    <section class="campus-link">
-      <h2>Class Chat and Study Hall</h2>
-      <p>Enrolled students can also talk with classmates, ask for help, and visit Study Hall inside the protected NBL University campus. Those rooms require University access; regular direct messages do not.</p>
-      <a class="btn" href="/university-campus.html#nbl-social">Open University Social Chat</a>
-    </section>
   </main>
-  <footer>NBL Messenger · <a href="/">New Beansland home</a> · <a href="/university-campus.html#nbl-social">Student rooms</a></footer>
+  <footer>NBL Messenger · <a href="/">New Beansland home</a></footer>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") { window.addEventListener("load", () => navigator.serviceWorker.register("/messenger/sw.js", {scope:"/messenger/"}).catch(() => {})); }</script>
 </body>
 </html>
