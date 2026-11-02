@@ -1,43 +1,45 @@
 #!/usr/bin/env node
-// Static route/security checks for University public arrival, separate admissions and protected Grey campus.
-// Source assertions do not demonstrate real browser, checkout or model behavior.
+// New Beansland storefront is a SINGLE University admissions entry; academic work belongs to nblschool.com.
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
-const home=read("index.html"),arrival=read("university.html");
-const tuition=read("university-enrollment.html"),campus=read("campus.html");
-const alias=read("university-campus.html"),free=read("nblu-dickitry-clause.html");
-const early=read("nbl-university-early-interest.js");
+const home=read("index.html");
+const arrival=read("university.html");
+const script=read("university-storefront.js");
+const legacy=read("university-enrollment.html");
+const campus=read("campus.html");
+const alias=read("university-campus.html");
+const lesson=read("nblu-dickitry-clause.html");
+const sharedHeader=read("nbl-world-header.js");
 assert.match(home,/class="world-card official-art reveal" href="university\.html"/);
-assert.ok(arrival.includes('id="nblu-gateway-title"')&&arrival.includes("Welcome to"));
-assert.ok(arrival.includes('href="https://nblschool.com/homeroom.html#first-class"'));
-assert.ok(arrival.includes('href="#enroll"')&&arrival.includes('id="enroll"'));
-assert.ok(!arrival.includes('<details class="university-category">'));
-assert.ok(!arrival.includes('data-nbl-university-checkout='));
-assert.ok(!arrival.includes('data-nbl-university-interest-form'));
-assert.ok(arrival.includes('function forwardLegacyLink()'));
-assert.match(tuition,/rel="canonical" href="https:\/\/newbeansland\.org\/university-enrollment\.html"/);
-for(const value of ['id="early-registration"','id="enroll"','data-nbl-university-interest-form','data-nbl-university-checkout="foundation" disabled','data-nbl-university-checkout="full_foundation" disabled','src="/nbl-university-checkout.js"'])assert.ok(tuition.includes(value),value);
-assert.ok(early.includes("newbeansland.org/university-enrollment.html#early-registration"));
-const universityPages=[["Frontier arrival",arrival],["Enrollment & Tuition",tuition]];
-for(const [name,html] of universityPages){
- assert.ok(html.includes('class="nblu-scope"'),name+" must be a University-scoped page");
- assert.ok(html.includes(".nblu-scope .nbl-world-chat-launch")&&html.includes(".nblu-scope .nbl-world-beans-toggle"),name+" must not expose the active Beans conversation overlay");
- assert.ok(html.includes("Switch to Beans"),name+" must offer a deliberate exit back to the lower-cost NBL assistant");
+assert.match(arrival,/id="nblu-one-entry"/);
+assert.match(arrival,/Sign up &amp; continue to payment/);
+assert.match(arrival,/https:\/\/nblschool\.com\//);
+assert.match(arrival,/src="\/university-storefront\.js/);
+assert.doesNotMatch(arrival,/campus\.html|university-enrollment\.html|Class Chat|Study Hall|coursework|data-nbl-university-interest-form|nbl-world-header\.js/i);
+for(const key of ["foundation","foundation_university","full_foundation","full_nblu_diy","full_nblu","beans_university_monthly","foundation_student_continuation","nblu_continuation"]){
+  assert.match(arrival,new RegExp('value="'+key+'"'),"Missing distinct verified offer "+key);
+  assert.ok(script.includes(key+':{title:'),"Missing distinct metadata for "+key);
 }
-assert.ok(tuition.includes("Professor Grey</strong> is the separate University AI assistant and instructor"),"Tuition must distinguish free Beans information from protected Grey instruction");
-assert.ok(tuition.includes("deeper learning requires verified University access"),"Paid Grey services must not be represented as freely available");
-assert.ok(arrival.includes('href="/campus.html#grey"'),"Academic doorway must route to protected Grey campus");
-assert.ok(!tuition.includes('data-nbl-university-checkout="foundation">'),"University enrollment checkout cannot be enabled");
-
+for(const priceId of [
+  "price_1UOeUBB8jr0ZIsSbopkO6zn6",
+  "price_1URiSuB8jr0ZIsSbLuuwVa7p",
+  "price_1UOjEVB8jr0ZIsSburX83EuO",
+  "price_1UXSXxB8jr0ZIsSbIayXWHSL",
+  "price_1UOeUIB8jr0ZIsSb1acvYFWb",
+  "price_1URiSwB8jr0ZIsSb3uyktHc4",
+  "price_1URiSxB8jr0ZIsSbYvs4bnf6",
+  "price_1UOeULB8jr0ZIsSb3Z7wX62y"
+])assert.ok(script.includes(priceId),"Wrong current New Beansland Stripe offer "+priceId);
+assert.match(script,/\/billing\/checkout/);
+assert.match(script,/trustedStripe/);
+assert.match(script,/if\(!item\.plan\)/);
+assert.doesNotMatch(arrival,/\$39\.99/); // no unverified or retired prices displayed.
 for(const page of [campus,alias]){
- assert.ok(page.includes('data-campus-gate')&&page.includes('data-campus hidden')&&page.includes('id="grey"'));
- assert.ok(page.includes('href="/university-enrollment.html#enroll"')&&page.includes('href="/"'));
- assert.ok(page.includes("The Frontier Check"));
- assert.ok(!page.includes('class="enrollment-grid"'));
+ assert.match(page,/http-equiv="refresh" content="0;url=https:\/\/nblschool\.com\//);
+ assert.doesNotMatch(page,/<form|data-campus-gate|data-campus hidden/);
 }
-assert.ok(arrival.includes("No Counterfeit Weight"));
-assert.ok(free.includes('https://nblschool.com/homeroom.html#first-class'));
-assert.ok(!/dickitry/i.test(free),'Old internal title should not be visible at the retired public route');
-for(const needle of ["fetch(", "localStorage", "sessionStorage","XMLHttpRequest"])assert.ok(!free.includes(needle));
-console.log("NBL University arrival/enrollment/academic gate source invariants PASS (not browser E2E).");
+assert.match(legacy,/url=https:\/\/newbeansland\.org\/university\.html#enroll/);
+assert.match(lesson,/url=https:\/\/nblschool\.com\/homeroom\.html#first-class/);
+assert.match(sharedHeader,/href="https:\/\/nblschool\.com\/professor-grey\.html"/);
+console.log("PASS: one .org NBL University cashier, distinct verified live product prices, school.com campus routing, and checkout release gates.");

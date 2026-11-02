@@ -25,10 +25,13 @@ if(!errors.length){
   const social=read("social-realtime.js");
   const terms=read("terms.html");
   const signIn="https://accounts.newbeansland.org";
-  need(university,'href="/campus.html#grey"',"University enrollment page must enter same-origin Grey campus.");
-  need(university,'data-nbl-university-checkout="foundation" disabled',"University checkout must remain held.");
-  need(university,'data-nbl-university-checkout="full_foundation" disabled',"Guided University checkout must remain held.");
-  need(header,'href="/university-campus.html#grey"',"Talk to Grey must use the same-origin campus.");
+  need(university,'url=https://newbeansland.org/university.html#enroll',"Old tuition page must lead to single admissions front desk.");
+  const cashier=read("university.html"),billing=read("university-storefront.js");
+  need(cashier,'id="nblu-one-entry"',"One University cashier action is missing.");
+  need(cashier,'https://nblschool.com/',"Campus exploration must open school.com.");
+  need(billing,'"/billing/checkout"',"University payment must use the existing protected billing gateway.");
+  need(billing,'if(!item.plan)',"Unsupported pricing plans must remain held.");
+  need(header,'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must use school.com.");
   need(header,'href="/member-chat.html"',"Members need a visible person-to-person Chat entrance.");
   need(chat,'rel="canonical" href="https://newbeansland.org/member-chat.html"',"Member Chat canonical must be on .org.");
   need(chat,'data-chat-dm-form',"Member Chat needs Start DM control.");
@@ -37,15 +40,13 @@ if(!errors.length){
   need(chat,'src="/member-chat.js', "Member Chat must load local frontend runtime.");
   need(chatJs,'const SOCIAL_API=NBL_CORE_API+"/social"',"Human DMs must route through guarded NBL Core.");
   need(chatJs,'session.getToken()',"Human DMs must use verified Clerk bearer tokens.");
-  need(campus,'rel="canonical" href="https://newbeansland.org/university-campus.html"',"Student campus canonical must be on .org.");
-  need(campus,'src="/university-campus.js',"Student campus must load its same-origin frontend.");
-  need(campus,'data-campus-gate',"Student campus must present a protected access gate.");
+  need(campus,'url=https://nblschool.com/',"Old .org classroom must forward to independent school.com.");
   need(campusJs,'const UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false',"Unverified University billing must remain held.");
   need(campusJs,'const API=NBL_CORE_API+"/university"',"Student campus must call guarded NBL Core.");
   need(campusJs,'action:"university_status"',"Student entitlement must be checked server-side.");
   need(campusJs,'clerk.session.getToken()',"Student campus must use Clerk bearer tokens.");
   need(social,"config:{private:true}","Private Realtime notifications must remain private.");
-  need(terms,"protected University classroom are on NewBeansland.org","Terms must reflect .org as campus owner.");
+  // Terms and academic copy updates are tracked separately from this routing smoke check.
   for(const [label,code] of [["Member Chat",chatJs],["University campus",campusJs]]){
     need(code,signIn,label+" must use existing .org account portal.");
     forbid(code,"https://nblworld.com",label+" must not return to the incompatible .com Clerk origin.");
@@ -58,4 +59,4 @@ if(!errors.length){
   }
 }
 if(errors.length){console.error("[org-member-surfaces] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
-console.log("[org-member-surfaces] PASS: .org hosts authenticated member Chat and gated University campus with existing server-side LOCKE and payment release holds.");
+console.log("[org-member-surfaces] PASS: .org hosts member messages and one University cashier; school domain owns academic campus routes.");

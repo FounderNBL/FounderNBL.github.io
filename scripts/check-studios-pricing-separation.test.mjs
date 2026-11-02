@@ -39,20 +39,21 @@ test("the canonical storefront prices stay intact and Studios is corrected to $8
  assert.doesNotMatch(creator,/\$7\.00/);
  for(const id of ["beans.price","beansUniversity.price","foundationStudentContinuation.price","foundationUniversity.price","getMore.price","foundationProgram.price","guidedFoundation.price","fullNbluDiy.price","fullNblu.price","nblPlus.price","nblUsage.price","nbluContinuation.price","studiosCredits.price","studiosSupport.price"])assert.ok(pricing.includes('data-nbl-plan-value="'+id+'"'),id);
 });
-test("University stays under construction with all existing prices and 100 percent refund for nondelivery",()=>{
- assert.match(campus,/University under construction/);
- assert.match(campus,/Target opening month is December 2026/);
- assert.doesNotMatch(campus,/before Thanksgiving 2026/);
- assert.match(campus,/Full NBLU · Digital DIY · \$184\.99 once/);
- assert.match(pricing,/Physical books/i);
- assert.match(pricing,/fullNbluDiy\.price/);
- assert.match(pricing,/nblPlus\.price/);
- assert.match(campus,/full refund of the advance-enrollment payment/);
+test("University .org remains a single admissions front desk with distinct held products and 100 percent nondelivery refund",()=>{
+ const cashier=read("university.html"),script=read("university-storefront.js");
+ assert.match(campus,/url=https:\/\/newbeansland\.org\/university\.html#enroll/);
+ assert.match(cashier,/Sign up &amp; continue to payment/);
+ assert.match(cashier,/https:\/\/nblschool\.com\//);
+ for(const key of ["foundation","foundation_university","full_foundation","full_nblu_diy","full_nblu","beans_university_monthly","foundation_student_continuation","nblu_continuation"]){
+   assert.ok(cashier.includes('value="'+key+'"'),"Missing approved distinct offer "+key);
+ }
+ assert.match(script,/\$184\.99 once/);
+ assert.match(script,/\$449\.99 once/);
+ assert.match(script,/if\(!item\.plan\)/);
+ assert.match(cashier,/advance-enrollment payment is fully refundable/i);
  assert.match(pricing,/full refund of that advance-enrollment payment/);
  assert.match(pricing,/If an announced start is delayed/);
  assert.match(pricing,/University checkouts are currently disabled/);
- assert.match(campus,/data-nbl-university-checkout="foundation" disabled/);
- assert.match(campus,/data-nbl-university-checkout="full_foundation" disabled/);
  assert.match(pricing,/opening dates will be confirmed/i);
  assert.doesNotMatch(pricing,/pay\.stripe\.com|checkout\.stripe\.com|data-nbl-university-checkout=/);
 });

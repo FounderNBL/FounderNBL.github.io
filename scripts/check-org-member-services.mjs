@@ -13,12 +13,15 @@ const forbid=(key,needle,why)=>{if(files[key].includes(needle))failures.push(why
 // One Clerk production origin. Account and payment screens must stay on .org.
 need("account",'accounts.newbeansland.org',"Verified .org account portal missing.");
 need("chat",'href="https://newbeansland.org/chat.html"',"Person-to-person Chat must canonically live on .org.");
-need("campus",'href="https://newbeansland.org/campus.html"',"Student campus must canonically live on .org.");
+need("campus",'url=https://nblschool.com/',"Old .org campus must redirect to the school website.");
 need("header",'href="/messenger/"',"Talk to People must open independent .org Messenger.");
-need("header",'href="/campus.html#grey"',"Talk to Grey must open the protected .org campus.");
-need("landing",'href="/campus.html"',"University enrollment must open .org classroom.");
-need("landing",'data-nbl-university-checkout="foundation" disabled',"University enrollment checkout was unlocked without verification.");
-need("landing",'data-nbl-university-checkout="full_foundation" disabled',"Guided enrollment checkout was unlocked without verification.");
+need("header",'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must open the independent school website.");
+need("landing",'url=https://newbeansland.org/university.html#enroll',"Legacy enrollment must redirect to the single cashier page.");
+const currentAdmissions=read("university.html");
+const currentBilling=read("university-storefront.js");
+if(!currentAdmissions.includes('id="nblu-one-entry"'))failures.push("The one-page University admissions entry is missing.");
+if(!currentBilling.includes('if(!item.plan)'))failures.push("Held University plans must not create unsupported checkouts.");
+if(!currentBilling.includes('"/billing/checkout"'))failures.push("University checkout must use the NBL billing gateway.");
 
 // Human Chat is only for signed-in people; messaging is bound to Core/Supabase.
 need("chat",'data-chat-guest',"Missing signed-out person-to-person Chat entrance.");
@@ -33,10 +36,8 @@ need("messages",'action:"send"',"Message-send API action is missing.");
 forbid("messages",'localStorage.setItem',"Do not cache human Chat tokens or sessions in localStorage.");
 
 // LOCKE/Registrar must gate every protected course action, not just hide content.
-need("campus",'data-campus-gate',"University LOCKE gate is missing.");
-need("campus",'data-campus hidden',"Protected student campus must be hidden before verification.");
-need("campus",'id="grey"',"Professor Grey link no longer reaches its destination.");
-need("campus",'data-study-lab',"Student Study Lab is missing.");
+// Academic source is no longer served as a .org classroom; the school has its own domain.
+need("campus","url=https://nblschool.com/","Legacy campus does not forward to school.com.");
 need("university",'const API=NBL_CORE_API+"/university"',"Campus must use verified Core University ingress.");
 need("university",'const UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false',"University public checkout release hold was changed.");
 need("university",'clerk.session.getToken()',"Campus bearer identity is missing.");
@@ -67,5 +68,5 @@ if(failures.length){
   failures.forEach(x=>console.error("[org-member-services] FAIL:",x));
   process.exitCode=1;
 }else{
-  console.log("[org-member-services] PASS: .org Clerk origin, person-to-person Chat, LOCKE-gated Grey/campus, server-only private actions, held enrollment checkout and same-origin member navigation.");
+  console.log("[org-member-services] PASS: single .org admissions cashier, independent school.com campus and old-route forwarding, shared Clerk identity, existing member messaging and billing guardrails.");
 }

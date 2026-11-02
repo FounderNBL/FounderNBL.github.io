@@ -1,37 +1,24 @@
 import {test,expect} from "@playwright/test";
 
-test("University campus loads with a protected enrollment gate",async({page})=>{
-  await page.goto("/campus.html");
-  await expect(page).toHaveTitle(/NBL University Campus/i);
-  await expect(page.getByRole("heading",{name:"Student Campus"})).toBeVisible();
-  await expect(page.locator("[data-study-lab] h2")).toHaveText("Your Study Lab");
-  await expect(page.locator("[data-study-lab]")).toBeHidden();
-  await expect(page.locator("[data-study-save]")).toBeHidden();
-  await expect(page.locator("#enroll")).toBeVisible();
-  await expect(page.locator('[data-nblu-checkout="full_nblu"]')).toHaveCount(0);
-  await expect(page.locator("[data-release-proof-notice]")).toBeVisible();
-  await expect(page.getByRole("link",{name:/Explore Enrollment & Tuition/i}).first()).toHaveAttribute("href","/university-enrollment.html#enroll");
-  await expect(page.getByRole("link",{name:"Switch back to Beans"})).toHaveAttribute("href","/");
-  await expect(page.locator("body")).not.toContainText("$449.99");
-  await expect(page.locator("[data-campus-gate]")).toBeVisible();
-  await expect(page.locator("body")).toContainText("LOCKE opens the classroom only when that account has University enrollment");
-  await expect(page.locator("[data-campus]")).toBeHidden();
-  await expect(page.locator("[data-frontier]")).toBeHidden();
-  await expect(page.locator("body")).toContainText("The Frontier Check");
-  await expect(page.locator("body")).toContainText("Some are trying to get you to confidently say some bullshit");
-  await expect(page.locator("body")).toContainText("Professor Grey");
-  await expect(page.locator("body")).toContainText("Your digital materials");
-  await expect(page.locator("body")).toContainText("Course assessment");
-  await expect(page.locator("body")).toContainText("Your course work");
-  await expect(page.locator("body")).toContainText("Registrar rail");
-  await expect(page.locator("body")).toContainText("Gradebook");
-  await expect(page.locator("body")).toContainText("approximately 9 hours of engaged learning total");
-  await expect(page.locator("body")).toContainText("What each course expects");
-  await expect(page.locator("body")).toContainText("Opt-in scoreboard");
-  await expect(page.locator("body")).toContainText("Access / accommodation");
-  await expect(page.locator("body")).toContainText("Request academic review");
-  await expect(page.locator("body")).toContainText("Chat means people");
-  await expect(page.locator("body")).toContainText("Ask classmates first");
-  await expect(page.locator("body")).toContainText("Helper leaderboard");
-  await expect(page.locator("#nbl-social")).toBeHidden();
+test("old .org campus links lead directly to independent nblschool.com",async({page})=>{
+  const legacy=await page.request.get("/campus.html");
+  const html=await legacy.text();
+  expect(html).toContain('<meta http-equiv="refresh" content="0;url=https://nblschool.com/">');
+  expect(html).toContain('href="https://nblschool.com/"');
+  expect(html).not.toContain('data-campus-gate');
+  expect(html).not.toContain('data-study-lab');
+});
+test("the .org campus checkout is one admissions page with a separate school link",async({page})=>{
+  await page.goto("/university.html");
+  await expect(page).toHaveTitle(/Registration & Tuition/);
+  await expect(page.getByRole("heading",{name:"Welcome to NBL University."})).toBeVisible();
+  await expect(page.locator("#nblu-one-entry")).toHaveCount(1);
+  await expect(page.locator("#nblu-program option")).toHaveCount(8);
+  await expect(page.locator('a[href="https://nblschool.com/"]')).toHaveCount(1);
+  await expect(page.locator('[data-campus-gate], [data-study-lab], [data-social-dm-handle]')).toHaveCount(0);
+  await page.locator("#nblu-program").selectOption("full_nblu_diy");
+  await expect(page.locator("#nblu-offer-price")).toHaveText("$184.99 once");
+  await expect(page.locator("#nblu-offer-desc")).toContainText("without physical books");
+  await page.locator("#nblu-program").selectOption("full_nblu");
+  await expect(page.locator("#nblu-offer-price")).toHaveText("$449.99 once");
 });

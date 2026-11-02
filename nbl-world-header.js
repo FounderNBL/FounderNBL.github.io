@@ -524,7 +524,7 @@
           </button>
 
           <nav class="nbl-chat-drawer-conversations" aria-label="NBL conversations">
-            <a class="nbl-chat-drawer-item nbl-beans-grey-link" href="/campus.html#grey">
+            <a class="nbl-chat-drawer-item nbl-beans-grey-link" href="https://nblschool.com/professor-grey.html">
               <span class="nbl-chat-drawer-fallback" aria-hidden="true">G</span>
               <span><strong>Talk to Grey</strong><small>Protected NBL University</small></span>
             </a>

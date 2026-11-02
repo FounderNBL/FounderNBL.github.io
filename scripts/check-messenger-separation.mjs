@@ -31,11 +31,8 @@ assert.match(sw, /event.request.method !== "GET"/);
 assert.match(sw, /SHELL.includes\(url.pathname\)/);
 assert.doesNotMatch(sw, /functions\/v1|clerk\.newbeansland\.org/);
 
-// The separate Messenger app must not remove protected student rooms.
-assert.match(university, /id="nbl-social"/);
-assert.match(university, /\/messenger\//);
-assert.match(university, /Professor Grey/);
-assert.match(university, /study.hall/i);
+// Messenger and independent school are separate websites. Old .org campus redirects.
+assert.match(university, /url=https:\/\/nblschool\.com\//);
 assert.match(oldHumanChat, /data-chat-send-form/); // old bookmarks still work
 assert.match(website, /href="\/messenger\//); // discoverable without Beans
 
