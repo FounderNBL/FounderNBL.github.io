@@ -15,7 +15,7 @@ h2{font-size:1.3rem;margin:0 0 16px;color:var(--cream)}
 .eyebrow{font-size:.72rem;letter-spacing:.14em;font-weight:900;color:var(--gold2);text-transform:uppercase;margin:0}
 .intro>p:not(.eyebrow){max-width:750px;color:var(--soft);margin:10px 0 18px}
 .intro strong{color:var(--cream)}
-.signin-panel,.userbar,.campus-link{border:1px solid var(--line);border-radius:15px;padding:18px;background:rgba(6,20,33,.83)}
+.signin-panel,.userbar,.account-settings{border:1px solid var(--line);border-radius:15px;padding:18px;background:rgba(6,20,33,.83)}
 .signin-panel p{margin:0 0 14px}.userbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:16px 0}
 .btn{display:inline-flex;justify-content:center;align-items:center;min-height:40px;padding:8px 15px;border:1px solid var(--gold2);border-radius:10px;color:var(--gold2);background:transparent;text-decoration:none;font-weight:800;font-size:.83rem;line-height:1.2}
 .btn:hover{background:rgba(214,161,75,.12);text-decoration:none}.btn.primary{background:linear-gradient(180deg,#f3d994,#cf9630);color:#101010}.btn.small{min-height:34px;padding:6px 10px;font-size:.76rem}
@@ -49,7 +49,6 @@ input::placeholder,textarea::placeholder{color:#938774}
 .composer{padding:16px 18px;border-top:1px solid rgba(255,255,255,.08)}
 .composer .btn{margin-top:10px}
 .status{margin:16px 0;color:var(--gold2);min-height:24px;font-size:.88rem}
-.campus-link{margin-top:34px}.campus-link p{color:var(--soft);max-width:720px}
 footer{padding:0 16px 30px;text-align:center;font-size:.77rem;color:var(--soft)}
 @media(max-width:790px){.chat-app{grid-template-columns:1fr}.sidebar{max-height:none;border-right:0;border-bottom:1px solid rgba(255,255,255,.1)}.messages{min-height:240px;max-height:500px}.thread-actions{justify-content:flex-start}.conversation-head{align-items:flex-start;flex-direction:column}}
 @media(max-width:520px){.topbar{align-items:flex-start;flex-direction:column}.form-row{flex-wrap:wrap}.form-row .btn{width:100%}.message{max-width:96%}main{padding:26px 12px 45px}}
@@ -70,3 +69,20 @@ footer{padding:0 16px 30px;text-align:center;font-size:.77rem;color:var(--soft)}
 .notification-settings h2{margin:6px 0 8px}
 .notification-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:16px 0 10px}
 @media(max-width:520px){.notification-actions .btn{flex:1 1 100%}}
+
+/* Messenger settings belong to the current account and remain on this screen. */
+.userbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.account-settings{margin:14px 0 22px}
+.account-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.account-heading h2{margin:4px 0}
+.account-heading .hint{margin:7px 0 15px;overflow-wrap:anywhere}
+.account-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
+.account-grid>div{padding:15px;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:rgba(3,12,22,.55);min-width:0}
+.account-grid h3{font-size:1rem;margin:0 0 10px;color:var(--gold2)}
+.account-grid .form-row{flex-wrap:wrap}
+.account-grid .form-row input{flex:1 1 155px}
+.account-grid .form-row button{flex:0 0 auto}
+.account-links{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
+.account-links .btn{max-width:100%;white-space:normal}
+@media(max-width:930px){.account-grid{grid-template-columns:1fr 1fr}.account-grid>div:last-child{grid-column:1/-1}}
+@media(max-width:600px){.userbar{align-items:flex-start;flex-direction:column}.userbar-actions{justify-content:flex-start}.account-grid{grid-template-columns:1fr}.account-grid>div:last-child{grid-column:auto}}
