@@ -11,7 +11,7 @@ const early=read("nbl-university-early-interest.js");
 assert.match(home,/class="world-card official-art reveal" href="university\.html"/);
 assert.ok(arrival.includes('id="nblu-gateway-title"')&&arrival.includes("Welcome to"));
 assert.ok(arrival.includes('href="https://nblschool.com/homeroom.html#first-class"'));
-assert.ok(arrival.includes('href="/university-enrollment.html#enroll"'));
+assert.ok(arrival.includes('href="#enroll"')&&arrival.includes('id="enroll"'));
 assert.ok(!arrival.includes('<details class="university-category">'));
 assert.ok(!arrival.includes('data-nbl-university-checkout='));
 assert.ok(!arrival.includes('data-nbl-university-interest-form'));
