@@ -32,7 +32,7 @@ test("Messenger independently restores Clerk session and clears private UI on lo
   await page.route("**/functions/v1/nbl-social",route=>{
     const {action}=route.request().postDataJSON();
     const payload=action==="me"?{ok:true,me:{handle:"alice"}}:
-      action==="list_threads"?{ok:true,threads:[{id:"private-a",title:"PRIVATE_A_THREAD",thread_type:"direct"}]}:
+      action==="list_threads"?{ok:true,threads:[{id:"private-a",title:"PRIVATE_A_THREAD",thread_type:"direct",peer:{handle:"PRIVATE_A_THREAD"}}]}:
       {ok:true,messages:[]};
     return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(payload)});
   });
@@ -60,7 +60,7 @@ test("Messenger ignores delayed account A responses after account B signs in",as
     if(isA){requestsA++;await waitA;}
     const prefix=isA?"ACCOUNT_A_PRIVATE":"account-b";
     const payload=action==="me"?{ok:true,me:{handle:prefix}}:
-      action==="list_threads"?{ok:true,threads:[{id:isA?"thread-A":"thread-B",title:isA?"ACCOUNT_A_PRIVATE_THREAD":"B visible conversation",thread_type:"direct"}]}:
+      action==="list_threads"?{ok:true,threads:[{id:isA?"thread-A":"thread-B",title:isA?"ACCOUNT_A_PRIVATE_THREAD":"B visible conversation",thread_type:"direct",peer:{handle:isA?"ACCOUNT_A_PRIVATE_THREAD":"B visible conversation"}}]}:
       {ok:true,messages:[]};
     await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(payload)});
     if(isA)completedA++;
