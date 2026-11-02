@@ -63,12 +63,12 @@
         <h2>Profile</h2>
         <p id="identityLine" class="status">Loading your account…</p>
         <form id="usernameForm">
-          <label for="username">NBL username</label>
+          <label for="username">Your NBL handle · used everywhere</label>
           <div class="row">
             <input id="username" name="username" autocomplete="username" minlength="3" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}" placeholder="Choose a username">
             <button type="submit">Save username</button>
           </div>
-          <p class="status">3–30 characters. Letters, numbers, underscores and hyphens.</p>
+          <p class="status">One @NBL handle for Beans, Messenger, and University. Students receive a separate student ID, not another username. 3–30 letters, numbers, underscores or hyphens.</p>
         </form>
         <p id="profileStatus" class="status"></p>
         <div class="row">
@@ -514,6 +514,7 @@
     const renderSummary=async()=>{
       const payload=await accountFetch("?action=summary");
       usernameInput.value=payload?.profile?.username||"";
+      if(payload?.profile?.username)identityLine.textContent="NBL identity: @"+payload.profile.username+" · Sign-in email: "+primaryEmail;
       document.getElementById("conversationCount").textContent=String(payload?.usage?.conversations||0);
       document.getElementById("messageCount").textContent=String(payload?.usage?.messages||0);
       document.getElementById("modelCount").textContent=String(payload?.usage?.modelResponses||0);
@@ -660,7 +661,8 @@
       try{
         const payload=await accountFetch("?action=profile",{method:"POST",body:JSON.stringify({username:usernameInput.value.trim()})});
         usernameInput.value=payload.profile.username;
-        profileStatus.textContent="Username saved. Beans can use this name when you are signed in.";
+        identityLine.textContent="NBL identity: @"+payload.profile.username+" · Sign-in email: "+primaryEmail;
+        profileStatus.textContent="NBL handle saved. This same name is used in Beans, Messenger and University.";
       }catch(error){profileStatus.textContent=error.message}
     });
 
