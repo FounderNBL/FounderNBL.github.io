@@ -118,7 +118,7 @@ test("NBL website hides long offer menus inside three accessible categories",()=
  assert.equal((account.match(/<details class="account-category">/g)||[]).length,3);
  assert.equal((university.match(/<details class="university-category">/g)||[]).length,3);
  assert.equal((arrival.match(/<details class="university-category">/g)||[]).length,3);
- assert.match(arrival,/href="\/university-enrollment\.html#enroll"/);
+ assert.match(arrival,/href="#enroll"/);
  assert.equal((header.match(/<details class="nbl-drawer-category">/g)||[]).length,3);
  assert.match(styles,/\.nbl-drawer-category>summary/);
  assert.equal((account.match(/data-account-billing-plan="/g)||[]).length,11);
