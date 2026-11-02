@@ -86,6 +86,6 @@ for(const platform of ["normal"]) {
   await reply(page,1,own(500));
   await expect(page.locator("#free")).toHaveText("—");
   expect(await page.evaluate(()=>window.__VAULT_REQUESTS.length)).toBe(2);
-  await expect(page).toHaveURL(/\\/vault\\.html$/);
+  await expect(page).toHaveURL(/\/vault\.html$/);
  });
 }
