@@ -11,13 +11,11 @@ test("NBL account exposes an optional per-user GitHub connection and disconnect"
  assert.match(account,/Connect my GitHub/);
  assert.match(account,/Read-only repository inspection|repository reading only|read-only inspection/);
 });
-test("Payhip automatic coupon lives behind explicit Founder approval without removing manual fallback",()=>{
- assert.match(account,/operation:"founder_approve",fulfillmentRequestId:item.id,/);
- assert.match(account,/autoCreatePayhipCoupon:true/);
- assert.match(account,/confirmRecipient:true/);
- assert.match(account,/Already created coupon — approve manually/);
- assert.match(account,/redemptionCode:code.value.trim\(\)/);
- assert.match(account,/Create Payhip coupon & approve/);
+test("Founder-only Azure diagnostics and LOCKE approval operations are not shipped in customer account HTML",()=>{
+ for(const text of ["founderAzureCheck","founder-actions","operation:\"founder_approve\"","autoCreatePayhipCoupon:true","Create Payhip coupon & approve","nbl-core/azure/status"]){
+  assert.ok(!account.includes(text),"Internal-only workbench leaked: "+text);
+ }
+ assert.match(account,/id="deliveryCard"/); // Customer deliveries preserved.
 });
 test("No credential or extra public token handling embedded in HTML",()=>{
  for(const marker of ["PAYHIP_API_KEY","NBL_GITHUB_APP_CLIENT_SECRET","NBL_CONNECT_TOKEN_AES_KEY","SUPABASE_SERVICE_ROLE_KEY"])assert.ok(!account.includes(marker),marker+" is not public");

@@ -25,11 +25,9 @@ test("customer data only requested for the authenticated identity",()=>{
   assert.doesNotMatch(html,/localStorage\.|sessionStorage\.|\bPOST\b/);
 });
 
-test("Founder data must come only from verified backend, not a client role flag",()=>{
-  checks(/api\("founder",epoch\)/);
-  checks(/const f=result\.founder/);
-  checks(/if\(!f\)\{\$\("founder"\)\.hidden=true;return;\}/);
-  checks(/id="founder" hidden/);
+test("Public Vault never requests or renders the internal operating vault",()=>{
+  assert.doesNotMatch(html,/api\("founder",epoch\)|renderFounder\(|id="founder" hidden|view="founder"/);
+  checks(/api\("mine",epoch\)/);
   assert.doesNotMatch(html,/role\s*[:=]\s*["']founder["']|\?founder=true|isFounder=true/);
 });
 
@@ -39,12 +37,10 @@ test("Vault never renders untrusted balances as HTML or initiates payments",()=>
   assert.doesNotMatch(html,/\.post\(|\bfetch\([^\n]*method:\s*["']POST/);
   assert.doesNotMatch(html,/sk_(?:live|test)_[A-Za-z0-9]+|SUPABASE_SERVICE_ROLE_KEY|\btransferFunds\b|\bcreatePayout\b/i);
   checks(/service allowances, not cash or withdrawals/);
-  checks(/Unverified balances remain unknown/);
 });
 
 test("Vault prevents premature claims of live financial integration",()=>{
-  checks(/No reconciled settlements yet; actual cash\/profit is not established/);
-  checks(/Automated refills and Founder payouts are off/);
+  assert.doesNotMatch(html,/No reconciled settlements yet; actual cash\/profit is not established|Automated refills and Founder payouts are off/);
   checks(/Vault records cannot be read right now/);
 });
 
@@ -121,8 +117,8 @@ test("NBL website hides long offer menus inside three accessible categories",()=
  assert.equal((pricing.match(/<details class="nbl-category" data-nbl-category/g)||[]).length,3);
  assert.equal((account.match(/<details class="account-category">/g)||[]).length,3);
  assert.equal((university.match(/<details class="university-category">/g)||[]).length,3);
- assert.equal((arrival.match(/<details class="university-category">/g)||[]).length,0);
- assert.match(arrival,/href="\/university-enrollment\.html#enroll"/);
+ assert.equal((arrival.match(/<details class="university-category">/g)||[]).length,3);
+ assert.match(arrival,/href="#enroll"/);
  assert.equal((header.match(/<details class="nbl-drawer-category">/g)||[]).length,3);
  assert.match(styles,/\.nbl-drawer-category>summary/);
  assert.equal((account.match(/data-account-billing-plan="/g)||[]).length,11);

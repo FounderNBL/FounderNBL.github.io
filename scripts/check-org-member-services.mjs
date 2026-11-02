@@ -47,8 +47,8 @@ need("university",'/study-lab.mjs',"University must load student-safe local Stud
 need("lab",'action: "university_submit_work"',"Study Lab must save to the protected Registrar API.");
 need("realtime",'config:{private:true}',"Realtime channels must be private.");
 need("realtime",'watchThread',"Private thread updates must be available.");
-need("voiceJs",'clerk.session.getToken()',"Founder voice calls must require a Clerk session.");
-need("voiceJs",'Bearer',"Voice calls must include a bearer token.");
+need("voice","This page is unavailable.","Internal voice lab must not be reachable on public site.");
+forbid("voiceJs","founder_sample","Public voice-lab script must not execute privileged operations.");
 
 // No remote domain owns a second Clerk customer session; .com is only a shop destination.
 for(const key of ["landing","campus","chat","voice"]){
