@@ -17,7 +17,7 @@ assert.match(arrival,/Sign up &amp; continue to payment/);
 assert.match(arrival,/https:\/\/nblschool\.com\//);
 assert.match(arrival,/src="\/university-storefront\.js/);
 assert.doesNotMatch(arrival,/campus\.html|university-enrollment\.html|Class Chat|Study Hall|coursework|data-nbl-university-interest-form|nbl-world-header\.js/i);
-for(const key of ["foundation","foundation_university","full_foundation","full_nblu","beans_university_monthly","foundation_student_continuation","nblu_continuation"]){
+for(const key of ["foundation","foundation_university","full_foundation","full_nblu_diy","full_nblu","beans_university_monthly","foundation_student_continuation","nblu_continuation"]){
   assert.match(arrival,new RegExp('value="'+key+'"'),"Missing distinct verified offer "+key);
   assert.ok(script.includes(key+':{title:'),"Missing distinct metadata for "+key);
 }
@@ -25,6 +25,7 @@ for(const priceId of [
   "price_1UOeUBB8jr0ZIsSbopkO6zn6",
   "price_1URiSuB8jr0ZIsSbLuuwVa7p",
   "price_1UOjEVB8jr0ZIsSburX83EuO",
+  "price_1UXSXxB8jr0ZIsSbIayXWHSL",
   "price_1UOeUIB8jr0ZIsSb1acvYFWb",
   "price_1URiSwB8jr0ZIsSb3uyktHc4",
   "price_1URiSxB8jr0ZIsSbYvs4bnf6",
@@ -33,7 +34,7 @@ for(const priceId of [
 assert.match(script,/\/billing\/checkout/);
 assert.match(script,/trustedStripe/);
 assert.match(script,/if\(!item\.plan\)/);
-assert.doesNotMatch(arrival,/\$184\.99|\$39\.99/); // no unverified or retired prices displayed.
+assert.doesNotMatch(arrival,/\$39\.99/); // no unverified or retired prices displayed.
 for(const page of [campus,alias]){
  assert.match(page,/http-equiv="refresh" content="0;url=https:\/\/nblschool\.com\//);
  assert.doesNotMatch(page,/<form|data-campus-gate|data-campus hidden/);
