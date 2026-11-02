@@ -46,6 +46,16 @@ assert.match(app, /data-chat-share-invite/);
 assert.match(app, /data-chat-copy-invite/);
 assert.match(app, /data-chat-handle-setup hidden/);
 assert.match(app, /data-chat-founder-marker hidden/);
+// Private campus remains separate; none of its promotional breadcrumbs appear in Messenger.
+assert.doesNotMatch(app, /Class Chat|Study Hall|Student rooms|University Social Chat|University enrollment|university-campus\.html/);
+assert.match(app, /data-chat-account-toggle/);
+assert.match(app, /data-chat-profile-form/);
+assert.match(app, /data-chat-open-clerk/);
+assert.match(app, /data-chat-download-messages/);
+assert.match(js, /\.openUserProfile\(/);
+assert.match(js, /accountRequest\("profile"/);
+assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
+assert.match(js, /Recent direct messages only: up to 200 threads and the latest 100 messages per thread/);
 assert.match(app, /href="\/account\.html"/);
 assert.match(js, /const INVITE_URL="https:\/\/newbeansland\.org\/messenger\/"/);
 assert.match(js, /const founder=state\.me\?\.role==="founder"/);
@@ -55,7 +65,7 @@ assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261102-private-surface/);
+assert.match(sw, /nbl-messenger-shell-20261102-account-controls/);
 
 
 for(const item of [

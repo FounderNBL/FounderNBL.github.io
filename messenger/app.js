@@ -3,6 +3,7 @@
 
 // Independent human-messaging runtime. Beans remains on its own AI endpoint.
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
+const ACCOUNT_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
 const PUSH_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-messenger-push";
 const PUSH_OWNER_KEY="nbl-messenger-push-clerk-user-v1";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
@@ -87,6 +88,108 @@ async function social(body){
     error.status=response.status;error.reason=payload?.reason;throw error;
   }
   return payload;
+}
+
+async function accountRequest(action,options={}){
+  const userId=state.clerk?.user?.id;
+  const generation=authSyncGeneration;
+  const token=await authToken();
+  if(!userId||generation!==authSyncGeneration||state.clerk?.user?.id!==userId)
+    throw Error("Your NBL account changed. Try again.");
+  const response=await fetch(ACCOUNT_API+"?action="+encodeURIComponent(action),{
+    ...options,
+    headers:{"Authorization":"Bearer "+token,"Content-Type":"application/json","Accept":"application/json",...(options.headers||{})},
+    cache:"no-store"
+  });
+  const payload=await response.json().catch(()=>({}));
+  if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)
+    throw Error("Your NBL account changed. Try again.");
+  if(!response.ok)throw Error(payload?.message||"Your account settings are unavailable.");
+  return payload;
+}
+async function openAccountPanel(){
+  const panel=$("[data-chat-account-settings]");
+  const button=$("[data-chat-account-toggle]");
+  if(!state.clerk?.isSignedIn||!state.clerk?.user?.id)return;
+  const shouldOpen=panel.hidden;
+  panel.hidden=!shouldOpen;
+  button.setAttribute("aria-expanded",String(shouldOpen));
+  if(!shouldOpen)return;
+  const email=state.clerk.user.primaryEmailAddress?.emailAddress||"Signed in to your NBL account";
+  $("[data-chat-account-email]").textContent=email;
+  $("[data-chat-profile-status]").textContent="Loading your NBL username…";
+  try{
+    const data=await accountRequest("summary");
+    if(panel.hidden)return;
+    $("[data-chat-profile-username]").value=data.profile?.username||"";
+    $("[data-chat-profile-status]").textContent=state.me?.role==="founder"
+      ?"Your official Messenger handle stays @NBLFounderOfficial."
+      :"Edit your NBL username here.";
+  }catch(error){
+    $("[data-chat-profile-status]").textContent=error.message||"Could not load your username.";
+  }
+}
+async function saveAccountUsername(event){
+  event.preventDefault();
+  const button=$("[data-chat-profile-form] button[type=submit]");
+  button.disabled=true;
+  $("[data-chat-profile-status]").textContent="Saving username…";
+  try{
+    const value=$("[data-chat-profile-username]").value.trim();
+    const data=await accountRequest("profile",{method:"POST",body:JSON.stringify({username:value})});
+    $("[data-chat-profile-username]").value=data.profile?.username||value;
+    await refresh();
+    $("[data-chat-profile-status]").textContent=state.me?.role==="founder"
+      ?"Username saved. Your verified Messenger handle stays @NBLFounderOfficial."
+      :"Username saved. Your Messenger handle has been updated.";
+  }catch(error){
+    $("[data-chat-profile-status]").textContent=error.message||"Could not save username.";
+  }finally{button.disabled=false;}
+}
+function manageLoginConnections(){
+  const c=state.clerk;
+  if(!c?.isSignedIn||!c?.user)return;
+  if(typeof c.openUserProfile==="function"){
+    c.openUserProfile();
+    return;
+  }
+  location.assign(ACCOUNT_PORTAL+"/user");
+}
+async function downloadRecentMessages(){
+  const button=$("[data-chat-download-messages]");
+  const display=$("[data-chat-export-status]");
+  button.disabled=true;
+  display.textContent="Collecting your recent direct messages…";
+  const userId=state.clerk?.user?.id;
+  const generation=authSyncGeneration;
+  try{
+    const threadResult=await social({action:"list_threads"});
+    const threads=(threadResult.threads||[]).filter(row=>row.thread_type==="direct");
+    const snapshot=[];
+    for(const t of threads){
+      if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)
+        throw Error("Your NBL account changed. Try again.");
+      const data=await social({action:"list_messages",threadId:t.id,limit:100});
+      snapshot.push({thread:t,messages:data.messages||[]});
+    }
+    if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)
+      throw Error("Your NBL account changed. Try again.");
+    const result={
+      format:"nbl-messenger-recent-snapshot-v1",
+      note:"Recent direct messages only: up to 200 threads and the latest 100 messages per thread. Not a complete archive.",
+      exportedAt:new Date().toISOString(),
+      handle:state.me?.handle||null,
+      conversations:snapshot
+    };
+    const blob=new Blob([JSON.stringify(result,null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement("a");
+    link.href=url;link.download="nbl-messenger-recent-messages.json";
+    document.body.append(link);link.click();link.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    display.textContent="Recent message snapshot downloaded.";
+  }catch(error){display.textContent=error.message||"Unable to download messages.";}
+  finally{button.disabled=false;}
 }
 
 function supportsPhonePush(){
@@ -250,10 +353,6 @@ function renderIdentity(me){
   if(marker)marker.hidden=!founder;
   const setup=$("[data-chat-handle-setup]");
   if(setup)setup.hidden=Boolean(me?.handle);
-  const entry=$(".campus-link a");
-  if(entry&&me?.university!==true){
-    entry.textContent="See University";
-  }
 }
 function renderInviteState(){
   const empty=state.threads.length===0;
@@ -293,7 +392,7 @@ function renderThreads(){
 }
 async function loadThreads(){
   const response=await social({action:"list_threads"});
-  state.threads=response.threads||[];
+  state.threads=(response.threads||[]).filter(row=>row.thread_type==="direct");
   renderThreads();
 }
 function renderMessages(messages){
@@ -362,7 +461,7 @@ async function refresh(){
     status("Refreshing NBL Messenger…");
     const [identity,threads]=await Promise.all([social({action:"me"}),social({action:"list_threads"})]);
     renderIdentity(identity.me||{});
-    state.threads=threads.threads||[];
+    state.threads=(threads.threads||[]).filter(row=>row.thread_type==="direct");
     if(state.selectedId&&!state.threads.some(t=>t.id===state.selectedId)){
       state.selectedId=null;state.selected=null;
       state.realtimeStop?.();state.realtimeStop=null;state.realtimeThread=null;
@@ -491,6 +590,12 @@ async function syncClerkSession(){
   state.selectedId=null;state.selected=null;state.threads=[];state.me=null;state.busy=false;
   lastSeenMessages.clear();
   $("[data-chat-userbar]").hidden=true;
+  $("[data-chat-account-settings]").hidden=true;
+  $("[data-chat-account-toggle]").setAttribute("aria-expanded","false");
+  $("[data-chat-account-email]").textContent="";
+  $("[data-chat-profile-username]").value="";
+  $("[data-chat-profile-status]").textContent="";
+  $("[data-chat-export-status]").textContent="";
   $("[data-chat-app]").hidden=true;
   $("[data-chat-notification-settings]").hidden=true;
   pushConfig=null;
@@ -511,7 +616,7 @@ async function syncClerkSession(){
   if(generation!==authSyncGeneration)return;
   if(!userId){
     $("[data-chat-guest]").hidden=false;
-    $("[data-chat-auth-status]").textContent="Sign in to send and read human-to-human messages. University enrollment is not required for direct messages.";
+    $("[data-chat-auth-status]").textContent="Sign in to send and read direct messages.";
     status("NBL Messenger conversations are private until you sign in.");
     return;
   }
@@ -524,6 +629,14 @@ async function syncClerkSession(){
 }
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
+  $("[data-chat-account-toggle]").addEventListener("click",()=>{void openAccountPanel();});
+  $("[data-chat-account-close]").addEventListener("click",()=>{
+    $("[data-chat-account-settings]").hidden=true;
+    $("[data-chat-account-toggle]").setAttribute("aria-expanded","false");
+  });
+  $("[data-chat-profile-form]").addEventListener("submit",event=>{void saveAccountUsername(event);});
+  $("[data-chat-open-clerk]").addEventListener("click",manageLoginConnections);
+  $("[data-chat-download-messages]").addEventListener("click",()=>{void downloadRecentMessages();});
   $("[data-nbl-infinity-preview]")?.addEventListener("click",()=>{window.NBLInfinitySound?.play("people");});
   $("[data-chat-notify-enable]").addEventListener("click",()=>{void enablePhonePush();});
   $("[data-chat-notify-disable]").addEventListener("click",()=>{void disablePhonePush();});
