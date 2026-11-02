@@ -124,7 +124,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-head .nbl-beans-grey-link")).toHaveCount(0);
     await expect(page.locator(".nbl-beans-head .nbl-beans-people-link")).toHaveCount(0);
     await page.getByRole("button",{name:"Open Beans menu"}).click();
-    await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to Grey/})).toHaveAttribute("href","/campus.html#grey");
+    await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to Grey/})).toHaveAttribute("href","https://nblschool.com/professor-grey.html");
     await expect(page.getByRole("navigation",{name:"NBL conversations"}).getByRole("link",{name:/Talk to People/})).toHaveAttribute("href","/messenger/");
     await expect(page.getByRole("link",{name:/Privacy & AI notice/})).toHaveAttribute("href","/privacy.html");
     await page.getByRole("button",{name:"Close Beans menu"}).click();
@@ -195,50 +195,30 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
   });
 
-  test("one University World Card leads to Frontier with prices, signup, username and student ID", async ({ page }) => {
+  test("one University World Card opens one tuition form and the independent campus link",async({page})=>{
     await open("/",page);
-    const universityCard=page.locator('.world-grid .world-card[href="university.html"]');
-    await expect(universityCard).toHaveCount(1);
-    await universityCard.click();
+    const card=page.locator('.world-grid .world-card[href="university.html"]');
+    await expect(card).toHaveCount(1);
+    await card.click();
     await expect(page).toHaveURL(/\/university\.html$/);
-    await expect(page).toHaveTitle(/Welcome to the Frontier/i);
-    await expect(page.getByRole("heading",{name:/Welcome to.*the Frontier/i})).toBeVisible();
-    await expect(page.locator(".nbl-world-beans-toggle")).toBeHidden();
-
-    const registration=page.locator("#early-registration");
-    const admissions=page.locator("#enroll");
-    await expect(registration).toHaveCount(1);
-    await expect(admissions).toHaveCount(1);
-    await expect(registration.getByRole("link",{name:/Create free NBL \/ student account/i})).toHaveAttribute(
-      "href",/accounts\.newbeansland\.org\/sign-up\?redirect_url=/
-    );
-    await expect(registration.locator('[data-nbl-university-username-form] input[name="username"]')).toHaveCount(1);
-    await expect(registration.locator('[data-nbl-university-interest-form]')).toHaveCount(1);
-    await expect(registration.locator("[data-nbl-university-student-id]")).toBeVisible();
-    for(const summary of await admissions.locator("details.university-category > summary").all()) await summary.click();
-    await expect(admissions.getByText(/Foundation \+ University · \$34\.99/i).first()).toBeVisible();
-    await expect(admissions.getByText(/Guided Foundation · \$54\.99/i).first()).toBeVisible();
-    await expect(admissions.getByText(/Full NBLU · Digital DIY · \$184\.99/i).first()).toBeVisible();
-    await expect(admissions.locator('[data-nbl-university-checkout="foundation"]')).toBeDisabled();
-    await expect(admissions.locator('[data-nbl-university-checkout="full_foundation"]')).toBeDisabled();
-
-    await page.getByRole("link",{name:/Programs & tuition/i}).first().click();
-    await expect(page).toHaveURL(/\/university\.html#enroll$/);
-    await expect(page.locator('a[href="/university-enrollment.html#enroll"]')).toHaveCount(0);
+    await expect(page.getByRole("heading",{name:"Welcome to NBL University."})).toBeVisible();
+    await expect(page.locator("#nblu-one-entry")).toHaveCount(1);
+    await expect(page.locator("#nblu-program option")).toHaveCount(8);
+    await page.locator("#nblu-program").selectOption("full_nblu_diy");
+    await expect(page.locator("#nblu-offer-price")).toHaveText("$184.99 once");
+    await expect(page.locator('a[href="https://nblschool.com/"]')).toHaveCount(1);
+    await expect(page.locator("[data-campus-gate],[data-study-lab],[data-coursework-pdf]")).toHaveCount(0);
   });
 
-  test("same-origin campus remains protected and sign-in points to verified .org", async ({ page }) => {
-    await open("/campus.html", page);
-
-    await expect(page).toHaveTitle(/NBL University Campus/i);
-    await expect(page.getByRole("heading", { name: "Student Campus" })).toBeVisible();
-    await expect(page.locator("[data-campus-gate]")).toBeVisible();
-    await expect(page.locator("[data-campus]")).toBeHidden();
-    await expect(page.getByRole("navigation",{name:"Campus navigation"}).getByRole("link",{name:"NBL Chat"})).toHaveAttribute("href","/chat.html");
+  test("old .org campus addresses forward to the independent school, not another classroom",async({page})=>{
+    for(const path of ["/campus.html","/university-campus.html"]){
+      const response=await page.request.get(path);
+      const html=await response.text();
+      expect(html).toContain('url=https://nblschool.com/');
+      expect(html).not.toContain('data-campus-gate');
+    }
   });
 
-  // The Inspector tests each route separately. A confirmed Cloudflare browser
-  // challenge to the CI runner is UNVERIFIED, never a PASS or a customer outage.
   const registeredRoutes = [
     "/", "/books.html", "/stories.html", "/founder-office.html",
     "/studio/", "/account.html", "/university.html", "/campus.html", "/chat.html", "/voice-lab.html"
