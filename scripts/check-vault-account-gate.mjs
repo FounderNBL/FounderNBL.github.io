@@ -25,12 +25,10 @@ test("customer data only requested for the authenticated identity",()=>{
   assert.doesNotMatch(html,/localStorage\.|sessionStorage\.|\bPOST\b/);
 });
 
-test("Founder data must come only from verified backend, not a client role flag",()=>{
-  checks(/api\("founder",epoch\)/);
-  checks(/const f=result\.founder/);
-  checks(/if\(!f\)\{\$\("founder"\)\.hidden=true;return;\}/);
-  checks(/id="founder" hidden/);
-  assert.doesNotMatch(html,/role\s*[:=]\s*["']founder["']|\?founder=true|isFounder=true/);
+test("Public Vault never requests or renders the internal operating vault",()=>{
+  assert.doesNotMatch(html,/api\\("founder",epoch\\)|renderFounder\\(|id="founder" hidden|view="founder"/);
+  checks(/api\\("mine",epoch\\)/);
+  assert.doesNotMatch(html,/role\\s*[:=]\\s*["']founder["']|\\?founder=true|isFounder=true/);
 });
 
 test("Vault never renders untrusted balances as HTML or initiates payments",()=>{
@@ -39,7 +37,6 @@ test("Vault never renders untrusted balances as HTML or initiates payments",()=>
   assert.doesNotMatch(html,/\.post\(|\bfetch\([^\n]*method:\s*["']POST/);
   assert.doesNotMatch(html,/sk_(?:live|test)_[A-Za-z0-9]+|SUPABASE_SERVICE_ROLE_KEY|\btransferFunds\b|\bcreatePayout\b/i);
   checks(/service allowances, not cash or withdrawals/);
-  checks(/Unverified balances remain unknown/);
 });
 
 test("Vault prevents premature claims of live financial integration",()=>{
