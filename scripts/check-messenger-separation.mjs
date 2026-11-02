@@ -50,9 +50,11 @@ assert.match(app, /data-chat-profile-form/);
 assert.match(app, /data-chat-open-clerk/);
 assert.match(app, /data-chat-download-messages/);
 // Hosted account profile is the reliable path for Facebook/Google connection management.
-assert.doesNotMatch(js, /\\.openUserProfile\\(/);
-assert.match(js, /location\\.assign\\(ACCOUNT_PORTAL\\+"\\/user\\?redirect_url="\\+encodeURIComponent\\(returnUrl\\)\\)/);
-assert.match(app, /\\/messenger\\/app\\.js\\?v=20261102-clerk-connections/);
+assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
+assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
+  "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
+assert.ok(app.includes('/messenger/app.js?v=20261102-clerk-connections'),
+  "Messenger must load the new account navigation handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
 assert.match(js, /Recent direct messages only: up to 200 threads and the latest 100 messages per thread/);
