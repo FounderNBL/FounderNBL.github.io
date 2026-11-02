@@ -148,13 +148,6 @@ async function loadPhoneSettings(){
  try{
   const config=await pushApi({action:"push_config"});
   pushConfig=config;
-  const panel=$("[data-chat-notification-founder]");
-  panel.hidden=config.founderControls!==true;
-  if(config.founderControls===true){
-   $("[data-chat-notify-title]").value=config.title||"NBL Messenger";
-   $("[data-chat-notify-body]").value=config.body||"You have a new message.";
-   $("[data-chat-notify-sender]").checked=config.showSender===true;
-  }
   const current=await subscription();
   const enabled=Boolean(current&&window.Notification.permission==="granted");
   updatePhoneButtons(enabled);
@@ -163,7 +156,6 @@ async function loadPhoneSettings(){
    :"Phone alerts are off on this browser. Enable them to receive messages when Messenger is closed.");
  }catch(error){
   updatePhoneButtons(false);
-  $("[data-chat-notification-founder]").hidden=true;
   setPushStatus(error.message||"Phone notification service unavailable.");
  }
 }
@@ -235,20 +227,6 @@ async function previewPhoneNotification(){
   setPushStatus("Phone preview shown. Your phone controls its system sound; Test ♾️ sound plays the original NBL audio inside Messenger.");
  }catch(error){setPushStatus(error.message||"Phone preview unavailable.");}
 }
-async function saveFounderPhoneTemplate(event){
- event.preventDefault();
- if(state.me?.role!=="founder")return;
- const title=$("[data-chat-notify-title]").value.trim();
- const body=$("[data-chat-notify-body]").value.trim();
- if(title.length<3||body.length<5){setPushStatus("Please enter a heading and message preview.");return;}
- try{
-  pushConfig=await pushApi({
-   action:"push_template_set",title,body,showSender:$("[data-chat-notify-sender]").checked===true
-  });
-  setPushStatus("NBL phone notification template saved for future messages. Preview it on this phone.");
- }catch(error){setPushStatus(error.message||"Notification template could not be saved.");}
-}
-
 function displayThread(row){
   if(row.thread_type==="direct")return row.peer?.handle?"@"+row.peer.handle:"Direct message";
   return row.title||"NBL conversation";
@@ -515,7 +493,6 @@ async function syncClerkSession(){
   $("[data-chat-userbar]").hidden=true;
   $("[data-chat-app]").hidden=true;
   $("[data-chat-notification-settings]").hidden=true;
-  $("[data-chat-notification-founder]").hidden=true;
   pushConfig=null;
   $("[data-chat-myhandle]").textContent="@NBL member";
   $("[data-chat-founder-marker]").hidden=true;
@@ -551,7 +528,6 @@ async function boot(){
   $("[data-chat-notify-enable]").addEventListener("click",()=>{void enablePhonePush();});
   $("[data-chat-notify-disable]").addEventListener("click",()=>{void disablePhonePush();});
   $("[data-chat-notify-preview]").addEventListener("click",()=>{void previewPhoneNotification();});
-  $("[data-chat-notification-founder]").addEventListener("submit",saveFounderPhoneTemplate);
   $("[data-chat-share-invite]").addEventListener("click",()=>{void shareInvite();});
   $("[data-chat-copy-invite]").addEventListener("click",()=>{void copyInvite();});
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
