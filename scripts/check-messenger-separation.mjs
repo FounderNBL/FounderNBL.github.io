@@ -49,7 +49,10 @@ assert.match(app, /data-chat-account-toggle/);
 assert.match(app, /data-chat-profile-form/);
 assert.match(app, /data-chat-open-clerk/);
 assert.match(app, /data-chat-download-messages/);
-assert.match(js, /\.openUserProfile\(/);
+// Hosted account profile is the reliable path for Facebook/Google connection management.
+assert.doesNotMatch(js, /\\.openUserProfile\\(/);
+assert.match(js, /location\\.assign\\(ACCOUNT_PORTAL\\+"\\/user\\?redirect_url="\\+encodeURIComponent\\(returnUrl\\)\\)/);
+assert.match(app, /\\/messenger\\/app\\.js\\?v=20261102-clerk-connections/);
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
 assert.match(js, /Recent direct messages only: up to 200 threads and the latest 100 messages per thread/);
@@ -62,7 +65,7 @@ assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261102-account-controls/);
+assert.match(sw, /nbl-messenger-shell-20261102-clerk-connections/);
 
 
 for(const item of [
