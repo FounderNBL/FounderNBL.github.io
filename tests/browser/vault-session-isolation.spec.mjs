@@ -22,11 +22,6 @@ const own=(n)=>({ok:true,customer:{
  beans:{freeRepliesRemaining:n,paidRepliesRemaining:n+1,purchasedTopupRepliesRemaining:n+2},
  studios:{creditsRemaining:n+3}
 }});
-const founder=()=>({ok:true,founder:{
- financials:{verified:false},resources:[],accounts:[],
- accountCount:0,accountsPage:0,accountsPerPage:25
-}});
-
 async function setup(page){
  await page.addInitScript(()=>{
   const original=window.fetch.bind(window);
@@ -67,34 +62,30 @@ for(const platform of ["normal"]) {
   expect(requests[1].auth).toBe("Bearer fixture-token-user_B");
   await reply(page,1,own(37));
   await expect(page.locator("#free")).toHaveText("37");
-  await waitRequest(page,3);
-  await reply(page,2,{code:"FOUNDER_REQUIRED"},403);
   await reply(page,0,own(99));
   await expect(page.locator("#free")).toHaveText("37");
   await expect(page.locator("#studio")).toHaveText("40");
-  await expect(page.locator("#founder")).toBeHidden();
+  await expect(page.locator("#founder")).toHaveCount(0);
+  expect(await page.evaluate(()=>window.__VAULT_REQUESTS.length)).toBe(2);
   await expect(page).toHaveURL(/\/vault\.html$/);
  });
 
- test("sign-out clears Founder and customer balances even with requests pending",async({page})=>{
+ test("sign-out clears customer balances even with requests pending",async({page})=>{
   await setup(page);
-  await switchTo(page,"user_FOUNDER");
+  await switchTo(page,"user_A");
   await waitRequest(page,1);
   await reply(page,0,own(6));
-  await waitRequest(page,2);
-  await reply(page,1,founder());
-  await expect(page.locator("#founder")).toBeVisible();
   await expect(page.locator("#free")).toHaveText("6");
+  await expect(page.locator("#founder")).toHaveCount(0);
   await page.locator("#refresh").click();
-  await waitRequest(page,3);
+  await waitRequest(page,2);
   await switchTo(page,null);
-  await expect(page.locator("#founder")).toBeHidden();
   await expect(page.locator("#free")).toHaveText("—");
   await expect(page.locator("#studio")).toHaveText("—");
   await expect(page.locator("#signin")).toBeVisible();
-  await reply(page,2,own(500));
+  await reply(page,1,own(500));
   await expect(page.locator("#free")).toHaveText("—");
-  await expect(page.locator("#accounts")).toBeEmpty();
-  await expect(page).toHaveURL(/\/vault\.html$/);
+  expect(await page.evaluate(()=>window.__VAULT_REQUESTS.length)).toBe(2);
+  await expect(page).toHaveURL(/\\/vault\\.html$/);
  });
 }
