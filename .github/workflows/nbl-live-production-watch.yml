@@ -194,6 +194,18 @@ jobs:
         with:
           node-version: "22"
 
+      # The Cloudflare-first job is not merely a dependency. Consume its
+      # actual evidence here, and never interpret UNVERIFIED as a green WAF pass.
+      - name: Receive Cloudflare-first handshake evidence
+        uses: actions/download-artifact@v8
+        with:
+          name: nbl-cloudflare-handshake
+          path: .inspector
+
+      - name: Report Cloudflare-to-browser handoff
+        run: |
+          node -e 'const fs=require("node:fs");const p=".inspector/cloudflare-handshake.json";const d=JSON.parse(fs.readFileSync(p,"utf8"));const status=d.overall==="PASS"?"PASS":"UNVERIFIED";console.log("CLOUDFLARE_HANDSHAKE_BROWSER "+status+" (zone metadata, not WAF allowance)");if(status==="UNVERIFIED")console.log("::warning::Cloudflare-first handshake cannot authenticate yet. Browser challenges must be UNVERIFIED, not a website outage.");fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,"### Cloudflare → browser Inspector\n"+status+" — zone metadata only; no bot exemption or visitor proof.\n");'
+
       - name: Wait for the deployed Chat asset to match this release
         if: ${{ github.event_name == 'push' }}
         shell: bash
@@ -226,7 +238,27 @@ jobs:
         env:
           NBL_BASE_URL: https://newbeansland.org
           NBL_EXPECT_BILLING_LIVE: "1"
-        run: npx playwright test --project=chromium --project=mobile-chromium
+        shell: bash
+        run: |
+          set -o pipefail
+          npx playwright test --project=chromium --project=mobile-chromium 2>&1 | tee .inspector/browser-test-output.log
+
+      - name: Classify external browser challenge evidence
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -f .inspector/browser-test-output.log ]; then
+            echo "Browser test evidence was unavailable; do not claim a pass." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          count="$(grep -c 'NBL_EXTERNAL_UNVERIFIED' .inspector/browser-test-output.log || true)"
+          echo "### External browser results" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$count" -gt 0 ]; then
+            echo "::warning::Cloudflare challenged $count automated navigation(s). They are UNVERIFIED, not proven outages or visitor passes."
+            echo "**UNVERIFIED:** $count Cloudflare-challenged automated navigation(s); independent visitor/device proof required." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No explicit Cloudflare challenges appeared in the captured browser test output." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Upload browser failure evidence
         if: failure()
