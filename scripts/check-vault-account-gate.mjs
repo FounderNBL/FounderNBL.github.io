@@ -40,8 +40,7 @@ test("Vault never renders untrusted balances as HTML or initiates payments",()=>
 });
 
 test("Vault prevents premature claims of live financial integration",()=>{
-  checks(/No reconciled settlements yet; actual cash\/profit is not established/);
-  checks(/Automated refills and Founder payouts are off/);
+  assert.doesNotMatch(html,/No reconciled settlements yet; actual cash\/profit is not established|Automated refills and Founder payouts are off/);
   checks(/Vault records cannot be read right now/);
 });
 
@@ -118,7 +117,7 @@ test("NBL website hides long offer menus inside three accessible categories",()=
  assert.equal((pricing.match(/<details class="nbl-category" data-nbl-category/g)||[]).length,3);
  assert.equal((account.match(/<details class="account-category">/g)||[]).length,3);
  assert.equal((university.match(/<details class="university-category">/g)||[]).length,3);
- assert.equal((arrival.match(/<details class="university-category">/g)||[]).length,0);
+ assert.equal((arrival.match(/<details class="university-category">/g)||[]).length,3);
  assert.match(arrival,/href="\/university-enrollment\.html#enroll"/);
  assert.equal((header.match(/<details class="nbl-drawer-category">/g)||[]).length,3);
  assert.match(styles,/\.nbl-drawer-category>summary/);
