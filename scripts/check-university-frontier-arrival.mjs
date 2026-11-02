@@ -10,8 +10,8 @@ const alias=read("university-campus.html"),free=read("nblu-dickitry-clause.html"
 const early=read("nbl-university-early-interest.js");
 assert.match(home,/class="world-card official-art reveal" href="university\.html"/);
 assert.ok(arrival.includes('id="nblu-gateway-title"')&&arrival.includes("Welcome to"));
-assert.ok(arrival.includes('href="/nblu-dickitry-clause.html"'));
-assert.ok(arrival.includes('href="/university-enrollment.html#enroll"'));
+assert.ok(arrival.includes('href="https://nblschool.com/homeroom.html#first-class"'));
+assert.ok(arrival.includes('href="#enroll"')&&arrival.includes('id="enroll"'));
 assert.ok(!arrival.includes('<details class="university-category">'));
 assert.ok(!arrival.includes('data-nbl-university-checkout='));
 assert.ok(!arrival.includes('data-nbl-university-interest-form'));
@@ -19,7 +19,7 @@ assert.ok(arrival.includes('function forwardLegacyLink()'));
 assert.match(tuition,/rel="canonical" href="https:\/\/newbeansland\.org\/university-enrollment\.html"/);
 for(const value of ['id="early-registration"','id="enroll"','data-nbl-university-interest-form','data-nbl-university-checkout="foundation" disabled','data-nbl-university-checkout="full_foundation" disabled','src="/nbl-university-checkout.js"'])assert.ok(tuition.includes(value),value);
 assert.ok(early.includes("newbeansland.org/university-enrollment.html#early-registration"));
-const universityPages=[["Frontier arrival",arrival],["Enrollment & Tuition",tuition],["Free Founder preview",free]];
+const universityPages=[["Frontier arrival",arrival],["Enrollment & Tuition",tuition]];
 for(const [name,html] of universityPages){
  assert.ok(html.includes('class="nblu-scope"'),name+" must be a University-scoped page");
  assert.ok(html.includes(".nblu-scope .nbl-world-chat-launch")&&html.includes(".nblu-scope .nbl-world-beans-toggle"),name+" must not expose the active Beans conversation overlay");
@@ -36,8 +36,8 @@ for(const page of [campus,alias]){
  assert.ok(page.includes("The Frontier Check"));
  assert.ok(!page.includes('class="enrollment-grid"'));
 }
-assert.equal((free.match(/data-page="\d"/g)||[]).length,3);
-assert.ok(free.includes('name="frontier-choice"')&&free.includes('id="result"'));
-assert.ok(free.includes("not the official Frontier Check")&&free.includes("unfinished future course"));
+assert.ok(arrival.includes("No Counterfeit Weight"));
+assert.ok(free.includes('https://nblschool.com/homeroom.html#first-class'));
+assert.ok(!/dickitry/i.test(free),'Old internal title should not be visible at the retired public route');
 for(const needle of ["fetch(", "localStorage", "sessionStorage","XMLHttpRequest"])assert.ok(!free.includes(needle));
 console.log("NBL University arrival/enrollment/academic gate source invariants PASS (not browser E2E).");
