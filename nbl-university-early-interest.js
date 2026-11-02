@@ -101,7 +101,7 @@ if(usernameForm&&usernameInput&&usernameStatus){
    }
    const save=usernameForm.querySelector('button[type="submit"]');
    save.disabled=true;
-   usernameStatus.textContent="Saving your NBLU username…";
+   usernameStatus.textContent="Saving your shared NBL handle…";
    try{
      const token=await authToken({redirect:true});
      if(!token)return;
@@ -114,7 +114,7 @@ if(usernameForm&&usernameInput&&usernameStatus){
      const payload=await response.json().catch(()=>({}));
      if(!response.ok)throw new Error(payload.message||"Unable to save username.");
      usernameInput.value=payload.profile.username;
-     usernameStatus.textContent="Your NBLU username is saved to your NBL account.";
+     usernameStatus.textContent="Your NBL handle is shared with Beans and Messenger. Your student ID stays separate.";
      const result=await request("GET",null,{redirect:false});
      if(result)updateUi(result.registration,result.identity);
    }catch(error){usernameStatus.textContent=error.message||"Unable to save username.";}
