@@ -209,7 +209,7 @@ requireText(university,'id="enroll"',"University enrollment section is missing f
 requireText(university,'href="/campus.html"',"University enrollment must link to same-origin protected campus.");
 forbidText(university,'https://nblworld.com/university.html#enroll',"University enrollment must remain on .org, not return to the old .com payment route.");
 requireText(university,"Professor Grey","Enrollment page must explain the Grey teaching boundary.");
-requireText(universityArrival,'href="/university-enrollment.html#enroll"',"University arrival must lead to a separate tuition page.");
+requireText(universityArrival,'href="#enroll"',"University arrival must link to its existing admission and tuition section.");
 requireText(university,'href="/chat.html"',"University must link to same-origin person-to-person Chat.");
 requireText(university,"Target opening month is December 2026","University must show the latest December opening target.");
 requireText(university,"Full NBLU · Digital DIY · $184.99 once","University must show the $184.99 full digital DIY tier.");
