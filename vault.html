@@ -121,14 +121,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 <p class="note"><strong>Advance-enrollment refund promise:</strong> If NBL cannot deliver the University program or access promised for an advance payment, the student receives a <strong>full refund of that advance-enrollment payment</strong>. If a planned start is delayed, prepaid students can wait or request the full refund. No University checkout is active from this Vault. See <a class="link-quiet" href="/university.html#enroll">University registration</a> and <a class="link-quiet" href="/pricing.html#early-enrollment">full enrollment terms</a>.</p>
 </section>
 </details>
-<section class="panel" id="founder" hidden>
-<h2>Founder · NBL Operating Vault</h2>
-<p id="money" class="note"></p>
-<h3>Verified NBL operating resources</h3><div id="resources"></div>
-<h3>Customer balances</h3><div id="accounts"></div>
-<div class="controls"><button type="button" id="prev">Previous</button><button type="button" id="next">Next</button><span id="page" class="note"></span></div>
-<p class="note">Founder-only operating reserves are separate from customer NBL allowances. Unverified balances remain unknown. Automated refills and Founder payouts are off.</p>
-</section>
 <p class="note"><a href="/account.html">Back to my NBL account</a></p>
 </main>
 <script>
@@ -136,14 +128,12 @@ button:disabled{opacity:.45;cursor:not-allowed}
 "use strict";
 const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-vault";
 const $=id=>document.getElementById(id);
-const state={bridge:null,clerk:null,page:0,loading:false,identity:"",epoch:0};
+const state={bridge:null,clerk:null,loading:false,identity:"",epoch:0};
 function identity(){return state.clerk?.isSignedIn?String(state.clerk.user?.id||""):"";}
 function isCurrent(epoch){return epoch===state.epoch&&Boolean(state.clerk?.isSignedIn&&state.clerk.session)&&identity()===state.identity;}
 function clearPrivateDisplay(){
  for(const id of ["free","paid","topups","studio"])$(id).textContent="—";
- $("founder").hidden=true;$("money").textContent="";
- $("resources").replaceChildren();$("accounts").replaceChildren();
- $("page").textContent="";
+
  for(const key of ["free","paid","studio"]){$(key+"-breakdown").textContent="—";$(key+"-fill").style.width="0%";$(key+"-track").setAttribute("aria-valuenow","0");}
  $("topups-breakdown").textContent="—";$("renewal").textContent="";
  $("tool-usage").replaceChildren();$("tool-usage").append(node("Tool usage","Sign in for your current allowances."));
@@ -156,12 +146,11 @@ function node(label,value){
  const s=document.createElement("span");s.textContent=String(value);
  p.append(b,s);return p;
 }
-const cash=cents=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(Number(cents)/100);
 async function api(view,epoch){
  const token=await state.bridge.getToken();
  if(!isCurrent(epoch))return null;
  if(!token)throw new Error("Your NBL session is still connecting.");
- const url=API+"?view="+encodeURIComponent(view)+(view==="founder"?"&page="+state.page:"");
+ const url=API+"?view="+encodeURIComponent(view);
  const response=await fetch(url,{headers:{Authorization:"Bearer "+token,Accept:"application/json"},cache:"no-store"});
  const data=await response.json().catch(()=>({}));
  if(!isCurrent(epoch))return null;
@@ -223,30 +212,6 @@ function renderPersonal(data){
  $("renewal").textContent=renewal&&!Number.isNaN(renewal.getTime())?"Current membership period ends "+renewal.toLocaleDateString()+".":"Your membership period is shown when available.";
  $("status").textContent="Read directly from your account's existing Beans meter and Studios wallet.";
 }
-function renderFounder(result){
- const f=result.founder;
- if(!f){$("founder").hidden=true;return;}
- $("founder").hidden=false;
- const r=f.financials;
- $("money").textContent=r?.verified?
-   "Verified net surplus: "+cash(r.netSurplusCents)+" · 5% Founder allocation: "+cash(r.founderProfitCents)+" · NBL operating reserve: "+cash(r.nblOperatingReserveCents):
-   "Founder allocation is 5% of reconciled net surplus. No reconciled settlements yet; actual cash/profit is not established.";
- $("resources").replaceChildren();
- for(const v of f.resources||[])$("resources").append(node(v.provider_key+" · "+v.funding_kind,
-   v.verified_available===null?"Not yet verified":String(v.verified_available)+" "+v.resource_unit));
- if(!$("resources").children.length)$("resources").append(node("Resources","No verified provider balances recorded yet."));
- $("accounts").replaceChildren();
- for(const v of f.accounts||[]){
-  const b=v.beans||{},s=v.studios||{};
-  $("accounts").append(node(v.accountId,
-    "Beans free "+b.freeRepliesRemaining+", member "+(b.unlimitedByPrivilege?"∞":b.paidRepliesRemaining)+
-    ", Get More "+b.purchasedTopupRepliesRemaining+", Studios "+s.creditsRemaining));
- }
- if(!$("accounts").children.length)$("accounts").append(node("Customer accounts","No accounts on this page."));
- const count=Number(f.accountCount||0),limit=Number(f.accountsPerPage||25);
- $("prev").disabled=state.page===0;$("next").disabled=(state.page+1)*limit>=count;
- $("page").textContent="Showing "+(count?state.page*limit+1:0)+"–"+Math.min(count,(state.page+1)*limit)+" of "+count;
-}
 async function refresh(){
  if(state.loading||!state.bridge)return;
  const epoch=state.epoch;
@@ -260,16 +225,10 @@ async function refresh(){
   if(!isCurrent(epoch))return;
   if(!personal?.ok||!personal.customer?.beans||!personal.customer?.studios)throw new Error("Vault account response is unavailable.");
   renderPersonal(personal);
-  try{
-   const company=await api("founder",epoch);
-   if(isCurrent(epoch)&&company?.ok)renderFounder(company);
-  }catch{if(isCurrent(epoch))$("founder").hidden=true;}
  }catch(e){if(isCurrent(epoch))$("status").textContent=e?.message||"Vault temporarily unavailable.";}
  finally{if(epoch===state.epoch)state.loading=false;}
 }
 $("refresh").addEventListener("click",refresh);
-$("prev").addEventListener("click",()=>{if(!state.loading&&state.page>0){state.page--;refresh();}});
-$("next").addEventListener("click",()=>{if(!state.loading){state.page++;refresh();}});
 (async()=>{
  for(let i=0;i<60;i++){if(window.NBLAccountBridge){state.bridge=window.NBLAccountBridge;break;}
   await new Promise(resolve=>setTimeout(resolve,100));}
@@ -279,7 +238,7 @@ $("next").addEventListener("click",()=>{if(!state.loading){state.page++;refresh(
  state.clerk.addListener(()=>{
   const next=identity();
   if(next!==state.identity){
-   state.epoch++;state.identity=next;state.page=0;state.loading=false;
+   state.epoch++;state.identity=next;state.loading=false;
    clearPrivateDisplay();refresh();
   }
  });
