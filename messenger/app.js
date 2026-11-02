@@ -147,13 +147,11 @@ async function saveAccountUsername(event){
   }finally{button.disabled=false;}
 }
 function manageLoginConnections(){
-  const c=state.clerk;
-  if(!c?.isSignedIn||!c?.user)return;
-  if(typeof c.openUserProfile==="function"){
-    c.openUserProfile();
-    return;
-  }
-  location.assign(ACCOUNT_PORTAL+"/user");
+  // The ClerkJS profile overlay is not reliable inside the standalone
+  // Messenger page. Open the already-working hosted Clerk account profile.
+  if(!state.clerk?.isSignedIn||!state.clerk?.user)return;
+  const returnUrl=new URL("/messenger/",location.origin).href;
+  location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));
 }
 async function downloadRecentMessages(){
   const button=$("[data-chat-download-messages]");
