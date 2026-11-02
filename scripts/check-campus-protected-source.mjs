@@ -24,13 +24,13 @@ assert.match(chat,/data-chat-guest/);
 assert.match(chat,/data-chat-app hidden/);
 assert.match(realtime,/config:{private:true}/);
 // These options are independent and have distinct Stripe price objects.
-for(const key of ["foundation","foundation_university","full_foundation","full_nblu","beans_university_monthly","foundation_student_continuation","nblu_continuation"]){
+for(const key of ["foundation","foundation_university","full_foundation","full_nblu_diy","full_nblu","beans_university_monthly","foundation_student_continuation","nblu_continuation"]){
  assert.ok(admissions.includes('value="'+key+'"'),"Missing offer: "+key);
 }
 for(const mapped of ['plan:"foundation"','plan:"full_foundation"','plan:"full_nblu"','plan:"nblu_continuation"']){
  assert.ok(billing.includes(mapped),"Existing server billing handoff missing: "+mapped);
 }
-for(const held of ["foundation_university","beans_university_monthly","foundation_student_continuation"]){
+for(const held of ["full_nblu_diy","foundation_university","beans_university_monthly","foundation_student_continuation"]){
  assert.match(billing,new RegExp(held+':\\{[\\s\\S]*?plan:null'),"Non-wired plan must not charge: "+held);
 }
 assert.match(billing,/if\(!item\.plan\)/);
