@@ -10,10 +10,10 @@
   <meta name="application-name" content="NBL Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
-  <link rel="stylesheet" href="/messenger/app.css?v=20261103-compact-layout">
+  <link rel="stylesheet" href="/messenger/app.css?v=20261103-mobile-basic">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
-  <script defer src="/messenger/app.js?v=20261103-contact-action"></script>
+  <script defer src="/messenger/app.js?v=20261103-mobile-basic"></script>
 </head>
 <body>
   <header class="topbar">
@@ -125,6 +125,7 @@
       </aside>
       <article class="conversation" aria-label="Current conversation">
         <div class="conversation-head">
+          <button class="btn small mobile-chat-back" type="button" data-chat-back aria-label="Back to chats">← Chats</button>
           <div>
             <p class="eyebrow" data-chat-thread-kind>Messages</p>
             <h2 data-chat-thread-title>Choose a conversation</h2>
