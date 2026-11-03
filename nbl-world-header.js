@@ -23,7 +23,7 @@
     if(/\/about\.html$/.test(path)||/\/jamel-hawkins\.html$/.test(path)) return {label:"About NBL",key:"about"};
     if(/\/account\.html$/.test(path)) return {label:"My NBL Account",key:"account"};
     if(/\/search\.html$/.test(path)) return {label:"Search New Beansland",key:"search"};
-    if(/\/privacy\.html$/.test(path)||/\/terms\.html$/.test(path)||/\/account-deletion\.html$/.test(path)||/\/nbl-chat-/.test(path)) return {label:"NBL Chat™ Legal",key:"legal"};
+    if(/\/privacy\.html$/.test(path)||/\/terms\.html$/.test(path)||/\/account-deletion\.html$/.test(path)||/\/nbl-chat-/.test(path)) return {label:"NBL Services Legal",key:"legal"};
     return {label:"Stories · Questions · Worlds",key:""};
   })();
 
@@ -2725,8 +2725,8 @@
     beta.setAttribute("aria-labelledby","nbl-beta-title");
     beta.innerHTML=`
       <div class="nbl-beta-inner">
-        <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans from NBL Chat™">
-        <p class="nbl-beta-kicker">NBL Chat™ · What’s next</p>
+        <img class="nbl-beta-beans" src="/NBLChat_Beans.png" alt="Beans AI assistant">
+        <p class="nbl-beta-kicker">Beans · What’s next</p>
         <h2 id="nbl-beta-title">Get updates on what Beans is building next.</h2>
         <p>Join the NBL email list for updates about future Beans features and upcoming testing opportunities.</p>
         <form class="nbl-beta-form">
@@ -2742,8 +2742,8 @@
       event.preventDefault();
       const email=beta.querySelector("input").value.trim();
       if(!email) return;
-      const subject=encodeURIComponent("NBL Chat™ Future Features");
-      const body=encodeURIComponent(`Please add ${email} to the NBL Chat™ future-features update list.`);
+      const subject=encodeURIComponent("Beans Future Features");
+      const body=encodeURIComponent(`Please add ${email} to the Beans future-features update list.`);
       location.href=`mailto:founder@newbeansland.org?subject=${subject}&body=${body}`;
     });
     document.body.append(beta);
