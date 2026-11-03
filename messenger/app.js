@@ -635,9 +635,9 @@ async function loadMetaPage(){
       button.addEventListener("click",()=>{void openMetaPeer(item.peerId);});
       area.append(button);
     }
-    metaStatus((payload.threads||[]).length
-      ?"Facebook Page conversations ready. You can reply only inside Meta's permitted messaging window."
-      :"Facebook Page connected. No Page messages have arrived yet.");
+    metaStatus(stateResult.receivedPageMessage
+      ?"Facebook Page message received through the verified webhook. You can reply to eligible conversations within Meta's permitted messaging window."
+      :"Facebook Page credentials are present, but no Facebook Page message has arrived through the verified webhook. Complete the Meta Page subscription and send a test message before treating this connection as live.");
   }catch(error){metaStatus(error.message||"Unable to load Facebook Page messages.");}
 }
 async function openMetaPeer(peer){
