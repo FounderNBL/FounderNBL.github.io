@@ -276,6 +276,25 @@ for(const forbidden of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_
   forbidText(plans,forbidden,`Public catalog contains a private secret marker: ${forbidden}`);
 }
 
+// Public-facing brands: Beans is AI; NBL Messenger is human messaging.
+// Keep historic support URLs and the historical NBL Chat™ mark for continuity,
+// but never advertise NBL Chat as a current third service.
+for(const [label,source] of [
+  ["Support",support],["Terms",terms],["Privacy",privacy],
+  ["Account deletion",deletion],["Header",header],
+  ["Pricing",read("pricing.html")],["Public AI index",read("llms.txt")]
+])forbidText(source,"NBL Chat",label+" still markets the retired NBL Chat service.");
+for(const path of ["chat.html","member-chat.html"]){
+  const page=read(path);
+  requireText(page,"<h1>NBL Messenger</h1>",path+" must show current human-messaging brand.");
+  requireText(page,'rel="canonical" href="https://newbeansland.org/messenger/"',
+    path+" must point at the sole official Messenger canonical.");
+  forbidText(page,"NBL Chat",path+" must not display retired NBL Chat branding.");
+}
+requireText(support,"Beans & NBL Messenger Support","Support must name both current services.");
+requireText(legal,"historical NBL Chat™ name","Historical mark must remain identified as historical.");
+requireText(header,"Beans · What’s next","Homepage newsletter still advertises the old product.");
+
 // Worker permission gates: website Copilot workers must not be auto-selected.
 const webInspector=read(".github/agents/the-health-inspector.agent.md");
 const webFixer=read(".github/agents/the-fixer.agent.md");
