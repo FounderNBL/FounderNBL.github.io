@@ -61,6 +61,6 @@ assert.doesNotMatch(js,/https:\/\/.*secret/i);
 assert.match(css,/social-card/);
 assert.match(existing,/functions\/v1\/nbl-social/);
 assert.match(existing,/data-chat-messages/);
-assert.match(campus,/id="nbl-social"/);
+assert.match(campus,/https:\/\/nblschool\.com\//); // University now uses its independent school; never change it from Social.
 assert.match(releases,/not yet a Play Store Android package/);
 console.log("PASS: separate NBL Social preview source, server-owned identity, Stream Feeds calls, existing DMs and University preserved.");
