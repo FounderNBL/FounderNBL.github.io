@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="/messenger/app.css?v=20261102-account-controls">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
-  <script defer src="/messenger/app.js?v=20261102-clerk-connections"></script>
+  <script defer src="/messenger/app.js?v=20261103-meta-page-inbox"></script>
 </head>
 <body>
   <header class="topbar">
@@ -140,6 +140,31 @@
           <button class="btn primary" type="submit" disabled>Send message</button>
         </form>
       </article>
+    </section>
+    <section class="notification-settings" data-chat-meta-page hidden aria-label="NBL Facebook Page inbox">
+      <div class="notification-heading">
+        <div><p class="eyebrow">New Beansland · Official Facebook Page</p>
+          <h2>Facebook Page inbox</h2>
+          <p>Answer messages people send to the New Beansland Facebook Page. This is separate from personal Facebook chats and NBL member DMs.</p>
+        </div>
+      </div>
+      <div class="notification-actions">
+        <button class="btn" type="button" data-chat-meta-refresh>Refresh Facebook Page messages</button>
+      </div>
+      <p class="hint" data-chat-meta-status role="status" aria-live="polite">Checking Page connection…</p>
+      <div class="account-grid">
+        <div><h3>Page conversations</h3><div data-chat-meta-threads></div></div>
+        <div><h3 data-chat-meta-heading>Select a Page conversation</h3>
+          <div class="messages" data-chat-meta-messages role="log" aria-label="Facebook Page messages">
+            <p class="hint">Messages will appear here when the Page is connected.</p>
+          </div>
+          <form data-chat-meta-reply-form>
+            <label for="nbl-meta-page-reply">Reply as New Beansland</label>
+            <textarea id="nbl-meta-page-reply" data-chat-meta-reply maxlength="2000" rows="3" disabled required></textarea>
+            <button class="btn primary" type="submit" disabled>Send Page reply</button>
+          </form>
+        </div>
+      </div>
     </section>
     <section class="notification-settings" data-chat-notification-settings hidden aria-label="NBL Messenger phone notifications">
       <div class="notification-heading">
