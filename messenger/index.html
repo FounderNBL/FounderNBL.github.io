@@ -10,7 +10,7 @@
   <meta name="application-name" content="NBL Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
-  <link rel="stylesheet" href="/messenger/app.css?v=20261102-account-controls">
+  <link rel="stylesheet" href="/messenger/app.css?v=20261103-compact-layout">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
   <script defer src="/messenger/app.js?v=20261103-contact-action"></script>
@@ -34,11 +34,11 @@
       </div>
       <div class="userbar" data-chat-userbar hidden>
         <span>Signed in as <strong data-chat-myhandle>@NBL member</strong> <span class="founder-marker" data-chat-founder-marker hidden>Verified Founder</span></span>
-        <div class="userbar-actions">
+        <details class="compact-menu account-menu"><summary class="btn small">☰ Account & settings</summary><div class="userbar-actions">
           <button class="btn small" type="button" data-chat-account-toggle aria-expanded="false" aria-controls="messenger-account-settings">My account</button>
           <button class="btn small" type="button" data-nbl-infinity-preview aria-label="Test NBL Infinity notification sound">Test ♾️ sound</button>
           <button class="btn small" type="button" data-chat-signout>Sign out</button>
-        </div>
+        </div></details>
       </div>
       <section id="messenger-account-settings" class="account-settings" data-chat-account-settings hidden aria-label="My Messenger account">
         <div class="account-heading">
@@ -81,7 +81,9 @@
     </section>
     <section class="chat-app" data-chat-app hidden aria-label="NBL Messenger">
       <aside class="sidebar">
-        <h2>Start a conversation</h2>
+        <div class="sidebar-heading"><h2>Your chats</h2><button class="btn small" type="button" data-chat-refresh>Refresh</button></div>
+        <div data-chat-threads aria-label="Your conversations"></div>
+        <details class="compact-menu new-chat-menu"><summary class="btn primary">＋ New conversation</summary><div class="menu-content">
         <div class="profile-setup" data-chat-handle-setup hidden>
           <strong>Choose your NBL username first</strong>
           <p>Other members find you by your NBL handle. Set one in your existing account so friends can message you.</p>
@@ -108,11 +110,7 @@
             <button class="btn" type="submit">Open</button>
           </div>
         </form>
-        <div class="sidebar-heading">
-          <h2>Your chats</h2>
-          <button class="btn small" type="button" data-chat-refresh>Refresh</button>
-        </div>
-        <div data-chat-threads aria-label="Your conversations"></div>
+        </div></details>
         <section class="invite-card" data-chat-invite hidden aria-label="Invite friends to NBL Messenger">
           <p class="eyebrow">Welcome to the neighborhood</p>
           <h3 data-chat-invite-title>You're early. Bring a friend!</h3>
@@ -131,12 +129,12 @@
             <p class="eyebrow" data-chat-thread-kind>Messages</p>
             <h2 data-chat-thread-title>Choose a conversation</h2>
           </div>
-          <div class="thread-actions">
+          <details class="compact-menu thread-menu"><summary class="btn small">⋯ Chat options</summary><div class="thread-actions">
             <button class="btn small" type="button" data-chat-video-call hidden aria-label="Start private video call with this member">Video call</button>
             <button class="btn small" type="button" data-chat-mute hidden>Mute</button>
             <button class="btn small" type="button" data-chat-block hidden>Block member</button>
             <button class="btn small" type="button" data-chat-unblock hidden>Unblock member</button>
-          </div>
+          </div></details>
         </div>
         <div class="messages" data-chat-messages role="log" aria-live="polite" aria-label="Messages">
           <p class="hint">Choose a conversation or invite someone to join NBL Messenger.</p>
