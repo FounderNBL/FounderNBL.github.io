@@ -537,7 +537,8 @@ async function invitePhoneContact(){
   // contact explicitly chosen by the person. Never send contact data to NBL.
   const message=$("[data-chat-phone-contact-status]");
   if(!navigator.contacts?.select){
-    message.textContent="Phone contact picker is not supported here. Use Invite a friend instead.";
+    message.textContent="Your browser cannot open phone contacts directly. Opening your phone’s share options instead…";
+    await shareInvite();
     return;
   }
   try{
@@ -822,7 +823,7 @@ async function boot(){
   $("[data-chat-share-invite]").addEventListener("click",()=>{void shareInvite();});
   $("[data-chat-copy-invite]").addEventListener("click",()=>{void copyInvite();});
   const phoneButton=$("[data-chat-phone-contact]");
-  if(phoneButton && navigator.contacts?.select){
+  if(phoneButton){
     phoneButton.hidden=false;
     phoneButton.addEventListener("click",()=>{void invitePhoneContact();});
   }
