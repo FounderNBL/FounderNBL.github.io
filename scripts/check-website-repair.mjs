@@ -245,8 +245,8 @@ requireText(support,'data-nbl-plan-value="foundationProgram.price"',"Support doe
 requireText(support,'href="/university.html#enroll"',"Support does not direct enrollment to .org.");
 requireText(support,'href="https://nblschool.com/"',"Support must link directly to independent NBL University school.");
 forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
-requireText(support,"Signed-in website checkout is available from Membership & plans in NBL Chat™ for verified products","Support does not document verified signed-in Chat checkout.");
-requireText(terms,"Signed-in website checkout is available through NBL Chat™","Terms do not document authenticated Chat checkout.");
+requireText(support,"Signed-in website checkout is available from Membership &amp; plans in your NBL account for verified products","Support does not document verified signed-in Beans checkout.");
+requireText(terms,"Signed-in Beans checkout uses the existing NBL account","Terms do not document authenticated Beans checkout.");
 requireText(privacy,"signed-in website checkout is handed off to Stripe","Privacy does not document Stripe checkout handling.");
 requireText(deletion,"Deleting NBL application data does not cancel an active Stripe subscription","Account deletion does not explain active subscription cancellation.");
 for(const staleBillingCopy of ["website checkout/payment rails for the Chat plans are not currently available","website checkout/payment rails for these plans are not currently available","The public Chat-plan catalog is not a website checkout"]){
@@ -275,6 +275,25 @@ for(const forbidden of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_
   forbidText(header,forbidden,`Public header contains a private secret marker: ${forbidden}`);
   forbidText(plans,forbidden,`Public catalog contains a private secret marker: ${forbidden}`);
 }
+
+// Public-facing brands: Beans is AI; NBL Messenger is human messaging.
+// Keep historic support URLs and the historical NBL Chat™ mark for continuity,
+// but never advertise NBL Chat as a current third service.
+for(const [label,source] of [
+  ["Support",support],["Terms",terms],["Privacy",privacy],
+  ["Account deletion",deletion],["Header",header],
+  ["Pricing",read("pricing.html")],["Public AI index",read("llms.txt")]
+])forbidText(source,"NBL Chat",label+" still markets the retired NBL Chat service.");
+for(const path of ["chat.html","member-chat.html"]){
+  const page=read(path);
+  requireText(page,"<h1>NBL Messenger</h1>",path+" must show current human-messaging brand.");
+  requireText(page,'rel="canonical" href="https://newbeansland.org/messenger/"',
+    path+" must point at the sole official Messenger canonical.");
+  forbidText(page,"NBL Chat",path+" must not display retired NBL Chat branding.");
+}
+requireText(support,"Beans & NBL Messenger Support","Support must name both current services.");
+requireText(legal,"historical NBL Chat™ name","Historical mark must remain identified as historical.");
+requireText(header,"Beans · What’s next","Homepage newsletter still advertises the old product.");
 
 // Worker permission gates: website Copilot workers must not be auto-selected.
 const webInspector=read(".github/agents/the-health-inspector.agent.md");

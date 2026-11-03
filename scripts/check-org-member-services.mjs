@@ -12,7 +12,7 @@ const forbid=(key,needle,why)=>{if(files[key].includes(needle))failures.push(why
 
 // One Clerk production origin. Account and payment screens must stay on .org.
 need("account",'accounts.newbeansland.org',"Verified .org account portal missing.");
-need("chat",'href="https://newbeansland.org/chat.html"',"Person-to-person Chat must canonically live on .org.");
+need("chat",'href="https://newbeansland.org/messenger/"',"Person-to-person messaging must canonically identify NBL Messenger on .org.");
 need("campus",'url=https://nblschool.com/',"Old .org campus must redirect to the school website.");
 need("header",'href="/messenger/"',"Talk to People must open independent .org Messenger.");
 need("header",'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must open the independent school website.");

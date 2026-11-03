@@ -354,7 +354,7 @@ body[data-nbl-room="books"] .book-body .actions{margin-top:auto}
 }
 
 
-/* Optional shared NBL account connection (same Clerk identity as NBL Chat) */
+/* Optional shared NBL account connection (same Clerk identity as Beans and NBL Messenger) */
 .nbl-world-account{
   flex:0 0 auto;padding:9px 12px;border:1px solid rgba(240,197,111,.52);border-radius:999px;
   color:var(--nbl-world-gold2);background:rgba(7,20,33,.92);cursor:pointer;
@@ -778,7 +778,7 @@ body.nbl-world-menu-open{overflow:hidden!important}
 }
 
 
-/* Homepage public shell: simple NBL Chat + NBL World actions */
+/* Homepage public shell: simple Beans + NBL World actions */
 .nbl-world-header-home{
   display:flex!important;
   align-items:center!important;

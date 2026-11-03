@@ -79,7 +79,7 @@ async function social(body){
   const payload=await response.json().catch(()=>({}));
   assertCurrentAccount();
   if(!response.ok||payload?.ok!==true){
-    const error=new Error(payload?.message||"NBL Chat is temporarily unavailable. Try again.");
+    const error=new Error(payload?.message||"NBL Messenger is temporarily unavailable. Try again.");
     error.status=response.status;error.reason=payload?.reason;throw error;
   }
   return payload;
@@ -190,7 +190,7 @@ async function openThread(id){
 async function refresh(){
   const requestedUserId=state.clerk?.user?.id;
   try{
-    status("Refreshing NBL Chat…");
+    status("Refreshing NBL Messenger…");
     const [identity,threads]=await Promise.all([social({action:"me"}),social({action:"list_threads"})]);
     if(!requestedUserId||state.clerk?.user?.id!==requestedUserId)return;
     renderIdentity(identity.me||{});
@@ -204,8 +204,8 @@ async function refresh(){
     }
     renderThreads();
     if(state.selectedId)await openThread(state.selectedId);
-    else status("NBL Chat is ready. Open a DM or select a conversation.");
-  }catch(error){status(error.message||"NBL Chat could not refresh.");}
+    else status("NBL Messenger is ready. Open a DM or select a conversation.");
+  }catch(error){status(error.message||"NBL Messenger could not refresh.");}
 }
 async function openDM(handle){
   if(!handle||state.busy)return;

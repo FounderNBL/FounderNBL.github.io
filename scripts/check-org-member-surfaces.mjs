@@ -33,7 +33,7 @@ if(!errors.length){
   need(billing,'if(!item.plan)',"Unsupported pricing plans must remain held.");
   need(header,'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must use school.com.");
   need(header,'href="/member-chat.html"',"Members need a visible person-to-person Chat entrance.");
-  need(chat,'rel="canonical" href="https://newbeansland.org/member-chat.html"',"Member Chat canonical must be on .org.");
+  need(chat,'rel="canonical" href="https://newbeansland.org/messenger/"',"Legacy member messaging must identify the official NBL Messenger canonical.");
   need(chat,'data-chat-dm-form',"Member Chat needs Start DM control.");
   need(chat,'data-chat-find-form',"Member Chat needs member discovery.");
   need(chat,'data-chat-app hidden',"Human DMs must start signed-out/gated.");
