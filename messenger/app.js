@@ -462,6 +462,7 @@ async function openThread(id){
   if(!id)return;
   const row=state.threads.find(t=>t.id===id);
   state.selectedId=id;state.selected=row||null;
+  $("[data-chat-app]").classList.add("chat-open");
   watchOpenThread(id);
   $("[data-chat-thread-title]").textContent=displayThread(row||{});
   $("[data-chat-thread-kind]").textContent=row?.thread_type==="direct"?"Direct message":String(row?.thread_type||"Message").replaceAll("_"," ");
@@ -483,6 +484,7 @@ async function refresh(){
     state.threads=(threads.threads||[]).filter(row=>row.thread_type==="direct");
     if(state.selectedId&&!state.threads.some(t=>t.id===state.selectedId)){
       state.selectedId=null;state.selected=null;
+      $("[data-chat-app]").classList.remove("chat-open");
       state.realtimeStop?.();state.realtimeStop=null;state.realtimeThread=null;
       resetComposer();
       $("[data-chat-thread-title]").textContent="Choose a conversation";
@@ -758,6 +760,7 @@ async function syncClerkSession(){
   state.realtimeStop?.();state.inboxStop?.();
   state.realtimeStop=null;state.inboxStop=null;state.realtimeThread=null;
   state.selectedId=null;state.selected=null;state.threads=[];state.me=null;state.busy=false;
+  $("[data-chat-app]").classList.remove("chat-open");
   lastSeenMessages.clear();
   metaLoadedForUser=null;metaSelectedPeer=null;
   $("[data-chat-meta-page]").hidden=true;
@@ -827,6 +830,10 @@ async function boot(){
     phoneButton.hidden=false;
     phoneButton.addEventListener("click",()=>{void invitePhoneContact();});
   }
+  $("[data-chat-back]").addEventListener("click",()=>{
+    $("[data-chat-app]").classList.remove("chat-open");
+    $("[data-chat-app]").querySelector(".sidebar")?.scrollIntoView({block:"start"});
+  });
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
   $("[data-chat-dm-form]").addEventListener("submit",event=>{event.preventDefault();void openDM($("[data-chat-dm-handle]").value.trim());});
   $("[data-chat-send-form]").addEventListener("submit",sendMessage);
