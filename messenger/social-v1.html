@@ -4,9 +4,14 @@
 <meta name="theme-color" content="#06111d">
 <title>NBL Social — Stream Feeds integration preview | New Beansland</title>
 <meta name="robots" content="noindex,nofollow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="New Beansland">
+<meta property="og:title" content="A post from New Beansland Social">
+<meta property="og:description" content="Discover a post shared by a New Beansland member. Visit NBL Social to see the original post.">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261021">
-<script type="module" src="/messenger/social-v1.mjs?v=20261021"></script>
+<script type="module" src="/messenger/social-v1.mjs?v=20261103-facebook-share"></script>
 </head><body>
 <header class="topbar">
   <a class="brand" href="/messenger/">NBL Messenger</a>
@@ -29,6 +34,10 @@
       <button data-feed="notification" type="button" aria-pressed="false">Notifications</button>
       <a href="/messenger/">Messages ↗</a>
     </nav>
+    <section class="social-list" id="sharedPost" aria-labelledby="sharedPostTitle" hidden>
+      <h2 id="sharedPostTitle">Shared NBL post</h2>
+      <div id="sharedPostContent" aria-live="polite"></div>
+    </section>
     <section class="social-compose" aria-labelledby="composeTitle">
       <h2 id="composeTitle">Share with NBL</h2>
       <form id="postForm"><label for="postText">Your post</label>
