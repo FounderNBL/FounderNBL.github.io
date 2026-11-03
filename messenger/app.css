@@ -86,3 +86,18 @@ footer{padding:0 16px 30px;text-align:center;font-size:.77rem;color:var(--soft)}
 .account-links .btn{max-width:100%;white-space:normal}
 @media(max-width:930px){.account-grid{grid-template-columns:1fr 1fr}.account-grid>div:last-child{grid-column:1/-1}}
 @media(max-width:600px){.userbar{align-items:flex-start;flex-direction:column}.userbar-actions{justify-content:flex-start}.account-grid{grid-template-columns:1fr}.account-grid>div:last-child{grid-column:auto}}
+
+/* Compact Messenger: keep chats and messages in focus, extras one tap away. */
+.compact-menu{position:relative;min-width:0}
+.compact-menu>summary{list-style:none;cursor:pointer;user-select:none}
+.compact-menu>summary::-webkit-details-marker{display:none}
+.compact-menu[open]>summary{background:rgba(214,161,75,.17)}
+.compact-menu .menu-content{padding:14px 0 4px}
+.new-chat-menu{margin-top:15px}
+.new-chat-menu>summary{width:100%}
+.new-chat-menu .phone-contacts{margin:14px 0;padding:12px;border:1px solid var(--line);border-radius:12px}
+.new-chat-menu .phone-contacts h3{margin:0 0 7px}
+.account-menu .userbar-actions,.thread-menu .thread-actions{position:absolute;z-index:5;right:0;top:calc(100% + 6px);display:flex;flex-direction:column;align-items:stretch;min-width:170px;max-width:min(90vw,280px);padding:10px;border:1px solid var(--line);border-radius:12px;background:#0a1b2b;box-shadow:0 12px 25px rgba(0,0,0,.45)}
+.account-menu .userbar-actions .btn,.thread-menu .thread-actions .btn{width:100%}
+.sidebar-heading{margin:0 0 12px}
+@media(max-width:790px){.chat-app{min-height:0}.sidebar{padding:14px}.conversation-head{flex-direction:row;align-items:center}.messages{min-height:280px}.thread-menu .thread-actions{right:0}}
