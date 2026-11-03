@@ -1,13 +1,11 @@
 name: NBL Website Health Inspector
 
+# Monitor the deployed websites, NOT source pushes or release pipelines.
 on:
-  push:
-    branches:
-      - main
   schedule:
     # Lightweight production route inspection every hour.
     - cron: "17 * * * *"
-    # Full desktop/mobile browser inspection once per day.
+    # Targeted LIVE website browser inspection once per day (no build/version tests).
     - cron: "23 14 * * *"
   workflow_dispatch:
 
@@ -76,9 +74,11 @@ jobs:
             "https://newbeansland.org/founder-office.html"
             "https://newbeansland.org/studio/"
             "https://newbeansland.org/account.html"
+            "https://newbeansland.org/messenger/"
             "https://newbeansland.org/university.html"
             "https://nblworld.com/"
-            "https://nblworld.com/university.html"
+            "https://nblschool.com/"
+            "https://books.newbeansland.org/"
           )
 
           user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36"
@@ -182,7 +182,7 @@ jobs:
   deep-browser-inspection:
     name: Health Inspector · external desktop + mobile
     needs: cloudflare-preflight
-    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -194,28 +194,6 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Wait for the deployed Chat asset to match this release
-        if: ${{ github.event_name == 'push' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          expected="$(sha256sum nbl-world-header.js | awk '{print $1}')"
-          for attempt in $(seq 1 30); do
-            live="$RUNNER_TEMP/nbl-world-header-live.js"
-            rm -f "$live"
-            if curl --fail --silent --show-error --location --max-time 20               -H "Cache-Control: no-cache"               "https://newbeansland.org/nbl-world-header.js?health=$GITHUB_SHA-$attempt"               --output "$live"; then
-              actual="$(sha256sum "$live" | awk '{print $1}')"
-              if [ "$actual" = "$expected" ]; then
-                echo "Live Chat asset matches this release."
-                exit 0
-              fi
-            fi
-            echo "Waiting for Pages deployment to catch up ($attempt/30)…"
-            sleep 10
-          done
-          echo "Live Chat asset did not match the release source within 5 minutes."
-          exit 1
-
       - name: Install Playwright test runner
         run: npm install --no-save @playwright/test@latest
 
@@ -225,8 +203,7 @@ jobs:
       - name: Inspect live New Beansland + NBL World on desktop and mobile
         env:
           NBL_BASE_URL: https://newbeansland.org
-          NBL_EXPECT_BILLING_LIVE: "1"
-        run: npx playwright test --project=chromium --project=mobile-chromium
+        run: npx playwright test tests/browser/live-site-health.spec.mjs --project=chromium --project=mobile-chromium
 
       - name: Upload browser failure evidence
         if: failure()
