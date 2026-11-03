@@ -11,7 +11,25 @@ const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 // The NBL server/provider still decides which activity the signed-in viewer may read.
 const PUBLIC_SOCIAL_URL="https://newbeansland.org/messenger/social-v1.html";
 const linkedPostId=new URL(location.href).searchParams.get("post");
-const LABELS={foryou:"For You",timeline:"Following",user:"My Posts",notification:"Notifications"};
+const LABELS={foryou:"For You",timeline:"Following",user:"My Posts",notification:"Notifications",friends:"Friends"};
+const MAX_PHOTO_BYTES=8*1024*1024,MAX_VIDEO_BYTES=40*1024*1024,MAX_PHOTOS=4;
+const IMAGE_TYPES=new Set(["image/jpeg","image/png","image/webp"]);
+const VIDEO_TYPES=new Set(["video/mp4","video/webm"]);
+function selectedMedia(){
+  const files=Array.from(document.querySelector("#postMedia")?.files||[]);
+  if(!files.length)return [];
+  const images=files.filter(f=>IMAGE_TYPES.has(f.type));
+  const videos=files.filter(f=>VIDEO_TYPES.has(f.type));
+  if(images.length===files.length&&files.length<=MAX_PHOTOS&&images.every(f=>f.size>0&&f.size<=MAX_PHOTO_BYTES))return files;
+  if(videos.length===1&&files.length===1&&videos[0].size>0&&videos[0].size<=MAX_VIDEO_BYTES)return files;
+  throw new Error("Choose up to four JPEG/PNG/WebP photos (8 MB each), or one MP4/WebM video (40 MB).");
+}
+function trustedMediaLink(raw){
+  try{
+    const url=new URL(String(raw||""));
+    return url.protocol==="https:"&&url.hostname.endsWith(".stream-io-cdn.com")?url.href:null;
+  }catch{return null;}
+}
 const state={clerk:null,client:null,user:null,me:null,selected:"foryou",feed:null,unsubscribe:null,busy:false,timeline:null};
 let initialNBLUserId=null,accountChanged=false;
 function assertCurrentAccount(userId){
@@ -166,11 +184,19 @@ function renderActivity(activity){
   const meta=element("div","social-meta",Number(activity.comment_count||0)+" comments");
   const actions=element("div","social-actions");
   const feedback=element("p","social-feedback","");
-  const like=element("button",null,"♡ Like");like.type="button";
+  let liked=Boolean((activity.own_reactions||[]).some(reaction=>reaction.type==="like"));
+  let likeCount=Number(activity.reaction_groups?.like?.count||0);
+  const like=element("button",null,"");like.type="button";
+  const paintLike=()=>{like.textContent=(liked?"♥ Liked":"♡ Like")+" ("+Math.max(0,likeCount)+")";};
+  paintLike();
   like.addEventListener("click",async()=>{
     like.disabled=true;
-    try{await state.client.addActivityReaction({activity_id:activity.id,type:"like",enforce_unique:true});
-      feedback.textContent="Reaction saved.";}catch(e){feedback.textContent=safeError(e);}
+    try{
+      if(liked)await state.client.deleteActivityReaction({activity_id:activity.id,type:"like"});
+      else await state.client.addActivityReaction({activity_id:activity.id,type:"like",enforce_unique:true});
+      liked=!liked;likeCount+=liked?1:-1;paintLike();
+      feedback.textContent=liked?"You liked this post.":"Like removed.";
+    }catch(e){feedback.textContent=safeError(e);}
     finally{like.disabled=false;}
   });
   const showComments=element("button",null,"Comments");showComments.type="button";
@@ -230,7 +256,21 @@ function renderActivity(activity){
     });
     actions.append(message);
   }
-  card.append(head,time,text,meta,actions,feedback,form,commentsArea);
+  const media=element("div","social-media");
+  for(const attachment of activity.attachments||[]){
+    if(!attachment||!["image","video"].includes(attachment.type))continue;
+    const address=trustedMediaLink(attachment.type==="image"?attachment.image_url:attachment.asset_url);
+    if(!address)continue;
+    if(attachment.type==="image"){
+      const image=element("img");image.src=address;image.alt="Photo shared by "+authorLabel;
+      image.loading="lazy";image.decoding="async";media.append(image);
+    }else{
+      const video=element("video");video.src=address;video.controls=true;
+      video.preload="metadata";video.playsInline=true;video.setAttribute("aria-label","Video shared by "+authorLabel);
+      media.append(video);
+    }
+  }
+  card.append(head,time,text,media,meta,actions,feedback,form,commentsArea);
   return card;
 }
 async function loadLinkedPost(){
