@@ -11,6 +11,7 @@ const read=relative=>fs.readFileSync(new URL(relative,root),"utf8");
 const header=read("nbl-world-header.js");
 const plans=read("nbl-product-plans.js");
 const support=read("nbl-chat-support.html");
+const profile=read("company-profile.html");
 const legal=read("nbl-chat-legal.html");
 const terms=read("terms.html");
 const privacy=read("privacy.html");
@@ -292,6 +293,8 @@ for(const path of ["chat.html","member-chat.html"]){
   forbidText(page,"NBL Chat",path+" must not display retired NBL Chat branding.");
 }
 requireText(support,"Beans & NBL Messenger Support","Support must name both current services.");
+requireText(profile,"Beans and NBL Messenger; NBL Digital Services","Company profile description must use NBL Messenger instead of retired NBL Chat.");
+forbidText(profile,"Beans and NBL Chat","Company profile still describes retired product.");
 requireText(legal,"historical NBL Chat™ name","Historical mark must remain identified as historical.");
 requireText(header,"Beans · What’s next","Homepage newsletter still advertises the old product.");
 
