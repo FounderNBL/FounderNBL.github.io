@@ -5,6 +5,9 @@
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
 const ACCOUNT_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-account";
 const PUSH_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-messenger-push";
+const VIDEO_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-video";
+const VIDEO_INVITE_RE=/^NBL video call invitation: https:\/\/newbeansland\.org\/messenger\/call\.html\?call=([0-9a-f-]{36})$/i;
+const IS_CALL_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const META_PAGE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-meta-page-inbox";
 const PUSH_OWNER_KEY="nbl-messenger-push-clerk-user-v1";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
@@ -341,6 +344,8 @@ function resetComposer(){
   if(composer)composer.disabled=!ready;
   const button=$("[data-chat-send-form] button[type=submit]");
   if(button)button.disabled=!ready||state.busy;
+  const callButton=$("[data-chat-video-call]");
+  if(callButton){callButton.hidden=!ready||state.selected?.thread_type!=="direct";callButton.disabled=!ready||state.busy;}
   $("[data-chat-mute]").hidden=!ready;
   $("[data-chat-block]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
   $("[data-chat-unblock]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
@@ -414,6 +419,13 @@ function renderMessages(messages){
     const verified=message.sender?.verified||Boolean(message.officialRole);
     bubble.append(node("div","byline","@"+from+(verified?" · Verified":"")+(message.createdAt?" · "+new Date(message.createdAt).toLocaleString():"")));
     bubble.append(node("p",null,message.body||""));
+    const invite=VIDEO_INVITE_RE.exec(String(message.body||""));
+    if(invite&&!message.deleted&&IS_CALL_ID.test(invite[1])){
+      const link=node("a","btn small","Join NBL video call");
+      link.href="https://newbeansland.org/messenger/call.html?call="+encodeURIComponent(invite[1]);
+      link.rel="noreferrer";
+      bubble.append(link);
+    }
     if(!mine&&!message.deleted&&message.id){
       const actions=node("div","msg-actions");
       const button=node("button",null,"Report message");
@@ -538,6 +550,35 @@ async function searchMembers(event){
     }
     status("Choose a member to open a private conversation.");
   }catch(error){status(error.message||"Search unavailable.");}
+}
+async function startVideoCall(){
+  if(!state.selectedId||state.selected?.thread_type!=="direct"||state.busy)return;
+  const threadId=state.selectedId;
+  const userId=state.clerk?.user?.id,generation=authSyncGeneration;
+  const button=$("[data-chat-video-call]");button.disabled=true;
+  status("Preparing your private video call…");
+  try{
+    const token=await authToken();
+    if(state.clerk?.user?.id!==userId||generation!==authSyncGeneration)
+      throw Error("NBL account changed. Try again.");
+    const response=await fetch(VIDEO_API,{
+      method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
+      body:JSON.stringify({action:"start",threadId}),cache:"no-store"
+    });
+    const result=await response.json().catch(()=>({}));
+    if(state.clerk?.user?.id!==userId||generation!==authSyncGeneration||state.selectedId!==threadId)
+      throw Error("Conversation or account changed. No invitation sent.");
+    if(!response.ok||result.ok!==true)throw Error(result.message||"NBL video calls are not enabled yet.");
+    const url=new URL(result.joinUrl||"https://invalid.example/");
+    if(url.origin!=="https://newbeansland.org"||url.pathname!=="/messenger/call.html"
+      ||!IS_CALL_ID.test(url.searchParams.get("call")||""))
+      throw Error("Invalid NBL call invitation.");
+    // In-app invitation is delivered inside the same protected direct conversation.
+    await social({action:"send",threadId,message:"NBL video call invitation: "+url.href});
+    status("Video invitation sent in your NBL conversation.");
+    await openThread(threadId);
+  }catch(error){status(error.message||"NBL video call could not start.");}
+  finally{resetComposer();}
 }
 async function sendMessage(event){
   event.preventDefault();
@@ -752,6 +793,7 @@ async function boot(){
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
   $("[data-chat-dm-form]").addEventListener("submit",event=>{event.preventDefault();void openDM($("[data-chat-dm-handle]").value.trim());});
   $("[data-chat-send-form]").addEventListener("submit",sendMessage);
+  $("[data-chat-video-call]").addEventListener("click",()=>{void startVideoCall();});
   $("[data-chat-refresh]").addEventListener("click",()=>{void refresh();});
   $("[data-chat-mute]").addEventListener("click",()=>{void toggleMute();});
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
