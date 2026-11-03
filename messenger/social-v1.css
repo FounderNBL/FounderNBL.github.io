@@ -25,3 +25,15 @@
 .social-comment{margin-bottom:11px;overflow-wrap:anywhere}
 .social-empty{color:var(--soft);font-style:italic;padding:25px 6px}
 @media(max-width:620px){.social-intro{display:block}.social-identity{margin-top:14px}.social-compose,.social-list{padding:13px}}
+/* NBL Social owns its media and friendships. These are NOT Facebook Page controls. */
+.social-media{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
+.social-media:empty{display:none}
+.social-media img,.social-media video{width:100%;max-height:430px;object-fit:contain;border-radius:10px;background:#010a12}
+.social-media video{grid-column:1/-1}
+#postMedia{display:block;max-width:100%;margin:8px 0;color:var(--cream)}
+.friend-form-row{display:flex;gap:8px;flex-wrap:wrap}
+.friend-form-row input{flex:1 1 180px;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--navy);color:var(--cream)}
+.friend-entry{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:13px 0}
+.friend-entry strong{color:var(--gold2)}
+#friendItems h3{color:var(--cream);font-size:1rem;margin:22px 0 6px}
+@media(max-width:620px){.social-media{grid-template-columns:1fr}}
