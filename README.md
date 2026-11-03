@@ -1,3 +1,14 @@
+## Current product names — November 2, 2026 (supersedes earlier branding)
+
+**New Beansland has two active public communication products, not three:**
+- **Beans** — the AI assistant on the website and in the Android app.
+- **NBL Messenger** — human-to-human New Beansland messages, including an optional separately authorized Facebook Page inbox.
+- One Clerk/NBL identity is shared. NBL University uses separate student-number entitlements, not a second account name.
+
+**NBL Chat™ is a retired public product name**, not a third service. Legacy website routes (`/chat.html`, `/member-chat.html`, `/nbl-chat-support.html`, `/nbl-chat-legal.html`), old Android package IDs, GitHub repository names, billing keys, historic trademark mentions, and archived plans remain unchanged for compatibility and records. New public-facing text uses Beans or NBL Messenger. All older README descriptions below are historic and do not override this instruction.
+
+---
+
 ## Current Founder decision — October 14, 2026: member services on .org
 
 **THIS OVERRIDES October 8 routing instructions below.** Clerk production for newbeansland.org does not provide a shared signed-in session to nblworld.com. Founder expressly approved moving human-to-human Chat, University/Professor Grey/Virgo, all NBL-owned paid account services, and member interactions to **https://newbeansland.org**. The existing Beans and account gateway already run here. The independent **nblworld.com** domain is for **commercial sales/discovery** (Shopify, books, external merchant links) and must not own a second Clerk sign-in or NBL Stripe checkout. Source migration is staged in PRs and is not live/verified until approved, merged and tested. Keep protected NBL academic content and credentials on Supabase/LOCKE servers, and keep University checkout held until account binding and second-account isolation are proven. Preserve all game/Office/video art and files unchanged. Newest Founder decision beats older README/test text.
