@@ -53,7 +53,7 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261102-clerk-connections'),
+assert.ok(app.includes('/messenger/app.js?v=20261103-meta-page-inbox'),
   "Messenger must load the new account navigation handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
@@ -67,7 +67,7 @@ assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261102-clerk-connections/);
+assert.match(sw, /nbl-messenger-shell-20261103-meta-page-inbox/);
 
 
 for(const item of [
