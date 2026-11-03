@@ -16,7 +16,7 @@
 .social-card{background:#04111e;border:1px solid rgba(214,161,75,.2);border-radius:12px;padding:16px;margin:12px 0}
 .social-author{font-weight:bold;color:var(--gold2)}.social-time,.social-meta{font-size:.8rem;color:var(--soft)}
 .social-body{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0}
-.social-actions{display:flex;flex-wrap:wrap;gap:8px}.social-actions button{padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:#0a263c;color:var(--cream)}
+.social-actions{display:flex;flex-wrap:wrap;gap:8px}.social-actions button,.social-actions a{display:inline-flex;align-items:center;padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:#0a263c;color:var(--cream);text-decoration:none;font:inherit;cursor:pointer}
 .social-actions button:disabled{opacity:.45}
 .social-feedback{font-size:.86rem;color:var(--soft);margin:8px 0}
 .social-comment-form{margin-top:12px}
