@@ -296,6 +296,62 @@ async function loadLinkedPost(){
     content.replaceChildren(element("p","social-feedback","This public NBL post is unavailable or you do not have access to it."));
   }
 }
+function friendListItem(item){
+  const line=element("div","friend-entry");
+  const who=element("strong",null,"@"+item.handle+(item.verified?" · Verified":""));
+  const current=element("span","social-meta",item.direction==="friends"?"Friends":item.direction==="incoming"?"Wants to be friends":"Request sent");
+  const controls=element("div","social-actions");
+  const choices=item.direction==="incoming"?[["friend_accept","Accept"],["friend_decline","Decline"]]:
+    item.direction==="friends"?[["friend_remove","Remove friend"]]:[];
+  for(const [action,title] of choices){
+    const btn=element("button",null,title);btn.type="button";
+    btn.addEventListener("click",async()=>{
+      btn.disabled=true;
+      try{
+        await secured(SOCIAL_API,{action,handle:item.handle});
+        status(title==="Accept"?"Friend request accepted.":title==="Decline"?"Request declined.":"Friend removed.");
+        await loadFriends();
+      }catch(error){status("Could not update friends: "+safeError(error));}
+      finally{btn.disabled=false;}
+    });
+    controls.append(btn);
+  }
+  line.append(who,current,controls);
+  return line;
+}
+async function loadFriends(){
+  const out=$("#friendItems");
+  out.replaceChildren(element("p","social-meta","Loading your NBL friends…"));
+  try{
+    const actorId=state.user.id;
+    const result=await secured(SOCIAL_API,{action:"friends_list"});
+    assertCurrentAccount(actorId);
+    const rows=Array.isArray(result.connections)?result.connections:[];
+    out.replaceChildren();
+    if(!rows.length){out.append(element("p","social-empty","No requests yet. Send one using someone's NBL username."));return;}
+    for(const [label,direction] of [["Friend requests","incoming"],["Friends","friends"],["Sent requests","outgoing"]]){
+      const section=rows.filter(row=>row.direction===direction);
+      if(!section.length)continue;
+      out.append(element("h3",null,label));
+      for(const item of section)out.append(friendListItem(item));
+    }
+  }catch(error){out.replaceChildren(element("p","social-feedback","Friends unavailable: "+safeError(error)));}
+}
+async function requestFriend(event){
+  event.preventDefault();
+  const handle=$("#friendHandle").value.trim().replace(/^@/,"");
+  if(!/^[A-Za-z0-9_-]{2,64}$/.test(handle)){status("Enter an NBL username.");return;}
+  const button=$("#friendForm button[type=submit]");
+  button.disabled=true;
+  try{
+    const result=await secured(SOCIAL_API,{action:"friend_request",handle});
+    status(result.state==="friends"?"You're already friends.":result.state==="incoming"?"They already requested you. Accept in Friends.":"Friend request sent. The other member decides.");
+    $("#friendHandle").value="";
+    await loadFriends();
+  }catch(error){status("Friend request failed: "+safeError(error));}
+  finally{button.disabled=false;}
+}
+
 function renderFeed(rows){
   const out=$("#feedItems");out.replaceChildren();
   if(!rows.length){
@@ -316,6 +372,7 @@ function renderFeed(rows){
 }
 async function loadFeed(){
   if(!state.client)return;
+  if(state.selected==="friends"){await loadFriends();return;}
   const selected=state.selected;
   state.unsubscribe?.();state.unsubscribe=null;
   $("#feedTitle").textContent=LABELS[selected];
@@ -349,13 +406,35 @@ async function publishPost(event){
   event.preventDefault();
   if(state.busy||!state.client)return;
   const text=$("#postText").value.trim();
-  if(!text||text.length>1500)return;
+  let files;
+  try{files=selectedMedia();}catch(error){status(safeError(error));return;}
+  if((!text&&!files.length)||text.length>1500)return;
   state.busy=true;
   const submit=$("#postForm button[type=submit]");submit.disabled=true;
   try{
     const feed=state.client.feed("user",state.user.id);
-    await feed.addActivity({type:"post",text,visibility:"public"});
+    const attachments=[];
+    for(const file of files){
+      // Uploads are member-authenticated to Stream Feeds, never to a Facebook Page.
+      const image=IMAGE_TYPES.has(file.type);
+      const response=image?await state.client.uploadImage({file}):await state.client.uploadFile({file});
+      if(!trustedMediaLink(response?.file))throw new Error("Upload did not return a trusted media link.");
+      attachments.push(image?{type:"image",image_url:response.file,custom:{}}:{type:"video",asset_url:response.file,custom:{}});
+    }
+    try{
+      await feed.addActivity({type:"post",text,attachments,visibility:"public"});
+    }catch(error){
+      // Best-effort removal of orphaned uploads if publishing fails.
+      for(const asset of attachments){
+        try{
+          if(asset.type==="image")await state.client.deleteImage({url:asset.image_url});
+          else await state.client.deleteFile({url:asset.asset_url});
+        }catch{}
+      }
+      throw error;
+    }
     $("#postText").value="";$("#postCount").textContent="0 / 1500";
+    $("#postMedia").value="";$("#mediaSelection").textContent="Up to 4 photos (8 MB each) or 1 video (40 MB).";
     status("Your NBL post was published.");
     state.selected="user";selectTab();await loadFeed();
   }catch(error){status("Post not published: "+safeError(error));}
@@ -363,11 +442,21 @@ async function publishPost(event){
 }
 function selectTab(){
   document.querySelectorAll("[data-feed]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.feed===state.selected)));
-  $(".social-compose").hidden=state.selected==="notification";
+  const friends=state.selected==="friends";
+  $("#friendsPanel").hidden=!friends;
+  $("#feedPanel").hidden=friends;
+  $(".social-compose").hidden=friends||state.selected==="notification";
 }
 async function boot(){
   $("#signIn").href=signInURL();
   $("#postForm").addEventListener("submit",publishPost);
+  $("#friendForm").addEventListener("submit",requestFriend);
+  $("#postMedia").addEventListener("change",()=>{
+    try{
+      const files=selectedMedia();
+      $("#mediaSelection").textContent=files.length?files.map(file=>file.name).join(", "):"No media selected.";
+    }catch(error){$("#mediaSelection").textContent=safeError(error);}
+  });
   $("#postText").addEventListener("input",e=>{$("#postCount").textContent=e.target.value.length+" / 1500";});
   document.querySelectorAll("[data-feed]").forEach(button=>button.addEventListener("click",()=>{
     if(!state.client||state.selected===button.dataset.feed)return;
