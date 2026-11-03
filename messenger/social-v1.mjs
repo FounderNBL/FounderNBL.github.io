@@ -7,6 +7,10 @@ const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-s
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
+// Public deep links contain only a provider activity ID, never message bodies or account credentials.
+// The NBL server/provider still decides which activity the signed-in viewer may read.
+const PUBLIC_SOCIAL_URL="https://newbeansland.org/messenger/social-v1.html";
+const linkedPostId=new URL(location.href).searchParams.get("post");
 const LABELS={foryou:"For You",timeline:"Following",user:"My Posts",notification:"Notifications"};
 const state={clerk:null,client:null,user:null,me:null,selected:"foryou",feed:null,unsubscribe:null,busy:false,timeline:null};
 let initialNBLUserId=null,accountChanged=false;
@@ -35,6 +39,18 @@ function element(tag,className,text){
   return el;
 }
 function status(text){$("#socialStatus").textContent=String(text);}
+function isValidPostId(id){return typeof id==="string"&&/^[A-Za-z0-9._:-]{1,160}$/.test(id);}
+function isShareablePost(activity){
+  return activity?.type==="post"&&activity.visibility==="public"&&isValidPostId(activity.id);
+}
+function nblPostLink(id){
+  const dest=new URL(PUBLIC_SOCIAL_URL);
+  dest.searchParams.set("post",id);
+  return dest.href;
+}
+function facebookShareLink(id){
+  return "https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(nblPostLink(id));
+}
 function safeError(error){return String(error?.message||"Unable to connect to NBL Social right now.").slice(0,220);}
 function signInURL(){
   const dest=new URL(location.href);
@@ -166,6 +182,16 @@ function renderActivity(activity){
     if(reveal)await loadComments(activity,commentsArea);
   });
   actions.append(like,showComments);
+  if(isShareablePost(activity)){
+    // Sharing is always the member's action, performed on Facebook's own screen.
+    // This does not publish to or grant privileges over the official NBL Facebook Page.
+    const share=element("a",null,"Share to Facebook");
+    share.href=facebookShareLink(activity.id);
+    share.target="_blank";
+    share.rel="noopener noreferrer";
+    share.setAttribute("aria-label","Share this public NBL post to your Facebook account");
+    actions.append(share);
+  }
   if(signedActor&&authorId!==state.user.id){
     const follow=element("button",null,"Follow");follow.type="button";
     let following=false;
@@ -206,6 +232,29 @@ function renderActivity(activity){
   }
   card.append(head,time,text,meta,actions,feedback,form,commentsArea);
   return card;
+}
+async function loadLinkedPost(){
+  if(linkedPostId===null)return;
+  const panel=$("#sharedPost"),content=$("#sharedPostContent");
+  panel.hidden=false;
+  if(!isValidPostId(linkedPostId)){
+    content.replaceChildren(element("p","social-feedback","That shared post link is invalid."));
+    return;
+  }
+  content.replaceChildren(element("p","social-meta","Opening shared NBL post…"));
+  const actorId=state.user?.id;
+  try{
+    assertCurrentAccount(actorId);
+    const response=await state.client.getActivity({id:linkedPostId});
+    assertCurrentAccount(actorId);
+    const activity=response.activity;
+    if(!isShareablePost(activity)||activity.id!==linkedPostId)
+      throw new Error("This post is not publicly shareable.");
+    content.replaceChildren(renderActivity(activity));
+  }catch{
+    if(accountChanged)return;
+    content.replaceChildren(element("p","social-feedback","This public NBL post is unavailable or you do not have access to it."));
+  }
 }
 function renderFeed(rows){
   const out=$("#feedItems");out.replaceChildren();
@@ -265,7 +314,7 @@ async function publishPost(event){
   const submit=$("#postForm button[type=submit]");submit.disabled=true;
   try{
     const feed=state.client.feed("user",state.user.id);
-    await feed.addActivity({type:"post",text});
+    await feed.addActivity({type:"post",text,visibility:"public"});
     $("#postText").value="";$("#postCount").textContent="0 / 1500";
     status("Your NBL post was published.");
     state.selected="user";selectTab();await loadFeed();
@@ -297,7 +346,7 @@ async function boot(){
     await session();
     assertCurrentAccount(initialNBLUserId);
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
-    selectTab();await loadFeed();
+    selectTab();await loadFeed();await loadLinkedPost();
   }catch(error){status("Social integration not available: "+safeError(error));}
 }
 void boot();
