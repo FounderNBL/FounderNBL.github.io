@@ -238,9 +238,9 @@ test.describe("New Beansland web app browser smoke", () => {
     });
   }
 
-  test("same-origin human NBL Chat offers real member-search and DM affordances", async ({page}) => {
+  test("legacy same-origin NBL Messenger route offers real member-search and DM affordances", async ({page}) => {
     await open("/chat.html",page);
-    await expect(page).toHaveTitle(/NBL Chat/);
+    await expect(page).toHaveTitle(/NBL Messenger/);
     await expect(page.locator("[data-chat-guest]")).toBeVisible();
     await expect(page.locator("[data-chat-app]")).toBeHidden();
     await expect(page.locator("[data-chat-find-form]")).toHaveCount(1);
