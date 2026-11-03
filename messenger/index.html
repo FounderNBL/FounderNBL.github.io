@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>NBL Messenger | New Beansland</title>
   <meta name="description" content="NBL Messenger is the people-to-people messaging app for New Beansland.">
-  <link rel="canonical" href="https://newbeansland.org/messenger/">
+  <link rel="canonical" href="https://newbeansland.org/messenger/index.html">
   <meta name="theme-color" content="#06111d">
   <meta name="application-name" content="NBL Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
@@ -95,6 +95,12 @@
           </div>
         </form>
         <div data-chat-search-results aria-live="polite"></div>
+        <section aria-label="Phone contacts" class="phone-contacts">
+          <h3>People from your phone</h3>
+          <p class="hint">Choose a contact to invite. Your address book stays on your device; NBL does not upload or sync it.</p>
+          <button class="btn" type="button" data-chat-phone-contact hidden>Choose phone contact</button>
+          <p class="hint" data-chat-phone-contact-status aria-live="polite">You can also use Invite a friend to share through your phone.</p>
+        </section>
         <form data-chat-dm-form class="dm-form">
           <label for="chat-dm">Or open a direct message</label>
           <div class="form-row">
@@ -115,7 +121,7 @@
             <button class="btn primary" type="button" data-chat-share-invite>Invite a friend</button>
             <button class="btn" type="button" data-chat-copy-invite>Copy invite link</button>
           </div>
-          <a class="invite-url" data-chat-invite-url href="https://newbeansland.org/messenger/">newbeansland.org/messenger/</a>
+          <a class="invite-url" data-chat-invite-url href="https://newbeansland.org/messenger/index.html">newbeansland.org/messenger/index.html</a>
           <p class="invite-note">Real people only. No fake accounts, no extra Messenger registration, and no Beans AI credits.</p>
         </section>
       </aside>
