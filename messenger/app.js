@@ -12,7 +12,7 @@ const META_PAGE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-m
 const PUSH_OWNER_KEY="nbl-messenger-push-clerk-user-v1";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
-const INVITE_URL="https://newbeansland.org/messenger/";
+const INVITE_URL="https://newbeansland.org/messenger/index.html";
 const $=selector=>document.querySelector(selector);
 const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:false,realtimeThread:null,realtimeStop:null,inboxStop:null};
 let activeAuthUserId;
@@ -532,6 +532,37 @@ async function shareInvite(){
   }
   await copyInvite();
 }
+async function invitePhoneContact(){
+  // Contacts Picker API is opt-in, browser-supported only, and returns only the
+  // contact explicitly chosen by the person. Never send contact data to NBL.
+  const message=$("[data-chat-phone-contact-status]");
+  if(!navigator.contacts?.select){
+    message.textContent="Phone contact picker is not supported here. Use Invite a friend instead.";
+    return;
+  }
+  try{
+    const contacts=await navigator.contacts.select(["name","tel"],{multiple:false});
+    if(!contacts?.length)return;
+    const contact=contacts[0];
+    const name=String(contact.name?.[0]||"your friend").slice(0,80);
+    const phone=String(contact.tel?.[0]||"").trim();
+    const body="Join me on NBL Messenger: "+INVITE_URL;
+    // The recipient is selected explicitly; no automatic SMS is sent.
+    if(phone && /^[+0-9() .-]{5,32}$/.test(phone)){
+      const sms="sms:"+encodeURIComponent(phone)+"?body="+encodeURIComponent(body);
+      message.textContent="Opening your text app for "+name+". Review before sending.";
+      window.location.href=sms;
+    }else if(navigator.share){
+      await navigator.share({title:"NBL Messenger",text:body,url:INVITE_URL});
+      message.textContent="Invitation shared.";
+    }else{
+      await copyInvite();
+      message.textContent="Contact has no usable phone number. Invitation link copied if clipboard is available.";
+    }
+  }catch(error){
+    if(error?.name!=="AbortError")message.textContent="Couldn't open phone contacts. Use Invite a friend instead.";
+  }
+}
 async function searchMembers(event){
   event.preventDefault();
   const q=$("[data-chat-find-input]").value.trim();
@@ -790,6 +821,11 @@ async function boot(){
   $("[data-chat-notify-preview]").addEventListener("click",()=>{void previewPhoneNotification();});
   $("[data-chat-share-invite]").addEventListener("click",()=>{void shareInvite();});
   $("[data-chat-copy-invite]").addEventListener("click",()=>{void copyInvite();});
+  const phoneButton=$("[data-chat-phone-contact]");
+  if(phoneButton && navigator.contacts?.select){
+    phoneButton.hidden=false;
+    phoneButton.addEventListener("click",()=>{void invitePhoneContact();});
+  }
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
   $("[data-chat-dm-form]").addEventListener("submit",event=>{event.preventDefault();void openDM($("[data-chat-dm-handle]").value.trim());});
   $("[data-chat-send-form]").addEventListener("submit",sendMessage);
