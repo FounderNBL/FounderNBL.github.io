@@ -245,8 +245,8 @@ requireText(support,'data-nbl-plan-value="foundationProgram.price"',"Support doe
 requireText(support,'href="/university.html#enroll"',"Support does not direct enrollment to .org.");
 requireText(support,'href="https://nblschool.com/"',"Support must link directly to independent NBL University school.");
 forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
-requireText(support,"Signed-in website checkout is available from Membership & plans in NBL Chat™ for verified products","Support does not document verified signed-in Chat checkout.");
-requireText(terms,"Signed-in website checkout is available through NBL Chat™","Terms do not document authenticated Chat checkout.");
+requireText(support,"Signed-in website checkout is available from Membership &amp; plans in your NBL account for verified products","Support does not document verified signed-in Beans checkout.");
+requireText(terms,"Signed-in Beans checkout uses the existing NBL account","Terms do not document authenticated Beans checkout.");
 requireText(privacy,"signed-in website checkout is handed off to Stripe","Privacy does not document Stripe checkout handling.");
 requireText(deletion,"Deleting NBL application data does not cancel an active Stripe subscription","Account deletion does not explain active subscription cancellation.");
 for(const staleBillingCopy of ["website checkout/payment rails for the Chat plans are not currently available","website checkout/payment rails for these plans are not currently available","The public Chat-plan catalog is not a website checkout"]){
