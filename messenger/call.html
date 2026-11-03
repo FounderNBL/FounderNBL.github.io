@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#06111d">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Permissions-Policy" content="camera=(self), microphone=(self)">
+<title>NBL Messenger · Private video call</title>
+<link rel="stylesheet" href="/messenger/call.css?v=20261103">
+<script type="module" src="/messenger/call.mjs?v=20261103"></script>
+</head><body>
+<header><a href="/messenger/">← NBL Messenger</a><strong>Private video call</strong></header>
+<main>
+ <section class="call-panel">
+  <h1>Video call</h1>
+  <p>Your NBL conversation stays yours. Choose Join to allow camera and microphone access. The other person must be a member of your direct conversation.</p>
+  <p id="callStatus" role="status" aria-live="polite">Preparing your call…</p>
+  <div id="participants" class="participants" aria-label="Video call participants" hidden></div>
+  <div class="actions">
+   <button id="join" type="button">Join video call</button>
+   <button id="camera" type="button" hidden>Turn camera off</button>
+   <button id="microphone" type="button" hidden>Mute microphone</button>
+   <button id="leave" type="button" class="danger" hidden>Leave call</button>
+  </div>
+  <p class="hint">No automatic recording or transcription. The provider's actual settings and member-only access must be verified before launch. Calls can use mobile data.</p>
+ </section>
+</main>
+<footer>New Beansland · NBL Messenger · Human-to-human video</footer>
+</body></html>

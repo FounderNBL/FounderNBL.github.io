@@ -1,0 +1,19 @@
+:root{color-scheme:dark;--bg:#06111d;--panel:#0d2235;--line:#345066;--gold:#f0c56f;--text:#f7ecd8}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#102d42,var(--bg) 65%);color:var(--text);font:16px/1.5 system-ui,sans-serif}
+header{padding:18px 22px;display:flex;gap:18px;align-items:center;border-bottom:1px solid var(--line)}
+a{color:var(--gold)}header strong{font:700 1.1rem Georgia,serif}
+main{max-width:1020px;margin:30px auto;padding:0 18px}
+.call-panel{border:1px solid var(--line);background:var(--panel);border-radius:18px;padding:clamp(15px,4vw,28px)}
+h1{color:var(--gold);font:700 2rem Georgia,serif;margin:0}
+#callStatus{background:#081524;border-radius:8px;padding:14px}
+.participants{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:15px;margin:18px 0}
+.person{overflow:hidden;background:#010711;border:1px solid var(--line);border-radius:14px}
+.person video{width:100%;min-height:160px;max-height:55vh;object-fit:contain;background:#000}
+.person p{margin:8px 12px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+button,.signin{background:#244c6f;border:1px solid #7393a9;color:white;border-radius:9px;padding:12px 18px;font:600 1rem system-ui;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+button.danger{background:#722d33;border-color:#b45e62}
+.hint,footer{color:#b5c5cf;font-size:.85rem}
+footer{text-align:center;padding:30px}
