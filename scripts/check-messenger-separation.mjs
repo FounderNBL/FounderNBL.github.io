@@ -100,4 +100,11 @@ assert.match(sw,/new URL\("\/messenger\/",self.location.origin\)/);
 assert.doesNotMatch(sw,/event\.data\?\.json\(\)[\s\S]*token/);
 assert.doesNotMatch(app,/type="file"/);
 
+// Meta Page inbox uses Founder verification, not a second NBL identity.
+assert.match(app,/data-chat-meta-page hidden/);
+assert.match(app,/data-chat-meta-threads/);
+assert.match(js,/functions\/v1\/nbl-meta-page-inbox/);
+assert.match(js,/state\.me\?\.role!=="founder"/);
+assert.match(js,/metaPageRequest\("reply"/);
+assert.doesNotMatch(js,/NBL_META_PAGE_ACCESS_TOKEN|NBL_META_APP_SECRET/);
 console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and customer phone alerts preserved without Founder controls.");
