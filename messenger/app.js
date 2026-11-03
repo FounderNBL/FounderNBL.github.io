@@ -345,7 +345,7 @@ function resetComposer(){
   const button=$("[data-chat-send-form] button[type=submit]");
   if(button)button.disabled=!ready||state.busy;
   const callButton=$("[data-chat-video-call]");
-  if(callButton){callButton.hidden=!ready||state.selected?.thread_type!=="direct";callButton.disabled=!ready||state.busy;}
+  if(callButton){callButton.hidden=!ready||state.selected?.thread_type!=="direct"||state.me?.role!=="founder";callButton.disabled=!ready||state.busy;}
   $("[data-chat-mute]").hidden=!ready;
   $("[data-chat-block]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
   $("[data-chat-unblock]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
