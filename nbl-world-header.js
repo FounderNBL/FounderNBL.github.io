@@ -2727,6 +2727,12 @@
   document.body.prepend(header);
   document.body.append(searchPanel);
   document.body.append(beansPanel);
+  // Independent presentation layer around the existing real Beans chat.
+  // No screenshot-as-a-background, no generated wardrobe, no change to the AI runtime.
+  const beansExperienceScript=document.createElement("script");
+  beansExperienceScript.src="/nbl-beans-experience.js?v=20261105-1";
+  beansExperienceScript.async=true;
+  document.body.appendChild(beansExperienceScript);
   document.body.classList.add("nbl-world-ready");
   setupNblAccountUi(header);
 
