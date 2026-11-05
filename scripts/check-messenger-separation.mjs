@@ -60,7 +60,7 @@ assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
 assert.match(js, /Recent direct messages only: up to 200 threads and the latest 100 messages per thread/);
 assert.match(app, /href="\/account\.html"/);
-assert.match(js, /const INVITE_URL="https:\/\/newbeansland\.org\/messenger\/"/);
+assert.match(js, /const INVITE_URL="https:\/\/newbeansland\.org\/messenger\/index\.html"/);
 assert.match(js, /const founder=state\.me\?\.role==="founder"/);
 assert.match(js, /if\(invite\)invite\.hidden=!empty/);
 assert.match(js, /await navigator\.share\(/);
