@@ -128,7 +128,9 @@ forbidText(header,'Beans is the New Beansland AI assistant. NBL Chat is where pe
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);
 }
-requireText(header,"Beans includes limited free replies. Sign in to keep your history","Limited-free and signed-in history context is missing.");
+requireText(header,"Free Beans requires a free NBL account.","Sign-in requirement for free Beans is missing.");
+requireText(header,'data-nbl-beans-signin',"Beans sign-in link is missing.");
+requireText(header,'data-nbl-beans-signup',"Beans free-account sign-up link is missing.");
 requireText(header,"future Beans features and upcoming testing opportunities","Homepage still describes Chat as unreleased.");
 
 requireText(header,'chatDrawer.querySelector("[data-nbl-chat-drawer-close]")?.focus()',"Opening the drawer does not move focus inside it.");
