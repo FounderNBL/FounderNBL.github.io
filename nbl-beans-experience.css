@@ -38,6 +38,7 @@
 .nbl-beans-customize-open:focus-visible,
 .nbl-beans-customize-sheet button:focus-visible,
 .nbl-beans-shortcuts button:focus-visible,
+.nbl-beans-shortcuts a:focus-visible,
 .nbl-beans-explore-worlds a:focus-visible{
   outline:3px solid #bd7804;outline-offset:3px;
 }
@@ -102,14 +103,14 @@
   position:relative;z-index:3;display:flex;flex:none;justify-content:space-around;
   flex-wrap:wrap;gap:9px;padding:12px 20px;
 }
-.nbl-beans-shortcuts button{
+.nbl-beans-shortcuts button,.nbl-beans-shortcuts a{
   flex:1 1 130px;min-height:44px;max-width:280px;
   border-radius:14px;border:1px solid #d9a14a;
   background:rgba(255,247,234,.94);color:#281a0d;
   font-weight:750;cursor:pointer;padding:9px 12px;
   display:flex;align-items:center;justify-content:center;gap:9px;
 }
-.nbl-beans-shortcuts button:hover{background:#ffedc8;border-color:#af731e}
+.nbl-beans-shortcuts button:hover,.nbl-beans-shortcuts a:hover{background:#ffedc8;border-color:#af731e}
 .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-log{
   min-height:100px;max-height:none;flex:1;z-index:2;
   padding:12px clamp(14px,3vw,35px);margin:0;
