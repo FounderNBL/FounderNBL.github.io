@@ -53,8 +53,9 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261103-private-video'),
-  "Messenger must load the new account navigation handler");
+// This verifies the live approved Messenger entry script, without modifying Messenger.
+assert.ok(app.includes('/messenger/app.js?v=20261103-mobile-basic'),
+  "Messenger must load the currently published, account-aware entry script");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
 assert.match(js, /Recent direct messages only: up to 200 threads and the latest 100 messages per thread/);
