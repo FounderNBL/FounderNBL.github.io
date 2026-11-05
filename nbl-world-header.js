@@ -513,7 +513,7 @@
           <div>
             <p>New Beansland™</p>
             <strong>Beans</strong>
-            <small>Beans, tools, history, and your NBL account.</small>
+            <small>Your NBL personal AI assistant, tools, and saved chats.</small>
           </div>
           <button type="button" data-nbl-chat-drawer-close aria-label="Close Beans menu">✕</button>
         </div>
@@ -523,16 +523,6 @@
             <span><strong>New chat</strong><small>Start fresh with Beans</small></span>
           </button>
 
-          <nav class="nbl-chat-drawer-conversations" aria-label="NBL conversations">
-            <a class="nbl-chat-drawer-item nbl-beans-grey-link" href="https://nblschool.com/professor-grey.html">
-              <span class="nbl-chat-drawer-fallback" aria-hidden="true">G</span>
-              <span><strong>Talk to Grey</strong><small>Protected NBL University</small></span>
-            </a>
-            <a class="nbl-chat-drawer-item nbl-beans-people-link" href="/messenger/">
-              <span class="nbl-chat-drawer-fallback" aria-hidden="true">P</span>
-              <span><strong>Talk to People</strong><small>Your NBL member messages</small></span>
-            </a>
-          </nav>
           <section class="nbl-chat-drawer-history" aria-labelledby="nbl-chat-drawer-history-title">
             <div class="nbl-chat-drawer-section-head">
               <strong id="nbl-chat-drawer-history-title">Recent conversations</strong>
@@ -549,30 +539,25 @@
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
             <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
-            <span><strong>Membership &amp; plans</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.foundationProgram.price} Foundation Materials · ${NBL_PRODUCT_PLANS.beansUniversity.price} Beans + University (held) · Get More</small></span>
+            <span><strong>Beans membership &amp; usage</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · Get More · NBL Usage credits</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
 <details class="nbl-drawer-category"><summary><strong>Beans & add-ons</strong><small>Beans · Plus · extra replies · NBL credits</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>${NBL_PRODUCT_PLANS.beans.replies} per billing period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Choose Beans</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.nblPlus?.name||"NBL Plus"} · ${NBL_PRODUCT_PLANS.nblPlus?.price||"$29.99/month"}</strong><span>Premium Beans only; not the $29.99 Foundation materials offer and not protected University/Grey access. Entitlement checkout pending.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nbl_plus" disabled aria-disabled="true" title="Premium Beans entitlement verification pending">NBL Plus checkout pending</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.nblUsage?.name||"NBL Usage — 500 Credits"} · ${NBL_PRODUCT_PLANS.nblUsage?.price||"$7.00 one-time"}</strong><span>500 purchased NBL Usage credits; separate from Beans reply top-ups, included monthly NBL tool uses and NBL Studios Credits. Checkout held pending verified wallet/debit rules.</span><a href="/vault.html#credits">NBL credit details</a></article></div></details>
-<details class="nbl-drawer-category"><summary><strong>University & teachers</strong><small>Campus packages · Professor Grey · continuation</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.beansUniversity.name} · ${NBL_PRODUCT_PLANS.beansUniversity.price}</strong><span>Combined Beans + University membership. Renews at $14.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout verification pending">University membership checkout pending</button></article>
+<details class="nbl-drawer-category" hidden style="display:none!important"><summary><strong>University & teachers</strong><small>Campus packages · Professor Grey · continuation</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.beansUniversity.name} · ${NBL_PRODUCT_PLANS.beansUniversity.price}</strong><span>Combined Beans + University membership. Renews at $14.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout verification pending">University membership checkout pending</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.foundationStudentContinuation.name} · ${NBL_PRODUCT_PLANS.foundationStudentContinuation.price}</strong><span>Only for verified $34.99 purchasers, beginning after their included first month. Renews at $9.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_student_continuation" disabled aria-disabled="true" title="Eligibility and checkout pending">Student continuation checkout pending</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.foundationUniversity.name} · ${NBL_PRODUCT_PLANS.foundationUniversity.price}</strong><span>Foundation materials and the first month of Beans + University. Qualifying continuation: $9.99/month. Enrollment held.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation_university" disabled aria-disabled="true" title="University checkout verification pending">Foundation + University pending</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.guidedFoundation.name} · ${NBL_PRODUCT_PLANS.guidedFoundation.price}</strong><span>Foundation physical + digital materials plus one month of the full University guided experience with Professor Grey™ / Virgo System™.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_foundation" disabled aria-disabled="true" title="University checkout verification pending">Guided Foundation checkout pending</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.fullNbluDiy?.name||"Full NBLU Experience — Digital DIY"} · ${NBL_PRODUCT_PLANS.fullNbluDiy?.price||"$184.99 one-time"}</strong><span>Same planned Full NBLU digital academic program as the physical-books option, without printed books. Six-month guided access begins only after University opening and LOCKE verification.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu_diy" disabled aria-disabled="true" title="University checkout verification pending">Digital DIY checkout pending</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.fullNblu.name} · ${NBL_PRODUCT_PLANS.fullNblu.price}</strong><span>Six months of the full University experience plus the staged physical-book and ebook entitlement across the planned program as material is completed and released. Shipping may be charged separately for physical stage packs.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="full_nblu" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU checkout pending</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.nbluContinuation.name} · ${NBL_PRODUCT_PLANS.nbluContinuation.price}</strong><span>Owner-only continuation after the included six-month Full NBLU guided period.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nblu_continuation" disabled aria-disabled="true" title="University checkout verification pending">Full NBLU continuation checkout pending</button></article></div></details>
-<details class="nbl-drawer-category"><summary><strong>NBL Services</strong><small>Books, Studios and separate creator credits</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.studiosCredits?.name||"NBL Studios Credits"} · ${NBL_PRODUCT_PLANS.studiosCredits?.price||"$8.99 one-time"}</strong><span>500 NBL Studios Credits for separately quoted creative generations. New credit checkout held; see the quote before creating.</span><a href="/studio/creator.html">View creator pricing</a></article>
+<details class="nbl-drawer-category" hidden style="display:none!important"><summary><strong>NBL Services</strong><small>Books, Studios and separate creator credits</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.studiosCredits?.name||"NBL Studios Credits"} · ${NBL_PRODUCT_PLANS.studiosCredits?.price||"$8.99 one-time"}</strong><span>500 NBL Studios Credits for separately quoted creative generations. New credit checkout held; see the quote before creating.</span><a href="/studio/creator.html">View creator pricing</a></article>
 <article><strong>${NBL_PRODUCT_PLANS.foundationProgram.name} · ${NBL_PRODUCT_PLANS.foundationProgram.price}</strong><span>Two physical books and one month of Beans; no ebooks or University materials included. Then Beans renews at $4.99/month until cancelled or upgraded, with customer consent. No University enrollment.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="foundation" disabled aria-disabled="true" title="Fulfillment and recurring-billing verification pending">Foundation checkout pending</button></article></div></details>
 <button class="nbl-billing-manage" type="button" data-nbl-billing-portal>Manage billing</button>
             <p class="nbl-billing-status" data-nbl-billing-status role="status">Foundation and University checkouts are held pending verified renewal consent, fulfillment, payment and LOCKE identity binding.</p>
           </div>
-
-          <a class="nbl-chat-drawer-item" href="/university.html">
-            <img src="/NBL_University.png" alt="" aria-hidden="true">
-            <span><strong>NBL University</strong><small>Courses and University doors · enrollment required</small></span>
-          </a>
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-tools>
             <span class="nbl-chat-drawer-fallback" aria-hidden="true">+</span>
@@ -598,12 +583,12 @@
         </div>
       </aside>
 
-      <div class="nbl-quick-selector" id="nbl-quick-selector" data-nbl-quick-selector role="group" aria-label="Choose NBL conversation" hidden>
+      <div class="nbl-quick-selector" id="nbl-quick-selector" data-nbl-quick-selector role="group" aria-label="Retired conversation switcher" hidden inert style="display:none!important">
         <button type="button" data-nbl-quick="beans" aria-label="Chat with Beans"><img src="/Beans.png" alt="" aria-hidden="true"><strong>Beans</strong><small>AI assistant</small></button>
         <button type="button" data-nbl-quick="grey" aria-label="Talk to Professor Grey, LOCKE authorization required"><img src="/Professor_Grey.png" alt="" aria-hidden="true"><strong>Grey</strong><small>Teaching · LOCKE</small></button>
         <a href="/university.html" data-nbl-quick="university" aria-label="NBL University entrance, enrollment and LOCKE approval required"><img src="/NBL_University.png" alt="" aria-hidden="true"><strong>University</strong><small>Locked · enrollment</small></a>
       </div>
-      <div class="nbl-chat-modes" role="tablist" aria-label="Beans mode">
+      <div class="nbl-chat-modes" role="tablist" aria-label="Beans mode" hidden style="display:none!important">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
         <button id="nbl-chat-tab-plus" type="button" data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden>University</button>
       </div>
@@ -651,7 +636,7 @@
               <input data-nbl-still-camera type="file" accept="image/*" capture="environment" hidden>
               <input data-nbl-beans-knowledge-file type="file" accept=".pdf,.txt,.md,.json,.html,.css,.js,.ts,.py,.doc,.docx,.pptx,.c,.cpp,.cs,.go,.java,.php,.rb,.sh,.tex,application/pdf,application/json,text/plain,text/markdown,text/html" hidden>
             </div>
-            <button class="nbl-quick-toggle" type="button" data-nbl-quick-toggle aria-controls="nbl-quick-selector" aria-expanded="false" aria-label="Choose Beans, Professor Grey or University">⌕</button>
+            <button class="nbl-quick-toggle" type="button" data-nbl-quick-toggle aria-controls="nbl-quick-selector" aria-expanded="false" aria-label="Retired conversation switcher" hidden inert style="display:none!important" tabindex="-1">⌕</button>
             <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
             <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans">🎙</button>
             <button class="nbl-beans-stop" type="button" data-nbl-beans-stop aria-label="Stop Beans response" hidden>Stop</button>
