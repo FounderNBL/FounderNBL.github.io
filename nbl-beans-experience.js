@@ -44,14 +44,25 @@ title.innerHTML='<span class="nbl-beans-hero-tag">Beans · Personal AI</span><h3
 presence.appendChild(title);
 const suggestions=document.createElement("nav");
 suggestions.className="nbl-beans-shortcuts";
-suggestions.setAttribute("aria-label","Start a Beans conversation");
+suggestions.setAttribute("aria-label","Beans quick actions and real NBL destinations");
 suggestions.innerHTML=[
-'<button type="button" data-nbl-beans-prompt="Help me with a task">✦ <span>Help me with a task</span></button>',
-'<button type="button" data-nbl-beans-prompt="Help me brainstorm ideas">◈ <span>Brainstorm ideas</span></button>',
-'<button type="button" data-nbl-beans-prompt="What can we talk about?">☏ <span>Just chat with me</span></button>'
+'<button type="button" data-nbl-beans-explore>◈ <span>Show me NBL worlds</span></button>',
+'<button type="button" data-nbl-beans-prompt="Help me write a song">♫ <span>Help me write a song</span></button>',
+'<button type="button" data-nbl-beans-prompt="How do I start Foundation?">✦ <span>How do I start Foundation?</span></button>',
+'<a href="/books.html">▣ <span>Take me to Books</span></a>'
 ].join("");
 presence.insertAdjacentElement("afterend",suggestions);
 suggestions.addEventListener("click",event=>{
+ const trigger=event.target.closest("[data-nbl-beans-explore]");
+ if(trigger){
+  explore.open=true;
+  if(window.matchMedia("(max-width:959px)").matches){
+   const toggle=panel.querySelector("[data-nbl-chat-drawer-toggle]");
+   if(toggle?.getAttribute("aria-expanded")!=="true")toggle?.click();
+  }
+  explore.querySelector("summary").focus();
+  return;
+ }
  const button=event.target.closest("[data-nbl-beans-prompt]");
  if(!button)return;
  input.value=button.dataset.nblBeansPrompt;
