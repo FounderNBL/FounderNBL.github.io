@@ -122,8 +122,8 @@ forbidText(header,'data:image/webp;base64,',"Inline Base64 Chat artwork returned
 requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"The AI dialog title must be Beans.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");
 requireText(header,'data-nbl-chat-mode="plus" role="tab" aria-controls="nbl-chat-panel-plus" aria-selected="false" aria-label="NBL University Professor Grey™ / Virgo System™" tabindex="-1" hidden',"Preserved Professor Grey tab is not hidden from public Chat.");
-requireText(header,'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must open the standalone NBL school.");
-requireText(header,'href="/messenger/"',"Talk to People must stay on the independent NBL Messenger.");
+forbidText(header,'class="nbl-chat-drawer-item nbl-beans-grey-link"',"Grey's school must not appear in the Beans assistant menu.");
+forbidText(header,'class="nbl-chat-drawer-item nbl-beans-people-link"',"Messenger must not appear in the Beans assistant menu.");
 forbidText(header,'Beans is the New Beansland AI assistant. NBL Chat is where people message people',"Removed promotional copy has returned.");
 for(const stale of ["Talk to Beans","Beans is free to use. No account required.","beta test NBL Chat","request beta access"]){
   forbidText(header,stale,`Stale Chat naming/status wording remains: ${stale}`);

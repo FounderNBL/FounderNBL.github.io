@@ -14,8 +14,10 @@ const forbid=(key,needle,why)=>{if(files[key].includes(needle))failures.push(why
 need("account",'accounts.newbeansland.org',"Verified .org account portal missing.");
 need("chat",'href="https://newbeansland.org/messenger/"',"Person-to-person messaging must canonically identify NBL Messenger on .org.");
 need("campus",'url=https://nblschool.com/',"Old .org campus must redirect to the school website.");
-need("header",'href="/messenger/"',"Talk to People must open independent .org Messenger.");
-need("header",'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must open the independent school website.");
+// Messenger and Professor Grey exist independently; neither belongs in the Beans assistant drawer.
+forbid("header",'class="nbl-chat-drawer-item nbl-beans-people-link"',"Person messaging must not be a Beans menu item.");
+forbid("header",'class="nbl-chat-drawer-item nbl-beans-grey-link"',"Professor Grey must not be a Beans menu item.");
+need("header",'data-nbl-beans-regular',"Beans' own assistant chat panel must remain available.");
 need("landing",'url=https://newbeansland.org/university.html#enroll',"Legacy enrollment must redirect to the single cashier page.");
 const currentAdmissions=read("university.html");
 const currentBilling=read("university-storefront.js");

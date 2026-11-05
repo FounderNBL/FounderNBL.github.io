@@ -3,11 +3,12 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 const read=p=>fs.readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const css=read("nbl-world-header.css");
+const experienceCss=read("nbl-beans-experience.css");
 const js=read("nbl-world-header.js");
-test("Beans uses the character inside the conversation, not as a separate image card",()=>{
+test("Beans keeps approved character artwork in its working conversation hero",()=>{
  assert.match(js,/class="nbl-beans-presence"/);
  assert.match(js,/class="nbl-beans-log"/);
- assert.match(css,/#nbl-chat-panel-beans \.nbl-beans-presence\s*\{[^}]*position:absolute/s);
+ assert.match(experienceCss,/\.nbl-beans-presence\{[^}]*position:relative!important/s);
  assert.match(css,/#nbl-chat-panel-beans \.nbl-beans-log\s*\{[^}]*background:rgba/s);
 });
 test("Beans + menu is initially hidden and stays near the composer until tapped",()=>{
@@ -27,12 +28,12 @@ test("Grey stays locked while official artwork is displayed only behind protecte
 });
 test("fresh cache keys load new styles and scripts on real entry pages",()=>{
  assert.match(read("index.html"),/nbl-world-header\.css\?v=20261024-v12-final-parity/);
- assert.match(read("index.html"),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
+ assert.match(read("index.html"),/nbl-world-header\.js\?v=20261105-beans-experience/);
  assert.match(read("university-campus.html"),/url=https:\/\/nblschool\.com\//);
 });
 
-test("website Beans matches V12 native 2-second chooser while retaining free PDF and LOCKE rails",()=>{
- assert.match(js,/id="nbl-quick-selector"[^>]*hidden/);
+test("website Beans retires the old Grey/Messenger chooser while retaining PDF and LOCKE rails",()=>{
+ assert.match(js,/id="nbl-quick-selector"[^>]*hidden inert style="display:none!important"/);
  assert.match(js,/data-nbl-quick="beans"/);
  assert.match(js,/data-nbl-quick="grey"/);
  assert.match(js,/href="\/university\.html" data-nbl-quick="university"/);
@@ -40,13 +41,14 @@ test("website Beans matches V12 native 2-second chooser while retaining free PDF
  assert.match(js,/src="\/Professor_Grey\.png"/);
  assert.match(js,/setChatMode\("plus"\); \/\/ Existing Grey authentication \+ LOCKE/);
  assert.match(js,/nblQuickToggle\.addEventListener\("click"/);
+ assert.match(js,/data-nbl-quick-toggle[^>]*hidden inert style="display:none!important"/);
  assert.match(js, /},2000\);/);
  assert.match(css,/\.nbl-quick-selector\s*\{[^}]*position:absolute/s);
  assert.match(css,/\.nbl-beans-card > \.nbl-chat-modes\{display:none!important\}/);
  assert.match(js,/data-nbl-tool="pdf-local"/);
  assert.match(js,/NblDevicePdf/);
  assert.match(js,/nblpdf/);
- for(const page of ["index.html","account.html","books.html","clothing.html","nbl-kids.html","pricing.html","stories.html","studios.html"]){
+ for(const page of ["account.html","books.html","clothing.html","nbl-kids.html","pricing.html","stories.html","studios.html"]){
    assert.match(read(page),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
  }
  assert.match(read("university.html"),/src="\/university-storefront\.js/);

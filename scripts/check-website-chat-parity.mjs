@@ -1,3 +1,4 @@
+import "./check-beans-experience.mjs";
 import "./check-website-grey-teaching.mjs";
 import "./check-website-infinity.mjs";
 import fs from "node:fs";
@@ -82,9 +83,10 @@ forbidText(header,'Beans is the New Beansland AI assistant. NBL Chat is where pe
 // Website-standard Chat shell and Beans continuity.
 requireText(header,'data-nbl-chat-drawer',"Website-standard NBL Chat™ drawer is missing.");
 requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"Beans must be the AI dialog name.");
-requireText(header,'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must open the independent nblschool.com faculty page.");
-requireText(header,'href="/messenger/"',"Human Messages must open the independent NBL Messenger, matching V12.");
+forbidText(header,'class="nbl-chat-drawer-item nbl-beans-grey-link"',"Grey must not appear in the Beans personal assistant menu.");
+forbidText(header,'class="nbl-chat-drawer-item nbl-beans-people-link"',"Messenger must not appear in Beans personal assistant menu.");
 forbidText(header,'class="nbl-chat-drawer-item nbl-beans-people-link" href="/chat.html"',"Old human-message door must not return in the Beans drawer.");
+requireText(header,'data-nbl-quick-toggle aria-controls="nbl-quick-selector" aria-expanded="false" aria-label="Retired conversation switcher" hidden inert style="display:none!important"',"Separate product selector must not appear in Beans chat.");
 forbidText(header,'Beans is NBL Chat™',"Beans must not be labeled as human NBL Chat.");
 forbidText(header,'NBL CHAT PLUS™',"Retired Plus marketing must not be displayed.");
 requireText(header,'Professor Grey™',"Professor Grey™ trademark display is missing.");
@@ -95,7 +97,7 @@ requireText(header,'?action=conversations',"Website-standard recent Chat history
 requireText(header,'data-nbl-drawer-grey hidden',"Preserved Professor Grey entry must stay hidden from public Chat.");
 requireText(header,'data-nbl-drawer-tools',"Website-standard Beans tools entry is missing.");
 requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans entry is missing.");
-requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · ${NBL_PRODUCT_PLANS.foundationProgram.price} Foundation Materials · ${NBL_PRODUCT_PLANS.beansUniversity.price} Beans + University (held) · Get More',"Website-standard plan labels do not use the canonical catalog.");
+requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · Get More · NBL Usage credits',"Beans assistant menu must show only Beans-specific membership.");
 requireText(plans,'beans:Object.freeze({name:"Beans"',"Beans base-tier display name must be Beans, not human NBL Chat.");
 requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
 requireText(plans,'price:"$29.99 one-time"',"Correct one-time Foundation Materials price is missing.");
