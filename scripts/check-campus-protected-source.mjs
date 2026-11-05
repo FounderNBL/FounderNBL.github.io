@@ -19,7 +19,9 @@ for(const page of [campus,alias]){
  assert.match(page,/http-equiv="refresh" content="0;url=https:\/\/nblschool\.com\//);
  assert.doesNotMatch(page,/data-campus-gate|data-campus hidden|data-social-dm-handle|data-school-office/);
 }
-assert.match(header,/href="https:\/\/nblschool\.com\/professor-grey\.html"/);
+// Beans no longer exposes Professor Grey as a chat shortcut; the independent school link is on the admissions page.
+assert.doesNotMatch(header,/class="nbl-chat-drawer-item nbl-beans-grey-link"/);
+assert.match(admissions,/https:\/\/nblschool\.com\//);
 assert.match(chat,/data-chat-guest/);
 assert.match(chat,/data-chat-app hidden/);
 assert.match(realtime,/config:{private:true}/);
