@@ -177,22 +177,23 @@ test.describe("New Beansland web app browser smoke", () => {
     }
   });
 
-  test("live Beans keeps greeting and NBL acronym answers on the right rail", async ({ page }) => {
-    test.skip(!process.env.NBL_BASE_URL, "Live semantic check only runs against the deployed web app.");
+  test("live guest Beans offers free sign-in without consuming a reply", async ({ page }) => {
+    test.skip(!process.env.NBL_BASE_URL, "Live authentication UI check only runs against deployed website.");
     await open("/", page);
-
     await page.getByRole("button", { name: "Open Beans" }).click();
     const input = page.locator("#nbl-beans-input");
     const send = page.locator("[data-nbl-beans-form] button[type=\"submit\"]");
-    const beansReplies = page.locator("[data-nbl-beans-regular] .nbl-beans-message.is-beans p");
-
+    const answers = page.locator("[data-nbl-beans-regular] .nbl-beans-message.is-beans p");
     await input.fill("Hi Beans");
     await send.click();
-    await expect(beansReplies.last()).toHaveText("Hey. What's up?");
-
-    await input.fill("What does NBL stand for?");
-    await send.click();
-    await expect(beansReplies.last()).toHaveText("NBL stands for New Beansland.");
+    await expect(page.locator("[data-nbl-beans-auth-note]")).toBeVisible();
+    await expect(input).toHaveValue("Hi Beans");
+    await expect(answers).toHaveCount(1);
+    const signIn = new URL(await page.locator("[data-nbl-beans-signin]").getAttribute("href"));
+    const signUp = new URL(await page.locator("[data-nbl-beans-signup]").getAttribute("href"));
+    expect(signIn.origin).toBe("https://accounts.newbeansland.org");
+    expect(signIn.pathname).toBe("/sign-in");
+    expect(signUp.pathname).toBe("/sign-up");
   });
 
   test("one University World Card opens one tuition form and the independent campus link",async({page})=>{

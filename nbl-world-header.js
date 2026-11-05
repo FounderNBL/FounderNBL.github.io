@@ -661,7 +661,8 @@
         <p class="nbl-beans-note" data-nbl-beans-disclaimer style="margin-top:10px">
           Signed-in chats may be stored with your NBL account and processed by service providers to provide Beans. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
         </p>
-        <p class="nbl-beans-status" data-nbl-beans-status role="status">Beans includes limited free replies. Sign in to keep your history and use your NBL membership.</p>
+        <p class="nbl-beans-status" data-nbl-beans-status role="status">Free Beans requires a free NBL account. No subscription is needed for free replies.</p>
+        <p class="nbl-beans-note" data-nbl-beans-auth-note hidden>Want to talk to Beans? <a href="https://accounts.newbeansland.org/sign-in" data-nbl-beans-signin>Sign in</a> or <a href="https://accounts.newbeansland.org/sign-up" data-nbl-beans-signup>create a free account</a>. Public NBL pages stay open.</p>
       </section>
 
       <section id="nbl-chat-panel-plus" class="nbl-plus-shell" role="tabpanel" aria-labelledby="nbl-chat-tab-plus" tabindex="0" data-nbl-plus hidden>
@@ -756,6 +757,11 @@
   const chatDrawerTools=beansPanel.querySelector("[data-nbl-drawer-tools]");
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
   const beansStatus=beansPanel.querySelector("[data-nbl-beans-status]");
+  const beansAuthNote=beansPanel.querySelector("[data-nbl-beans-auth-note]");
+  const beansSignInLink=beansPanel.querySelector("[data-nbl-beans-signin]");
+  const beansSignUpLink=beansPanel.querySelector("[data-nbl-beans-signup]");
+  beansSignInLink.href=accountPortalUrl("/sign-in");
+  beansSignUpLink.href=accountPortalUrl("/sign-up");
   const stillTools=beansPanel.querySelector("[data-nbl-still-tools]");
   const stillStatus=beansPanel.querySelector("[data-nbl-still-status]");
   const stillControls=beansPanel.querySelector("[data-nbl-still-controls]");
@@ -1964,12 +1970,13 @@
     chatHistoryEntry=`nbl-chat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     window.history.pushState({...window.history.state,nblChatOverlay:chatHistoryEntry},"",location.href);
     beansPanel.hidden=false;
+    beansAuthNote.hidden=Boolean(currentClerkUserId());
     beansDisclaimer.hidden=false;
     if(beansDisclaimerTimer!==null) window.clearTimeout(beansDisclaimerTimer);
     beansDisclaimerTimer=window.setTimeout(()=>{
       beansDisclaimer.hidden=true;
       beansDisclaimerTimer=null;
-      const intro="Beans includes limited free replies. Sign in to keep your history and use your NBL membership.";
+      const intro="Free Beans requires a free NBL account. No subscription is needed for free replies.";
       if(beansStatus.textContent===intro) beansStatus.textContent="";
     },2000);
     setModalIsolation(beansPanel,true);
@@ -1989,6 +1996,23 @@
     event.preventDefault();
     const text=beansInput.value.trim();
     if(!text||beansSubmit.disabled) return;
+
+    // Free chat requires a real Clerk account. Preserve unsent text on sign-in.
+    let preflightToken=await getNblBeansAuthToken();
+    if(!preflightToken&&currentClerkUserId()){
+      try{preflightToken=await nblClerk.session?.getToken({skipCache:true})}catch{}
+      if(!preflightToken){
+        beansStatus.textContent="Your NBL account is signed in, but its secure session is still connecting. Please retry.";
+        return;
+      }
+    }
+    if(!preflightToken){
+      beansAuthNote.hidden=false;
+      beansStatus.textContent="Create a free NBL account or sign in to chat with Beans. Your unsent message stays here.";
+      beansSignInLink.focus();
+      return;
+    }
+    beansAuthNote.hidden=true;
 
     const preflightAccountGeneration=beansAccountGeneration;
     const preflightConversationGeneration=beansConversationGeneration;
@@ -2469,8 +2493,10 @@
   void getNblClerk().then(clerk=>{
     if(typeof clerk?.addListener!=="function") return;
     beansIdentityUserId=currentClerkUserId();
+    beansAuthNote.hidden=Boolean(beansIdentityUserId);
     clerk.addListener(()=>{
       const nextUserId=currentClerkUserId();
+      beansAuthNote.hidden=Boolean(nextUserId);
       const accountChanged=nextUserId!==beansIdentityUserId;
       if(!accountChanged){
         if(!beansPanel.hidden&&chatDrawer.classList.contains("is-open")) void updateChatDrawerAccountAction();
@@ -2497,7 +2523,7 @@
       if(activeChatMode==="plus") void refreshPlusAccess({force:true});
       else void loadSignedInBeansHistory();
     });
-  }).catch(()=>{});
+  }).catch(()=>{beansAuthNote.hidden=false;});
 
   beansToggle.addEventListener("click",openBeans);
   beansClose.addEventListener("click",closeBeans);
