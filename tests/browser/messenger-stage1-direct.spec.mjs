@@ -98,6 +98,9 @@ test("Stage 1: two independent NBL accounts can exchange DM replies in the brows
     await expect(founder.locator("[data-chat-messages]")).toContainText("Hello from a real member UI test.");
     await founder.locator("[data-chat-compose]").fill("Hello back from the Founder UI test.");
     await founder.locator("[data-chat-send-form] button[type=submit]").click();
+    // Mobile intentionally hides the inbox while a private chat is open.
+    // Follow the real Back → Chats → Refresh flow rather than tapping a hidden control.
+    if(await member.locator("[data-chat-back]").isVisible())await member.locator("[data-chat-back]").click();
     await member.locator("[data-chat-refresh]").click();
     await expect(member.locator("[data-chat-messages]")).toContainText("Hello back from the Founder UI test.");
   }finally{
