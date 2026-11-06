@@ -402,6 +402,23 @@ function renderThreads(){
     area.append(item);
   }
 }
+async function loadFeaturedFounder(){
+  // Show only the *real*, backend-verified Founder account, never a fabricated member.
+  const card=$("[data-chat-featured-founder]");
+  if(!card)return;
+  card.hidden=true;
+  if(!state.clerk?.isSignedIn||!state.clerk?.user?.id||state.me?.role==="founder")return;
+  const userId=state.clerk.user.id,generation=authSyncGeneration;
+  try{
+    const result=await social({action:"find_users",q:"NBLFounderOfficial"});
+    if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
+    const found=(result.users||[]).some(user=>String(user.handle||"").toLowerCase()==="nblfounderofficial"&&user.verified===true);
+    card.hidden=!found;
+  }catch{
+    // A failed lookup must never display a made-up Founder identity.
+    card.hidden=true;
+  }
+}
 async function loadThreads(){
   const response=await social({action:"list_threads"});
   state.threads=(response.threads||[]).filter(row=>row.thread_type==="direct");
@@ -491,6 +508,7 @@ async function refresh(){
       $("[data-chat-messages]").replaceChildren(node("p","hint","Choose a conversation."));
     }
     renderThreads();
+    void loadFeaturedFounder();
     await loadPhoneSettings();
     if(state.selectedId)await openThread(state.selectedId);
     else status("NBL Messenger is ready. Open a DM or select a conversation.");
@@ -786,6 +804,7 @@ async function syncClerkSession(){
   $("[data-chat-messages]").replaceChildren(node("p","hint","Choose a conversation."));
   $("[data-chat-threads]").replaceChildren();
   $("[data-chat-search-results]").replaceChildren();
+  $("[data-chat-featured-founder]").hidden=true;
   $("[data-chat-thread-title]").textContent="Choose a conversation";
   $("[data-chat-thread-kind]").textContent="Messages";
   $("[data-chat-compose]").value="";
@@ -834,6 +853,7 @@ async function boot(){
     $("[data-chat-app]").classList.remove("chat-open");
     $("[data-chat-app]").querySelector(".sidebar")?.scrollIntoView({block:"start"});
   });
+  $("[data-chat-featured-message]").addEventListener("click",()=>{void openDM("NBLFounderOfficial");});
   $("[data-chat-find-form]").addEventListener("submit",searchMembers);
   $("[data-chat-dm-form]").addEventListener("submit",event=>{event.preventDefault();void openDM($("[data-chat-dm-handle]").value.trim());});
   $("[data-chat-send-form]").addEventListener("submit",sendMessage);
