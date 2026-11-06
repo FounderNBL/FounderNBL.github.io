@@ -2140,14 +2140,14 @@
         if(!window.NblDevicePdf){
           await new Promise((resolve,reject)=>{
             const tag=document.createElement("script");
-            tag.src="/nbl-device-pdf.js?v=20261023";
+            tag.src="/nbl-device-pdf.js?v=20261106";
             tag.onload=resolve;
             tag.onerror=()=>reject(new Error("NBL PDF Reader script could not load."));
             document.head.appendChild(tag);
           });
         }
         if(!window.NblDevicePdf)throw new Error("Local reader unavailable.");
-        window.NblDevicePdf.open();
+        window.NblDevicePdf.open({onAttach:async selectedPdf=>{await addBeansFiles([selectedPdf]);}});
       }catch(error){beansStatus.textContent=error?.message||"NBL PDF Reader could not open.";}
       return;
     }
