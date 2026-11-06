@@ -1,0 +1,22 @@
+name: NBL Social Feeds Preview — unsigned source checks
+on:
+  pull_request:
+    paths:
+      - "messenger/social-v1.*"
+      - "scripts/check-nbl-social-v1.mjs"
+      - ".github/workflows/nbl-social-feeds-preview.yml"
+      - "docs/nbl-social/**"
+permissions:
+  contents: read
+jobs:
+  source-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Check browser JS syntax
+        run: node --check messenger/social-v1.mjs
+      - name: Assert DM separation, auth boundaries and safe preview
+        run: node scripts/check-nbl-social-v1.mjs
