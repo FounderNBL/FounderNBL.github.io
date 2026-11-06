@@ -10,10 +10,10 @@
   <meta name="application-name" content="NBL Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
-  <link rel="stylesheet" href="/messenger/app.css?v=20261103-mobile-basic">
+  <link rel="stylesheet" href="/messenger/app.css?v=20261105-stage1">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
-  <script defer src="/messenger/app.js?v=20261103-mobile-basic"></script>
+  <script defer src="/messenger/app.js?v=20261105-stage1"></script>
 </head>
 <body>
   <header class="topbar">
@@ -26,8 +26,8 @@
   <main>
     <section class="intro">
       <p class="eyebrow">The official Messenger of NBL</p>
-      <h1>NBL Messenger</h1>
-      <p>Message your friends on NBL.</p>
+      <h1><img class="messenger-heading-mark" src="/messenger/icon.svg" alt="" width="58" height="58">NBL Messenger</h1>
+      <p>Your own space to connect and talk with real people on New Beansland.</p>
       <div class="signin-panel" data-chat-guest>
         <p data-chat-auth-status>Sign in with your NBL account to see your conversations.</p>
         <a class="btn primary" data-chat-signin href="https://newbeansland.org/account.html">Sign in / create account</a>
@@ -83,6 +83,15 @@
       <aside class="sidebar">
         <div class="sidebar-heading"><h2>Your chats</h2><button class="btn small" type="button" data-chat-refresh>Refresh</button></div>
         <div data-chat-threads aria-label="Your conversations"></div>
+        <section class="featured-founder" data-chat-featured-founder hidden aria-label="Meet the New Beansland Founder">
+          <div class="featured-founder-avatar" aria-hidden="true">NBL</div>
+          <div class="featured-founder-copy">
+            <span class="featured-founder-eyebrow">Featured first member</span>
+            <strong>Jamel Hawkins <span aria-label="Verified Founder" title="Verified Founder">✓</span></strong>
+            <small>@NBLFounderOfficial</small>
+          </div>
+          <button class="btn small founder-message" data-chat-featured-message type="button">Message</button>
+        </section>
         <details class="compact-menu new-chat-menu"><summary class="btn primary">＋ New conversation</summary><div class="menu-content">
         <div class="profile-setup" data-chat-handle-setup hidden>
           <strong>Choose your NBL username first</strong>

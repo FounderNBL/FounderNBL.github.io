@@ -1,0 +1,45 @@
+name: NBL Messenger Stage 1 — one real Android BrowserStack smoke
+
+on:
+  pull_request:
+    paths:
+      - "messenger/**"
+      - "scripts/browserstack-messenger-stage1.mjs"
+      - ".github/workflows/nbl-messenger-stage1-browserstack.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nbl-messenger-stage1-browserstack-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  android-messenger:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+      BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JavaScript
+        run: node --check scripts/browserstack-messenger-stage1.mjs
+      - name: Confirm BrowserStack credentials without revealing them
+        shell: bash
+        run: |
+          if [[ -z "$BROWSERSTACK_USERNAME" || -z "$BROWSERSTACK_ACCESS_KEY" ]]; then
+            echo "BLOCKED: Website repository has no available BrowserStack Actions credentials." >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::BrowserStack website test blocked: missing repository/org Actions secrets."
+            exit 2
+          fi
+      - name: One real Samsung Android Chrome visit to deployed Messenger
+        timeout-minutes: 5
+        run: node scripts/browserstack-messenger-stage1.mjs
+      - name: Record exact test boundary
+        if: always()
+        shell: bash
+        run: |
+          echo "One REAL Android Chrome public Messenger visit only. Does not prove authenticated A-to-B messaging, two devices, or that the PR branch is deployed." >> "$GITHUB_STEP_SUMMARY"

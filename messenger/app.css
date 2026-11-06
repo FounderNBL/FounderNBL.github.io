@@ -124,3 +124,123 @@ footer{padding:0 16px 30px;text-align:center;font-size:.77rem;color:var(--soft)}
   .composer textarea{min-height:60px}
   .userbar{padding:10px;margin:10px 0}
 }
+
+
+/* Stage 1 — a focused, welcoming NBL Messenger room. Existing chat behavior is retained. */
+body{
+  background:
+    radial-gradient(ellipse 80% 55% at 90% 1%, rgba(42,103,145,.25),transparent 75%),
+    radial-gradient(ellipse 65% 70% at 5% 95%, rgba(178,129,54,.12),transparent 78%),
+    #030b15;
+  background-attachment:fixed;
+}
+.topbar{
+  background:rgba(3,13,24,.87);
+  backdrop-filter:blur(18px);
+  border-bottom-color:rgba(240,197,111,.18);
+}
+main{max-width:1240px}
+.intro{position:relative}
+.intro h1{display:flex;align-items:center;gap:15px;font-size:clamp(2rem,5vw,3.1rem);letter-spacing:-.025em}
+.messenger-heading-mark{display:block;width:clamp(44px,7vw,60px);height:auto;flex:none;filter:drop-shadow(0 6px 18px rgba(240,197,111,.18))}
+.intro>p:not(.eyebrow){font-size:.98rem;margin-top:7px}
+.userbar{background:linear-gradient(125deg,rgba(14,35,53,.98),rgba(5,17,31,.96));box-shadow:0 12px 38px rgba(0,0,0,.12)}
+.chat-app{
+  position:relative;
+  min-height:min(72vh,730px);
+  background:linear-gradient(130deg,rgba(9,28,45,.98),rgba(4,14,27,.99));
+  border-color:rgba(240,197,111,.24);
+  border-radius:23px;
+  box-shadow:0 22px 70px rgba(0,0,0,.36),0 1px 0 rgba(255,255,255,.06) inset;
+}
+.sidebar{
+  position:relative;
+  background:linear-gradient(180deg,rgba(14,36,56,.98),rgba(5,18,31,.96));
+  border-right-color:rgba(240,197,111,.15);
+}
+.sidebar-heading{margin-top:6px}
+.sidebar-heading h2{font-size:1.17rem;letter-spacing:.01em}
+.thread{
+  border-radius:14px;
+  background:rgba(255,255,255,.035);
+  border-color:rgba(255,255,255,.09);
+  padding:13px 15px;
+  text-align:left;
+  transition:background .15s ease,border-color .15s ease,transform .15s ease;
+}
+.thread:hover,.thread.selected{background:rgba(240,197,111,.11);border-color:rgba(240,197,111,.48);transform:translateY(-1px)}
+.thread small{font-size:.74rem;opacity:.88}
+.conversation{background:radial-gradient(circle at 85% 8%,rgba(40,89,127,.18),transparent 42%),#081a2a}
+.conversation-head{
+  min-height:78px;
+  background:rgba(8,26,43,.93);
+  border-color:rgba(240,197,111,.11);
+  backdrop-filter:blur(8px)
+}
+.conversation-head h2{margin:3px 0 0;font-size:1.25rem}
+.messages{
+  background-image:
+    radial-gradient(circle at 20% 24%,rgba(227,193,130,.04) 0 2px,transparent 3px),
+    radial-gradient(circle at 72% 74%,rgba(157,205,235,.035) 0 2px,transparent 3px);
+  background-size:120px 124px,150px 148px;
+  padding:24px;
+  max-height:min(61vh,640px);
+}
+.message{
+  max-width:min(84%,510px);
+  border-radius:17px 17px 17px 5px;
+  background:#173149;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 8px 24px rgba(0,0,0,.09);
+  padding:12px 15px;
+}
+.message.mine{
+  border-radius:17px 17px 5px 17px;
+  background:linear-gradient(135deg,#f3dba8,#e7bd70);
+  border-color:#f5ddae;
+  color:#1f2430;
+}
+.message.mine .byline{color:#65400c}
+.message .byline{font-size:.69rem}
+.composer{background:rgba(6,20,33,.95);border-top-color:rgba(240,197,111,.18)}
+.composer textarea{min-height:64px;max-height:160px;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15);border-radius:13px;padding:13px}
+.composer textarea:focus{border-color:var(--gold2)}
+.composer .btn.primary{min-height:43px}
+.featured-founder{
+  display:grid;
+  grid-template-columns:46px minmax(0,1fr) auto;
+  gap:11px;
+  align-items:center;
+  padding:13px;
+  margin:16px 0 18px;
+  border:1px solid rgba(240,197,111,.45);
+  border-radius:16px;
+  background:linear-gradient(115deg,rgba(201,152,71,.18),rgba(42,92,123,.17));
+}
+.featured-founder-avatar{width:46px;height:46px;display:grid;place-items:center;border-radius:50%;font-size:.8rem;font-weight:900;letter-spacing:.08em;color:#0b1926;background:linear-gradient(135deg,#f5d798,#c6923b)}
+.featured-founder-copy{min-width:0;display:flex;flex-direction:column;gap:1px}
+.featured-founder-eyebrow{font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;color:#e8c689;font-weight:700}
+.featured-founder-copy strong{font-size:.85rem;color:#fff4dc}
+.featured-founder-copy strong span{color:#72d1ec;font-weight:800}
+.featured-founder-copy small{font-size:.72rem;color:#c7cbd2;overflow-wrap:anywhere}
+.founder-message{white-space:nowrap}
+.btn{transition:background .15s ease,box-shadow .15s ease}
+.btn:hover{box-shadow:0 0 0 2px rgba(240,197,111,.11)}
+@media(max-width:790px){
+  main{padding:13px 10px 30px}
+  .intro h1{font-size:1.6rem;gap:9px}
+  .messenger-heading-mark{width:42px}
+  .chat-app{border-radius:17px;min-height:0;margin-top:12px}
+  .sidebar{background:linear-gradient(180deg,#102c43,#071b2c)}
+  .conversation-head{min-height:66px}
+  .chat-app.chat-open .conversation{min-height:calc(100dvh - 190px)}
+  .messages{padding:15px 12px;max-height:none}
+  .message{max-width:89%}
+  .composer{padding:12px}
+}
+@media(max-width:380px){
+  .featured-founder{grid-template-columns:40px minmax(0,1fr);gap:9px}
+  .featured-founder-avatar{width:40px;height:40px}
+  .featured-founder .founder-message{grid-column:1/-1;width:100%}
+}
+@media(prefers-reduced-motion:reduce){.thread,.btn{transition:none}.thread:hover{transform:none}}

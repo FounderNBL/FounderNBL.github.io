@@ -11,7 +11,7 @@ const university = read("university-campus.html");
 const oldHumanChat = read("member-chat.html");
 const website = read("index.html");
 
-assert.match(app, /<h1>NBL Messenger<\/h1>/);
+assert.match(app, /<h1>[\s\S]*?NBL Messenger<\/h1>/);
 assert.match(app, /href="\/messenger\/manifest.webmanifest"/);
 assert.match(app, /src="\/messenger\/app.js/);
 assert.match(app, /data-chat-find-form/);
@@ -34,7 +34,12 @@ assert.doesNotMatch(sw, /functions\/v1|clerk\.newbeansland\.org/);
 // Messenger and independent school are separate websites. Old .org campus redirects.
 assert.match(university, /url=https:\/\/nblschool\.com\//);
 assert.match(oldHumanChat, /data-chat-send-form/); // old bookmarks still work
-assert.match(website, /href="\/messenger\//); // discoverable without Beans
+assert.match(website, /href="\/messenger\//);
+assert.match(website, /class="nav-messenger-launch"/);
+assert.match(website, /src="\/messenger\/icon\.svg"/);
+assert.match(app, /data-chat-featured-founder hidden/);
+assert.match(js, /action:"find_users",q:"NBLFounderOfficial"/);
+assert.match(js, /user\.verified===true/); // discoverable without Beans
 
 // A zero-thread inbox is NOT proof that nobody else has registered.
 // Welcome existing verified Founder without inventing fake member profiles.
@@ -53,21 +58,21 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261103-private-video'),
+assert.ok(app.includes('/messenger/app.js?v=20261105-stage1'),
   "Messenger must load the new account navigation handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
 assert.match(js, /Recent direct messages only: up to 200 threads and the latest 100 messages per thread/);
 assert.match(app, /href="\/account\.html"/);
-assert.match(js, /const INVITE_URL="https:\/\/newbeansland\.org\/messenger\/"/);
+assert.match(js, /const INVITE_URL="https:\/\/newbeansland\.org\/messenger\/index\.html"/);
 assert.match(js, /const founder=state\.me\?\.role==="founder"/);
 assert.match(js, /if\(invite\)invite\.hidden=!empty/);
 assert.match(js, /await navigator\.share\(/);
 assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
-assert.doesNotMatch(js, /navigator\.contacts|\.getContacts\(/);
+assert.match(js, /navigator\.contacts\?\.select/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261103-private-video/);
+assert.match(sw, /nbl-messenger-shell-20261105-stage1/);
 
 
 for(const item of [
