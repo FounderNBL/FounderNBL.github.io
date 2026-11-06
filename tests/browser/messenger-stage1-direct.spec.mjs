@@ -43,6 +43,10 @@ test("Stage 1: two independent NBL accounts can exchange DM replies in the brows
       status:200,contentType:"application/json",
       body:JSON.stringify({ok:true,publicKey:"AA"})
     }));
+    await page.route("**/functions/v1/nbl-meta-page-inbox*",route=>route.fulfill({
+      status:403,contentType:"application/json",
+      body:JSON.stringify({ok:false,reason:"not_in_stage1_test"})
+    }));
     await page.route("**/functions/v1/nbl-social",async route=>{
       const token=(route.request().headers().authorization||"").replace(/^Bearer /i,"");
       const actor=members[token];
