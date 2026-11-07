@@ -1,0 +1,56 @@
+name: Pulse — backend parity and restricted source gate
+on:
+  push:
+    branches:
+      - work/nbl-pulse-homeworld-stream-feeds-20261106
+    paths:
+      - 'pulse/**'
+      - 'messenger/social-v1.*'
+      - 'supabase/functions/nbl-social/**'
+      - 'supabase/migrations/*nbl_pulse*'
+      - '.github/workflows/nbl-pulse-backend-source.yml'
+  pull_request:
+    paths:
+      - 'pulse/**'
+      - 'messenger/social-v1.*'
+      - 'supabase/functions/nbl-social/**'
+      - 'supabase/migrations/*nbl_pulse*'
+permissions:
+  contents: read
+jobs:
+  source-and-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: NBL Pulse existing source checks
+        run: |
+          node --check messenger/social-v1.mjs
+          node scripts/check-nbl-social-v1.mjs
+      - name: Verify private friend migration and Clerk backend actions
+        run: |
+          node --input-type=module <<'JS'
+          import {readFileSync} from 'node:fs';
+          import assert from 'node:assert/strict';
+          const api=readFileSync('supabase/functions/nbl-social/index.ts','utf8');
+          const ddl=readFileSync('supabase/migrations/20261107_nbl_pulse_friend_requests.sql','utf8');
+          const front=readFileSync('pulse/index.html','utf8');
+          for(const action of ['social_profile','friends_list','friend_request','friend_accept','friend_decline','friend_remove']) assert.ok(api.includes('action==="'+action+'"') || (api.includes('"'+action+'"') && api.includes('action==="friend_request"')),action);
+          assert.match(api,/const me=await actor\(req\)/);
+          assert.match(api,/async function pulseBlocked\(/);
+          assert.match(api,/friend_request_daily_limit/);
+          assert.match(ddl,/enable row level security/);
+          assert.match(ddl,/revoke all.*anon,authenticated/i);
+          assert.match(front,/Go Live · setup pending/);
+          assert.match(front,/disabled>Go Live/);
+          assert.doesNotMatch(api,/sk_live_|STREAM_API_SECRET\s*=\s*['"][^'"]{12}/i);
+          console.log('PASS: Pulse source/auth structure and restricted schema checks');
+          JS
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check staged deployed-source parity
+        run: deno check supabase/functions/nbl-social/index.ts
