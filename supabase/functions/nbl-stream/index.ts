@@ -13,6 +13,7 @@ const JWKS=createRemoteJWKSet(new URL(ISSUER+"/.well-known/jwks.json"));
 const db=createClient(BASE,SERVICE,{auth:{persistSession:false,autoRefreshToken:false}});
 const ALLOWED=new Set(["https://newbeansland.org","https://www.newbeansland.org","https://foundernbl.github.io"]);
 let lastHealth:{at:number;healthy:boolean;code:string}|null=null;
+let lastPulseModeration:{at:number;ready:boolean;code:string}|null=null;
 
 function cors(req:Request){
   const origin=(req.headers.get("origin")||"").replace(/\/$/,"");
@@ -76,6 +77,30 @@ async function streamHealth(){
   lastHealth={at:Date.now(),healthy,code};
   return lastHealth;
 }
+// Pulse activities are added to 'user' feeds. The provider group policy
+// is an enforceable default for ALL members, not a client-side voluntary hint.
+// Never mint public Feeds tokens when the text moderation policy is absent.
+async function pulseModerationHealth(){
+  if(!configReady())return {ready:false,code:"STREAM_CREDENTIALS_UNAVAILABLE"};
+  if(lastPulseModeration && Date.now()-lastPulseModeration.at<45000)return lastPulseModeration;
+  let ready=false,code="PULSE_MODERATION_UNAVAILABLE";
+  try{
+    const auth=await signedToken({server:true},60);
+    const response=await fetch(
+      "https://chat.stream-io-api.com/api/v2/moderation/config/feeds%3Auser?api_key="+encodeURIComponent(STREAM_KEY),
+      {headers:{authorization:auth,"stream-auth-type":"jwt",accept:"application/json"},signal:AbortSignal.timeout(6500)}
+    );
+    if(response.ok){
+      const payload=await response.json().catch(()=>({}));
+      const config=payload?.config;
+      ready=config?.key==="feeds:user"&&config?.ai_text_config?.enabled===true
+        &&Array.isArray(config?.ai_text_config?.rules)&&config.ai_text_config.rules.length>=8;
+      code=ready?"MODERATION_CONNECTED":"PULSE_POLICY_NOT_READY";
+    }else code=response.status===404?"PULSE_POLICY_NOT_INSTALLED":"MODERATION_HTTP_"+response.status;
+  }catch{code="PULSE_MODERATION_UNAVAILABLE";}
+  lastPulseModeration={at:Date.now(),ready,code};
+  return lastPulseModeration;
+}
 Deno.serve(async(req:Request)=>{
   if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(req)});
   if(!goodOrigin(req))return json(req,{ok:false,reason:"origin_not_allowed"},403);
@@ -84,6 +109,12 @@ Deno.serve(async(req:Request)=>{
     const h=await streamHealth();
     return json(req,{ok:h.healthy,provider:"Stream",connected:h.healthy,code:h.code},h.healthy?200:503);
   }
+  if(req.method==="GET" && url.searchParams.get("action")==="pulse-readiness"){
+    const [stream,moderation]=await Promise.all([streamHealth(),pulseModerationHealth()]);
+    return json(req,{ok:stream.healthy&&moderation.ready,connected:stream.healthy,
+      moderation_ready:moderation.ready,code:!stream.healthy?stream.code:moderation.code},
+      stream.healthy&&moderation.ready?200:503);
+  }
   if(req.method!=="POST")return json(req,{ok:false,reason:"method_not_allowed"},405);
   const actor=await verifiedActor(req);
   if(!actor)return json(req,{ok:false,reason:"sign_in_required"},401);
@@ -91,15 +122,14 @@ Deno.serve(async(req:Request)=>{
   if(body?.action!=="session")return json(req,{ok:false,reason:"unsupported_action"},400);
   const h=await streamHealth();
   if(!h.healthy)return json(req,{ok:false,reason:h.code},503);
+  const moderation=await pulseModerationHealth();
+  if(!moderation.ready)return json(req,{ok:false,reason:moderation.code},503);
   const [profile,role]=await Promise.all([
     db.from("nbl_account_profiles").select("username").eq("clerk_user_id",actor).maybeSingle(),
     db.from("nbl_chat_usage_accounts").select("role").eq("clerk_user_id",actor).maybeSingle()
   ]);
   if(profile.error||role.error)return json(req,{ok:false,reason:"identity_unavailable"},503);
   const founder=String(role.data?.role||"").toLowerCase()==="founder";
-  // Safe private launch: do not mint Stream tokens for the general public
-  // until moderation, privacy and usage gates are independently verified.
-  if(!founder)return json(req,{ok:false,reason:"pulse_founder_preview_only"},403);
   const name=founder?"NBLFounderOfficial":String(profile.data?.username||"NBL member")
     .replace(/[^a-zA-Z0-9_-]/g,"").slice(0,30)||"NBL member";
   const token=await signedToken({user_id:actor},3600);
