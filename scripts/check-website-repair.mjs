@@ -117,7 +117,7 @@ for(const filename of findHtml(rootPath)){
 }
 
 requireText(header,'aria-label="Open Beans"',"The AI launcher must be named Beans.");
-requireText(header,'<img src="/NBLChat_Beans.png" alt="" aria-hidden="true">',"Homepage Chat launcher is not using the stable NBL Chat artwork.");
+requireText(header,'<img src="/beans_01_wave_nbl.png" alt="" aria-hidden="true">',"Homepage Chat launcher is not using the new official Standard Beans artwork.");
 forbidText(header,'data:image/webp;base64,',"Inline Base64 Chat artwork returned; use the stable repository asset.");
 requireText(header,'<h2 id="nbl-beans-title">Beans</h2>',"The AI dialog title must be Beans.");
 requireText(header,'data-nbl-chat-mode="beans" role="tab"',"Beans is not named as the regular Chat tab.");

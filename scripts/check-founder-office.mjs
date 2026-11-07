@@ -35,7 +35,7 @@ requireText(html, 'function setupFloorFigure(figure)', "shared Beans/toy interac
 requireText(html, 'floorFigures.forEach(setupFloorFigure)', "not all floor figures use the shared interaction.");
 requireText(html, 'returnFigureHome', "floor figures do not snap back home.");
 
-requireText(html, 'src="/Beans.png"', "Beans lightweight image asset is missing from the room.");
+requireText(html, 'src="/beans_01_wave_nbl.png"', "Beans lightweight image asset is missing from the room.");
 requireText(html, 'src="/NBL-Model-Front.png"', "NBL toy lightweight image asset is missing from the room.");
 requireText(html, 'className = "office-artifact-image"', "museum artifact image preview is missing.");
 
@@ -74,7 +74,7 @@ for (const source of inlineScripts) {
 const requiredAssets = [
   "founder-office-room.png",
   "official-nbl-emblem.png",
-  "Beans.png",
+  "beans_01_wave_nbl.png",
   "NBL-Model-Front.png",
   "founder-nameplate.png",
   "founder-doctorate-degree.png",

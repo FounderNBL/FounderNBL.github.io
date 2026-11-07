@@ -115,7 +115,7 @@ test.describe("New Beansland web app browser smoke", () => {
     const launcher = page.getByRole("button", { name: "Open Beans" });
     await expect(launcher).toBeVisible();
     const launcherImage = launcher.locator("img");
-    await expect(launcherImage).toHaveAttribute("src", "/NBLChat_Beans.png");
+    await expect(launcherImage).toHaveAttribute("src", "/beans_01_wave_nbl.png");
     await expect.poll(async () => launcherImage.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
     await launcher.click();
 
@@ -137,7 +137,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(drawer.getByRole("link",{name:/Privacy & AI notice/})).toHaveAttribute("href","/privacy.html");
     if(mobile)await page.getByRole("button",{name:"Close Beans menu"}).click();
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
-    await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src","/NBLChat_Beans.png");
+    await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src","/beans_01_wave_nbl.png");
     await expect(page.getByRole("tab",{name:"Beans"})).toBeHidden();
     await expect(page.locator("[data-nbl-quick-toggle]")).toBeHidden();
     await expect(page.locator("[data-nbl-quick-selector]")).toBeHidden();
@@ -146,9 +146,10 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-hero-copy")).toBeVisible();
     await page.locator("[data-nbl-customize-open]").click();
     await expect(page.locator("[data-nbl-customize-section='wardrobe']")).toBeVisible();
-    await expect(page.locator("[data-nbl-look='classic']")).toBeEnabled();
-    await expect(page.locator("[data-nbl-look='nbl']")).toBeEnabled();
-    await expect(page.getByRole("button",{name:/Third approved look/})).toBeDisabled();
+    for(const name of ["standard","crossed","jersey","cargoWave","cargoPoint"]){
+      await expect(page.locator(`[data-nbl-look='${name}']`)).toBeEnabled();
+    }
+    await expect(page.locator("[data-nbl-premium-outfits]")).toBeDisabled();
     await page.locator("[data-nbl-customize-tab='appearance']").click();
     await expect(page.locator("[data-nbl-customize-photo='chat']")).toHaveAttribute("accept","image/png,image/jpeg,image/webp,image/gif");
     await page.locator("[data-nbl-customize-color]").fill("#e6cda5");

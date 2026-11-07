@@ -175,7 +175,7 @@
 }
 .nbl-beans-look[aria-pressed="true"]{border:2px solid #d59726;background:#fff2d9}
 .nbl-beans-look img,.nbl-beans-look-placeholder{
-  flex:0 0 85px;width:85px;height:100px;object-fit:cover;border-radius:12px;
+  flex:0 0 85px;width:85px;height:100px;object-fit:contain;border-radius:12px;
   background:linear-gradient(145deg,#44270b,#0c1523);color:#efd19a;
 }
 .nbl-beans-look-placeholder{display:grid;place-items:center;font-size:2rem}
