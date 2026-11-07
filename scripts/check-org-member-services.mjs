@@ -18,12 +18,12 @@ need("campus",'url=https://nblschool.com/',"Old .org campus must redirect to the
 forbid("header",'class="nbl-chat-drawer-item nbl-beans-people-link"',"Person messaging must not be a Beans menu item.");
 forbid("header",'class="nbl-chat-drawer-item nbl-beans-grey-link"',"Professor Grey must not be a Beans menu item.");
 need("header",'data-nbl-beans-regular',"Beans' own assistant chat panel must remain available.");
-need("landing",'url=https://newbeansland.org/university.html#enroll',"Legacy enrollment must redirect to the single cashier page.");
+need("landing",'url=https://newbeansland.org/university.html#early-registration',"Legacy enrollment must redirect to the single cashier page.");
 const currentAdmissions=read("university.html");
-const currentBilling=read("university-storefront.js");
-if(!currentAdmissions.includes('id="nblu-one-entry"'))failures.push("The one-page University admissions entry is missing.");
-if(!currentBilling.includes('if(!item.plan)'))failures.push("Held University plans must not create unsupported checkouts.");
-if(!currentBilling.includes('"/billing/checkout"'))failures.push("University checkout must use the NBL billing gateway.");
+const currentBilling=read("nbl-university-early-interest.js");
+if(!currentAdmissions.includes('data-nbl-university-interest-form'))failures.push("Free notification signup is missing.");
+if(!currentBilling.includes('action:"join"'))failures.push("University signup must use the free interest ledger.");
+if(currentAdmissions.includes('billing/checkout')||currentAdmissions.includes('nblu-pay'))failures.push("University payment page must be closed.");
 
 // Human Chat is only for signed-in people; messaging is bound to Core/Supabase.
 need("chat",'data-chat-guest',"Missing signed-out person-to-person Chat entrance.");
