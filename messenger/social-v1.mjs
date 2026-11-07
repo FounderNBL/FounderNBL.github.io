@@ -481,6 +481,9 @@ async function boot(){
     assertCurrentAccount(initialNBLUserId);
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
     selectTab();await loadFeed();await loadLinkedPost();
-  }catch(error){status("Social integration not available: "+safeError(error));}
+  }catch(error){
+    if(String(error?.message||"").includes("Founder-only"))$("#guest").hidden=true;
+    status("Social integration not available: "+safeError(error));
+  }
 }
 void boot();
