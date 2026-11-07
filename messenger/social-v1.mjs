@@ -18,6 +18,9 @@ const VIDEO_TYPES=new Set(["video/mp4","video/webm"]);
 function selectedMedia(){
   const files=Array.from(document.querySelector("#postMedia")?.files||[]);
   if(!files.length)return [];
+  // Prevent unmoderated upload costs in the Pulse live preview.
+  if(location.pathname.startsWith("/pulse"))
+    throw new Error("Pulse photos and videos open after upload safety and cost testing.");
   const images=files.filter(f=>IMAGE_TYPES.has(f.type));
   const videos=files.filter(f=>VIDEO_TYPES.has(f.type));
   if(images.length===files.length&&files.length<=MAX_PHOTOS&&images.every(f=>f.size>0&&f.size<=MAX_PHOTO_BYTES))return files;
@@ -121,10 +124,11 @@ async function secured(url,body){
 async function session(){
   const actorId=state.clerk?.user?.id;
   assertCurrentAccount(actorId);
-  const [api,identity]=await Promise.all([
-    secured(STREAM_BRIDGE,{action:"session"}),
-    secured(SOCIAL_API,{action:"me"})
-  ]);
+  const identity=await secured(SOCIAL_API,{action:"me"});
+  // First website release is Founder's private beta, not a public Feeds launch.
+  if(String(identity.me?.role||"").toLowerCase()!=="founder")
+    throw new Error("Pulse is in Founder-only testing. Your NBL Messenger account is unaffected.");
+  const api=await secured(STREAM_BRIDGE,{action:"session"});
   // Only the server chooses the Stream user ID and official Founder status.
   assertCurrentAccount(actorId);
   if(api.user?.id!==actorId)throw new Error("Social identity mismatch.");
