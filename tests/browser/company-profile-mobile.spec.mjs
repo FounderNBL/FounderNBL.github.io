@@ -27,10 +27,12 @@ for (const viewport of [
   });
 }
 
-test("homepage company profile links only to one-page presentation", async ({ page }) => {
+test("homepage opens the real NBL Pulse world; company presentation stays separately available", async ({ page }) => {
   await page.goto("/");
-  const section = page.locator("#nbl-company-profile");
-  await expect(section).toContainText("one-page NBL Company Profile");
-  await expect(section.locator('a[href="company-profile.html"]')).toHaveCount(2);
-  await expect(section.locator(".profile-cta-cover")).toHaveCount(1);
+  const section = page.locator("#nbl-pulse-door");
+  await expect(section).toBeVisible();
+  await expect(section.getByRole("heading", { name: "NBL Pulse™" })).toBeVisible();
+  await expect(section.locator('a[href="/pulse/"]')).toHaveCount(1);
+  await page.goto("/company-profile.html");
+  await expect(page.getByRole("img", { name: /New Beansland company profile/ })).toBeVisible();
 });
