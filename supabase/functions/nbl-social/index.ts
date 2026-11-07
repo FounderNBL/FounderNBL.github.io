@@ -1,4 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// Supabase supplies EdgeRuntime globally at runtime; this declares its TypeScript shape.
+declare const EdgeRuntime: { waitUntil(task: Promise<unknown>): void };
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 import { createRemoteJWKSet, jwtVerify } from "npm:jose@5.9.6";
 import { unsafeSocialMediaReason, urgentSafetyAllegation, safeSafetyQueueItem } from "./nbl-ugc-safety.mjs";
