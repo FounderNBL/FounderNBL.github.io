@@ -53,7 +53,7 @@ if (mode === "--dry-run") {
   const jwt = unsigned+"."+createHmac("sha256",secret).update(unsigned).digest("base64url");
   const q = "?api_key="+encodeURIComponent(key);
   const base = "https://chat.stream-io-api.com/api/v2";
-  const auth = {authorization:jwt,"stream-auth-type":"jwt",accept:"application/json"};
+  const auth = {authorization:"Bearer "+jwt,"stream-auth-type":"jwt",accept:"application/json"};
   async function request(path,method="GET",body) {
     const response = await fetch(base+path+q,{
       method,

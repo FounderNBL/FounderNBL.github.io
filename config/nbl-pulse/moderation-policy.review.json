@@ -139,7 +139,8 @@
         "action": "flag",
         "min_confidence": 80
       }
-    ]
+    ],
+    "enabled": true
   },
   "ai_video_config": {
     "rules": [
@@ -158,6 +159,7 @@
         "action": "flag",
         "min_confidence": 70
       }
-    ]
+    ],
+    "enabled": true
   }
 }

@@ -29,3 +29,8 @@ Read-only and write mode require environment variables STREAM_API_KEY and STREAM
 
 Stream docs: https://getstream.io/moderation/docs/node/configuration/policies/ ; https://getstream.io/moderation/docs/node/integrations/stream-feeds/ ; https://getstream.io/moderation/pricing/
 Rollback: remove staged PR; if a draft config is later installed, verify it is unattached before deleting that exact named config.
+
+## Existing credential integration (2026-11-06)
+Existing Supabase nbl-stream v14 uses STREAM_API_KEY/STREAM_API_SECRET; GitHub secrets can also be used by a trusted workflow, if present in the **website** repository. No keys are moved or shown.
+For this review branch, the guarded workflow triggers once on a branch update, performs offline tests, and attempts to create the **unattached** policy only if both Stream secrets exist as Actions secrets. If they are unavailable, the workflow prints a warning and leaves Stream unchanged.
+No public Feeds policy, Chat policy, live calls, videos or bills are enabled. Installing a named unattached config is not public moderation activation. All subsequent changes still need a separate Founder-approved rollout.
