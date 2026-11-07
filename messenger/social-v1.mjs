@@ -18,12 +18,13 @@ const VIDEO_TYPES=new Set(["video/mp4","video/webm"]);
 function selectedMedia(){
   const files=Array.from(document.querySelector("#postMedia")?.files||[]);
   if(!files.length)return [];
-  // Prevent unmoderated upload costs in the Pulse live preview.
-  if(location.pathname.startsWith("/pulse"))
-    throw new Error("Pulse photos and videos open after upload safety and cost testing.");
   const images=files.filter(f=>IMAGE_TYPES.has(f.type));
-  const videos=files.filter(f=>VIDEO_TYPES.has(f.type));
   if(images.length===files.length&&files.length<=MAX_PHOTOS&&images.every(f=>f.size>0&&f.size<=MAX_PHOTO_BYTES))return files;
+  // Pulse is a REAL photo-sharing service, but video uploads stay off until
+  // separately released. Reject unsupported files even if accept= is bypassed.
+  if(location.pathname.startsWith("/pulse"))
+    throw new Error("Choose up to four JPEG, PNG or WebP photos (8 MB each). Video uploads are not enabled yet.");
+  const videos=files.filter(f=>VIDEO_TYPES.has(f.type));
   if(videos.length===1&&files.length===1&&videos[0].size>0&&videos[0].size<=MAX_VIDEO_BYTES)return files;
   throw new Error("Choose up to four JPEG/PNG/WebP photos (8 MB each), or one MP4/WebM video (40 MB).");
 }
@@ -442,17 +443,20 @@ async function publishPost(event){
   try{
     const feed=state.client.feed("user",state.user.id);
     const attachments=[];
-    for(const file of files){
-      // Uploads are member-authenticated to Stream Feeds, never to a Facebook Page.
-      const image=IMAGE_TYPES.has(file.type);
-      const response=image?await state.client.uploadImage({file}):await state.client.uploadFile({file});
-      if(!trustedMediaLink(response?.file))throw new Error("Upload did not return a trusted media link.");
-      attachments.push(image?{type:"image",image_url:response.file,custom:{}}:{type:"video",asset_url:response.file,custom:{}});
-    }
+    let result;
     try{
-      await feed.addActivity({type:"post",text,attachments,visibility:"public"});
+      for(const file of files){
+        // Stream authenticates uploads with the member's own Clerk-derived identity.
+        const image=IMAGE_TYPES.has(file.type);
+        const response=image?await state.client.uploadImage({file}):await state.client.uploadFile({file});
+        const trusted=trustedMediaLink(response?.file);
+        if(!trusted)throw new Error("Upload did not return a trusted Stream media link.");
+        attachments.push(image?{type:"image",image_url:trusted,custom:{}}:{type:"video",asset_url:trusted,custom:{}});
+      }
+      result=await feed.addActivity({type:"post",text,attachments,visibility:"public"});
     }catch(error){
-      // Best-effort removal of orphaned uploads if publishing fails.
+      // Also clean up partial photo uploads when a later upload fails, rather
+      // than only cleaning up when activity creation itself fails.
       for(const asset of attachments){
         try{
           if(asset.type==="image")await state.client.deleteImage({url:asset.image_url});
@@ -462,8 +466,11 @@ async function publishPost(event){
       throw error;
     }
     $("#postText").value="";$("#postCount").textContent="0 / 1500";
-    $("#postMedia").value="";$("#mediaSelection").textContent="Up to 4 photos (8 MB each) or 1 video (40 MB).";
-    status("Your NBL post was published.");
+    $("#postMedia").value="";$("#mediaSelection").textContent=location.pathname.startsWith("/pulse")
+      ?"Up to 4 photos (8 MB each). Videos are not enabled.":"Up to 4 photos (8 MB each) or 1 video (40 MB).";
+    const modAction=String(result?.activity?.moderation?.action||result?.moderation?.action||"").toLowerCase();
+    status(["remove","shadow","shadow_block","bounce"].includes(modAction)
+      ?"Your post was submitted to moderation and may not be visible to others.":"Your NBL post was published.");
     state.selected="user";selectTab();await loadFeed();
   }catch(error){status("Post not published: "+safeError(error));}
   finally{state.busy=false;submit.disabled=false;}
