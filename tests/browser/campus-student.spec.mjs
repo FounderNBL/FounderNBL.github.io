@@ -14,5 +14,5 @@ test("University admission is closed; free opening notification only",async({pag
   await expect(page.locator("[data-nbl-university-interest-form]")).toHaveCount(1);
   await expect(page.locator('a[href="https://nblschool.com/"]')).toHaveCount(1);
   await expect(page.locator("#nblu-one-entry, #nblu-pay")).toHaveCount(0);
-  await expect(page.getByText("No tuition", {exact:false}).first()).toBeVisible();
+  await expect(page.getByText("we are not accepting tuition", {exact:false}).first()).toBeVisible();
 });
