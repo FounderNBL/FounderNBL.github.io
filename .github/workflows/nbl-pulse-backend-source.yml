@@ -46,8 +46,13 @@ jobs:
           assert.match(ddl,/revoke all.*anon,authenticated/i);
           assert.match(front,/Go Live · setup pending/);
           assert.match(front,/disabled>Go Live/);
-          assert.match(readFileSync('supabase/functions/nbl-stream/index.ts','utf8'),/pulse_founder_preview_only/);
-          assert.match(readFileSync('messenger/social-v1.mjs','utf8'),/identity\.me\?\.role/);
+          const bridge=readFileSync('supabase/functions/nbl-stream/index.ts','utf8');
+          assert.match(bridge,/pulseModerationHealth/);
+          assert.match(bridge,/moderation\\/config\\/feeds%3Auser/);
+          assert.doesNotMatch(bridge,/pulse_founder_preview_only/);
+          const pulseUI=readFileSync('messenger/social-v1.mjs','utf8');
+          assert.match(pulseUI,/entity_type:"stream:feeds:v3:activity"/);
+          assert.match(pulseUI,/entity_type:"stream:feeds:v3:comment"/);
           assert.match(front,/id="postMedia" type="file" disabled/);
           assert.doesNotMatch(api,/sk_live_|STREAM_API_SECRET\s*=\s*['"][^'"]{12}/i);
           console.log('PASS: Pulse source/auth structure and restricted schema checks');
