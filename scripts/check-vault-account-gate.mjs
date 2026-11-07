@@ -70,33 +70,22 @@ test("customer NBL Vault uses NBL tool-cost language, never supplier-cost langua
  assert.doesNotMatch(customer,/OpenAI|API provider invoices|provider charges|supplier invoices/i);
 });
 
-test("Vault, public catalog and Beans drawer preserve every approved Founder price",()=>{
- const planSource=readFileSync(new URL("../nbl-product-plans.js",import.meta.url),"utf8");
- const publicCatalog=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
- const header=readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
- const approved=[
-  ["beans","$4.99/month"],["nblPlus","$29.99/month"],["beansUniversity","$14.99/month"],
-  ["foundationStudentContinuation","$9.99/month"],["getMore","$9.99 one-time"],
-  ["nblUsage","$7.00 one-time"],["studiosCredits","$8.99 one-time"],
-  ["foundationProgram","$29.99 one-time"],["foundationUniversity","$34.99 one-time"],
-  ["guidedFoundation","$54.99 one-time"],["fullNbluDiy","$184.99 one-time"],
-  ["fullNblu","$449.99 one-time"],["nbluContinuation","$14.99/month"]
- ];
- for(const [key,price] of approved){
-   const row=planSource.split(key+":Object.freeze({")[1]?.split("\n")[0]||"";
-   assert.ok(row.includes('price:"'+price+'"'),key+" changed its approved rate");
-   assert.ok(html.includes('data-nbl-plan-value="'+key+'.price"'),"Vault missing canonical "+key);
-   assert.ok(publicCatalog.includes('data-nbl-plan-value="'+key+'.price"'),"Catalog missing canonical "+key);
+test("Vault and public catalog preserve active prices while University is closed",()=>{
+ const plans=readFileSync(new URL("../nbl-product-plans.js",import.meta.url),"utf8");
+ const pricing=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
+ const account=readFileSync(new URL("../account.html",import.meta.url),"utf8");
+ for(const [key,price] of [["beans","$4.99/month"],["getMore","$9.99 one-time"],
+   ["nblUsage","$7.00 one-time"],["studiosCredits","$8.99 one-time"]]){
+   assert.ok(plans.includes('price:"'+price+'"'),key+" canonical value missing");
+   assert.ok(html.includes('data-nbl-plan-value="'+key+'.price"'),"Vault missing "+key);
+   assert.ok(pricing.includes('data-nbl-plan-value="'+key+'.price"'),"Catalog missing "+key);
  }
- assert.match(header,/NBL_PRODUCT_PLANS\.nblUsage\?\.price/);
- assert.match(header,/NBL_PRODUCT_PLANS\.studiosCredits\?\.price/);
+ assert.match(pricing,/University is under construction/);
+ assert.match(account,/Sign up free for the opening notification/);
+ assert.match(html,/No University purchase or subscription can be started/);
+ assert.doesNotMatch(html,/<article class="rate-card"><h3.*Full NBLU Experience/is);
  assert.match(html,/id="university-prices"/);
- assert.match(html,/full refund of that advance-enrollment payment/);
- assert.match(html,/December 2026/);
- assert.match(html,/\$184\.99.*no physical books/is);
- assert.match(html,/\$449\.99.*physical stage-release books/is);
 });
-
 test("NBL service currencies stay separate; no extra fee or leaked operating reserve",()=>{
  const customer=html.split('<section class="panel" id="founder" hidden>')[0];
  assert.match(customer,/not.*deduction from purchased NBL Usage or NBL Studios credits/i);
@@ -107,28 +96,24 @@ test("NBL service currencies stay separate; no extra fee or leaked operating res
  assert.doesNotMatch(customer,/data-nbl-university-checkout=|data-account-billing-plan=|data-nbl-billing-plan=/);
 });
 
-test("NBL website hides long offer menus inside three accessible categories",()=>{
+test("Public pricing keeps three categories, account keeps Beans and closed University only",()=>{
  const pricing=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
  const account=readFileSync(new URL("../account.html",import.meta.url),"utf8");
- const university=readFileSync(new URL("../university-enrollment.html",import.meta.url),"utf8");
  const arrival=readFileSync(new URL("../university.html",import.meta.url),"utf8");
+ const legacy=readFileSync(new URL("../university-enrollment.html",import.meta.url),"utf8");
  const header=readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
  const styles=readFileSync(new URL("../nbl-world-header.css",import.meta.url),"utf8");
  assert.equal((pricing.match(/<details class="nbl-category" data-nbl-category/g)||[]).length,3);
- assert.equal((account.match(/<details class="account-category">/g)||[]).length,3);
- assert.equal((university.match(/<details class="university-category">/g)||[]).length,3);
- assert.equal((arrival.match(/<details class="university-category">/g)||[]).length,3);
- assert.match(arrival,/href="#enroll"/);
+ assert.equal((account.match(/<details class="account-category">/g)||[]).length,2);
+ assert.match(arrival,/data-nbl-university-interest-form/);
+ assert.match(legacy,/university.html#early-registration/);
  assert.equal((header.match(/<details class="nbl-drawer-category">/g)||[]).length,3);
- assert.match(styles,/\.nbl-drawer-category>summary/);
- assert.equal((account.match(/data-account-billing-plan="/g)||[]).length,11);
- assert.equal((university.match(/<article class="panel">/g)||[]).length>=9,true);
- assert.match(account,/data-account-billing-plan="beans"/);
- assert.match(account,/data-account-billing-plan="topup_500"/);
+ assert.match(styles,/nbl-drawer-category/);
+ for(const name of ["beans","topup_500"])assert.ok(account.includes('data-account-billing-plan="'+name+'"'));
  assert.match(pricing,/addEventListener\("hashchange",reveal\)/);
  assert.match(html,/addEventListener\("hashchange",revealVaultCategory\)/);
  assert.match(html,/id="pricing"/);
  assert.match(html,/id="university-prices"/);
- for(const source of [pricing,account,university,html])assert.match(source,/<details/);
- for(const source of [pricing,account,university])assert.match(source,/refund|renew/i);
+ assert.match(arrival,/school is under construction/);
+ assert.doesNotMatch(arrival,/nblu-pay|billing\/checkout/);
 });
