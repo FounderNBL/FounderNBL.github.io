@@ -102,12 +102,10 @@ requireText(plans,'beans:Object.freeze({name:"Beans"',"Beans base-tier display n
 requireText(plans,'price:"$4.99/month"',"Canonical Beans plan price is missing.");
 requireText(plans,'price:"$29.99 one-time"',"Correct one-time Foundation Materials price is missing.");
 requireText(plans,'beansUniversity:Object.freeze',"Combined Beans + University plan is missing.");
-requireText(account,'data-account-billing-plan="beans_university"',"Account Beans + University checkout action is missing.");
-requireText(account,'data-account-billing-plan="beans_university" disabled',"University membership checkout must remain held.");
-requireText(account,'data-account-billing-plan="foundation" disabled',"Foundation checkout must stay held pending proof.");
-requireText(account,'data-account-billing-plan="full_foundation" disabled',"Guided Foundation checkout must stay held pending proof.");
-requireText(account,'data-account-billing-plan="full_nblu" disabled',"Full NBLU checkout must stay held pending proof.");
-requireText(account,'data-account-billing-plan="nblu_continuation" disabled',"Owner continuation must stay held pending proof.");
+requireText(account,'Sign up free for the opening notification',"School account link must point to free opening notification.");
+for(const blocked of ["beans_university","foundation","full_foundation","full_nblu","nblu_continuation","foundation_student_continuation"]) {
+  forbidText(account,'data-account-billing-plan="'+blocked+'"',"School must not expose its old paid checkout option: "+blocked);
+}
 requireText(header,'beansHistoryLoadedFor',"Signed-in Beans history is not isolated per account.");
 requireText(header,'conversationId:beansConversationId',"Beans conversation continuity is not sent to the backend.");
 requireText(header,'NBL_CORE_API',"NBL Core website ingress is missing.");
@@ -122,7 +120,7 @@ requireText(header,'Your NBL account is still signed in, but its secure session 
 forbidText(header,'functions/v1/beans-public',"Website client still hardcodes the internal public Beans runtime.");
 requireText(header,'meter:requestNblMeter',"Website membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership status card is missing.");
-requireText(account,'data-account-billing-plan="foundation_student_continuation" disabled',"Qualified continuation checkout must stay held.");
+requireText(account,'school payments are closed',"University account notice must reject tuition.");
 requireText(header,'toolMode:beansToolMode',"Beans tool selection is not sent to the backend.");
 requireText(header,'attachments:beansAttachments.map',"Beans attachments are not sent to the backend.");
 requireText(header,'data-nbl-tool="artifact"',"Beans downloadable file/PDF creation control is missing.");
