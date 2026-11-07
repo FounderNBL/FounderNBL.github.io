@@ -31,6 +31,8 @@ Stream docs: https://getstream.io/moderation/docs/node/configuration/policies/ ;
 Rollback: remove staged PR; if a draft config is later installed, verify it is unattached before deleting that exact named config.
 
 ## Existing credential integration (2026-11-06)
-Existing Supabase nbl-stream v14 uses STREAM_API_KEY/STREAM_API_SECRET; GitHub secrets can also be used by a trusted workflow, if present in the **website** repository. No keys are moved or shown.
-For this review branch, the guarded workflow triggers once on a branch update, performs offline tests, and attempts to create the **unattached** policy only if both Stream secrets exist as Actions secrets. If they are unavailable, the workflow prints a warning and leaves Stream unchanged.
-No public Feeds policy, Chat policy, live calls, videos or bills are enabled. Installing a named unattached config is not public moderation activation. All subsequent changes still need a separate Founder-approved rollout.
+The existing Supabase Edge Function `nbl-stream` reads `STREAM_API_KEY` and `STREAM_API_SECRET` securely at runtime; the private values never need to be sent to chat or GitHub source.
+
+Checked two GitHub Actions jobs, one in the website repo and one in the Beans repo: neither exposed those values to a job using `secrets.STREAM_API_KEY` and `secrets.STREAM_API_SECRET` at the default repo level. Both skipped provider installation; **no Stream moderation policy was created**. GitHub may hold credentials under another name, environment, or repo, but this was not verified. These are permissions/scope findings, not proof credentials were deleted or invalid.
+
+The short-lived auto-install workflows used for this read-only scope check were removed from both branches. Existing source tests remain in the website PR; the configured policy has NOT been attached or deployed. For installation without moving credentials, use a strictly Founder-authorized server-side action in the existing Supabase `nbl-stream` function, with read-after-write verification of this exact unattached key. Do not expose secrets in the browser, assume GitHub default-branch secrets, or enable moderation for public Feeds without separate cost and privacy approval.
