@@ -64,19 +64,21 @@ test("deferred portal and legacy commercial scripts may NOT overwrite official a
  assert.ok(source.includes('/nbl-portal.js?v=20261011-world-cards-safe'),"homepage must fetch corrected script, not stale cached portal");
 });
 
-test("company profile replaces Kaye's Cubs spotlight with one directly displayed page",()=>{
+test("Founder-approved Pulse replaces homepage company spotlight while standalone company profile stays intact",()=>{
  const viewer=readFileSync(new URL("../company-profile.html",import.meta.url),"utf8");
  const art="NBL_Corporate_Profile_2026.png";
- assert.ok(existsSync(new URL("../"+art,import.meta.url)),"one-page image asset missing");
- assert.ok(source.includes('id="nbl-company-profile"'));
- assert.ok(source.includes('href="company-profile.html"'));
+ assert.ok(existsSync(new URL("../"+art,import.meta.url)),"company-profile artwork must remain safely archived");
+ assert.ok(!source.includes('id="nbl-company-profile"'),"old business PDF/photo spotlight must not appear on homepage");
+ assert.ok(!source.includes('href="company-profile.html"'),"remove old homepage business profile entry");
+ assert.ok(source.includes('id="nbl-pulse-door"'),"Pulse replaces only the old spotlight");
+ assert.ok(source.includes('href="/pulse/"'),"Pulse world card must open the separate social destination");
+ assert.ok(source.includes('src="/pulse/pulse-world.svg"'),"Pulse has original NBL artwork, not an invented profile photo");
  assert.ok(!source.includes('href="kayes-cubs.html"'));
- assert.ok(viewer.includes('src="/'+art+'"'),"company profile must display the existing one-page artwork");
- assert.ok(viewer.includes('class="profile-art"'),"expected one-page full-width image");
- assert.ok(viewer.includes('.profile-art::after'),"obsolete Learn More artwork must be masked");
- assert.ok(!viewer.includes("<iframe"),"do not embed a PDF viewer");
- assert.ok(!viewer.includes("<button"),"no profile buttons");
- assert.ok(!viewer.includes('download>'),"no PDF download button");
- assert.ok(!viewer.includes("NBL_Company_Profile_Page2_World_Team_Updated.pdf"),"old three-page PDF must not be linked");
- assert.ok(source.includes("View the one-page NBL Company Profile"),"homepage link should describe one page");
+ assert.ok(viewer.includes('src="/'+art+'"'),"standalone one-page company profile still displays");
+ assert.ok(viewer.includes('class="profile-art"'));
+ assert.ok(viewer.includes(".profile-art::after"));
+ assert.ok(!viewer.includes("<iframe"));
+ assert.ok(!viewer.includes("<button"));
+ assert.ok(!viewer.includes("download>"));
+ assert.ok(!viewer.includes("NBL_Company_Profile_Page2_World_Team_Updated.pdf"));
 });
