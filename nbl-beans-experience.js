@@ -17,12 +17,15 @@ const input=panel.querySelector("#nbl-beans-input");
 if(!card||!art||!presence||!head||!drawer||!regular||!log||!input)return;
 
 const approved=Object.freeze({
- classic:Object.freeze({src:"/Beans.png",title:"Classic Beans",alt:"Classic Beans, official NBL character"}),
- nbl:Object.freeze({src:"/NBLChat_Beans.png",title:"Official NBL shirt",alt:"Beans in approved NBL branded clothing"})
+ standard:Object.freeze({src:"/beans_01_wave_nbl.png",title:"Standard Beans",alt:"Official standard Beans waving in his NBL outfit"}),
+ crossed:Object.freeze({src:"/beans_02_arms_crossed_messenger.png",title:"Arms crossed",alt:"Beans in his Messenger outfit, arms crossed"}),
+ jersey:Object.freeze({src:"/beans_03_jersey_wave.png",title:"NBL jersey",alt:"Beans waving in his NBL jersey"}),
+ cargoWave:Object.freeze({src:"/beans_04_cargo_wave_messenger.png",title:"Cargo outfit · wave",alt:"Beans waving in his NBL cargo outfit"}),
+ cargoPoint:Object.freeze({src:"/beans_05_cargo_point_messenger.png",title:"Cargo outfit · point",alt:"Beans pointing in his NBL cargo outfit"})
 });
-// The third concept exists in the Founder reference but has no verified standalone approved asset in this repo.
-// Show it as a reserved, disabled place. Never substitute randomly generated or third-party clothing.
-const preset={look:"classic",color:"#fff8ee"};
+// All five Founder-uploaded looks are free. Slot 3 is reserved for future paid NBL outfits; no checkout yet.
+// The character and each local background are independent preferences.
+const preset={look:"standard",color:"#fff8ee"};
 let preferences={...preset};
 let activeUser="";
 let mountedUrls={};
@@ -34,7 +37,7 @@ const assetKey=(id,slot)=>"nbl.beans.local-image.v1."+id+"."+slot;
 
 const style=document.createElement("link");
 style.rel="stylesheet";
-style.href="/nbl-beans-experience.css?v=20261105-1";
+style.href="/nbl-beans-experience.css?v=20261107-five-free";
 style.dataset.nblBeansExperience="true";
 document.head.appendChild(style);
 
@@ -109,11 +112,14 @@ sheet.setAttribute("aria-labelledby","nbl-beans-customize-title");
 sheet.innerHTML=[
 '<div class="nbl-beans-customize-head"><div><h3 id="nbl-beans-customize-title">Customize Beans</h3><p>Your photos and colors. Only NBL-approved character clothing.</p></div><button type="button" data-nbl-customize-close aria-label="Close customization">✕</button></div>',
 '<div class="nbl-beans-customize-tabs" role="tablist" aria-label="Personalization options"><button type="button" data-nbl-customize-tab="wardrobe" role="tab" aria-selected="true">Wardrobe</button><button type="button" data-nbl-customize-tab="appearance" role="tab" aria-selected="false">Appearance</button></div>',
-'<div data-nbl-customize-section="wardrobe"><p>Choose one of the official NBL character looks.</p>',
-'<button type="button" class="nbl-beans-look" data-nbl-look="classic"><img src="/Beans.png" alt=""><span><strong>Classic Beans</strong><small>Original Beans · Free</small></span><span aria-hidden="true" data-nbl-look-check="classic">○</span></button>',
-'<button type="button" class="nbl-beans-look" data-nbl-look="nbl"><img src="/NBLChat_Beans.png" alt=""><span><strong>Official NBL shirt</strong><small>Approved NBL merchandise look · Free</small></span><span aria-hidden="true" data-nbl-look-check="nbl">○</span></button>',
-'<button type="button" class="nbl-beans-look" disabled aria-disabled="true" title="Waiting for the separate approved artwork"><span class="nbl-beans-look-placeholder" aria-hidden="true">✦</span><span><strong>Third approved look</strong><small>Reserved · Free · Artwork pending</small></span><span aria-hidden="true">🔒</span></button>',
-'<p class="nbl-beans-lock-note">Future NBL outfits will appear here as locked items. Prices, checkout and unlock rules are not active.</p></div>',
+'<div data-nbl-customize-section="wardrobe"><p><strong>1. Standard Beans</strong> starts everyone off. <strong>2. All five official looks</strong> are free to choose. Switching Beans keeps your chosen background.</p>',
+'<button type="button" class="nbl-beans-look" data-nbl-look="standard"><img src="/beans_01_wave_nbl.png" alt=""><span><strong>Standard Beans</strong><small>Official default · Free</small></span><span aria-hidden="true" data-nbl-look-check="standard">○</span></button>',
+'<button type="button" class="nbl-beans-look" data-nbl-look="crossed"><img src="/beans_02_arms_crossed_messenger.png" alt=""><span><strong>Arms crossed · Messenger</strong><small>Official NBL look · Free</small></span><span aria-hidden="true" data-nbl-look-check="crossed">○</span></button>',
+'<button type="button" class="nbl-beans-look" data-nbl-look="jersey"><img src="/beans_03_jersey_wave.png" alt=""><span><strong>NBL jersey · Wave</strong><small>Official NBL look · Free</small></span><span aria-hidden="true" data-nbl-look-check="jersey">○</span></button>',
+'<button type="button" class="nbl-beans-look" data-nbl-look="cargoWave"><img src="/beans_04_cargo_wave_messenger.png" alt=""><span><strong>Cargo · Wave</strong><small>Official NBL look · Free</small></span><span aria-hidden="true" data-nbl-look-check="cargoWave">○</span></button>',
+'<button type="button" class="nbl-beans-look" data-nbl-look="cargoPoint"><img src="/beans_05_cargo_point_messenger.png" alt=""><span><strong>Cargo · Point</strong><small>Official NBL look · Free</small></span><span aria-hidden="true" data-nbl-look-check="cargoPoint">○</span></button>',
+'<button type="button" class="nbl-beans-look" data-nbl-premium-outfits disabled aria-disabled="true" title="Premium outfit purchases are not available yet"><span class="nbl-beans-look-placeholder" aria-hidden="true">✦</span><span><strong>3. Premium wardrobe</strong><small>Locked · Special outfits to purchase and unlock later</small></span><span aria-hidden="true">🔒</span></button>',
+'<p class="nbl-beans-lock-note">Premium NBL outfits are reserved for a later release. No prices, checkout or unlock are active. All five current looks remain free.</p></div>',
 '<div data-nbl-customize-section="appearance" hidden><p>Choose pictures from your own phone or device. Images remain on this device, not in Beans’ chat or NBL storage.</p>',
 '<label class="nbl-beans-color-choice">Chat background color <input type="color" data-nbl-customize-color value="#fff8ee"></label>',
 '<div class="nbl-beans-photo-choices">',
@@ -226,7 +232,7 @@ function syncProfile(){
  if(user){
   try{
    const stored=JSON.parse(localStorage.getItem(stateKey(user))||"null");
-   if(stored&&approved[stored.look])preferences.look=stored.look;
+   if(stored&&approved[stored.look])preferences.look=stored.look; // Legacy classic/nbl choices fall back to Standard.
    if(stored&&/^#[0-9a-f]{6}$/i.test(stored.color))preferences.color=stored.color;
   }catch{}
  }

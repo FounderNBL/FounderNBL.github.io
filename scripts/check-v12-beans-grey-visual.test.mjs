@@ -37,7 +37,7 @@ test("website Beans retires the old Grey/Messenger chooser while retaining PDF a
  assert.match(js,/data-nbl-quick="beans"/);
  assert.match(js,/data-nbl-quick="grey"/);
  assert.match(js,/href="\/university\.html" data-nbl-quick="university"/);
- assert.match(js,/src="\/Beans\.png"/);
+ assert.match(js,/src="\/beans_01_wave_nbl\.png"/);
  assert.match(js,/src="\/Professor_Grey\.png"/);
  assert.match(js,/setChatMode\("plus"\); \/\/ Existing Grey authentication \+ LOCKE/);
  assert.match(js,/nblQuickToggle\.addEventListener\("click"/);
