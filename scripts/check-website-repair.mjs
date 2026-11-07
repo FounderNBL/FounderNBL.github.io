@@ -153,10 +153,10 @@ requireText(header,"window.history.pushState({...window.history.state,nblChatOve
 requireText(header,"const shouldConsumeHistory=!fromPopState","Closing Chat does not distinguish UI-close from browser Back.");
 requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Chat leaves a duplicate same-page history entry behind.");
 
-requireText(home,"Under Construction · Early Enrollment Information","Homepage must identify University as under construction, not imply classes are open.");
-requireText(home,"checkout remains held pending verification","Homepage must preserve the University checkout hold.");
-requireText(home,"full-refund promise","Homepage must disclose the advance-enrollment refund policy.");
-requireText(university,"advance-enrollment payment is fully refundable","University must explain the full-refund promise when prepaid access cannot be delivered.");
+requireText(home,"Under Construction · Opening Soon","Homepage must show current University closure.");
+requireText(home,"No University payments.","Homepage must explicitly reject University payments.");
+requireText(home,"Sign up free for a notification","Homepage must advertise only free opening notices.");
+requireText(university,"we are not accepting tuition","University must explicitly refuse tuition while closed.");
 requireText(books,"https://books.newbeansland.org/","Connected NBL Books Payhip custom domain is missing from the bookstore.");
 requireText(books,"Digital · Payhip","Books no longer states the digital Payhip route.");
 requireText(books,"Physical · Lulu","Books no longer states the physical Lulu route.");
@@ -209,16 +209,13 @@ requireText(terms,'data-nbl-plan-value="fullNblu.price"',"Terms do not use the c
 requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not use the canonical Full NBLU owner continuation price.");
 requireText(terms,"the independent University campus is hosted at nblschool.com","Terms must keep school academics on the independent domain.");
 // Founder override: .org has exactly one tuition page; school academic UI lives on nblschool.com.
-requireText(university,'id="enroll"',"One .org admissions and tuition section is missing.");
-requireText(university,'id="nblu-one-entry"',"One University sign-up/payment form is missing.");
-requireText(university,'href="https://nblschool.com/"',"School exploration must go straight to nblschool.com.");
-requireText(university,'src="/university-storefront.js',"New .org admissions must load its billing client.");
-for(const offer of ['foundation','foundation_university','full_foundation','full_nblu_diy','full_nblu','beans_university_monthly','foundation_student_continuation','nblu_continuation']){
- requireText(university,'value="'+offer+'"',"Unique offer missing from registration: "+offer);
+requireText(university,'id="early-registration"',"University free signup form is missing.");
+requireText(university,'data-nbl-university-interest-form',"University signup must use verified interest ledger.");
+requireText(university,'href="https://nblschool.com/"',"Independent University domain link missing.");
+requireText(university,'src="/nbl-university-early-interest.js',"University must use free notification client.");
+for(const blocked of ['nblu-pay','nblu-one-entry','/billing/checkout','university-storefront.js','December 1']){
+ forbidText(university,blocked,"Closed University must not advertise checkout or class date: "+blocked);
 }
-requireText(university,'advance-enrollment payment is fully refundable',"University must keep full advance-enrollment refund promise.");
-requireText(universityCheckout,'GATEWAY+"/billing/checkout"',"One cashier must use existing server-bound billing.");
-requireText(universityCheckout,'if(!item.plan)',"Unwired offers must not start a payment.");
 forbidText(university,'data-study-lab',"No University classroom belongs on .org.");
 forbidText(university,'university-campus.html',"No alternate local campus navigation is allowed.");
 forbidText(university,"https://buy.stripe.com/","Public New Beansland University page contains a raw Stripe checkout.");
@@ -226,8 +223,8 @@ requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridg
 requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership card is missing.");
 requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
-requireText(account,'data-account-billing-plan="beans_university" disabled',"Unverified combined University checkout must remain held.");
-requireText(account,'data-account-billing-plan="foundation_student_continuation" disabled',"Qualified student continuation must remain held.");
+requireText(account,'Sign up free for the opening notification',"Account must direct students to free signup.");
+forbidText(account,'data-account-billing-plan="foundation_student_continuation"',"Account must not show University continuation checkout.");
 requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
 requireText(account,"renderMembership","Account membership meter rendering is missing.");
 for(const staleUniversityAccountCopy of [
