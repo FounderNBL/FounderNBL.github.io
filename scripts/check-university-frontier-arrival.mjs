@@ -24,7 +24,7 @@ for(const [value,needle] of [
   [pricing,"University is under construction"],
   [account,"Sign up free for the opening notification"],
   [vault,"No University purchase or subscription can be started"],
-  [legacy,"url=https://newbeansland.org/university.html#enroll"]
+  [legacy,"url=https://newbeansland.org/university.html#early-registration"]
 ]) assert.ok(value.includes(needle),"Missing University closure contract: "+needle);
 for(const forbidden of ["nblu-pay","nblu-one-entry","university-storefront.js","billing/checkout","checkout.stripe.com","December 1","December 2026","$34.99"]){
  assert.ok(!page.includes(forbidden),"Unexpected University cashier or stale date: "+forbidden);
