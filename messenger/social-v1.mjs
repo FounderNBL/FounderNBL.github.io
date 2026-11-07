@@ -1,5 +1,5 @@
-// NBL Social Stream Feeds v3 integration preview.
-// UNLINKED and noindex until 2-account, moderation, cost and privacy checks pass.
+// NBL Pulse live text feeds on the existing .org website.
+// Clerk-bound accounts, Stream user feeds and moderation review; media/Go Live remain separately disabled.
 // Existing Supabase human DMs remain unchanged; Beans AI and V12 are out of scope.
 import { FeedsClient } from "https://esm.sh/@stream-io/feeds-client@2.9.0?bundle";
 
@@ -125,9 +125,6 @@ async function session(){
   const actorId=state.clerk?.user?.id;
   assertCurrentAccount(actorId);
   const identity=await secured(SOCIAL_API,{action:"me"});
-  // First website release is Founder's private beta, not a public Feeds launch.
-  if(String(identity.me?.role||"").toLowerCase()!=="founder")
-    throw new Error("Pulse is in Founder-only testing. Your NBL Messenger account is unaffected.");
   const api=await secured(STREAM_BRIDGE,{action:"session"});
   // Only the server chooses the Stream user ID and official Founder status.
   assertCurrentAccount(actorId);
@@ -174,7 +171,21 @@ async function loadComments(activity,area){
       const line=element("div","social-comment");
       const who=element("strong",null,c.user?.name||"NBL member");
       const words=element("p",null,c.comment||"");
-      line.append(who,words);area.append(line);
+      line.append(who,words);
+    if(c.id&&c.user?.id!==state.user?.id){
+      const report=element("button","btn small","Report comment");
+      report.type="button";
+      report.addEventListener("click",async()=>{
+        report.disabled=true;
+        try{
+          await state.client.moderation.flag({entity_type:"stream:feeds:v3:comment",entity_id:c.id,reason:"member_safety_review"});
+          feedback.textContent="Comment reported to the NBL review queue.";
+        }catch(error){feedback.textContent="Report failed: "+safeError(error);}
+        finally{report.disabled=false;}
+      });
+      line.append(report);
+    }
+    area.append(line);
     }
   }catch(error){area.replaceChildren(element("p","social-feedback",safeError(error)));}
 }
@@ -213,6 +224,18 @@ function renderActivity(activity){
     if(reveal)await loadComments(activity,commentsArea);
   });
   actions.append(like,showComments);
+  if(activity.id&&authorId!==state.user.id){
+    const reportPost=element("button",null,"Report post");reportPost.type="button";
+    reportPost.addEventListener("click",async()=>{
+      reportPost.disabled=true;
+      try{
+        await state.client.moderation.flag({entity_type:"stream:feeds:v3:activity",entity_id:activity.id,reason:"member_safety_review"});
+        feedback.textContent="Post reported to the NBL review queue.";
+      }catch(error){feedback.textContent="Report failed: "+safeError(error);}
+      finally{reportPost.disabled=false;}
+    });
+    actions.append(reportPost);
+  }
   if(isShareablePost(activity)){
     // Sharing is always the member's action, performed on Facebook's own screen.
     // This does not publish to or grant privileges over the official NBL Facebook Page.
@@ -482,7 +505,6 @@ async function boot(){
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
     selectTab();await loadFeed();await loadLinkedPost();
   }catch(error){
-    if(String(error?.message||"").includes("Founder-only"))$("#guest").hidden=true;
     status("Social integration not available: "+safeError(error));
   }
 }
