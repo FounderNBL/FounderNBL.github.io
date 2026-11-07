@@ -46,6 +46,9 @@ jobs:
           assert.match(ddl,/revoke all.*anon,authenticated/i);
           assert.match(front,/Go Live · setup pending/);
           assert.match(front,/disabled>Go Live/);
+          assert.match(readFileSync('supabase/functions/nbl-stream/index.ts','utf8'),/pulse_founder_preview_only/);
+          assert.match(readFileSync('messenger/social-v1.mjs','utf8'),/identity\.me\?\.role/);
+          assert.match(front,/id="postMedia" type="file" disabled/);
           assert.doesNotMatch(api,/sk_live_|STREAM_API_SECRET\s*=\s*['"][^'"]{12}/i);
           console.log('PASS: Pulse source/auth structure and restricted schema checks');
           JS
@@ -53,7 +56,9 @@ jobs:
         with:
           deno-version: v2.x
       - name: Type-check staged deployed-source parity
-        run: deno check supabase/functions/nbl-social/index.ts
+        run: |
+          deno check supabase/functions/nbl-social/index.ts
+          deno check supabase/functions/nbl-stream/index.ts
 
       - name: Probe live Stream connectivity and reject unauthenticated Pulse access
         run: |
