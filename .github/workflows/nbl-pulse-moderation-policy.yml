@@ -1,0 +1,23 @@
+name: NBL Pulse Moderation — offline policy source gate
+on:
+  pull_request:
+    paths:
+      - 'config/nbl-pulse/**'
+      - 'scripts/nbl-pulse-moderation-policy.mjs'
+      - 'scripts/check-nbl-pulse-moderation-policy.test.mjs'
+      - '.github/workflows/nbl-pulse-moderation-policy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check scripts/nbl-pulse-moderation-policy.mjs
+      - run: node --test scripts/check-nbl-pulse-moderation-policy.test.mjs
+      - run: node scripts/nbl-pulse-moderation-policy.mjs --dry-run
