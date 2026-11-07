@@ -53,7 +53,8 @@ jobs:
           const pulseUI=readFileSync('messenger/social-v1.mjs','utf8');
           assert.match(pulseUI,/entity_type:"stream:feeds:v3:activity"/);
           assert.match(pulseUI,/entity_type:"stream:feeds:v3:comment"/);
-          assert.match(front,/id="postMedia" type="file" disabled/);
+          assert.ok(front.includes('id="postMedia" type="file" accept="image/jpeg,image/png,image/webp"'));
+          assert.doesNotMatch(front,/id="postMedia" type="file" disabled/);
           assert.doesNotMatch(api,/sk_live_|STREAM_API_SECRET\s*=\s*['"][^'"]{12}/i);
           console.log('PASS: Pulse source/auth structure and restricted schema checks');
           JS
