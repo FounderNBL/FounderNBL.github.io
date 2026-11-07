@@ -1,0 +1,165 @@
+{
+  "key": "pm:nbl-pulse-review-v1",
+  "ai_text_config": {
+    "enabled": true,
+    "rules": [
+      {
+        "label": "THREAT",
+        "severity_rules": [
+          {
+            "severity": "low",
+            "action": "flag"
+          },
+          {
+            "severity": "medium",
+            "action": "flag"
+          },
+          {
+            "severity": "high",
+            "action": "remove"
+          },
+          {
+            "severity": "critical",
+            "action": "remove"
+          }
+        ]
+      },
+      {
+        "label": "HATRED",
+        "severity_rules": [
+          {
+            "severity": "low",
+            "action": "flag"
+          },
+          {
+            "severity": "medium",
+            "action": "flag"
+          },
+          {
+            "severity": "high",
+            "action": "remove"
+          },
+          {
+            "severity": "critical",
+            "action": "remove"
+          }
+        ]
+      },
+      {
+        "label": "RACISM",
+        "severity_rules": [
+          {
+            "severity": "low",
+            "action": "flag"
+          },
+          {
+            "severity": "medium",
+            "action": "flag"
+          },
+          {
+            "severity": "high",
+            "action": "remove"
+          },
+          {
+            "severity": "critical",
+            "action": "remove"
+          }
+        ]
+      },
+      {
+        "label": "SEXUAL_HARASSMENT",
+        "severity_rules": [
+          {
+            "severity": "low",
+            "action": "flag"
+          },
+          {
+            "severity": "medium",
+            "action": "flag"
+          },
+          {
+            "severity": "high",
+            "action": "remove"
+          },
+          {
+            "severity": "critical",
+            "action": "remove"
+          }
+        ]
+      },
+      {
+        "label": "MORAL_HARASSMENT",
+        "action": "flag"
+      },
+      {
+        "label": "DOXXING",
+        "action": "remove"
+      },
+      {
+        "label": "SCAM",
+        "action": "flag"
+      },
+      {
+        "label": "SPAM",
+        "action": "flag"
+      },
+      {
+        "label": "PEDOPHILIA",
+        "action": "remove"
+      },
+      {
+        "label": "TERRORISM",
+        "action": "remove"
+      },
+      {
+        "label": "SELF_HARM",
+        "action": "flag"
+      }
+    ]
+  },
+  "ai_image_config": {
+    "rules": [
+      {
+        "label": "Explicit",
+        "action": "remove",
+        "min_confidence": 70
+      },
+      {
+        "label": "Violence",
+        "action": "flag",
+        "min_confidence": 60
+      },
+      {
+        "label": "Hate Symbols",
+        "action": "flag",
+        "min_confidence": 70
+      },
+      {
+        "label": "PII",
+        "action": "flag",
+        "min_confidence": 80
+      }
+    ],
+    "enabled": true
+  },
+  "ai_video_config": {
+    "rules": [
+      {
+        "label": "Explicit",
+        "action": "remove",
+        "min_confidence": 70
+      },
+      {
+        "label": "Violence",
+        "action": "flag",
+        "min_confidence": 60
+      },
+      {
+        "label": "Hate Symbols",
+        "action": "flag",
+        "min_confidence": 70
+      }
+    ],
+    "enabled": true
+  }
+}
