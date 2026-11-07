@@ -48,7 +48,7 @@ jobs:
           assert.match(front,/disabled>Go Live/);
           const bridge=readFileSync('supabase/functions/nbl-stream/index.ts','utf8');
           assert.match(bridge,/pulseModerationHealth/);
-          assert.match(bridge,/moderation\\/config\\/feeds%3Auser/);
+          assert.ok(bridge.includes('moderation/config/feeds%3Auser'));
           assert.doesNotMatch(bridge,/pulse_founder_preview_only/);
           const pulseUI=readFileSync('messenger/social-v1.mjs','utf8');
           assert.match(pulseUI,/entity_type:"stream:feeds:v3:activity"/);
