@@ -91,9 +91,56 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(pdf.locator('[data-count]')).toContainText("2 / 2");
     await pdf.getByRole("button",{name:"OCR this page"}).click();
     await expect(pdf.locator('[data-text]')).toContainText("Scanned NBL page");
+    await pdf.getByRole("button",{name:"Extract entire PDF"}).click();
+    await expect(pdf.locator("[data-status]")).toContainText("All 2 pages have extractable text");
+    const saved=page.waitForEvent("download");
+    await pdf.getByRole("button",{name:"Download full text"}).click();
+    expect((await saved).suggestedFilename()).toBe("local-all-pages.txt");
     expect(pdfUploads).toBe(0);
+    // Ask Beans is opt-in: attaching only adds a draft file; no AI request is made.
+    await pdf.getByRole("button",{name:"Attach PDF to Beans"}).click();
+    await expect(pdf).toBeHidden();
+    await expect(page.locator('[data-nbl-beans-attachments]')).toContainText("local.pdf");
+    expect(pdfUploads).toBe(0);
+    await page.getByRole("button",{name:"Open Beans tools"}).click();
+    await page.locator('[data-nbl-tool="pdf-local"]').click();
+    await expect(pdf).toBeVisible();
     await pdf.getByRole("button",{name:"Close"}).click();
     await expect(pdf).toBeHidden();
+  });
+
+  test("local PDF reader accepts a 369-page file, checks mobile button hit targets, and extracts all text",async({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.route("**/pdf.js/3.11.174/pdf.min.js",route=>route.fulfill({
+      status:200,contentType:"application/javascript",
+      body:`window.pdfjsLib={GlobalWorkerOptions:{},getDocument:()=>({promise:Promise.resolve({numPages:369,destroy:async()=>{},getPage:async n=>({getViewport:()=>({width:400,height:520}),render:()=>({promise:Promise.resolve()}),getTextContent:async()=>({items:[{str:'Page '+n+' of 369',transform:[1,0,0,1,20,100]}]})})})})};`
+    }));
+    await page.goto("/");
+    await page.getByRole("button",{name:"Open Beans"}).click();
+    await page.getByRole("button",{name:"Open Beans tools"}).click();
+    await page.locator('[data-nbl-tool="pdf-local"]').click();
+    const dialog=page.getByRole("dialog",{name:"NBL PDF Reader"});
+    await dialog.locator("[data-file]").setInputFiles({
+      name:"full-182-conversations.pdf",mimeType:"application/pdf",
+      buffer:Buffer.from("%PDF-1.7\\n"+" ".repeat(1200))
+    });
+    await expect(dialog.locator("[data-count]")).toContainText("Page 1 / 369");
+    // This checks actual pointer hit geometry on a phone-sized viewport.
+    for(const name of ["[data-next]","[data-ocr]","[data-all]","[data-beans]"]){
+      const target=dialog.locator(name);
+      await target.scrollIntoViewIfNeeded();
+      const hit=await target.evaluate(button=>{
+        const box=button.getBoundingClientRect();
+        const top=document.elementFromPoint(box.left+box.width/2,box.top+box.height/2);
+        return button===top||button.contains(top);
+      });
+      expect(hit,`Wrong mobile touch target for ${name}`).toBe(true);
+    }
+    await dialog.locator("[data-all]").click();
+    await expect(dialog.locator("[data-status]")).toContainText("All 369 pages have extractable text",{timeout:30000});
+    await expect(dialog.locator("[data-download]")).toBeEnabled();
+    await dialog.locator("[data-next]").click();
+    await expect(dialog.locator("[data-count]")).toContainText("Page 2 / 369");
   });
 
   test("Canva is paused while Beans image, camera and files remain available",async({page})=>{
