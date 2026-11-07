@@ -16,7 +16,7 @@ const musicPage=read("studio/index.html");
 const reader=read("reader.html");
 
 test("$29.99 Foundation Materials contains only 2 physical books and first month Beans; ebooks are separate",()=>{
- assert.match(pricing,/Two physical books plus the first month of Beans\. No ebooks, digital course materials, or University enrollment are included\./);
+ assert.match(pricing,/University is under construction/);
  assert.match(cashier,/No ebooks, digital course materials, coursework, or University enrollment are included\./);
  assert.match(header,/Two physical books and one month of Beans; no ebooks or University materials included/);
  assert.match(terms,/one-time with two physical books and one month of Beans; ebooks and University course access are not included/);
@@ -24,18 +24,18 @@ test("$29.99 Foundation Materials contains only 2 physical books and first month
  assert.doesNotMatch(header,/Two books, course materials and one month of Beans/);
 });
 
-test("University ebooks stay in independent school; .org only registers and collects tuition",()=>{
+test("University ebooks remain separate and .org offers free notifications only",()=>{
  for(const content of [campus,campusAlias]){
    assert.match(content,/url=https:\/\/nblschool\.com\//);
    assert.doesNotMatch(content,/data-coursework-pdf|data-grey-log|data-study-lab/);
  }
- assert.match(university,/id="nblu-one-entry"/);
+ assert.match(university,/data-nbl-university-interest-form/);
  assert.match(university,/value="foundation_university"/);
- assert.match(university,/value="full_nblu_diy"/);
+ assert.doesNotMatch(university,/nblu-pay|billing\/checkout|\$449\.99/);
  assert.match(university,/href="https:\/\/nblschool\.com\//);
  assert.match(cashier,/if\(!item\.plan\)/);
  assert.match(cashier,/No ebooks, digital course materials, coursework, or University enrollment are included/);
- assert.match(header,/University checkout verification pending/);
+ assert.match(university,/school is under construction/);
 });
 test("already-built NBL Music catalog and NBL Books digital Payhip/Reader remain independent",()=>{
  assert.match(musicPage,/<h1>NBL Music Productions<\/h1>/);
