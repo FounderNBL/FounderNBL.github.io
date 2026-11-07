@@ -54,3 +54,21 @@ jobs:
           deno-version: v2.x
       - name: Type-check staged deployed-source parity
         run: deno check supabase/functions/nbl-social/index.ts
+
+      - name: Probe live Stream connectivity and reject unauthenticated Pulse access
+        run: |
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          const base='https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/';
+          const h=await fetch(base+'nbl-stream?action=health',{signal:AbortSignal.timeout(12000)});
+          const health=await h.json();
+          console.log('Stream health:',h.status,health.code,health.connected);
+          assert.equal(h.status,200,'Stream bridge must have valid provider connection');
+          assert.equal(health.connected,true);
+          for(const action of ['nbl-stream','nbl-social']){
+            const r=await fetch(base+action,{method:'POST',headers:{'content-type':'application/json'},
+              body:JSON.stringify({action:'session'}),signal:AbortSignal.timeout(12000)});
+            console.log(action,'anonymous status',r.status);
+            assert.equal(r.status,401,'A signed-out caller cannot access social data');
+          }
+          JS
