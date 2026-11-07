@@ -1,29 +1,17 @@
 import {test,expect} from "@playwright/test";
 
-test("the existing NBL account authenticates the single tuition checkout without exposing a school login",async({page})=>{
-  await page.addInitScript(()=>{
-    window.Clerk={
-      load:async()=>{},
-      isSignedIn:true,
-      user:{id:"user_test_student"},
-      session:{getToken:async()=>"mock-nbl-token"}
-    };
-  });
-  let attempts=0;
-  await page.route("**/functions/v1/nbl-chat-gateway/billing/checkout",async route=>{
-    attempts++;
-    expect(route.request().headers().authorization).toBe("Bearer mock-nbl-token");
-    const data=route.request().postDataJSON();
-    expect(data.plan).toBe("full_foundation");
-    await route.fulfill({status:423,headers:{"Access-Control-Allow-Origin":"*","Content-Type":"application/json"},body:JSON.stringify({message:"University checkout is held pending release verification. No charge was made."})});
-  });
-  await page.goto("/university.html");
-  await page.locator("#nblu-program").selectOption("full_foundation");
-  await page.locator("#nblu-pay").click();
-  await expect(page.locator("#nblu-payment-status")).toContainText("No charge was made.");
-  expect(attempts).toBe(1);
-  await page.locator("#nblu-program").selectOption("full_nblu_diy");
-  await page.locator("#nblu-pay").click();
-  await expect(page.locator("#nblu-payment-status")).toContainText("not yet connected to an approved payment route");
-  expect(attempts).toBe(1);
+test("University is closed, free notification signup only, no checkout",async({page})=>{
+ let checkoutCalls=0;
+ await page.route("**/functions/v1/nbl-chat-gateway/billing/checkout",route=>{
+   checkoutCalls++;
+   return route.abort();
+ });
+ await page.goto("/university.html");
+ await expect(page.getByText("The school is under construction.")).toBeVisible();
+ await expect(page.locator("[data-nbl-university-interest-form]")).toBeVisible();
+ await expect(page.locator("[data-nbl-university-interest-submit]")).toHaveText("Join free notification list");
+ await expect(page.locator("[name=emailOptIn]")).toBeChecked();
+ await expect(page.locator("#nblu-pay")).toHaveCount(0);
+ await expect(page.locator("text=Sign up & continue to payment")).toHaveCount(0);
+ expect(checkoutCalls).toBe(0);
 });

@@ -26,11 +26,12 @@ if(!errors.length){
   const terms=read("terms.html");
   const signIn="https://accounts.newbeansland.org";
   need(university,'url=https://newbeansland.org/university.html#enroll',"Old tuition page must lead to single admissions front desk.");
-  const cashier=read("university.html"),billing=read("university-storefront.js");
-  need(cashier,'id="nblu-one-entry"',"One University cashier action is missing.");
-  need(cashier,'https://nblschool.com/',"Campus exploration must open school.com.");
-  need(billing,'"/billing/checkout"',"University payment must use the existing protected billing gateway.");
-  need(billing,'if(!item.plan)',"Unsupported pricing plans must remain held.");
+  const cashier=read("university.html"),interest=read("nbl-university-early-interest.js");
+  need(cashier,'data-nbl-university-interest-form',"Free University notification signup is missing.");
+  need(cashier,'https://nblschool.com/',"The school domain must stay linked.");
+  need(cashier,'school is under construction',"University must show closed status.");
+  need(interest,'nbl-university-early-interest',"Free signup must use the existing authenticated interest ledger.");
+  forbid(cashier,'/billing/checkout',"No University billing route may be shown at the school entrance.");
   need(header,'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must use school.com.");
   need(header,'href="/member-chat.html"',"Members need a visible person-to-person Chat entrance.");
   need(chat,'rel="canonical" href="https://newbeansland.org/messenger/"',"Legacy member messaging must identify the official NBL Messenger canonical.");
@@ -59,4 +60,4 @@ if(!errors.length){
   }
 }
 if(errors.length){console.error("[org-member-surfaces] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
-console.log("[org-member-surfaces] PASS: .org hosts member messages and one University cashier; school domain owns academic campus routes.");
+console.log("[org-member-surfaces] PASS: .org hosts member messages and free University opening notifications; school classes and tuition closed.");
