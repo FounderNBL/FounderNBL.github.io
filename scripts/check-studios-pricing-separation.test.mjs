@@ -31,31 +31,27 @@ test("Studios now has an independent film/video door and protected creator",()=>
  assert.match(studioClient,/NBLAccountBridge/);
  assert.doesNotMatch(studioClient,/RUNWAY_API_KEY|SUPABASE_SERVICE_ROLE_KEY/);
 });
-test("the canonical storefront prices stay intact and Studios is corrected to $8.99",()=>{
- for(const value of ["$4.99/month","$9.99/month","$14.99/month","$9.99 one-time","$29.99 one-time","$34.99 one-time","$54.99 one-time","$184.99 one-time","$449.99 one-time","$29.99/month","$7.00 one-time"])assert.ok(plans.includes(value),value);
- assert.match(plans,/studiosCredits:Object\.freeze\(\{name:"NBL Studios Credits",price:"\$8\.99 one-time",credits:"500 NBL Studios Credits"/);
- assert.match(plans,/studiosSupport:Object\.freeze\(\{name:"Support NBL Studios Fund",price:"\$1\.00 minimum",credits:"0 personal Studio Credits"/);
- assert.match(creator,/data-nbl-plan-value="studiosCredits\.price">\$8\.99 one-time/);
- assert.doesNotMatch(creator,/\$7\.00/);
- for(const id of ["beans.price","beansUniversity.price","foundationStudentContinuation.price","foundationUniversity.price","getMore.price","foundationProgram.price","guidedFoundation.price","fullNbluDiy.price","fullNblu.price","nblPlus.price","nblUsage.price","nbluContinuation.price","studiosCredits.price","studiosSupport.price"])assert.ok(pricing.includes('data-nbl-plan-value="'+id+'"'),id);
-});
-test("University .org remains a single admissions front desk with distinct held products and 100 percent nondelivery refund",()=>{
- const cashier=read("university.html"),script=read("university-storefront.js");
- assert.match(campus,/url=https:\/\/newbeansland\.org\/university\.html#enroll/);
- assert.match(cashier,/Sign up &amp; continue to payment/);
- assert.match(cashier,/https:\/\/nblschool\.com\//);
- for(const key of ["foundation","foundation_university","full_foundation","full_nblu_diy","full_nblu","beans_university_monthly","foundation_student_continuation","nblu_continuation"]){
-   assert.ok(cashier.includes('value="'+key+'"'),"Missing approved distinct offer "+key);
+test("Active services retain approved prices; closed University rates stay out of public offers",()=>{
+ for(const value of ["$4.99/month","$9.99 one-time","$7.00 one-time","$8.99 one-time"])assert.ok(plans.includes(value),value);
+ assert.match(plans,/studiosCredits:Object.freeze/);
+ assert.match(plans,/studiosSupport:Object.freeze/);
+ assert.match(creator,/data-nbl-plan-value="studiosCredits.price"/);
+ assert.doesNotMatch(creator,/$7.00/);
+ for(const id of ["beans.price","getMore.price","nblPlus.price","nblUsage.price","studiosCredits.price","studiosSupport.price"]){
+   assert.ok(pricing.includes('data-nbl-plan-value="'+id+'"'),id);
  }
- assert.match(script,/\$184\.99 once/);
- assert.match(script,/\$449\.99 once/);
- assert.match(script,/if\(!item\.plan\)/);
- assert.match(cashier,/advance-enrollment payment is fully refundable/i);
- assert.match(pricing,/full refund of that advance-enrollment payment/);
- assert.match(pricing,/If an announced start is delayed/);
- assert.match(pricing,/University checkouts are currently disabled/);
- assert.match(pricing,/opening dates will be confirmed/i);
- assert.doesNotMatch(pricing,/pay\.stripe\.com|checkout\.stripe\.com|data-nbl-university-checkout=/);
+ assert.match(pricing,/University is under construction/);
+});
+test("University entrance is construction-only free interest registration; no paid checkout",()=>{
+ const arrival=read("university.html");
+ const script=read("nbl-university-early-interest.js");
+ const legacy=read("university-enrollment.html");
+ assert.match(legacy,/university.html#early-registration/);
+ assert.match(arrival,/school is under construction/);
+ assert.match(arrival,/data-nbl-university-interest-form/);
+ assert.match(arrival,/https:\/\/nblschool.com\//);
+ assert.match(script,/action:"join"/);
+ assert.doesNotMatch(arrival,/nblu-pay|Sign up &amp; continue to payment|checkout.stripe.com|December 1/);
 });
 test("new priced tiers render safely when returning visitors have an older cached catalog",()=>{
  assert.match(header,/NBL_PRODUCT_PLANS\.nblPlus\?\.name\|\|"NBL Plus"/);
