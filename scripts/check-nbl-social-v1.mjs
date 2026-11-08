@@ -137,5 +137,5 @@ assert.match(pulse,/id="videoLink"/);
 assert.match(js,/action:"profile_photo",avatarUrl:upload/);
 assert.match(js,/nbl_youtube_id:youtubeId/);
 assert.doesNotMatch(js,/profile\?\.verified===true/);
-assert.match(embeds,/www\.youtube-nocookie\.com\/embed\//);
+assert.ok(embeds.includes("www.youtube-nocookie.com/embed/"));
 assert.match(js,/authorProfile\(userId\)/);
