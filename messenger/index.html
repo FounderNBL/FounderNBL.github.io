@@ -76,6 +76,13 @@
             <p class="hint">The Messenger download includes up to the 100 most recent messages in each of your latest 200 direct conversations. It is not a complete data archive.</p>
             <p class="hint" data-chat-export-status role="status" aria-live="polite"></p>
           </div>
+          <div>
+            <h3>Optional Google Analytics</h3>
+            <p class="hint">Help NBL understand general Messenger page usage. This is optional. NBL does not send message content, contacts, usernames, or account IDs to Google Analytics from this integration.</p>
+            <button class="btn" type="button" data-messenger-analytics-enable>Allow usage analytics</button>
+            <button class="btn" type="button" data-messenger-analytics-disable hidden>Turn off usage analytics</button>
+            <p class="hint" data-messenger-analytics-status role="status" aria-live="polite">Optional analytics is off.</p>
+          </div>
         </div>
       </section>
     </section>
@@ -200,5 +207,6 @@
   </main>
   <footer>NBL Messenger · <a href="/">New Beansland home</a></footer>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") { window.addEventListener("load", () => navigator.serviceWorker.register("/messenger/sw.js", {scope:"/messenger/"}).catch(() => {})); }</script>
+<script type="module" src="/messenger/firebase-web.js?v=20261107" defer></script>
 </body>
 </html>
