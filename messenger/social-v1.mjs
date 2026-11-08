@@ -2,6 +2,7 @@
 // Clerk-bound accounts, Stream user feeds and moderation review; media/Go Live remain separately disabled.
 // Existing Supabase human DMs remain unchanged; Beans AI and V12 are out of scope.
 import { FeedsClient } from "https://esm.sh/@stream-io/feeds-client@2.9.0?bundle";
+import {parsePublicVideo,mountPublicVideo} from "./social-video-connect.mjs";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -36,20 +37,12 @@ async function authorProfile(userId){
   if(!avatarCache.has(userId))avatarCache.set(userId,secured(SOCIAL_API,{action:"social_profile",userId}).then(x=>x.profile||null).catch(()=>null));
   return avatarCache.get(userId);
 }
-function hydrateAvatar(userId,img,videoId=null,media=null){
+function hydrateAvatar(userId,img){
   const owner=state.clerk?.user?.id;
   void authorProfile(userId).then(profile=>{
     if(state.clerk?.user?.id!==owner||!img.isConnected)return;
     const src=trustedMediaLink(profile?.avatarUrl);
     if(src)img.src=src;
-    if(videoId&&media?.isConnected&&profile?.verified===true){
-      const iframe=element("iframe","social-video-embed");
-      iframe.src="https://www.youtube-nocookie.com/embed/"+videoId;
-      iframe.title="NBL Founder YouTube video";
-      iframe.loading="lazy";iframe.allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share";
-      iframe.allowFullscreen=true;iframe.referrerPolicy="strict-origin-when-cross-origin";
-      media.append(iframe);
-    }
   });
 }
 function selectedMedia(){
@@ -57,10 +50,7 @@ function selectedMedia(){
   if(!files.length)return [];
   const images=files.filter(f=>IMAGE_TYPES.has(f.type));
   if(images.length===files.length&&files.length<=MAX_PHOTOS&&images.every(f=>f.size>0&&f.size<=MAX_PHOTO_BYTES))return files;
-  // Pulse is a REAL photo-sharing service, but video uploads stay off until
-  // separately released. Reject unsupported files even if accept= is bypassed.
-  if(location.pathname.startsWith("/pulse"))
-    throw new Error("Choose up to four JPEG, PNG or WebP photos (8 MB each). Video uploads are not enabled yet.");
+  // Member-controlled uploads use the existing Stream media service.
   const videos=files.filter(f=>VIDEO_TYPES.has(f.type));
   if(videos.length===1&&files.length===1&&videos[0].size>0&&videos[0].size<=MAX_VIDEO_BYTES)return files;
   throw new Error("Choose up to four JPEG/PNG/WebP photos (8 MB each), or one MP4/WebM video (40 MB).");
@@ -172,7 +162,9 @@ async function session(){
   state.user=api.user;
   state.me=identity.me;
   $("#identityAvatar").src=trustedMediaLink(identity.me?.avatarUrl)||"/messenger/icon.svg";
-  $("#founderYoutube").hidden=identity.me?.role!=="founder";
+  document.querySelector("#composerAvatar")?.setAttribute("src",trustedMediaLink(identity.me?.avatarUrl)||"/messenger/icon.svg");
+  const composerHandle=document.querySelector("#composerHandle");
+  if(composerHandle)composerHandle.textContent=identity.me?.handle?"@"+identity.me.handle:"Your NBL account";
   const handle=String(identity.me?.handle||"").replace(/^@/,"");
   $("#identityHandle").textContent=handle?"@"+handle:"Signed in to New Beansland";
   const client=new FeedsClient(api.key,{timeout:6500});
@@ -342,9 +334,8 @@ function renderActivity(activity){
       media.append(video);
     }
   }
-  const youtube=typeof activity.custom?.nbl_youtube_id==="string"&&/^[A-Za-z0-9_-]{11}$/.test(activity.custom.nbl_youtube_id)?activity.custom.nbl_youtube_id:null;
-  // The backend verifies Founder status before any video embed is mounted.
-  hydrateAvatar(authorId,avatar,youtube,media);
+  mountPublicVideo(activity.custom,media);
+  hydrateAvatar(authorId,avatar);
   card.append(head,time,text,media,meta,actions,feedback,form,commentsArea);
   return card;
 }
@@ -495,6 +486,7 @@ async function saveProfileAvatar(){
     assertCurrentAccount(actorId);
     state.me.avatarUrl=updated.avatarUrl;
     $("#identityAvatar").src=updated.avatarUrl||"/messenger/icon.svg";
+    document.querySelector("#composerAvatar")?.setAttribute("src",updated.avatarUrl||"/messenger/icon.svg");
     avatarCache.delete(actorId);
     $("#profileAvatarFile").value="";
     notice.textContent="Profile picture saved for your NBL account.";
@@ -507,12 +499,16 @@ async function publishPost(event){
   event.preventDefault();
   if(state.busy||!state.client)return;
   const text=$("#postText").value.trim();
-  const youtubeText=state.me?.role==="founder"?$("#youtubeUrl").value.trim():"";
-  const youtubeId=youtubeText?youtubeVideoId(youtubeText):null;
-  if(youtubeText&&!youtubeId){status("Use a valid link to your own YouTube video.");return;}
+  const videoLink=$("#videoLink").value.trim();
+  const chosenVideo=videoLink?parsePublicVideo(videoLink):null;
+  if(videoLink&&!chosenVideo){status("Use a public YouTube, Facebook video/Reel, or Instagram post/Reel link.");return;}
+  if(videoLink&&!$("#videoShareRights").checked){
+    status("Please confirm you own or have permission to share this video.");return;
+  }
+  const youtubeId=chosenVideo?.provider==="youtube"?chosenVideo.id:null;
   let files;
   try{files=selectedMedia();}catch(error){status(safeError(error));return;}
-  if((!text&&!files.length&&!youtubeId)||text.length>1500)return;
+  if((!text&&!files.length&&!chosenVideo)||text.length>1500)return;
   state.busy=true;
   const submit=$("#postForm button[type=submit]");submit.disabled=true;
   try{
@@ -528,7 +524,8 @@ async function publishPost(event){
         if(!trusted)throw new Error("Upload did not return a trusted Stream media link.");
         attachments.push(image?{type:"image",image_url:trusted,custom:{}}:{type:"video",asset_url:trusted,custom:{}});
       }
-      result=await feed.addActivity({type:"post",text:text||"NBL Founder video",attachments,visibility:"public",...(youtubeId?{custom:{nbl_youtube_id:youtubeId}}:{})});
+      result=await feed.addActivity({type:"post",text:text||"Shared a video",attachments,visibility:"public",
+        ...(chosenVideo?{custom:youtubeId?{nbl_youtube_id:youtubeId}:{nbl_external_video_url:chosenVideo.url}}:{})});
     }catch(error){
       // Also clean up partial photo uploads when a later upload fails, rather
       // than only cleaning up when activity creation itself fails.
@@ -541,8 +538,8 @@ async function publishPost(event){
       throw error;
     }
     $("#postText").value="";$("#postCount").textContent="0 / 1500";
-    $("#postMedia").value="";$("#youtubeUrl").value="";$("#mediaSelection").textContent=location.pathname.startsWith("/pulse")
-      ?"Up to 4 photos (8 MB each). Videos are not enabled.":"Up to 4 photos (8 MB each) or 1 video (40 MB).";
+    $("#postMedia").value="";$("#videoLink").value="";$("#videoShareRights").checked=false;
+    $("#mediaSelection").textContent="Up to 4 photos (8 MB each) or 1 video (40 MB).";
     const modAction=String(result?.activity?.moderation?.action||result?.moderation?.action||"").toLowerCase();
     status(["remove","shadow","shadow_block","bounce"].includes(modAction)
       ?"Your post was submitted to moderation and may not be visible to others.":"Your NBL post was published.");
@@ -572,6 +569,11 @@ function selectTab(){
 async function boot(){
   $("#signIn").href=signInURL();
   $("#postForm").addEventListener("submit",publishPost);
+  document.querySelector("#copyPulseInvite")?.addEventListener("click",async()=>{
+    try{await navigator.clipboard.writeText("https://newbeansland.org/pulse/");
+      status("NBL invite link copied. Paste it into Instagram or another conversation.");
+    }catch{status("Copy this link to share: https://newbeansland.org/pulse/");}
+  });
   $("#saveProfileAvatar").addEventListener("click",()=>{void saveProfileAvatar();});
   $("#friendForm").addEventListener("submit",requestFriend);
   $("#postMedia").addEventListener("change",()=>{
