@@ -119,7 +119,7 @@ assert.match(js,/await state\.client\.uploadImage\(\{file\}\)/);
 assert.match(js,/if\(asset\.type==="image"\)await state\.client\.deleteImage/);
 assert.match(pulse,/Go Live · setup pending/);
 
-// Pulse public avatars and verified Founder-owned video embeds.
+// Pulse public avatars, member media and safe provider video embeds.
 assert.match(pulse,/id="profileAvatarFile"/);
 assert.match(pulse,/id="identityAvatar"/);
 assert.match(pulse,/id="connectProviders"/);
@@ -128,12 +128,12 @@ assert.match(pulse,/id="composerAvatar"/);
 assert.match(pulse,/id="videoLink"/);
 assert.match(pulse,/id="videoShareRights"/);
 assert.match(embeds,/parsePublicVideo/);
-assert.match(embeds,/plugins\\/video.php/);
-assert.match(embeds,/www.instagram.com\\/embed.js/);
-assert.match(embeds,/www.youtube-nocookie.com\\/embed\\//);
-assert.match(js,/mountPublicVideo\\(activity.custom,media\\)/);
+assert.ok(embeds.includes("plugins/video.php"));
+assert.ok(embeds.includes("www.instagram.com/embed.js"));
+assert.ok(embeds.includes("www.youtube-nocookie.com/embed/"));
+assert.ok(js.includes("mountPublicVideo(activity.custom,media)"));
 assert.match(js,/nbl_external_video_url:chosenVideo.url/);
-assert.match(pulse,/id="youtubeUrl"/);
+assert.match(pulse,/id="videoLink"/);
 assert.match(js,/action:"profile_photo",avatarUrl:upload/);
 assert.match(js,/nbl_youtube_id:youtubeId/);
 assert.doesNotMatch(js,/profile\?\.verified===true/);
