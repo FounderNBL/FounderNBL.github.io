@@ -17,6 +17,13 @@ const ALLOWED=new Set([
 const ACTIVE_ENROLLMENTS=new Set(["paid","materials_ready","books_ordered","books_shipped","active","coursework_complete","final_eligible","completed"]);
 
 function clean(v:unknown,max=8000){return typeof v==="string"?v.replace(/\s+/g," ").trim().slice(0,max):"";}
+function publicAvatar(raw:unknown){
+  if(typeof raw!=="string"||raw.length>1000)return null;
+  try{
+    const u=new URL(raw);
+    return u.protocol==="https:"&&u.hostname.endsWith(".stream-io-cdn.com")&&!u.username&&!u.password?u.href:null;
+  }catch{return null;}
+}
 function origin(req:Request){return (req.headers.get("origin")||"").replace(/\/$/,"");}
 function headers(req:Request){
   const o=origin(req);
@@ -97,12 +104,12 @@ function publicHandle(username:string|null,role:string,_isUniversity:boolean){
 async function userCard(userId:string){
   if(userId==="nbl:grey")return {userId:null,handle:"greyhart",displayName:"Professor Grey",verified:true,officialRole:"grey"};
   const [p,r,u]=await Promise.all([
-    db.from("nbl_account_profiles").select("username").eq("clerk_user_id",userId).maybeSingle(),
+    db.from("nbl_account_profiles").select("username,avatar_url").eq("clerk_user_id",userId).maybeSingle(),
     db.from("nbl_chat_usage_accounts").select("role").eq("clerk_user_id",userId).maybeSingle(),
     universityAccess(userId)
   ]);
   const role=String(r.data?.role||"ordinary");
-  return {userId,handle:publicHandle(clean(p.data?.username,30)||null,role,u.allowed),displayName:null,verified:role==="founder",officialRole:role==="founder"?"founder":null};
+  return {userId,handle:publicHandle(clean(p.data?.username,30)||null,role,u.allowed),displayName:null,avatarUrl:publicAvatar(p.data?.avatar_url),verified:role==="founder",officialRole:role==="founder"?"founder":null};
 }
 async function resolveHandle(raw:unknown){
   const wanted=handleInput(raw);
@@ -164,7 +171,7 @@ async function pulseFriendList(me:{userId:string;role:string}){
     const card=await userCard(target);
     if(!card?.handle)continue;
     connections.push({handle:card.handle,verified:Boolean(card.verified),
-      direction:pair.status==="accepted"?"friends":pair.recipient_id===me.userId?"incoming":"outgoing"});
+      direction:pair.status==="accepted"?"friends":pair.recipient_id===me.userId?"incoming":"outgoing",avatarUrl:card.avatarUrl});
   }
   return connections;
 }
@@ -345,6 +352,17 @@ Deno.serve(async(req:Request)=>{
 
   try{
 
+    // NBL member controls their own public avatar via existing signed-in account.
+    if(action==="profile_photo"){
+      const raw=body?.avatarUrl;
+      const image=raw===null?null:publicAvatar(raw);
+      if(raw!==null&&!image)return json(req,{ok:false,reason:"invalid_profile_photo"},400);
+      const saved=await db.from("nbl_account_profiles").upsert({
+        clerk_user_id:me.userId,avatar_url:image,updated_at:new Date().toISOString()
+      },{onConflict:"clerk_user_id"}).select("avatar_url").single();
+      if(saved.error)return json(req,{ok:false,reason:"profile_photo_unavailable"},503);
+      return json(req,{ok:true,avatarUrl:publicAvatar(saved.data?.avatar_url)});
+    }
     // NBL Pulse public author lookup: no private profile fields.
     if(action==="social_profile"){
       const id=clean(body?.userId,90);
@@ -353,7 +371,7 @@ Deno.serve(async(req:Request)=>{
       try{await pulseTarget(me,id);}catch{return json(req,{ok:false,reason:"profile_not_found"},404);}
       const card=await userCard(id);
       if(!card?.handle)return json(req,{ok:false,reason:"profile_not_found"},404);
-      return json(req,{ok:true,profile:{handle:card.handle,verified:Boolean(card.verified)}});
+      return json(req,{ok:true,profile:{handle:card.handle,avatarUrl:card.avatarUrl,verified:Boolean(card.verified)}});
     }
     if(action==="friends_list")return json(req,{ok:true,connections:await pulseFriendList(me)});
     if(["friend_request","friend_accept","friend_decline","friend_remove"].includes(action)){
@@ -398,13 +416,14 @@ Deno.serve(async(req:Request)=>{
     }
 
     if(action==="me"){
-      const [u,locked,profile,wallet]=await Promise.all([
+      const [u,locked,profile,wallet,avatar]=await Promise.all([
         universityAccess(me.userId),assessmentLocked(me.userId),
         db.from("university_scoreboard_profiles").select("helper_mode,helper_level").eq("clerk_user_id",me.userId).maybeSingle(),
-        db.rpc("nbl_studios_wallet_state",{p_clerk_user_id:me.userId})
+        db.rpc("nbl_studios_wallet_state",{p_clerk_user_id:me.userId}),
+        db.from("nbl_account_profiles").select("avatar_url").eq("clerk_user_id",me.userId).maybeSingle()
       ]);
       return json(req,{ok:true,me:{
-        handle:publicHandle(me.username,me.role,u.allowed),role:me.role,university:u.allowed,
+        handle:publicHandle(me.username,me.role,u.allowed),role:me.role,university:u.allowed,avatarUrl:publicAvatar(avatar.data?.avatar_url),
         assessmentHelpLocked:locked,helperMode:Boolean(profile.data?.helper_mode),
         helperLevel:profile.data?.helper_level||null,studioCredits:Number(wallet.data?.balanceCredits||0)
       }});

@@ -359,10 +359,18 @@ function resetComposer(){
   $("[data-chat-block]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
   $("[data-chat-unblock]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
 }
+function safeAvatar(raw){
+  if(typeof raw!=="string")return null;
+  try{
+    const url=new URL(raw);
+    return url.protocol==="https:"&&url.hostname.endsWith(".stream-io-cdn.com")&&!url.username&&!url.password?url.href:null;
+  }catch{return null;}
+}
 function renderIdentity(me){
   state.me=me||{};
   const label=$("[data-chat-myhandle]");
   label.textContent=me?.handle?"@"+me.handle:"Your NBL account";
+  const avatar=$("[data-chat-my-avatar]");if(avatar)avatar.src=safeAvatar(me?.avatarUrl)||"/messenger/icon.svg";
   const founder=me?.role==="founder";
   const marker=$("[data-chat-founder-marker]");
   if(marker)marker.hidden=!founder;
@@ -399,6 +407,8 @@ function renderThreads(){
   for(const row of state.threads){
     const item=node("button","thread"+(row.id===state.selectedId?" selected":""),displayThread(row));
     item.type="button";
+    const photo=safeAvatar(row.peer?.avatarUrl);
+    if(photo){const image=node("img","chat-avatar");image.src=photo;image.alt="Conversation profile picture";image.loading="lazy";item.prepend(image);}
     const info=node("small",null,(row.thread_type==="direct"?"Direct message":String(row.thread_type||"Chat").replaceAll("_"," "))+(row.muted?" · Muted":""));
     item.append(info);
     item.addEventListener("click",()=>{void openThread(row.id).catch(error=>status(error.message));});
@@ -437,6 +447,8 @@ function renderMessages(messages){
     const mine=from.toLowerCase()===me;
     const bubble=node("div","message"+(mine?" mine":""));
     const verified=message.sender?.verified||Boolean(message.officialRole);
+    const photo=safeAvatar(message.sender?.avatarUrl);
+    if(photo){const image=node("img","chat-avatar");image.src=photo;image.alt="@"+from+" profile picture";image.loading="lazy";bubble.append(image);}
     bubble.append(node("div","byline","@"+from+(verified?" · Verified":"")+(message.createdAt?" · "+new Date(message.createdAt).toLocaleString():"")));
     bubble.append(node("p",null,message.body||""));
     const invite=VIDEO_INVITE_RE.exec(String(message.body||""));
