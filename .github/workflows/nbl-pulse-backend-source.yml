@@ -6,6 +6,7 @@ on:
     paths:
       - 'pulse/**'
       - 'messenger/social-v1.*'
+      - 'messenger/social-video-connect.mjs'
       - 'supabase/functions/nbl-social/**'
       - 'supabase/migrations/*nbl_pulse*'
       - '.github/workflows/nbl-pulse-backend-source.yml'
@@ -13,6 +14,7 @@ on:
     paths:
       - 'pulse/**'
       - 'messenger/social-v1.*'
+      - 'messenger/social-video-connect.mjs'
       - 'supabase/functions/nbl-social/**'
       - 'supabase/migrations/*nbl_pulse*'
 permissions:
@@ -53,7 +55,10 @@ jobs:
           const pulseUI=readFileSync('messenger/social-v1.mjs','utf8');
           assert.match(pulseUI,/entity_type:"stream:feeds:v3:activity"/);
           assert.match(pulseUI,/entity_type:"stream:feeds:v3:comment"/);
-          assert.ok(front.includes('id="postMedia" type="file" accept="image/jpeg,image/png,image/webp"'));
+          assert.ok(front.includes('id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm"'));
+          assert.ok(front.includes('id="videoShareRights" type="checkbox"'));
+          assert.match(pulseUI,/MAX_VIDEO_BYTES=40\*1024\*1024/);
+          assert.match(pulseUI,/VIDEO_TYPES\.has\(f\.type\)/);
           assert.doesNotMatch(front,/id="postMedia" type="file" disabled/);
           assert.doesNotMatch(api,/sk_live_|STREAM_API_SECRET\s*=\s*['"][^'"]{12}/i);
           console.log('PASS: Pulse source/auth structure and restricted schema checks');

@@ -11,8 +11,8 @@
 <meta property="og:description" content="Discover a post shared by a New Beansland member. Visit NBL Social to see the original post.">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
-<link rel="stylesheet" href="/messenger/social-v1.css?v=20261103-nbl-media">
-<script type="module" src="/messenger/social-v1.mjs?v=20261108-pulse-messenger-inside"></script>
+<link rel="stylesheet" href="/messenger/social-v1.css?v=20261108-provider-video">
+<script type="module" src="/messenger/social-v1.mjs?v=20261108-provider-video"></script>
 <style>
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
 .pulse-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(16px,calc((100vw - 1400px)/2));background:#0d0919;border-bottom:1px solid #51326d;position:sticky;top:0;z-index:20}.pulse-topbar>a{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.4rem;color:#fff;text-decoration:none}.pulse-topbar strong{color:#e6b5ff}.pulse-topbar nav{display:flex;gap:15px;flex-wrap:wrap}.pulse-topbar nav a{color:#e4d5f3;text-decoration:none;font-size:.82rem;font-weight:700}
@@ -37,6 +37,7 @@
 #founderYoutube{margin-top:14px}#founderYoutube input{width:100%;background:#20142f;color:#fff;border:1px solid #68457e;border-radius:9px;padding:11px}
 @media(max-width:1050px){.pulse-grid{grid-template-columns:190px minmax(0,1fr)}.pulse-rail{grid-column:2;grid-template-columns:repeat(2,1fr)}}
 @media(max-width:680px){.pulse-topbar{padding:10px}.pulse-topbar nav{gap:8px}.pulse-topbar nav a{font-size:.7rem}.pulse-topbar nav a:nth-child(3){display:none}.pulse-topbar strong{font-size:.82rem}.pulse-grid{display:block}.pulse-sidebar{position:static;padding:10px}.pulse-sidebar h2{display:none}.pulse-sidebar .social-tabs{flex-direction:row;overflow-x:auto}.pulse-sidebar .social-tabs button,.pulse-sidebar .social-tabs a{width:auto;flex:none;font-size:.8rem;white-space:nowrap;padding:10px}.pulse-live{margin:8px 2px 0;padding:8px 0}.pulse-rail{display:none}.pulse-main .social-compose,.pulse-main .social-list{padding:13px}}
+.pulse-connect{position:relative;z-index:19;align-self:center}.pulse-connect>summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;list-style:none;padding:12px 18px;font-weight:800}.pulse-connect>summary::-webkit-details-marker{display:none}.pulse-connect-menu{position:absolute;right:0;top:calc(100% + 9px);z-index:21;width:min(350px,calc(100vw - 32px));padding:14px;border:1px solid #945ac4;border-radius:16px;background:#190e2a;box-shadow:0 12px 44px #000a;display:grid;gap:5px}.pulse-connect-menu>strong{color:#f3ddff;margin-bottom:7px}.pulse-connect-menu>a,.pulse-connect-menu>button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:10px;border:0;border-radius:10px;background:#261638;color:#fff;text-decoration:none;font:inherit;cursor:pointer}.pulse-connect-menu :is(a,button):hover{background:#492366}.pulse-connect-menu b{font-size:1.1rem;display:grid;place-items:center;flex:none;border-radius:50%;width:34px;height:34px;background:#60328d}.pulse-connect-menu small{display:block;font-size:.72rem;color:#ddc7ec;margin-top:3px}.pulse-connect-menu p{font-size:.75rem;color:#c4b0d8;margin:8px 2px 0}.pulse-composer-who{display:flex;align-items:center;gap:10px;margin-bottom:12px;color:#dfb7ff;font-weight:800}#videoLinkArea{margin-top:14px}#videoLink{display:block;width:100%;background:#20142f;color:#fff;border:1px solid #68457e;border-radius:9px;padding:12px}.pulse-video-rights{font-size:.83rem;display:flex!important;gap:8px;align-items:center;font-weight:500!important}.pulse-video-rights input{accent-color:#a746fa}.pulse-body .social-card{padding:18px}.pulse-body .social-author-row{padding-bottom:8px}.pulse-body .social-actions button{border-radius:999px}@media(max-width:680px){.pulse-connect{width:100%}.pulse-connect>summary{width:100%;justify-content:center}.pulse-connect-menu{left:0;right:auto}}
 </style></head><body class="pulse-body">
 <header class="pulse-topbar"><a href="/"><img src="/NBL-Brand.png" alt="New Beansland" width="40" height="40"> NBL</a><strong>⌁ NBL PULSE MESSENGER</strong><nav><a href="/">Home</a><a class="pulse-message-top" href="/pulse/?messages=1" aria-label="Open NBL Messenger inside Pulse"><img src="/messenger/icon.svg" width="34" height="34" alt="NBL Messenger"></a><a href="/studios.html">Studios</a><a href="/account.html">Account</a></nav></header>
 <main class="social-shell pulse-shell">
@@ -54,6 +55,19 @@
         <p id="profileAvatarStatus" class="social-feedback" role="status"></p>
       </details>
     </div>
+    <details class="pulse-connect" id="connectProviders">
+      <summary class="btn primary">Connect <span aria-hidden="true">▾</span></summary>
+      <div class="pulse-connect-menu">
+        <strong>Connect or invite</strong>
+        <a href="https://accounts.newbeansland.org/user?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F"><b>f</b><span>Facebook <small>Manage Facebook login in your NBL account</small></span></a>
+        <a href="https://accounts.newbeansland.org/user?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F"><b>G</b><span>Google <small>Manage Google login in your NBL account</small></span></a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F" target="_blank" rel="noopener noreferrer"><b>f</b><span>Facebook share <small>Invite people to NBL Pulse</small></span></a>
+        <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;su=Join%20me%20on%20NBL%20Pulse&amp;body=Join%20me%20at%20https%3A%2F%2Fnewbeansland.org%2Fpulse%2F" target="_blank" rel="noopener noreferrer"><b>✉</b><span>Gmail <small>Send an invitation</small></span></a>
+        <a href="https://wa.me/?text=Join%20me%20on%20NBL%20Pulse%20https%3A%2F%2Fnewbeansland.org%2Fpulse%2F" target="_blank" rel="noopener noreferrer"><b>✆</b><span>WhatsApp <small>Send an invitation</small></span></a>
+        <button id="copyPulseInvite" type="button"><b>◎</b><span>Instagram <small>Copy your invite link to share</small></span></button>
+        <p>Account linking uses NBL sign-in. Sending an invite does not connect a social account.</p>
+      </div>
+    </details>
   </div>
   <p class="status" id="socialStatus" role="status" aria-live="polite">Checking your NBL account…</p>
   <div class="signin-panel" id="guest"><p>Sign in with your NBL account to post, message and call.</p><a class="btn primary" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in to NBL</a></div>
@@ -72,15 +86,17 @@
     </section>
     <section class="social-compose" aria-labelledby="composeTitle">
       <h2 id="composeTitle">Share with NBL</h2>
+      <div class="pulse-composer-who"><img id="composerAvatar" class="social-avatar" src="/messenger/icon.svg" width="46" height="46" alt="Your NBL profile picture"><span id="composerHandle">Your NBL account</span></div>
       <form id="postForm"><label for="postText">Your post</label>
         <textarea id="postText" rows="3" maxlength="1500" placeholder="What's happening in New Beansland?"></textarea>
-        <label for="postMedia">Add up to 4 photos (optional)</label>
-        <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp" multiple>
-        <p class="social-feedback" id="mediaSelection" role="status">Add up to 4 JPEG, PNG or WebP photos (8 MB each).</p>
-        <div id="founderYoutube" hidden>
-          <label for="youtubeUrl">Your YouTube video (Founder only)</label>
-          <input id="youtubeUrl" type="url" inputmode="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="off">
-          <p class="social-feedback">Paste the link to your own YouTube video. It plays right here in NBL Pulse.</p>
+        <label for="postMedia">Add photos or a video from your device</label>
+        <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" multiple>
+        <p class="social-feedback" id="mediaSelection" role="status">Up to 4 photos (8 MB each) or 1 MP4/WebM video (40 MB).</p>
+        <div id="videoLinkArea">
+          <label for="videoLink">Or share a YouTube, Facebook or Instagram video</label>
+          <input id="videoLink" type="url" inputmode="url" placeholder="Paste your public video link" autocomplete="off">
+          <label class="pulse-video-rights"><input id="videoShareRights" type="checkbox"> I own or have permission to share this video</label>
+          <p class="social-feedback">Public videos play in Pulse when their provider allows embedding.</p>
         </div>
         <div class="compose-bottom"><small id="postCount">0 / 1500</small><button class="btn primary" type="submit">Post</button></div>
       </form>

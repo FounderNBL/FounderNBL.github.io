@@ -37,3 +37,9 @@
 .friend-entry strong{color:var(--gold2)}
 #friendItems h3{color:var(--cream);font-size:1rem;margin:22px 0 6px}
 @media(max-width:620px){.social-media{grid-template-columns:1fr}}
+
+/* Viewer-activated public video embeds; full-width portrait and landscape posts. */
+.social-embed-play{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:135px;padding:18px;border:1px solid #8760b0;border-radius:13px;background:linear-gradient(130deg,#291242,#080c1b);color:#f7e5ff;cursor:pointer;font:800 1rem system-ui,sans-serif}
+.social-embed-play:hover,.social-embed-play:focus-visible{border-color:#d49aff;background:#362055}
+.social-media .instagram-media{grid-column:1/-1;min-width:0!important;max-width:100%!important;width:100%;margin:0!important;border-radius:14px!important;background:#fff!important}
+.social-video-embed{grid-column:1/-1;width:100%;aspect-ratio:16/9;min-height:220px;border:0;border-radius:12px;background:#030207}
