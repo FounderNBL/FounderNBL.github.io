@@ -1,8 +1,8 @@
 {
   "id": "/messenger/",
-  "name": "NBL Messenger",
-  "short_name": "Messenger",
-  "description": "New Beansland human-to-human messages. University student rooms remain protected.",
+  "name": "NBL Pulse Messenger",
+  "short_name": "Pulse Messenger",
+  "description": "NBL Pulse Messenger private messages. Community posts live in Pulse; University student rooms remain protected.",
   "start_url": "/messenger/",
   "scope": "/messenger/",
   "display": "standalone",
