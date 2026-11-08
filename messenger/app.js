@@ -21,6 +21,12 @@ let pushConfig=null;
 let metaLoadedForUser=null;
 let metaSelectedPeer=null;
 const status=message=>{const el=$("[data-chat-status]");if(el)el.textContent=message;};
+// Call feedback belongs beside the actual conversation, not in the page footer.
+const callFeedback=(message,failed=false)=>{
+  const el=$("[data-chat-video-feedback]");if(!el)return;
+  const value=String(message||"");
+  el.textContent=value;el.hidden=!value;el.dataset.error=failed?"true":"false";
+};
 const lastSeenMessages=new Map();
 function rememberIncoming(threadId,messages,{announce=false}={}){
   if(!threadId)return;
@@ -478,6 +484,7 @@ function watchInbox(){
 async function openThread(id){
   if(!id)return;
   const row=state.threads.find(t=>t.id===id);
+  if(state.selectedId!==id)callFeedback("");
   state.selectedId=id;state.selected=row||null;
   $("[data-chat-app]").classList.add("chat-open");
   watchOpenThread(id);
@@ -501,6 +508,7 @@ async function refresh(){
     state.threads=(threads.threads||[]).filter(row=>row.thread_type==="direct");
     if(state.selectedId&&!state.threads.some(t=>t.id===state.selectedId)){
       state.selectedId=null;state.selected=null;
+      callFeedback("");
       $("[data-chat-app]").classList.remove("chat-open");
       state.realtimeStop?.();state.realtimeStop=null;state.realtimeThread=null;
       resetComposer();
@@ -608,6 +616,7 @@ async function startVideoCall(){
   const threadId=state.selectedId;
   const userId=state.clerk?.user?.id,generation=authSyncGeneration;
   const button=$("[data-chat-video-call]");button.disabled=true;
+  callFeedback("Preparing your private video call…");
   status("Preparing your private video call…");
   try{
     const token=await authToken();
@@ -627,9 +636,13 @@ async function startVideoCall(){
       throw Error("Invalid NBL call invitation.");
     // In-app invitation is delivered inside the same protected direct conversation.
     await social({action:"send",threadId,message:"NBL video call invitation: "+url.href});
+    callFeedback("Video invitation sent in this conversation. Open the invitation below to join.");
     status("Video invitation sent in your NBL conversation.");
     await openThread(threadId);
-  }catch(error){status(error.message||"NBL video call could not start.");}
+  }catch(error){
+    const message=error?.message||"NBL video call could not start.";
+    callFeedback(message,true);status(message);
+  }
   finally{resetComposer();}
 }
 async function sendMessage(event){
@@ -802,6 +815,7 @@ async function syncClerkSession(){
   $("[data-chat-handle-setup]").hidden=true;
   $("[data-chat-invite]").hidden=true;
   $("[data-chat-messages]").replaceChildren(node("p","hint","Choose a conversation."));
+  callFeedback("");
   $("[data-chat-threads]").replaceChildren();
   $("[data-chat-search-results]").replaceChildren();
   $("[data-chat-featured-founder]").hidden=true;
