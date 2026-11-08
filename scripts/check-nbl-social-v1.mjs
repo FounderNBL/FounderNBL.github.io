@@ -118,3 +118,14 @@ assert.match(js,/image_url:trusted/);
 assert.match(js,/await state\.client\.uploadImage\(\{file\}\)/);
 assert.match(js,/if\(asset\.type==="image"\)await state\.client\.deleteImage/);
 assert.match(pulse,/Go Live · setup pending/);
+
+// Pulse public avatars and verified Founder-owned video embeds.
+assert.match(pulse,/id="profileAvatarFile"/);
+assert.match(pulse,/id="identityAvatar"/);
+assert.match(pulse,/id="founderYoutube" hidden/);
+assert.match(pulse,/id="youtubeUrl"/);
+assert.match(js,/action:"profile_photo",avatarUrl:upload/);
+assert.match(js,/nbl_youtube_id:youtubeId/);
+assert.match(js,/profile\?\.verified===true/);
+assert.match(js,/www\.youtube-nocookie\.com\/embed\//);
+assert.match(js,/authorProfile\(userId\)/);
