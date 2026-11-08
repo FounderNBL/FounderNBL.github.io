@@ -108,3 +108,20 @@ test("Messenger shows a rejected video call beside the conversation, not just in
   expect(videoRequests).toBe(1);
   await expect(page.locator("[data-chat-messages]")).not.toContainText("NBL video call invitation:");
 });
+
+test("Pulse links into the same signed-in Messenger without automatically sending a DM",async({page})=>{
+  let directRequests=0;
+  await page.route("**/functions/v1/nbl-social",route=>{
+    const action=route.request().postDataJSON()?.action;
+    if(action==="direct")directRequests++;
+    const result=action==="me"?{ok:true,me:{handle:"alice",role:"member"}}:
+      action==="list_threads"?{ok:true,threads:[]}:{ok:true,messages:[]};
+    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(result)});
+  });
+  await page.goto("/messenger/?dm=friend_123");
+  await page.evaluate(()=>window.__NBL_TEST_SET_IDENTITY("user_A"));
+  await expect(page.locator("[data-chat-dm-handle]")).toHaveValue("@friend_123");
+  await expect(page.locator("[data-chat-status]")).toContainText("Press Open");
+  expect(directRequests).toBe(0);
+  await expect(page.locator("a[href='/pulse/']")).toHaveCount(1);
+});

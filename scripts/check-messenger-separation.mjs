@@ -58,8 +58,8 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261107-video-feedback'),
-  "Messenger must load the video feedback handler");
+assert.ok(app.includes('/messenger/app.js?v=20261108-pulse-messenger'),
+  "Pulse Messenger must load the current account and call handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
 assert.match(js, /Recent direct messages only: up to 200 threads and the latest 100 messages per thread/);
@@ -105,15 +105,15 @@ assert.match(sw,/new URL\("\/messenger\/",self.location.origin\)/);
 assert.doesNotMatch(sw,/event\.data\?\.json\(\)[\s\S]*token/);
 assert.doesNotMatch(app,/type="file"/);
 
-// Meta Page inbox uses Founder verification, not a second NBL identity.
-assert.match(app,/data-chat-meta-page hidden/);
-assert.match(app,/data-chat-meta-threads/);
-assert.match(js,/functions\/v1\/nbl-meta-page-inbox/);
-assert.match(js,/state\.me\?\.role!=="founder"/);
-assert.match(js,/metaPageRequest\("reply"/);
-assert.match(js,/stateResult\.receivedPageMessage/);
-assert.match(js,/no Facebook Page message has arrived through the verified webhook/);
-assert.doesNotMatch(js,/NBL_META_PAGE_ACCESS_TOKEN|NBL_META_APP_SECRET/);
+// Pulse Messenger keeps the Facebook business Page inbox off the personal chat screen.
+assert.doesNotMatch(app,/data-chat-meta-page|Facebook Page inbox/);
+assert.ok(!js.includes("metaPageRequest")&&!js.includes("nbl-meta-page-inbox"),"Business Page inbox must not ship in personal Messenger");
+assert.ok(js.includes('searchParams.get("dm")'),"Pulse member message link handoff lost");
+assert.ok(js.includes("const suggested=pulseMessageIntent()"),"Pulse suggested recipient lost");
+assert.ok(js.includes("Press Open to start the private conversation"),"Explicit member action required");
+assert.ok(!js.includes('action:"direct",handle:suggested'),"A link must never auto-create a private conversation");
+assert.ok(app.includes('href="/pulse/"'),"Pulse navigation lost");
+assert.match(app,/NBL Pulse Messenger/);
 console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and customer phone alerts preserved without Founder controls.");
 
 const callPage=read("messenger/call.html"), callJs=read("messenger/call.mjs");
