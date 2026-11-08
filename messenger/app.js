@@ -8,7 +8,6 @@ const PUSH_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-messen
 const VIDEO_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-video";
 const VIDEO_INVITE_RE=/^NBL video call invitation: https:\/\/newbeansland\.org\/messenger\/call\.html\?call=([0-9a-f-]{36})$/i;
 const IS_CALL_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const META_PAGE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-meta-page-inbox";
 const PUSH_OWNER_KEY="nbl-messenger-push-clerk-user-v1";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
