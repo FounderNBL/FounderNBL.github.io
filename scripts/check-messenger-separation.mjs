@@ -107,12 +107,12 @@ assert.doesNotMatch(app,/type="file"/);
 
 // Pulse Messenger keeps the Facebook business Page inbox off the personal chat screen.
 assert.doesNotMatch(app,/data-chat-meta-page|Facebook Page inbox/);
-assert.doesNotMatch(js,/metaPageRequest|functions\\/v1\\/nbl-meta-page-inbox/);
-assert.match(js,/searchParams\\.get\\("dm"\\)/);
-assert.match(js,/const suggested=pulseMessageIntent\\(\\)/);
-assert.match(js,/Press Open to start the private conversation/);
-assert.doesNotMatch(js,/action:"direct",handle:suggested/);
-assert.match(app,/href="\\/pulse\\/"/);
+assert.ok(!js.includes("metaPageRequest")&&!js.includes("nbl-meta-page-inbox"),"Business Page inbox must not ship in personal Messenger");
+assert.ok(js.includes('searchParams.get("dm")'),"Pulse member message link handoff lost");
+assert.ok(js.includes("const suggested=pulseMessageIntent()"),"Pulse suggested recipient lost");
+assert.ok(js.includes("Press Open to start the private conversation"),"Explicit member action required");
+assert.ok(!js.includes('action:"direct",handle:suggested'),"A link must never auto-create a private conversation");
+assert.ok(app.includes('href="/pulse/"'),"Pulse navigation lost");
 assert.match(app,/NBL Pulse Messenger/);
 console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and customer phone alerts preserved without Founder controls.");
 
