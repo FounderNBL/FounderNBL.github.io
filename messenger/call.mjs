@@ -1,6 +1,8 @@
 // NBL Messenger private video call preview. No Stream secret or Facebook Page token.
 import {StreamVideoClient} from "https://esm.sh/@stream-io/video-client@1.27.0?bundle";
 const ENDPOINT="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-video";
+// NBL private calls may never fall back to Stream's general/default call type.
+const PRIVATE_CALL_TYPE="nbl_private";
 const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT="https://accounts.newbeansland.org";
 const $=selector=>document.querySelector(selector);
@@ -88,10 +90,10 @@ async function join(){
  status("Checking NBL account and call permissions…");
  try{
   const access=await videoRequest("join");
-  if(access.user?.id!==owner||!access.key||!access.token||!access.callType||access.callId!==callId)
+  if(access.user?.id!==owner||!access.key||!access.token||access.callType!==PRIVATE_CALL_TYPE||access.callId!==callId)
    throw Error("Video session identity verification failed.");
   client=new StreamVideoClient({apiKey:access.key,user:{id:owner},token:access.token});
-  call=client.call(access.callType,callId);
+  call=client.call(PRIVATE_CALL_TYPE,callId);
   await call.camera.enable();
   await call.microphone.enable();
   await call.join({create:false});
