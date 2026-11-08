@@ -34,8 +34,9 @@ assert.doesNotMatch(sw, /functions\/v1|clerk\.newbeansland\.org/);
 // Messenger and independent school are separate websites. Old .org campus redirects.
 assert.match(university, /url=https:\/\/nblschool\.com\//);
 assert.match(oldHumanChat, /data-chat-send-form/); // old bookmarks still work
-assert.match(website, /href="\/messenger\//);
-assert.match(website, /class="nav-messenger-launch"/);
+assert.match(website, /href="\/pulse\//);
+assert.match(website, /class="nav-pulse-launch"/);
+assert.doesNotMatch(website, /class="messenger-door"|people talking to people|Open Messenger/i);
 assert.match(website, /src="\/messenger\/icon\.svg"/);
 assert.match(app, /data-chat-featured-founder hidden/);
 assert.match(js, /action:"find_users",q:"NBLFounderOfficial"/);
@@ -51,6 +52,7 @@ assert.match(app, /data-chat-founder-marker hidden/);
 // Private campus remains separate; none of its promotional breadcrumbs appear in Messenger.
 assert.doesNotMatch(app, /Class Chat|Study Hall|Student rooms|University Social Chat|University enrollment|university-campus\.html/);
 assert.match(app, /data-chat-account-toggle/);
+assert.match(app, /pulse-embedded/);
 assert.match(app, /data-chat-profile-form/);
 assert.match(app, /data-chat-open-clerk/);
 assert.match(app, /data-chat-download-messages/);
