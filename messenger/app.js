@@ -18,8 +18,6 @@ const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:fa
 let activeAuthUserId;
 let authSyncGeneration=0;
 let pushConfig=null;
-let metaLoadedForUser=null;
-let metaSelectedPeer=null;
 const status=message=>{const el=$("[data-chat-status]");if(el)el.textContent=message;};
 // Call feedback belongs beside the actual conversation, not in the page footer.
 const callFeedback=(message,failed=false)=>{
@@ -47,6 +45,12 @@ function signInUrl(){
   dest.hash="";
   if(!["https:","http:"].includes(dest.protocol))return ACCOUNT_PORTAL+"/sign-in";
   return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(dest.href);
+}
+// Pulse shares this Messenger account. A URL may suggest a member, never auto-send a DM.
+function pulseMessageIntent(){
+  const raw=new URL(window.location.href).searchParams.get("dm")||"";
+  const handle=raw.replace(/^@/,"");
+  return /^[A-Za-z0-9_-]{2,64}$/.test(handle)?handle:null;
 }
 function clerkDomain(){
   const encoded=(CLERK_PUBLISHABLE_KEY.split("_")[2]||"").replace(/-/g,"+").replace(/_/g,"/");
@@ -363,12 +367,6 @@ function renderIdentity(me){
   const founder=me?.role==="founder";
   const marker=$("[data-chat-founder-marker]");
   if(marker)marker.hidden=!founder;
-  const metaPage=$("[data-chat-meta-page]");
-  if(metaPage)metaPage.hidden=!founder;
-  if(founder&&state.clerk?.user?.id&&metaLoadedForUser!==state.clerk.user.id){
-    metaLoadedForUser=state.clerk.user.id;
-    void loadMetaPage();
-  }
   const setup=$("[data-chat-handle-setup]");
   if(setup)setup.hidden=Boolean(me?.handle);
 }
@@ -692,96 +690,6 @@ async function reportMessage(messageId){
     status("Report recorded for review.");
   }catch(error){status(error.message||"Report could not be submitted.");}
 }
-async function metaPageRequest(action,{method="GET",peer="",text=""}={}){
-  // Uses the same Clerk identity as NBL Messenger. Never fetch messages using
-  // a social-login token, never surface a Page access token to the browser.
-  const userId=state.clerk?.user?.id;
-  const generation=authSyncGeneration;
-  if(!userId||state.me?.role!=="founder")throw Error("Founder-only Page inbox.");
-  const token=await authToken();
-  if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)throw Error("NBL account changed.");
-  const endpoint=new URL(META_PAGE_API);
-  endpoint.searchParams.set("action",action);
-  if(peer)endpoint.searchParams.set("peer",peer);
-  const response=await fetch(endpoint.href,{
-    method,headers:{"Authorization":"Bearer "+token,...(method==="POST"?{"Content-Type":"application/json"}:{})},
-    ...(method==="POST"?{body:JSON.stringify({text})}:{}),cache:"no-store"
-  });
-  const payload=await response.json().catch(()=>({}));
-  if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)throw Error("NBL account changed.");
-  if(!response.ok||!payload.ok){
-    throw Error(payload.reason==="messaging_window_closed"
-      ?"The Facebook 24-hour reply window has closed. Wait for another incoming message."
-      :payload.reason==="meta_page_not_configured"
-      ?"The Facebook Page has not been securely connected yet."
-      :"Facebook Page inbox is temporarily unavailable.");
-  }
-  return payload;
-}
-function metaStatus(message){
-  const el=$("[data-chat-meta-status]");if(el)el.textContent=message;
-}
-async function loadMetaPage(){
-  if(state.me?.role!=="founder")return;
-  metaStatus("Checking Facebook Page messaging…");
-  try{
-    const stateResult=await metaPageRequest("status");
-    if(!stateResult.configured){
-      metaStatus("Page messaging is not connected yet. Meta Page permissions, webhook verification and the Page access token are still required.");
-      $("[data-chat-meta-threads]").replaceChildren();
-      return;
-    }
-    const payload=await metaPageRequest("threads");
-    const area=$("[data-chat-meta-threads]");
-    area.replaceChildren();
-    for(const item of payload.threads||[]){
-      // Meta Page-scoped person identifiers are not NBL usernames.
-      const button=node("button","btn small","Facebook visitor · "+String(item.peerId).slice(-4)+" · "+(item.preview||"").slice(0,50));
-      button.type="button";
-      button.addEventListener("click",()=>{void openMetaPeer(item.peerId);});
-      area.append(button);
-    }
-    metaStatus(stateResult.receivedPageMessage
-      ?"Facebook Page message received through the verified webhook. You can reply to eligible conversations within Meta's permitted messaging window."
-      :"Facebook Page credentials are present, but no Facebook Page message has arrived through the verified webhook. Complete the Meta Page subscription and send a test message before treating this connection as live.");
-  }catch(error){metaStatus(error.message||"Unable to load Facebook Page messages.");}
-}
-async function openMetaPeer(peer){
-  metaSelectedPeer=null;
-  $("[data-chat-meta-heading]").textContent="Loading Page conversation…";
-  $("[data-chat-meta-reply]").disabled=true;
-  $("[data-chat-meta-reply-form] button[type=submit]").disabled=true;
-  try{
-    const payload=await metaPageRequest("messages",{peer});
-    metaSelectedPeer=peer;
-    $("[data-chat-meta-heading]").textContent="Facebook visitor · "+String(peer).slice(-4);
-    const area=$("[data-chat-meta-messages]");
-    area.replaceChildren();
-    for(const message of payload.messages||[]){
-      const item=node("p","hint",(message.direction==="out"?"New Beansland: ":"Visitor: ")+message.body);
-      area.append(item);
-    }
-    $("[data-chat-meta-reply]").disabled=false;
-    $("[data-chat-meta-reply-form] button[type=submit]").disabled=false;
-  }catch(error){metaStatus(error.message||"Could not open Page conversation.");}
-}
-async function sendMetaReply(event){
-  event.preventDefault();
-  const peer=metaSelectedPeer;
-  const field=$("[data-chat-meta-reply]");
-  const text=field.value.trim();
-  if(!peer||!text)return;
-  const submit=$("[data-chat-meta-reply-form] button[type=submit]");
-  submit.disabled=true;
-  try{
-    const result=await metaPageRequest("reply",{method:"POST",peer,text});
-    field.value="";
-    metaStatus(result.historySaved?"Facebook Page reply sent.":"Meta accepted the reply; local history sync needs attention. Do not resend.");
-    await openMetaPeer(peer);
-  }catch(error){metaStatus(error.message||"Page reply could not be sent.");}
-  finally{submit.disabled=false;}
-}
-
 async function syncClerkSession(){
   const userId=state.clerk?.isSignedIn&&state.clerk?.session?state.clerk.user?.id||null:null;
   if(userId===activeAuthUserId)return;
@@ -793,13 +701,6 @@ async function syncClerkSession(){
   state.selectedId=null;state.selected=null;state.threads=[];state.me=null;state.busy=false;
   $("[data-chat-app]").classList.remove("chat-open");
   lastSeenMessages.clear();
-  metaLoadedForUser=null;metaSelectedPeer=null;
-  $("[data-chat-meta-page]").hidden=true;
-  $("[data-chat-meta-threads]").replaceChildren();
-  $("[data-chat-meta-messages]").replaceChildren(node("p","hint","No Page conversation selected."));
-  $("[data-chat-meta-reply]").value="";
-  $("[data-chat-meta-reply]").disabled=true;
-  $("[data-chat-meta-reply-form] button[type=submit]").disabled=true;
   $("[data-chat-userbar]").hidden=true;
   $("[data-chat-account-settings]").hidden=true;
   $("[data-chat-account-toggle]").setAttribute("aria-expanded","false");
@@ -839,11 +740,14 @@ async function syncClerkSession(){
   watchInbox();
   await refresh();
   if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
+  const suggested=pulseMessageIntent();
+  if(suggested){
+    $("[data-chat-dm-handle]").value="@"+suggested;
+    status("Pulse opened a message to @"+suggested+". Press Open to start the private conversation.");
+  }
 }
 async function boot(){
   $("[data-chat-signin]").href=signInUrl();
-  $("[data-chat-meta-refresh]").addEventListener("click",()=>{void loadMetaPage();});
-  $("[data-chat-meta-reply-form]").addEventListener("submit",event=>{void sendMetaReply(event);});
   $("[data-chat-account-toggle]").addEventListener("click",()=>{void openAccountPanel();});
   $("[data-chat-account-close]").addEventListener("click",()=>{
     $("[data-chat-account-settings]").hidden=true;
