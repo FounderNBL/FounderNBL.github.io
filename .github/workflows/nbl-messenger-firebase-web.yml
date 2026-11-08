@@ -1,0 +1,32 @@
+name: NBL Messenger Firebase Web offline gate
+
+on:
+  pull_request:
+    paths:
+      - "messenger/firebase-web.js"
+      - "messenger/index.html"
+      - "messenger/FIREBASE_WEB_INTEGRATION.md"
+      - "privacy.html"
+      - "scripts/check-messenger-firebase-web.mjs"
+      - ".github/workflows/nbl-messenger-firebase-web.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  firebase-web-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check Firebase Web module JavaScript syntax
+        run: node --check messenger/firebase-web.js
+      - name: Verify NBL FOUNDATION, consent controls and existing Messenger integrations
+        run: node scripts/check-messenger-firebase-web.mjs
+      - name: Preserve independent Messenger safety contracts
+        run: node scripts/check-messenger-separation.mjs
+      - name: Explain this offline check
+        if: always()
+        run: |
+          echo "Source-only checks. No Firebase provider requests, analytics events, account data, live deployment, billing, or customer push were performed." >> "$GITHUB_STEP_SUMMARY"
