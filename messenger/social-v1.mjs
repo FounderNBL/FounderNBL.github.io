@@ -11,7 +11,7 @@ const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 // The NBL server/provider still decides which activity the signed-in viewer may read.
 const PUBLIC_SOCIAL_URL="https://newbeansland.org/messenger/social-v1.html";
 const linkedPostId=new URL(location.href).searchParams.get("post");
-const LABELS={foryou:"For You",timeline:"Following",user:"My Posts",notification:"Notifications",friends:"Friends"};
+const LABELS={foryou:"For You",timeline:"Following",user:"My Posts",notification:"Notifications",friends:"Friends",messages:"Messages"};
 const MAX_PHOTO_BYTES=8*1024*1024,MAX_VIDEO_BYTES=40*1024*1024,MAX_PHOTOS=4;
 const IMAGE_TYPES=new Set(["image/jpeg","image/png","image/webp"]);
 const VIDEO_TYPES=new Set(["video/mp4","video/webm"]);
@@ -34,7 +34,8 @@ function trustedMediaLink(raw){
     return url.protocol==="https:"&&url.hostname.endsWith(".stream-io-cdn.com")?url.href:null;
   }catch{return null;}
 }
-const state={clerk:null,client:null,user:null,me:null,selected:"foryou",feed:null,unsubscribe:null,busy:false,timeline:null};
+const pulseInitialQuery=new URL(location.href).searchParams;
+const state={clerk:null,client:null,user:null,me:null,selected:pulseInitialQuery.get("messages")==="1"?"messages":"foryou",feed:null,unsubscribe:null,busy:false,timeline:null};
 let initialNBLUserId=null,accountChanged=false;
 function assertCurrentAccount(userId){
   if(accountChanged||!userId||state.clerk?.user?.id!==userId||!state.clerk?.isSignedIn||!state.clerk?.session)
@@ -277,7 +278,8 @@ function renderActivity(activity){
         const handle=String(result.profile?.handle||"");
         if(!/^[A-Za-z0-9_-]{2,64}$/.test(handle))
           throw new Error("This creator cannot receive messages.");
-        const url=new URL("/messenger/",location.origin);
+        const url=new URL(location.pathname.startsWith("/pulse")?"/pulse/":"/messenger/",location.origin);
+        if(location.pathname.startsWith("/pulse"))url.searchParams.set("messages","1");
         url.searchParams.set("dm",handle);
         location.assign(url.pathname+url.search);
       }catch(error){feedback.textContent="Messenger could not open: "+safeError(error);}
@@ -477,10 +479,22 @@ async function publishPost(event){
 }
 function selectTab(){
   document.querySelectorAll("[data-feed]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.feed===state.selected)));
-  const friends=state.selected==="friends";
+  const friends=state.selected==="friends",messages=state.selected==="messages";
   $("#friendsPanel").hidden=!friends;
-  $("#feedPanel").hidden=friends;
-  $(".social-compose").hidden=friends||state.selected==="notification";
+  $("#feedPanel").hidden=friends||messages;
+  $(".social-compose").hidden=friends||messages||state.selected==="notification";
+  $(".pulse-stories").hidden=messages;
+  $("#messengerPanel").hidden=!messages;
+  if(messages){
+    const frame=$("#pulseMessengerFrame");
+    if(!frame.getAttribute("src")){
+      const target=new URL("/messenger/",location.origin);
+      target.searchParams.set("embed","pulse");
+      const handle=new URL(location.href).searchParams.get("dm")||"";
+      if(/^@?[A-Za-z0-9_-]{2,64}$/.test(handle))target.searchParams.set("dm",handle);
+      frame.src=target.pathname+target.search;
+    }
+  }
 }
 async function boot(){
   $("#signIn").href=signInURL();
@@ -495,12 +509,20 @@ async function boot(){
   $("#postText").addEventListener("input",e=>{$("#postCount").textContent=e.target.value.length+" / 1500";});
   document.querySelectorAll("[data-feed]").forEach(button=>button.addEventListener("click",()=>{
     if(!state.client||state.selected===button.dataset.feed)return;
-    state.selected=button.dataset.feed;selectTab();void loadFeed();
+    state.selected=button.dataset.feed;
+    if(location.pathname.startsWith("/pulse")){
+      const url=new URL(location.href);
+      if(state.selected==="messages")url.searchParams.set("messages","1");
+      else{url.searchParams.delete("messages");url.searchParams.delete("dm");}
+      history.replaceState(history.state,"",url.pathname+url.search);
+    }
+    selectTab();
+    if(state.selected!=="messages")void loadFeed();
   }));
   $("#refreshFeed").addEventListener("click",()=>{void loadFeed();});
   $("#signOut").addEventListener("click",async()=>{
-    try{state.unsubscribe?.();await state.client?.disconnectUser?.();await state.clerk.signOut();location.assign("/messenger/");}
-    catch{location.assign("/messenger/");}
+    try{state.unsubscribe?.();await state.client?.disconnectUser?.();await state.clerk.signOut();location.assign("/pulse/");}
+    catch{location.assign("/pulse/");}
   });
   try{
     const c=await clerk();
@@ -510,7 +532,9 @@ async function boot(){
     await session();
     assertCurrentAccount(initialNBLUserId);
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
-    selectTab();await loadFeed();await loadLinkedPost();
+    selectTab();
+    if(state.selected!=="messages")await loadFeed();
+    await loadLinkedPost();
   }catch(error){
     status("Social integration not available: "+safeError(error));
   }
