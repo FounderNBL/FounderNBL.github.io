@@ -17,7 +17,8 @@ const allow=document.querySelector("[data-messenger-analytics-enable]");
 const stop=document.querySelector("[data-messenger-analytics-disable]");
 const note=document.querySelector("[data-messenger-analytics-status]");
 let analyticsClient=null;
-let loading=null;
+let sdkPromise=null;
+let consentEpoch=0;
 
 function consented(){
   try{return localStorage.getItem(CONSENT_KEY)==="yes";}catch{return false;}
@@ -37,59 +38,67 @@ function render(message){
     ?"Optional Google Analytics enabled on this browser."
     :"Optional Google Analytics is off. Messenger still works normally.");
 }
-async function loadAnalytics(){
-  if(analyticsClient)return analyticsClient;
-  if(!loading){
-    loading=(async()=>{
-      // Load Google SDKs only after consent; this site uses no npm/bundler.
-      const [{initializeApp,getApps},{isSupported,getAnalytics,setAnalyticsCollectionEnabled}]=await Promise.all([
-        import(SDK+"firebase-app.js"),
-        import(SDK+"firebase-analytics.js")
-      ]);
-      if(!(await isSupported()))throw new Error("Analytics isn't supported in this browser.");
-      const app=getApps().find(item=>item.name==="nbl-messenger-web")
-        ||initializeApp(CONFIG,"nbl-messenger-web");
-      return {analytics:getAnalytics(app),setAnalyticsCollectionEnabled};
-    })();
+function loadSdk(){
+  if(!sdkPromise){
+    // Only fetch the Google SDK after an explicit opt-in or a stored prior opt-in.
+    sdkPromise=Promise.all([
+      import(SDK+"firebase-app.js"),
+      import(SDK+"firebase-analytics.js")
+    ]).then(([app,analytics])=>({app,analytics})).catch(error=>{
+      sdkPromise=null;
+      throw error;
+    });
   }
-  try{
-    analyticsClient=await loading;
-    return analyticsClient;
-  }catch(error){
-    loading=null;
-    throw error;
-  }
+  return sdkPromise;
 }
 async function enable(){
+  const ticket=++consentEpoch;
   if(allow)allow.disabled=true;
   render("Connecting optional analytics…");
   try{
-    const client=await loadAnalytics();
-    // Do not store the opt-in until Google Analytics is actually ready.
-    client.setAnalyticsCollectionEnabled(client.analytics,true);
-    if(!saveConsent(true)){
-      client.setAnalyticsCollectionEnabled(client.analytics,false);
-      render("This browser cannot save your choice. Analytics remains off.");
+    const {app,analytics}=await loadSdk();
+    // A user may opt out while SDKs are downloading. Do not initialize in that case.
+    if(ticket!==consentEpoch)return;
+    if(!(await analytics.isSupported()))throw new Error("Analytics not supported.");
+    if(ticket!==consentEpoch)return;
+    // No Firebase Auth, Firestore, Storage, Messaging or Cloud Functions SDKs are loaded.
+    // Firebase Analytics uses the default app; do not override a different project's app.
+    const existing=app.getApps().find(item=>item.name==="[DEFAULT]");
+    if(existing&&existing.options.projectId!==CONFIG.projectId){
+      throw new Error("Existing Firebase project does not match NBL FOUNDATION.");
+    }
+    if(!consented()&&!saveConsent(true)){
+      render("This browser cannot store your choice. Analytics remains off.");
       return;
     }
+    const client=analyticsClient||(analyticsClient={
+      value:analytics.getAnalytics(existing||app.initializeApp(CONFIG)),
+      setCollection:analytics.setAnalyticsCollectionEnabled
+    });
+    if(ticket!==consentEpoch){
+      client.setCollection(client.value,false);
+      return;
+    }
+    client.setCollection(client.value,true);
     render("Optional Google Analytics is on. No message contents or account IDs are sent by NBL.");
   }catch{
-    saveConsent(false);
-    render("Google Analytics wasn't available. Messenger and notifications are unaffected.");
+    if(ticket===consentEpoch){
+      saveConsent(false);
+      render("Google Analytics wasn't available. Messenger and notifications are unaffected.");
+    }
   }finally{
     if(allow)allow.disabled=false;
   }
 }
 function disable(){
+  consentEpoch++;
   saveConsent(false);
-  if(analyticsClient){
-    analyticsClient.setAnalyticsCollectionEnabled(analyticsClient.analytics,false);
-  }
+  if(analyticsClient)analyticsClient.setCollection(analyticsClient.value,false);
   render("Optional Google Analytics is off. Your NBL messages and calls are unchanged.");
 }
 if(allow&&stop&&note){
   allow.addEventListener("click",()=>{void enable();});
   stop.addEventListener("click",disable);
   render();
-  if(consented())void enable(); // Previously opted-in on this browser.
+  if(consented())void enable(); // Restore a previously selected browser preference.
 }
