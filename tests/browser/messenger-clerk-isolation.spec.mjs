@@ -78,3 +78,33 @@ test("Messenger ignores delayed account A responses after account B signs in",as
   await expect(page.locator("[data-chat-threads]")).not.toContainText("ACCOUNT_A_PRIVATE");
   await expect(page.locator("[data-chat-messages]")).not.toContainText("ACCOUNT_A_PRIVATE");
 });
+
+test("Messenger shows a rejected video call beside the conversation, not just in the footer",async({page})=>{
+  const threadId="11111111-1111-4111-8111-111111111111";
+  await page.route("**/functions/v1/nbl-social",route=>{
+    const {action}=route.request().postDataJSON();
+    const payload=action==="me"?{ok:true,me:{handle:"NBLFounderOfficial",role:"founder"}}:
+      action==="list_threads"?{ok:true,threads:[{id:threadId,thread_type:"direct",peer:{handle:"friend"}}]}:
+      {ok:true,messages:[]};
+    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(payload)});
+  });
+  let videoRequests=0;
+  await page.route("**/functions/v1/nbl-video",route=>{
+    videoRequests++;
+    return route.fulfill({status:503,contentType:"application/json",body:JSON.stringify({
+      ok:false,reason:"video_unavailable",message:"NBL calling is unavailable. No call was placed."
+    })});
+  });
+  await page.goto("/messenger/");
+  await page.evaluate(()=>window.__NBL_TEST_SET_IDENTITY("user_founder"));
+  await expect(page.locator("[data-chat-threads] .thread")).toHaveCount(1);
+  await page.locator("[data-chat-threads] .thread").click();
+  const video=page.locator("[data-chat-video-call]");
+  await expect(video).toBeEnabled();
+  await page.locator(".thread-menu summary").click();
+  await video.click();
+  await expect(page.locator("[data-chat-video-feedback]")).toBeVisible();
+  await expect(page.locator("[data-chat-video-feedback]")).toContainText("NBL calling is unavailable");
+  expect(videoRequests).toBe(1);
+  await expect(page.locator("[data-chat-messages]")).not.toContainText("NBL video call invitation:");
+});
