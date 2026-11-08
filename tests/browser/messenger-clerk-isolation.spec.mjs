@@ -125,3 +125,20 @@ test("Pulse links into the same signed-in Messenger without automatically sendin
   expect(directRequests).toBe(0);
   await expect(page.locator("a[href='/pulse/']")).toHaveCount(1);
 });
+
+test("Pulse displays the existing Messenger inside Pulse from its image entry",async({page})=>{
+  await page.route("**/functions/v1/nbl-social",route=>{
+    const action=route.request().postDataJSON()?.action;
+    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(
+      action==="me"?{ok:true,me:{handle:"alice",role:"member"}}:{ok:true,threads:[]}
+    )});
+  });
+  await page.goto("/pulse/?messages=1&dm=friend_123");
+  const panel=page.locator("#messengerPanel");
+  await expect(page.locator(".pulse-messenger-rail img[src='/messenger/icon.svg']")).toHaveCount(1);
+  await expect(page.locator(".messenger-door")).toHaveCount(0);
+  // When the NBL account is signed in, the same Messenger document is mounted in Pulse,
+  // never a second messaging provider or a copied chat database.
+  await expect(page.locator("#pulseMessengerFrame")).toHaveAttribute("title","NBL Messenger private messages and calls");
+  await expect(page.locator("[data-feed='messages']")).toHaveCount(1);
+});
