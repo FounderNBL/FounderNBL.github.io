@@ -246,3 +246,7 @@ main{max-width:1240px}
   .featured-founder .founder-message{grid-column:1/-1;width:100%}
 }
 @media(prefers-reduced-motion:reduce){.thread,.btn{transition:none}.thread:hover{transform:none}}
+
+/* Shared NBL profile avatars in member direct conversations and messages. */
+.chat-avatar{width:35px;height:35px;object-fit:cover;border-radius:50%;border:1px solid var(--gold2);vertical-align:middle;flex:none;background:#0a1b2b}
+.thread>.chat-avatar{float:left;margin-right:10px}.message>.chat-avatar{float:left;margin-right:10px}
