@@ -1,0 +1,381 @@
+/* NBL Pulse — member-first visual shell (November 9, 2026).
+ * CSS-only; the current Clerk, Stream, Supabase, Messenger and posting behavior
+ * remains untouched. Member-generated media is the visual content. No stock art,
+ * simulated profiles, placeholder stories, or new features are introduced.
+ * See docs/nbl-social/NBL_PULSE_MEMBER_FIRST_LAYOUT_2026-11-09.md.
+ */
+.pulse-body {
+  --pulse-bg:#0b0911;
+  --pulse-surface:#171320;
+  --pulse-raised:#211a2d;
+  --pulse-border:#3b304a;
+  --pulse-text:#f8f4fd;
+  --pulse-muted:#c4b7d3;
+  --pulse-accent:#b47af0;
+  --pulse-accent-strong:#9252df;
+  --pulse-warm:#f1c986;
+  --gold:var(--pulse-accent);
+  --gold2:#e2beff;
+  --line:var(--pulse-border);
+  --navy:var(--pulse-surface);
+  --cream:var(--pulse-text);
+  --soft:var(--pulse-muted);
+  color:var(--pulse-text);
+  background:radial-gradient(ellipse 880px 450px at 54% -190px,rgba(130,75,201,.13),transparent 85%),var(--pulse-bg);
+  font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  min-height:100vh;
+}
+.pulse-body *{box-sizing:border-box}
+.pulse-body [hidden]{display:none!important}
+.pulse-body a,.pulse-body button,.pulse-body textarea,.pulse-body input{font:inherit}
+.pulse-body :is(a,button,summary){-webkit-tap-highlight-color:transparent}
+.pulse-body :is(button,a,textarea,input,summary):focus-visible{outline:3px solid var(--pulse-warm);outline-offset:3px}
+.pulse-body button:not(:disabled){cursor:pointer}
+
+/* Compact identity / actions, instead of a giant landing-page billboard. */
+.pulse-body .pulse-topbar{
+  min-height:70px;
+  padding:10px max(24px,calc((100vw - 1240px)/2));
+  background:rgba(18,13,28,.96);
+  border-bottom:1px solid rgba(191,154,231,.18);
+  box-shadow:0 8px 22px #0003;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.pulse-body .pulse-topbar>a{
+  font-size:1.05rem;
+  letter-spacing:.03em;
+  gap:10px;
+}
+.pulse-body .pulse-topbar>a img{
+  width:38px;height:38px;object-fit:contain;
+  border-radius:10px;border:1px solid #765d8e;background:#170f23;
+}
+.pulse-body .pulse-topbar>strong{font:800 .84rem/1.2 system-ui,sans-serif;letter-spacing:.14em;color:var(--pulse-warm)}
+.pulse-body .pulse-topbar nav{gap:6px;align-items:center;flex-wrap:nowrap}
+.pulse-body .pulse-topbar nav a{
+  padding:10px 12px;border-radius:10px;font-size:.86rem;font-weight:650;
+  color:var(--pulse-muted);white-space:nowrap;
+}
+.pulse-body .pulse-topbar nav a:hover,.pulse-body .pulse-topbar nav a:focus-visible{background:#2e2140;color:#fff}
+.pulse-body .pulse-topbar nav .pulse-message-top{padding:5px 9px}
+.pulse-body .pulse-topbar nav .pulse-message-top img{width:36px;height:36px;object-fit:contain}
+
+/* A social feed, not a product landing page. */
+.pulse-body .pulse-shell{max-width:1240px;margin:auto;padding:18px 24px 84px}
+.pulse-body .pulse-shell .preview-bar{display:none}
+.pulse-body .pulse-shell .social-intro{
+  margin:0 0 18px;padding:0 2px;
+  gap:18px;min-height:80px;flex-wrap:wrap;justify-content:space-between;
+}
+.pulse-body .social-intro .eyebrow{margin:0 0 2px;color:var(--pulse-warm);font-size:.67rem;letter-spacing:.16em}
+.pulse-body .social-intro h1{
+  font:800 clamp(1.65rem,3vw,2.15rem)/1.08 system-ui,sans-serif;
+  letter-spacing:-.035em;color:var(--pulse-text);
+}
+.pulse-body .social-intro .social-subtitle{margin:6px 0 0;font-size:.86rem;color:var(--pulse-muted)}
+.pulse-body #identity{
+  display:flex;align-items:center;gap:9px;
+  background:#1a1425;border:1px solid var(--pulse-border);
+  border-radius:999px;padding:6px 8px 6px 7px;
+  max-width:100%;
+}
+.pulse-body #identity[hidden]{display:none!important}
+.pulse-body #identityAvatar{width:35px;height:35px;border:1px solid #9b67c3}
+.pulse-body #identityHandle{max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.8rem;font-weight:750;color:#f7edff}
+.pulse-body #identity .btn.small{font-size:.76rem;padding:7px 9px;border-radius:999px}
+.pulse-body .pulse-avatar-settings{position:relative}
+.pulse-body .pulse-avatar-settings>summary{font-size:.75rem}
+.pulse-body .pulse-avatar-settings[open]{background:var(--pulse-raised);border-radius:14px}
+.pulse-body .pulse-avatar-settings input{width:100%;max-width:230px;font-size:.76rem}
+.pulse-body .pulse-avatar-settings label{font-weight:650;color:var(--pulse-muted)}
+.pulse-body .pulse-connect{z-index:26}
+.pulse-body .pulse-connect>summary{
+  padding:11px 16px;background:linear-gradient(140deg,#7944bd,#5b318b);
+  border:1px solid #b384da;box-shadow:inset 0 1px #ffffff31;
+  border-radius:999px;font-size:.82rem;
+}
+.pulse-body .pulse-connect>summary:hover{background:#8b52c9}
+.pulse-body .pulse-connect-menu{background:#21162d;border:1px solid #705083;box-shadow:0 22px 50px #0009}
+.pulse-body #socialStatus{
+  margin:0 0 13px;padding:0 2px;color:#b6a5c5;
+  font-size:.77rem;line-height:1.5;min-height:1.2em;
+}
+.pulse-body #guest{
+  max-width:600px;margin:30px auto;padding:34px 24px;
+  border:1px solid var(--pulse-border);border-radius:20px;
+  background:var(--pulse-surface);text-align:center;
+}
+.pulse-body .signin-panel .btn{margin-top:12px}
+
+/* Familiar information architecture: navigation / human feed / supporting rail. */
+.pulse-body #socialApp .pulse-grid{
+  display:grid;
+  grid-template-columns:208px minmax(0,1fr) 218px;
+  align-items:start;gap:18px;
+}
+.pulse-body .pulse-sidebar{
+  position:sticky;top:88px;
+  background:#171220;border:1px solid var(--pulse-border);
+  border-radius:18px;padding:14px 10px;
+  box-shadow:0 10px 26px #0002;
+}
+.pulse-body .pulse-sidebar h2{
+  padding:3px 12px 10px;font-size:.92rem;letter-spacing:.02em;
+  color:var(--pulse-warm);margin:0;
+}
+.pulse-body .pulse-sidebar .social-tabs{
+  display:flex;flex-direction:column;gap:5px;
+  border:0;margin:0;overflow:visible;
+}
+.pulse-body .pulse-sidebar .social-tabs button{
+  width:100%;display:flex;align-items:center;min-height:45px;
+  text-align:left;border:1px solid transparent;border-radius:11px;
+  background:transparent;color:var(--pulse-muted);
+  font-size:.91rem;font-weight:650;padding:11px 14px;
+  transition:background-color .16s,border-color .16s,color .16s;
+}
+.pulse-body .pulse-sidebar .social-tabs button:hover{background:#292039;color:#fff}
+.pulse-body .pulse-sidebar .social-tabs button[aria-pressed="true"]{
+  color:#fff;background:#3e2859;border-color:#765099;
+  box-shadow:inset 3px 0 0 var(--pulse-warm);
+}
+.pulse-body .pulse-sidebar .social-tabs a.pulse-message-tab{
+  color:var(--pulse-warm);border:1px solid transparent;border-radius:11px;
+  background:transparent;text-decoration:none;text-align:left;font-size:.82rem;
+  font-weight:750;padding:9px 12px;min-height:48px;width:100%;display:flex;
+  align-items:center;gap:10px;
+}
+.pulse-body .pulse-sidebar .social-tabs a.pulse-message-tab:hover{background:#292039;color:#fff}
+.pulse-body .pulse-sidebar .pulse-message-tab{
+  justify-content:flex-start!important;min-height:50px;
+}
+.pulse-body .pulse-sidebar .pulse-message-tab img{width:32px;height:32px}
+.pulse-body .pulse-live{display:none} /* Disabled future-only feature: keep source, remove visual clutter. */
+.pulse-body .pulse-stories{display:none!important} /* No empty/fake stories. People supply real media. */
+.pulse-body .pulse-main{min-width:0}
+.pulse-body .pulse-rail{position:sticky;top:88px;display:grid;gap:14px}
+.pulse-body .pulse-rail section{
+  background:#171220;border:1px solid var(--pulse-border);
+  border-radius:18px;padding:18px;box-shadow:0 10px 25px #0002;
+}
+.pulse-body .pulse-rail h2{font:750 1rem/1.3 system-ui,sans-serif;color:var(--pulse-text);margin:0 0 9px}
+.pulse-body .pulse-rail p{line-height:1.55;color:var(--pulse-muted);font-size:.82rem;margin:0}
+.pulse-body .pulse-rail section:nth-child(2){display:none} /* Don't advertise disabled Live. */
+.pulse-body .pulse-messenger-rail{padding:16px!important;text-align:center}
+.pulse-body .pulse-messenger-rail a{padding:9px;display:grid;place-items:center;border:1px solid #49355b}
+.pulse-body .pulse-messenger-rail img{max-width:145px;height:auto;max-height:150px;object-fit:contain}
+
+/* Composer: make it obvious, fast, and usable without changing input contracts. */
+.pulse-body .pulse-main .social-compose{
+  margin:0 0 18px;padding:20px;
+  background:var(--pulse-surface);border:1px solid var(--pulse-border);
+  border-radius:18px;box-shadow:0 12px 30px #0003;
+}
+.pulse-body .pulse-main .social-compose h2{
+  color:var(--pulse-text);font:750 1.03rem/1.2 system-ui,sans-serif;
+  margin:0 0 14px;
+}
+.pulse-body .pulse-composer-who{
+  padding:0 0 13px;border-bottom:1px solid var(--pulse-border);
+  color:var(--pulse-text);font-weight:650;margin-bottom:15px;gap:10px;
+}
+.pulse-body .pulse-composer-who .social-avatar{width:41px;height:41px;border:1px solid #9160b5}
+.pulse-body .social-compose label{font-size:.78rem;color:var(--pulse-muted);font-weight:700;margin:10px 0 7px}
+.pulse-body #postText{
+  width:100%;min-height:82px;resize:vertical;line-height:1.55;
+  border-radius:15px;background:#221a2f;border:1px solid #4a3a5e;
+  padding:14px 16px;font-size:.95rem;color:#fff;
+}
+.pulse-body #postText::placeholder{color:#b8a7c8}
+.pulse-body #postText:focus{border-color:#c8a1ed}
+.pulse-body #postMedia{
+  width:100%;padding:11px 12px;border:1px dashed #84639c;
+  border-radius:12px;background:#21182e;font-size:.84rem;cursor:pointer;
+}
+.pulse-body #postMedia::file-selector-button{
+  margin-right:14px;padding:9px 13px;color:#fff;
+  background:#44305a;border:1px solid #72558e;
+  border-radius:9px;font-weight:750;cursor:pointer;
+}
+.pulse-body #videoLink{background:#221a2f;border-color:#4a3a5e;border-radius:12px;min-height:45px}
+.pulse-body .pulse-video-rights{color:var(--pulse-muted);line-height:1.4}
+.pulse-body .social-feedback{font-size:.78rem;color:var(--pulse-muted)}
+.pulse-body .compose-bottom{
+  padding-top:14px;margin-top:16px;border-top:1px solid var(--pulse-border);
+}
+.pulse-body .btn.primary,.pulse-body .pulse-main .btn.primary{
+  border:1px solid #bf91f4;background:linear-gradient(120deg,#985bd8,#7137b6);
+  color:#fff;font-weight:800;border-radius:999px;min-height:44px;
+  padding:10px 25px;box-shadow:0 5px 15px rgba(95,42,152,.18);
+}
+.pulse-body .btn.primary:hover{filter:brightness(1.13)}
+.pulse-body .btn.small{background:#2c213a;color:#e9d6f8;border:1px solid #57426b;border-radius:999px;min-height:38px}
+.pulse-body .btn.small:hover{background:#49315e}
+
+/* Real community content is the hero. No image is invented by the template. */
+.pulse-body .pulse-main #feedPanel{
+  background:none;border:none;box-shadow:none;padding:0;margin:0;
+}
+.pulse-body #feedPanel .social-list-head{
+  background:var(--pulse-surface);border:1px solid var(--pulse-border);
+  border-radius:15px;padding:14px 18px;margin:0 0 13px;
+}
+.pulse-body .social-list-head h2{font:750 1.05rem/1.2 system-ui,sans-serif;color:var(--pulse-text);margin:0}
+.pulse-body #feedItems{display:grid;gap:15px}
+.pulse-body .pulse-main .social-card{
+  background:var(--pulse-surface);border:1px solid var(--pulse-border);
+  border-radius:18px;padding:18px;margin:0;
+  box-shadow:0 11px 25px #0003;overflow:hidden;
+}
+.pulse-body .social-author-row{
+  display:flex;align-items:center;gap:10px;min-width:0;padding-bottom:3px;
+}
+.pulse-body .social-author-row .social-avatar{width:44px;height:44px;border:1px solid #9465c5}
+.pulse-body .social-author{font-size:.93rem;color:var(--pulse-text);font-weight:800;min-width:0;overflow-wrap:anywhere}
+.pulse-body .social-time,.pulse-body .social-meta{color:var(--pulse-muted);font-size:.74rem}
+.pulse-body .social-body{
+  margin:14px 0;color:#f5f1f9;white-space:pre-wrap;
+  overflow-wrap:anywhere;font-size:.94rem;line-height:1.58;
+}
+.pulse-body .social-media{gap:8px;margin:14px 0;min-width:0}
+.pulse-body .social-media:empty{display:none}
+/* One member photo should span the entire card, never look like a half-width thumbnail. */
+.pulse-body .social-media > :only-child{grid-column:1/-1}
+.pulse-body .social-media > img:last-child:nth-child(odd):not(:first-child){grid-column:1/-1}
+.pulse-body .social-media img,.pulse-body .social-media video{
+  width:100%;max-height:580px;object-fit:contain;
+  border-radius:12px;background:#09070f;
+}
+.pulse-body .social-video-embed{
+  width:100%;max-width:100%;border-radius:12px;
+  background:#09070f;
+}
+.pulse-body .social-embed-play{border-radius:12px;background:#322146}
+.pulse-body .social-actions{
+  display:flex;align-items:stretch;flex-wrap:wrap;
+  border-top:1px solid var(--pulse-border);gap:4px;
+  margin-top:14px;padding-top:10px;
+}
+.pulse-body .social-actions button,.pulse-body .social-actions a{
+  flex:1 1 auto;justify-content:center;min-height:44px;
+  padding:9px 10px;border:1px solid transparent;
+  background:transparent;color:#dfd2ed;border-radius:10px;
+  font-size:.85rem;font-weight:680;white-space:normal;
+}
+.pulse-body .social-actions :is(button,a):hover{
+  border-color:#5b4376;background:#2b2040;color:#fff;
+}
+.pulse-body .social-actions :is(button,a):disabled{opacity:.45}
+.pulse-body .social-comment-form textarea{
+  min-height:64px;background:#241a31;border-color:#564369;
+}
+.pulse-body .social-comments{border-left:2px solid #7f5ba3;padding-left:14px}
+.pulse-body .social-empty{
+  background:var(--pulse-surface);border:1px dashed #5e4974;
+  border-radius:16px;margin:0;padding:28px 22px;color:var(--pulse-muted);
+  font-style:normal;text-align:center;
+}
+.pulse-body .pulse-main .social-list:not(#feedPanel){
+  background:var(--pulse-surface);border:1px solid var(--pulse-border);
+  border-radius:18px;padding:20px;margin:0 0 16px;
+}
+.pulse-body #friendsPanel input{background:#241a31;border-color:#5b4870;color:#fff}
+.pulse-body .friend-entry{border-color:var(--pulse-border)}
+  border:1px solid var(--pulse-border);background:#130d1c;border-radius:18px;
+}
+.pulse-body footer{border-top:1px solid var(--pulse-border);background:#100d18;color:var(--pulse-muted);text-align:center;padding:18px 14px}
+.pulse-body footer a{color:#dfbaff}
+
+@media(max-width:1080px){
+  .pulse-body #socialApp .pulse-grid{grid-template-columns:196px minmax(0,1fr)}
+  .pulse-body .pulse-rail{display:none}
+}
+@media(max-width:760px){
+  .pulse-body{font-size:14px;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .pulse-body .pulse-topbar{min-height:60px;padding:8px 13px;gap:8px}
+  .pulse-body .pulse-topbar>a{font-size:.9rem}
+  .pulse-body .pulse-topbar>a img{width:33px;height:33px}
+  .pulse-body .pulse-topbar>strong{font-size:.74rem;letter-spacing:.09em}
+  .pulse-body .pulse-topbar nav{gap:0}
+  .pulse-body .pulse-topbar nav a{padding:8px;font-size:.78rem}
+  .pulse-body .pulse-topbar nav a[href="/studios.html"]{display:none}
+  .pulse-body .pulse-shell{padding:12px 10px 28px}
+  .pulse-body .pulse-shell .social-intro{
+    display:flex;align-items:center;gap:9px;margin:0 0 12px;
+    min-height:0;padding:0 4px;
+  }
+  .pulse-body .social-intro .eyebrow,.pulse-body .social-intro .social-subtitle{display:none}
+  .pulse-body .social-intro h1{font-size:1.4rem;line-height:1.15}
+  .pulse-body #identity{gap:5px;padding:4px}
+  .pulse-body #identityAvatar{width:29px;height:29px}
+  .pulse-body #identityHandle{max-width:92px;font-size:.72rem}
+  .pulse-body #identity .btn.small{padding:6px 8px;font-size:.7rem;min-height:32px}
+  .pulse-body .pulse-avatar-settings{max-width:140px}
+  .pulse-body .pulse-connect{width:auto}
+  .pulse-body .pulse-connect>summary{width:auto;padding:9px 12px;font-size:.74rem}
+  .pulse-body .pulse-connect-menu{left:auto;right:0;max-width:calc(100vw - 20px)}
+  .pulse-body #socialStatus{margin-bottom:8px;font-size:.7rem}
+  .pulse-body #socialApp .pulse-grid{display:block}
+  /* Five Pulse feeds plus a direct Messenger destination. */
+  .pulse-body .pulse-sidebar{
+    position:fixed;top:auto;left:0;right:0;bottom:0;z-index:35;
+    width:100%;padding:5px 5px calc(5px + env(safe-area-inset-bottom,0px));
+    border:0;border-top:1px solid #524069;border-radius:0;
+    background:rgba(21,14,31,.98);box-shadow:0 -8px 26px #0009;
+  }
+  .pulse-body .pulse-sidebar h2{display:none}
+  .pulse-body .pulse-sidebar .social-tabs{
+    display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:1px;margin:0;overflow:visible;
+  }
+  .pulse-body .pulse-sidebar .social-tabs button{
+    display:flex;flex-direction:column;justify-content:center;
+    align-items:center;gap:2px;min-width:0;width:100%;
+    min-height:61px;margin:0;padding:5px 1px 4px;
+    font-size:.64rem;line-height:1.15;white-space:normal;
+    text-align:center;border:0;border-radius:10px;
+  }
+  .pulse-body .pulse-sidebar .social-tabs button[aria-pressed="true"]{
+    box-shadow:inset 0 3px 0 var(--pulse-warm);background:#44275f;
+  }
+  .pulse-body .pulse-sidebar .social-tabs button::before{
+    display:block;font:700 1.3rem/1 system-ui,sans-serif;
+    height:22px;letter-spacing:0;
+  }
+  .pulse-body .pulse-sidebar .social-tabs button[data-feed="foryou"]::before{content:"⌂"}
+  .pulse-body .pulse-sidebar .social-tabs button[data-feed="timeline"]::before{content:"◎"}
+  .pulse-body .pulse-sidebar .social-tabs button[data-feed="user"]::before{content:"▤"}
+  .pulse-body .pulse-sidebar .social-tabs button[data-feed="friends"]::before{content:"♧"}
+  .pulse-body .pulse-sidebar .social-tabs button[data-feed="notification"]::before{content:"◉"}
+  .pulse-body .pulse-sidebar .social-tabs a.pulse-message-tab{
+    display:flex;flex-direction:column;align-items:center;justify-content:center!important;
+    gap:2px;min-height:61px;min-width:0;padding:5px 1px 4px;
+    font-size:.64rem;border:0;text-align:center;
+  }
+  .pulse-body .pulse-sidebar .social-tabs .pulse-message-tab img{width:23px;height:23px}
+  .pulse-body .pulse-main .social-compose,
+  .pulse-body .pulse-main .social-list:not(#feedPanel){
+    padding:16px;border-radius:16px;margin:0 0 12px;
+  }
+  .pulse-body .pulse-main #feedPanel{padding:0;margin:0}
+  .pulse-body #feedPanel .social-list-head{padding:12px 14px;margin-bottom:10px}
+  .pulse-body #feedItems{gap:11px}
+  .pulse-body .pulse-main .social-card{padding:14px;border-radius:15px}
+  .pulse-body .social-body{margin:10px 0}
+  .pulse-body .social-media{margin:12px -4px}
+  .pulse-body .social-media img,.pulse-body .social-media video{max-height:520px}
+  .pulse-body .social-actions{gap:1px}
+  .pulse-body .social-actions button,.pulse-body .social-actions a{
+    min-height:44px;padding:9px 4px;font-size:.78rem;
+  }
+}
+@media(max-width:415px){
+  .pulse-body .pulse-topbar>strong{display:none}
+  .pulse-body .pulse-shell .social-intro{gap:7px}
+  .pulse-body #identityHandle{max-width:78px}
+  .pulse-body .social-actions button,.pulse-body .social-actions a{font-size:.74rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .pulse-body .pulse-sidebar .social-tabs button{transition:none}
+}
