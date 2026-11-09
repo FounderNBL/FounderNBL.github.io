@@ -1,8 +1,8 @@
 {
   "id": "/messenger/",
-  "name": "NBL Pulse Messenger",
-  "short_name": "Pulse Messenger",
-  "description": "NBL Pulse Messenger private messages. Community posts live in Pulse; University student rooms remain protected.",
+  "name": "NBL Messenger",
+  "short_name": "NBL Messenger",
+  "description": "Private messages, people and calls with your existing New Beansland account. NBL Pulse remains a connected, separate social experience.",
   "start_url": "/messenger/",
   "scope": "/messenger/",
   "display": "standalone",
