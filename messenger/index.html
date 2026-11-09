@@ -3,23 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>NBL Pulse Messenger · Private messages | New Beansland</title>
-  <script>if(new URLSearchParams(location.search).get("embed")==="pulse")document.documentElement.classList.add("pulse-embedded");</script>
-  <style>html.pulse-embedded .topbar,html.pulse-embedded .intro,html.pulse-embedded footer{display:none!important}html.pulse-embedded body{background:#071421}html.pulse-embedded main{padding:6px 8px 18px;max-width:none}html.pulse-embedded .chat-app{margin-top:10px}html.pulse-embedded .sidebar{max-height:none}</style>
-  <meta name="description" content="Private conversations in NBL Pulse Messenger. One NBL account for your community and messages.">
+  <title>NBL Messenger | Private messages & calls · New Beansland</title>
+  <meta name="description" content="NBL Messenger: your private messages and member-to-member calls under one secure NBL account.">
   <link rel="canonical" href="https://newbeansland.org/messenger/index.html">
   <meta name="theme-color" content="#06111d">
-  <meta name="application-name" content="NBL Pulse Messenger">
+  <meta name="application-name" content="NBL Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
   <link rel="stylesheet" href="/messenger/app.css?v=20261108-incoming-calls">
+  <link rel="stylesheet" href="/messenger/messenger-skin.css?v=20261109-standalone">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
   <script defer src="/messenger/app.js?v=20261108-incoming-calls"></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/">New Beansland</a>
+    <a class="brand" href="/" aria-label="New Beansland company home"><img src="/NBL-Brand.png" width="36" height="36" alt=""> <span>NBL <em>Messenger</em></span></a>
     <nav aria-label="NBL World navigation">
       <a href="/pulse/">Pulse Feed</a>
       <a href="/chat.html">NBL World</a>
@@ -28,9 +27,9 @@
   </header>
   <main>
     <section class="intro">
-      <p class="eyebrow">NBL Pulse Messenger · Private conversations</p>
+      <p class="eyebrow">NEW BEANSLAND · PRIVATE CONNECTIONS</p>
       <h1><img class="messenger-heading-mark" src="/messenger/icon.svg" alt="" width="58" height="58">NBL Messenger</h1>
-      <p class="hint">Text · Voice call · Video call</p>
+      <p class="hint">Your messages. Your people. One NBL account.</p>
       <div class="signin-panel" data-chat-guest>
         <p data-chat-auth-status>Sign in with your NBL account to see your conversations.</p>
         <a class="btn primary" data-chat-signin href="https://newbeansland.org/account.html">Sign in / create account</a>
@@ -91,7 +90,7 @@
     </section>
     <section class="chat-app" data-chat-app hidden aria-label="NBL Messenger">
       <aside class="sidebar">
-        <div class="sidebar-heading"><h2>Your chats</h2><button class="btn small" type="button" data-chat-refresh>Refresh</button></div>
+        <div class="sidebar-heading"><h2>Messages</h2><button class="btn small" type="button" data-chat-refresh>Refresh</button></div>
         <div data-chat-threads aria-label="Your conversations"></div>
         <section class="featured-founder" data-chat-featured-founder hidden aria-label="Meet the New Beansland Founder">
           <div class="featured-founder-avatar" aria-hidden="true">NBL</div>
@@ -146,7 +145,7 @@
         <div class="conversation-head">
           <button class="btn small mobile-chat-back" type="button" data-chat-back aria-label="Back to chats">← Chats</button>
           <div>
-            <p class="eyebrow" data-chat-thread-kind>Messages</p>
+            <p class="eyebrow" data-chat-thread-kind>Private conversation</p>
             <h2 data-chat-thread-title>Choose a conversation</h2>
           </div>
           <details class="compact-menu thread-menu"><summary class="btn small">⋯ Chat options</summary><div class="thread-actions">
