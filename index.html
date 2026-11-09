@@ -135,6 +135,57 @@
   .pulse-world-door .messenger-world-card .card-body{background:linear-gradient(0deg,rgba(1,5,12,.85) 3%,transparent 58%)}
   .pulse-world-door .messenger-world-card h3,.pulse-world-door .messenger-world-card .enter{color:#f0c56f}
   @media(max-width:760px){.social-door-grid{grid-template-columns:1fr;max-width:540px;gap:16px}.pulse-world-door .social-door-grid .world-card{aspect-ratio:4/3}.pulse-world-door{padding:24px 14px 45px}}
+
+  /* Founder world-card rule: show full approved artwork, never crop or overflow the screen.
+     These social destinations live outside the six canonical .world-grid cards. */
+  .pulse-world-door{padding:clamp(18px,3vw,42px) clamp(12px,3vw,24px) 50px}
+  .pulse-world-door .social-door-grid{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(12px,2vw,22px);
+    width:min(1120px,100%);margin-inline:auto;align-items:stretch
+  }
+  .pulse-world-door .social-door-grid .world-card{
+    display:flex;flex-direction:column;min-width:0;width:100%;max-width:none;height:auto;
+    min-height:0;aspect-ratio:auto;margin:0;overflow:hidden;isolation:isolate;
+    border-radius:16px;text-decoration:none
+  }
+  .pulse-world-door .social-door-grid .world-card::after{display:none}
+  .pulse-world-door .social-door-grid .world-card .media{
+    position:relative;inset:auto;flex:none;width:100%;height:auto;aspect-ratio:4/3;
+    display:grid;place-items:center;overflow:hidden;
+    background:radial-gradient(circle at 50% 35%,#251339,#070817 85%)
+  }
+  .pulse-world-door .social-door-grid .world-card .media img,
+  .pulse-world-door .social-door-grid .messenger-world-card .media img{
+    display:block;width:100%;height:100%;max-height:100%;max-width:100%;
+    object-fit:contain;object-position:center;background:transparent;filter:none;
+    transform:none
+  }
+  .pulse-world-door .social-door-grid .world-card:hover .media img,
+  .pulse-world-door .social-door-grid .world-card:focus-visible .media img{transform:none}
+  .pulse-world-door .social-door-grid .world-card .card-body{
+    position:relative;inset:auto;min-height:0;height:auto;flex:1;
+    padding:13px clamp(13px,2vw,20px) 18px;
+    background:linear-gradient(180deg,#141527,#090e1a 90%);
+    justify-content:flex-start
+  }
+  .pulse-world-door .social-door-grid .messenger-world-card .card-body{
+    background:linear-gradient(180deg,#18283b,#081522)
+  }
+  .pulse-world-door .social-door-grid .world-card .status{margin:0 0 7px;font-size:.6rem}
+  .pulse-world-door .social-door-grid .world-card h3{font-size:clamp(1rem,2vw,1.36rem)}
+  .pulse-world-door .social-door-grid .world-card p{margin:6px 0 0;line-height:1.45}
+  .pulse-world-door .social-door-grid .world-card .enter{margin-top:12px}
+  @media(max-width:760px){
+    .pulse-world-door .social-door-grid{grid-template-columns:1fr;max-width:520px;gap:15px}
+    .pulse-world-door .social-door-grid .world-card{width:100%;max-width:520px}
+    .pulse-world-door .social-door-grid .world-card .media{aspect-ratio:4/3}
+    .pulse-world-door .social-door-grid .world-card .card-body{padding:12px 15px 16px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .pulse-world-door .social-door-grid .world-card:hover,
+    .pulse-world-door .social-door-grid .world-card:focus-visible{transform:none}
+  }
+
 </style>
   <script defer src="/nbl-portal.js?v=20261011-world-cards-safe"></script>
   <link rel="stylesheet" href="/nbl-world-header.css?v=20261024-v12-final-parity">
