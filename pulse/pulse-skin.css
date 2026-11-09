@@ -283,7 +283,7 @@
   .pulse-body .pulse-rail{display:none}
 }
 @media(max-width:760px){
-  .pulse-body{font-size:14px;padding-bottom:calc(68px + env(safe-area-inset-bottom,0px))}
+  .pulse-body{font-size:14px;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   .pulse-body .pulse-topbar{min-height:60px;padding:8px 13px;gap:8px}
   .pulse-body .pulse-topbar>a{font-size:.9rem}
   .pulse-body .pulse-topbar>a img{width:33px;height:33px}
@@ -323,7 +323,7 @@
   .pulse-body .pulse-sidebar .social-tabs button{
     display:flex;flex-direction:column;justify-content:center;
     align-items:center;gap:2px;min-width:0;width:100%;
-    min-height:53px;margin:0;padding:5px 1px 4px;
+    min-height:61px;margin:0;padding:5px 1px 4px;
     font-size:.64rem;line-height:1.15;white-space:normal;
     text-align:center;border:0;border-radius:10px;
   }
@@ -340,7 +340,7 @@
   .pulse-body .pulse-sidebar .social-tabs button[data-feed="friends"]::before{content:"♧"}
   .pulse-body .pulse-sidebar .social-tabs button[data-feed="notification"]::before{content:"♧"}
   .pulse-body .pulse-sidebar .social-tabs .pulse-message-tab{
-    min-height:53px;justify-content:center!important;
+    min-height:61px;justify-content:center!important;
   }
   .pulse-body .pulse-sidebar .social-tabs .pulse-message-tab img{width:23px;height:23px}
   .pulse-body .pulse-main .social-compose,
@@ -365,7 +365,6 @@
   .pulse-body .pulse-topbar>strong{display:none}
   .pulse-body .pulse-shell .social-intro{gap:7px}
   .pulse-body #identityHandle{max-width:78px}
-  .pulse-body #identity #signOut{display:none} /* Still available from NBL account page. */
   .pulse-body .social-actions button,.pulse-body .social-actions a{font-size:.74rem}
 }
 @media(prefers-reduced-motion:reduce){
