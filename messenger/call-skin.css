@@ -1,0 +1,61 @@
+/* NBL Messenger private video: dedicated, immersive phone and desktop screen. */
+:root{--bg:#02060b;--panel:#111e2e;--line:#55452d;--gold:#f0c56f;--text:#f9f1e7}
+body{
+  min-height:100dvh;
+  display:flex;flex-direction:column;
+  background:radial-gradient(ellipse 85% 60% at 50% 0%,#182e43,#06111e 56%,#02060b 100%);
+  font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+header{
+  position:sticky;top:0;z-index:10;
+  background:rgba(2,8,15,.96);border-bottom:1px solid #79633e;
+  min-height:62px;padding:12px max(15px,calc((100vw - 1200px)/2));
+  justify-content:space-between;flex-wrap:wrap;
+}
+header a{font-weight:750;text-decoration:none;font-size:.85rem}
+header strong{font:750 .9rem/1.2 system-ui,sans-serif;color:#f4d697}
+main{flex:1;width:min(100%,1240px);max-width:none;margin:0 auto;padding:24px 18px;display:flex;align-items:stretch}
+.call-panel{
+  width:100%;display:flex;flex-direction:column;
+  padding:clamp(16px,3vw,28px);border:1px solid #625037;border-radius:20px;
+  background:linear-gradient(145deg,#142436,#091626);
+  box-shadow:0 19px 65px #0008;
+}
+.call-panel h1{color:#fff;font:800 clamp(1.35rem,3vw,1.8rem)/1.2 system-ui,sans-serif;letter-spacing:-.02em}
+.call-panel>p{max-width:790px;color:#c7c5c2;margin:12px 0}
+#callStatus{border-radius:12px;background:#1a2b3c;border:1px solid #35485a;font-size:.86rem}
+.participants{
+  flex:1;align-content:center;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));
+  gap:14px;margin:15px 0;
+}
+.person{border-color:#564b3c;border-radius:16px;background:#03090f;overflow:hidden}
+.person video{object-fit:contain;max-height:64dvh;min-height:250px;border-radius:15px}
+.person p{font-weight:750;color:#fff}
+.actions{justify-content:center;gap:10px;margin-top:auto;padding:20px 0 4px}
+.actions button,.actions .signin{
+  min-height:48px;padding:12px 21px;border-radius:14px;
+  background:#1d3650;border-color:#6e7f8e;font-weight:750;
+  transition:background .16s;
+}
+.actions button:hover{background:#2d4a64}
+.actions button.danger{background:#702d35;border-color:#d87a81}
+.actions button.danger:hover{background:#a83f48}
+#join{background:linear-gradient(130deg,#f5dca1,#c89543);color:#19140c;border-color:#ffeaaf}
+.hint{font-size:.76rem;line-height:1.5}
+footer{padding:14px;color:#b6aa95}
+:focus-visible{outline:3px solid #ffde8b;outline-offset:3px}
+@media(max-width:650px){
+ header{min-height:58px;padding:10px 13px;gap:7px}
+ header strong{font-size:.72rem}
+ main{padding:9px 7px 6px}
+ .call-panel{border-radius:15px;padding:14px 11px}
+ .call-panel>p{font-size:.81rem;margin:9px 0}
+ #callStatus{font-size:.79rem;padding:10px}
+ .person video{min-height:170px;max-height:49dvh}
+ .actions{position:sticky;bottom:0;z-index:3;display:flex;justify-content:center;gap:8px;
+   margin-top:auto;padding:10px 4px calc(10px + env(safe-area-inset-bottom,0px));
+   background:#101d2b;border-top:1px solid #5b4a34;border-radius:10px}
+ .actions button{flex:1 1 110px;min-height:48px;font-size:.86rem;padding:10px 8px}
+ footer{font-size:.7rem}
+}
+@media(prefers-reduced-motion:reduce){.actions button{transition:none}}
