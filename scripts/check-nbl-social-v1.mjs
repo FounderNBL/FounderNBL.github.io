@@ -139,3 +139,19 @@ assert.match(js,/nbl_youtube_id:youtubeId/);
 assert.doesNotMatch(js,/profile\?\.verified===true/);
 assert.ok(embeds.includes("www.youtube-nocookie.com/embed/"));
 assert.match(js,/authorProfile\(userId\)/);
+
+
+//// Member-first design skin must NOT replace the actual Stream / Clerk / Messenger UI.
+const pulseSkin=read("pulse/pulse-skin.css");
+assert.match(pulse,/href="\/pulse\/pulse-skin\.css\?v=20261109-member-first"/);
+assert.match(pulseSkin,/#socialApp \.pulse-grid/);
+assert.match(pulseSkin,/#feedItems/);
+assert.match(pulseSkin,/\.social-media img/);
+assert.match(pulseSkin,/@media\(max-width:760px\)/);
+assert.match(pulseSkin,/grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/);
+assert.match(pulseSkin,/\.pulse-stories\{display:none!important\}/);
+assert.doesNotMatch(pulseSkin,/https?:\/\//,"The Pulse skin must not load third-party images, fonts or code.");
+assert.doesNotMatch(pulseSkin,/background-image\s*:\s*url\(/);
+assert.match(pulse,/id="postForm"/);
+assert.match(pulse,/id="feedItems"/);
+assert.match(pulse,/id="messengerPanel"/);
