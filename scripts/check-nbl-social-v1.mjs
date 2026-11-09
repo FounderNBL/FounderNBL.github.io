@@ -141,3 +141,16 @@ assert.match(js,/nbl_youtube_id:youtubeId/);
 assert.doesNotMatch(js,/profile\?\.verified===true/);
 assert.ok(embeds.includes("www.youtube-nocookie.com/embed/"));
 assert.match(js,/authorProfile\(userId\)/);
+
+
+// New member-first NBL Pulse skin is presentation-only: Messenger remains a link, not an iframe.
+const pulseSkin=read("pulse/pulse-skin.css");
+assert.match(pulse,/\/pulse\/pulse-skin\.css\?v=20261109-member-first-standalone/);
+assert.match(pulseSkin,/#socialApp \.pulse-grid/);
+assert.match(pulseSkin,/#feedItems/);
+assert.match(pulseSkin,/@media\(max-width:760px\)/);
+assert.match(pulseSkin,/grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/);
+assert.match(pulseSkin,/a\.pulse-message-tab/);
+assert.doesNotMatch(pulseSkin,/pulseMessengerFrame|pulse-messenger-panel/);
+assert.doesNotMatch(pulse,/<iframe|pulseMessengerFrame/);
+assert.match(pulse,/href="\/messenger\/"/);
