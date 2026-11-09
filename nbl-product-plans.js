@@ -2,6 +2,7 @@
   "use strict";
   const plans=Object.freeze({
     beans:Object.freeze({name:"Beans",price:"$4.99/month",replies:"300 successful replies",renewal:"Renews at $4.99/month until cancelled or changed."}),
+    allInOne:Object.freeze({name:"NBL All-in-One",price:"$20.00/month",status:"CHECKOUT_HELD",replies:"300 successful Beans replies",images:"18 basic AI images",videos:"11 basic 5-second AI video clips",searches:"10 basic web lookups",voice:"9,000 narration text characters — planned, not active"}),
     nblPlus:Object.freeze({name:"NBL Plus",price:"$29.99/month"}),
     beansUniversity:Object.freeze({name:"Beans + University",price:"$14.99/month"}),
     foundationStudentContinuation:Object.freeze({name:"Foundation Student Continuation",price:"$9.99/month"}),
