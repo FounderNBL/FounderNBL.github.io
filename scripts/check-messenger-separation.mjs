@@ -36,7 +36,9 @@ assert.match(university, /url=https:\/\/nblschool\.com\//);
 assert.match(oldHumanChat, /data-chat-send-form/); // old bookmarks still work
 assert.match(website, /href="\/pulse\//);
 assert.match(website, /class="nav-pulse-launch"/);
-assert.doesNotMatch(website, /class="messenger-door"|people talking to people|Open Messenger/i);
+assert.doesNotMatch(website, /people talking to people/i);
+assert.match(website,/class="world-card messenger-world-card/);
+assert.match(website,/href="\/messenger\/"/);
 assert.match(website, /src="\/messenger\/icon\.svg"/);
 assert.match(app, /data-chat-featured-founder hidden/);
 assert.match(js, /action:"find_users",q:"NBLFounderOfficial"/);
@@ -52,7 +54,9 @@ assert.match(app, /data-chat-founder-marker hidden/);
 // Private campus remains separate; none of its promotional breadcrumbs appear in Messenger.
 assert.doesNotMatch(app, /Class Chat|Study Hall|Student rooms|University Social Chat|University enrollment|university-campus\.html/);
 assert.match(app, /data-chat-account-toggle/);
-assert.match(app, /pulse-embedded/);
+assert.doesNotMatch(app, /pulse-embedded|iframe/);
+assert.match(app,/href="\/messenger\/messenger-skin.css\?v=20261109-standalone"/);
+assert.match(app,/data-chat-app hidden/);
 assert.match(app, /data-chat-profile-form/);
 assert.match(app, /data-chat-open-clerk/);
 assert.match(app, /data-chat-download-messages/);
@@ -74,7 +78,8 @@ assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.match(js, /navigator\.contacts\?\.select/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261108-incoming-call/);
+assert.match(sw, /nbl-messenger-shell-20261109-standalone/);
+assert.match(sw,/messenger\/messenger-skin.css/);
 
 
 for(const item of [
@@ -115,7 +120,8 @@ assert.ok(js.includes("const suggested=pulseMessageIntent()"),"Pulse suggested r
 assert.ok(js.includes("Press Open to start the private conversation"),"Explicit member action required");
 assert.ok(!js.includes('action:"direct",handle:suggested'),"A link must never auto-create a private conversation");
 assert.ok(app.includes('href="/pulse/"'),"Pulse navigation lost");
-assert.match(app,/NBL Pulse Messenger/);
+assert.match(app,/NBL Messenger/);
+assert.equal(manifest.name,"NBL Messenger");
 console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and customer phone alerts preserved without Founder controls.");
 
 const callPage=read("messenger/call.html"), callJs=read("messenger/call.mjs");
