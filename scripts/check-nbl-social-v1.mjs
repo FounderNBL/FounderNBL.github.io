@@ -33,7 +33,7 @@ assert.match(css,/social-media/);
 // Facebook uses user-controlled sharing of a public NBL post URL, never Page admin scopes.
 assert.match(ui,/id="sharedPost"[^>]*hidden/);
 assert.match(ui,/og:title/);
-assert.match(ui,/social-v1\.mjs\?v=20261108-instagram-share/);
+assert.match(ui,/social-v1\.mjs\?v=20261108-provider-video/);
 assert.match(js,/const PUBLIC_SOCIAL_URL="https:\/\/newbeansland\.org\/messenger\/social-v1\.html"/);
 assert.match(js,/new URL\(PUBLIC_SOCIAL_URL\)/);
 assert.match(js,/dest\.searchParams\.set\("post",id\)/);
