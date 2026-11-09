@@ -12,10 +12,10 @@
   <meta name="application-name" content="NBL Pulse Messenger">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
-  <link rel="stylesheet" href="/messenger/app.css?v=20261107-video-feedback">
+  <link rel="stylesheet" href="/messenger/app.css?v=20261108-incoming-calls">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
-  <script defer src="/messenger/app.js?v=20261108-pulse-messenger"></script>
+  <script defer src="/messenger/app.js?v=20261108-incoming-calls"></script>
 </head>
 <body>
   <header class="topbar">
@@ -156,6 +156,15 @@
             <button class="btn small" type="button" data-chat-unblock hidden>Unblock member</button>
           </div></details>
         </div>
+        <section class="incoming-video-call" data-chat-incoming-call role="dialog" aria-label="Incoming NBL video call" aria-live="assertive" hidden>
+          <span class="incoming-call-symbol" aria-hidden="true">♾️</span>
+          <div class="incoming-call-details">
+            <strong data-chat-incoming-from>Incoming NBL video call</strong>
+            <p data-chat-incoming-status>Answer or decline this private NBL video call.</p>
+          </div>
+          <a class="btn primary" data-chat-incoming-answer href="/messenger/" target="_top" rel="noopener noreferrer">Answer</a>
+          <button class="btn" data-chat-incoming-decline type="button">Decline</button>
+        </section>
         <p class="video-call-feedback" data-chat-video-feedback role="status" aria-live="polite" hidden></p>
         <div class="messages" data-chat-messages role="log" aria-live="polite" aria-label="Messages">
           <p class="hint">Choose a conversation or invite someone to join NBL Messenger.</p>

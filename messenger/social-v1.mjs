@@ -570,9 +570,22 @@ async function boot(){
   $("#signIn").href=signInURL();
   $("#postForm").addEventListener("submit",publishPost);
   document.querySelector("#copyPulseInvite")?.addEventListener("click",async()=>{
-    try{await navigator.clipboard.writeText("https://newbeansland.org/pulse/");
-      status("NBL invite link copied. Paste it into Instagram or another conversation.");
-    }catch{status("Copy this link to share: https://newbeansland.org/pulse/");}
+    const url="https://newbeansland.org/pulse/";
+    // Instagram has no Facebook-style web link-sharing dialog. Use the phone's
+    // native share sheet (Instagram if offered), with a copy-link fallback.
+    if(navigator.share){
+      try{
+        await navigator.share({title:"NBL Pulse",text:"Join me on NBL Pulse",url});
+        status("NBL Pulse invitation shared from your phone.");
+        return;
+      }catch(error){
+        if(error?.name==="AbortError"){status("Share canceled. No invitation was sent.");return;}
+      }
+    }
+    try{
+      await navigator.clipboard.writeText(url);
+      status("NBL Pulse invite link copied. Paste it into an Instagram DM.");
+    }catch{status("Copy this link into Instagram: "+url);}
   });
   $("#saveProfileAvatar").addEventListener("click",()=>{void saveProfileAvatar();});
   $("#friendForm").addEventListener("submit",requestFriend);

@@ -250,3 +250,13 @@ main{max-width:1240px}
 /* Shared NBL profile avatars in member direct conversations and messages. */
 .chat-avatar{width:35px;height:35px;object-fit:cover;border-radius:50%;border:1px solid var(--gold2);vertical-align:middle;flex:none;background:#0a1b2b}
 .thread>.chat-avatar{float:left;margin-right:10px}.message>.chat-avatar{float:left;margin-right:10px}
+
+
+/* Authenticated incoming video invitation: visible while Messenger is open. */
+.incoming-video-call{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:15px 16px;background:linear-gradient(120deg,#183d4e,#201637);border:2px solid var(--gold2);border-radius:14px;margin:12px 0;box-shadow:0 4px 24px rgba(0,0,0,.26)}
+.incoming-call-symbol{font-size:1.8rem;color:var(--gold2);flex:none}
+.incoming-call-details{flex:1 1 170px;min-width:0}
+.incoming-call-details strong{display:block;font-size:1rem;color:#fff5db}
+.incoming-call-details p{margin:2px 0 0;font-size:.84rem;color:#e4d9f5}
+.incoming-video-call .btn{flex:0 0 auto;text-align:center}
+@media(max-width:410px){.incoming-video-call .btn{flex:1 1 calc(50% - 6px)}}

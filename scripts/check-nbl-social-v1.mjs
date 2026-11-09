@@ -111,7 +111,7 @@ assert.match(js,/location\.pathname\.startsWith\("\/pulse"\)/);
 assert.match(pulse,/postMedia" type="file" accept="image\/jpeg,image\/png,image\/webp,video\/mp4,video\/webm" multiple/);
 assert.doesNotMatch(pulse,/postMedia" type="file" disabled/);
 assert.match(pulse,/postMedia"[^>]*video\/mp4/);
-assert.match(pulse,/social-v1\.mjs\?v=20261108-provider-video/);
+assert.match(pulse,/social-v1\.mjs\?v=20261108-instagram-share/);
 assert.match(js,/VIDEO_TYPES\.has\(f\.type\)/);
 assert.doesNotMatch(js,/Video uploads are not enabled yet/);
 assert.match(js,/image_url:trusted/);

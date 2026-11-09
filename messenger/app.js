@@ -25,6 +25,77 @@ const callFeedback=(message,failed=false)=>{
   el.textContent=value;el.hidden=!value;el.dataset.error=failed?"true":"false";
 };
 const lastSeenMessages=new Map();
+const incomingCallsSeen=new Set();
+let incomingCall=null, incomingScanBusy=false;
+function incomingCallUrl(id){return "https://newbeansland.org/messenger/call.html?call="+encodeURIComponent(id);}
+function hideIncomingCall(){
+  incomingCall=null;
+  const panel=$("[data-chat-incoming-call]");
+  if(panel)panel.hidden=true;
+}
+async function videoCallAction(action,callId){
+  const userId=state.clerk?.user?.id,generation=authSyncGeneration;
+  if(!userId||!IS_CALL_ID.test(callId))throw Error("Invalid NBL call.");
+  const token=await authToken();
+  if(userId!==state.clerk?.user?.id||generation!==authSyncGeneration)throw Error("NBL account changed.");
+  const response=await fetch(VIDEO_API,{
+    method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},
+    body:JSON.stringify({action,callId}),cache:"no-store"
+  });
+  const payload=await response.json().catch(()=>({}));
+  if(userId!==state.clerk?.user?.id||generation!==authSyncGeneration)throw Error("NBL account changed.");
+  if(!response.ok||payload.ok!==true)throw Error(payload.message||"This call is no longer available.");
+  return payload;
+}
+async function showIncomingCall(callId,from){
+  if(!IS_CALL_ID.test(callId)||incomingCallsSeen.has(callId)||incomingCall)return;
+  incomingCallsSeen.add(callId);
+  const userId=state.clerk?.user?.id,generation=authSyncGeneration;
+  try{
+    const access=await videoCallAction("join",callId);
+    if(!userId||userId!==state.clerk?.user?.id||generation!==authSyncGeneration||incomingCall)return;
+    if(access.callType!=="nbl_private"||access.callId!==callId||access.user?.id!==userId)return;
+    incomingCall={callId,from};
+    const panel=$("[data-chat-incoming-call]");
+    $("[data-chat-incoming-from]").textContent=from?"Video call from @"+from:"An NBL member is calling";
+    $("[data-chat-incoming-answer]").href=incomingCallUrl(callId);
+    $("[data-chat-incoming-status]").textContent="Answer or decline this private NBL video call.";
+    panel.hidden=false;
+    // Browser autoplay rules can suppress in-page sounds; phone alerts use device settings.
+    window.NBLInfinitySound?.play("people");
+  }catch{
+    // An expired, blocked, or forged invitation must never trigger the call screen.
+  }
+}
+function checkIncomingMessages(threadId,messages){
+  const row=state.threads.find(item=>item.id===threadId);
+  if(row?.muted||!row||incomingCall||!state.clerk?.user?.id)return;
+  const me=String(state.me?.handle||"").toLowerCase();
+  for(const message of [...messages].reverse()){
+    if(message?.deleted||!message?.body)continue;
+    const matched=VIDEO_INVITE_RE.exec(String(message.body));
+    if(!matched||!IS_CALL_ID.test(matched[1]))continue;
+    if(String(message.sender?.handle||"").toLowerCase()===me)continue;
+    if(incomingCallsSeen.has(matched[1]))continue;
+    void showIncomingCall(matched[1],String(message.sender?.handle||"NBL member").slice(0,64));
+    break;
+  }
+}
+async function scanIncomingCalls(){
+  if(incomingScanBusy||incomingCall||document.hidden||!state.clerk?.user?.id)return;
+  incomingScanBusy=true;
+  const userId=state.clerk.user.id,generation=authSyncGeneration;
+  try{
+    for(const row of state.threads.filter(x=>x.thread_type==="direct"&&!x.muted).slice(0,5)){
+      if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId||incomingCall)break;
+      try{
+        const data=await social({action:"list_messages",threadId:row.id,limit:15});
+        checkIncomingMessages(row.id,data.messages||[]);
+      }catch{ /* Messaging remains usable if an invitation scan fails. */ }
+    }
+  }finally{incomingScanBusy=false;}
+}
+
 function rememberIncoming(threadId,messages,{announce=false}={}){
   if(!threadId)return;
   const rows=Array.isArray(messages)?messages:[];
@@ -480,6 +551,7 @@ function watchOpenThread(id){
     if(state.selectedId===id){
       rememberIncoming(id,payload.messages||[],{announce:true});
       renderMessages(payload.messages||[]);
+      checkIncomingMessages(id,payload.messages||[]);
     }
   });
 }
@@ -488,6 +560,7 @@ function watchInbox(){
   state.inboxStop=window.NBLSocialRealtime.watchInbox(state.clerk.user.id,authToken,async()=>{
     if(document.hidden)return;
     await loadThreads();
+    await scanIncomingCalls();
   });
 }
 async function openThread(id){
@@ -507,6 +580,7 @@ async function openThread(id){
   if(state.selectedId!==id)return;
   rememberIncoming(id,payload.messages||[]);
   renderMessages(payload.messages||[]);
+  checkIncomingMessages(id,payload.messages||[]);
   status("Conversation ready. NBL human messages do not use AI credits.");
 }
 async function refresh(){
@@ -529,6 +603,7 @@ async function refresh(){
     await loadPhoneSettings();
     if(state.selectedId)await openThread(state.selectedId);
     else status("NBL Messenger is ready. Open a DM or select a conversation.");
+    void scanIncomingCalls();
   }catch(error){status(error.message||"NBL Messenger could not refresh.");}
 }
 async function openDM(handle){
@@ -711,7 +786,7 @@ async function syncClerkSession(){
   state.realtimeStop=null;state.inboxStop=null;state.realtimeThread=null;
   state.selectedId=null;state.selected=null;state.threads=[];state.me=null;state.busy=false;
   $("[data-chat-app]").classList.remove("chat-open");
-  lastSeenMessages.clear();
+  lastSeenMessages.clear();incomingCallsSeen.clear();hideIncomingCall();
   $("[data-chat-userbar]").hidden=true;
   $("[data-chat-account-settings]").hidden=true;
   $("[data-chat-account-toggle]").setAttribute("aria-expanded","false");
@@ -751,6 +826,9 @@ async function syncClerkSession(){
   watchInbox();
   await refresh();
   if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
+  const notificationCall=new URL(location.href).searchParams.get("call")||"";
+  if(IS_CALL_ID.test(notificationCall))void showIncomingCall(notificationCall,"");
+
   const suggested=pulseMessageIntent();
   if(suggested){
     $("[data-chat-dm-handle]").value="@"+suggested;
@@ -787,6 +865,19 @@ async function boot(){
   $("[data-chat-dm-form]").addEventListener("submit",event=>{event.preventDefault();void openDM($("[data-chat-dm-handle]").value.trim());});
   $("[data-chat-send-form]").addEventListener("submit",sendMessage);
   $("[data-chat-video-call]").addEventListener("click",()=>{void startVideoCall();});
+  $("[data-chat-incoming-answer]").addEventListener("click",()=>{hideIncomingCall();});
+  $("[data-chat-incoming-decline]").addEventListener("click",async()=>{
+    if(!incomingCall)return;
+    const {callId}=incomingCall,button=$("[data-chat-incoming-decline]");
+    button.disabled=true;
+    $("[data-chat-incoming-status]").textContent="Declining the call…";
+    try{
+      await videoCallAction("finish",callId);
+      hideIncomingCall();callFeedback("Incoming video call declined.");
+    }catch(error){
+      $("[data-chat-incoming-status]").textContent=error.message||"Could not decline this call. Try again.";
+    }finally{button.disabled=false;}
+  });
   $("[data-chat-refresh]").addEventListener("click",()=>{void refresh();});
   $("[data-chat-mute]").addEventListener("click",()=>{void toggleMute();});
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
