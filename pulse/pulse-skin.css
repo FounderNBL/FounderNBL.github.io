@@ -233,6 +233,9 @@
 }
 .pulse-body .social-media{gap:8px;margin:14px 0;min-width:0}
 .pulse-body .social-media:empty{display:none}
+/* One member photo should span the entire card, never look like a half-width thumbnail. */
+.pulse-body .social-media > :only-child{grid-column:1/-1}
+.pulse-body .social-media > img:last-child:nth-child(odd):not(:first-child){grid-column:1/-1}
 .pulse-body .social-media img,.pulse-body .social-media video{
   width:100%;max-height:580px;object-fit:contain;
   border-radius:12px;background:#09070f;
@@ -338,7 +341,7 @@
   .pulse-body .pulse-sidebar .social-tabs button[data-feed="timeline"]::before{content:"◎"}
   .pulse-body .pulse-sidebar .social-tabs button[data-feed="user"]::before{content:"▤"}
   .pulse-body .pulse-sidebar .social-tabs button[data-feed="friends"]::before{content:"♧"}
-  .pulse-body .pulse-sidebar .social-tabs button[data-feed="notification"]::before{content:"♧"}
+  .pulse-body .pulse-sidebar .social-tabs button[data-feed="notification"]::before{content:"◉"}
   .pulse-body .pulse-sidebar .social-tabs .pulse-message-tab{
     min-height:61px;justify-content:center!important;
   }
