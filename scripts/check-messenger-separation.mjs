@@ -103,7 +103,7 @@ assert.match(app,/data-chat-notification-settings hidden/);
 assert.match(js,/window.NBLInfinitySound\?\.play\("people"\)/);
 assert.match(sw,/self.addEventListener\("push"/);
 assert.match(sw,/self.addEventListener\("notificationclick"/);
-assert.match(sw,/new URL\("\/messenger\/",self.location.origin\)/);
+assert.match(sw,/new URL\(target,self.location.origin\)/);
 assert.doesNotMatch(sw,/event\.data\?\.json\(\)[\s\S]*token/);
 assert.doesNotMatch(app,/type="file"/);
 
