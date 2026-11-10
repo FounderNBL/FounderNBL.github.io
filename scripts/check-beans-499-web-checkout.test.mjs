@@ -4,9 +4,11 @@ import {readFileSync} from "node:fs";
 const header=readFileSync("nbl-world-header.js","utf8");
 const account=readFileSync("account.html","utf8");
 
-test("existing $4.99 Beans account button invokes authenticated NBL billing",()=>{
+test("current $4.99 seven-day Starter price is not connected to stale monthly checkout",()=>{
   assert.match(account,/data-account-billing-plan="beans"/);
-  assert.match(account,/Beans · \$4\.99\/month/);
+  assert.match(account,/Beans Starter · \$4\.99 \/ 7 days/);
+  assert.match(account,/data-account-billing-plan="beans" disabled aria-disabled="true"/);
+  assert.doesNotMatch(account,/Beans · \$4\.99\/month/);
   assert.match(account,/window.NBLBillingBridge\?\.checkout\?\.\(plan\)/);
   assert.match(header,/getNblBeansAuthToken\(\)/);
   assert.match(header,/const route=portal\?"\/billing\/portal":"\/billing\/checkout"/);
