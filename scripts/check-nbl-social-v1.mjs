@@ -38,6 +38,7 @@ assert.match(js,/const PUBLIC_SOCIAL_URL="https:\/\/newbeansland\.org\/messenger
 assert.match(js,/new URL\(PUBLIC_SOCIAL_URL\)/);
 assert.match(js,/dest\.searchParams\.set\("post",id\)/);
 assert.match(js,/www\.facebook\.com\/sharer\/sharer\.php\?u=/);
+assert.match(js,/nbl-pulse-share\?post=/,"Facebook must scrape the public post-specific thumbnail, not the static Pulse page");
 assert.match(js,/share\.target="_blank"/);
 assert.match(js,/share\.rel="noopener noreferrer"/);
 assert.match(js,/state\.client\.getActivity\(\{id:linkedPostId\}\)/);
