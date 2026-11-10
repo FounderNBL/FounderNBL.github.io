@@ -1,10 +1,10 @@
 (()=>{
   "use strict";
   const plans=Object.freeze({
-    beans:Object.freeze({name:"Beans Starter",price:"$4.99 / 7 days",status:"CHECKOUT_HELD",replies:"Beans-only access for 7 days; no included paid NBL creation services.",renewal:"Day 7 converts to NBL Basic at $20/month unless cancelled or upgraded during the first six days; requires informed customer consent."}),
-    allInOne:Object.freeze({name:"NBL Basic",price:"$20/month",status:"CHECKOUT_HELD",replies:"Beans and eligible NBL services; exact monthly grants pending verification",images:"Planned, not an active entitlement",videos:"Planned, not an active entitlement",searches:"Included within plan limits, not billed per ordinary search",voice:"Planned, not an active entitlement"}),
-    nblPlus:Object.freeze({name:"NBL Plus",price:"$40/month",status:"CHECKOUT_HELD",benefits:"Higher usage allowances, targeted at twice NBL Basic for eligible services; final grants pending verification."}),
-    foundersDeluxe:Object.freeze({name:"Founder’s Deluxe",price:"$100/month",status:"CHECKOUT_HELD",benefits:"Highest membership tier with generous eligible-service use, subject to fair-use and provider caps."}),
+    beans:Object.freeze({name:"Beans Starter",price:"$4.99 / 7 days",status:"LIVE",replies:"Beans-only access for 7 days; no included paid NBL creation services.",renewal:"Day 7 converts to NBL Basic at $20/month unless cancelled or upgraded during the first six days; requires informed customer consent."}),
+    allInOne:Object.freeze({name:"NBL Basic",price:"$20/month",status:"LIVE",replies:"Beans and eligible NBL services within monthly plan allowances",images:"Included where enabled under plan allowances",videos:"Included where enabled under plan allowances",searches:"Included within plan limits, not billed per ordinary search",voice:"Included where enabled under plan allowances"}),
+    nblPlus:Object.freeze({name:"NBL Plus",price:"$40/month",status:"LIVE",benefits:"Higher allowances, targeted at twice NBL Basic for eligible services."}),
+    foundersDeluxe:Object.freeze({name:"Founder’s Deluxe",price:"$100/month",status:"LIVE",benefits:"Highest membership tier with generous eligible-service use, subject to fair-use and provider caps."}),
     beansUniversity:Object.freeze({name:"Beans + University",price:"$14.99/month"}),
     foundationStudentContinuation:Object.freeze({name:"Foundation Student Continuation",price:"$9.99/month"}),
     foundationUniversity:Object.freeze({name:"Foundation + University (first month)",price:"$34.99 one-time"}),
