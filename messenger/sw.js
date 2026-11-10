@@ -1,5 +1,5 @@
 // Public app shell only. NEVER cache identity, messages, or Supabase responses.
-const CACHE = "nbl-messenger-shell-20261109-pulse-calling";
+const CACHE = "nbl-messenger-shell-20261109-live-ringing";
 const SHELL = ["/messenger/","/messenger/app.css","/messenger/messenger-skin.css","/messenger/app.js","/messenger/icon.svg","/messenger/manifest.webmanifest"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
@@ -37,9 +37,11 @@ self.addEventListener("push", event => {
         ?data.tag:"nbl-messenger";
     const options={
       body,icon:"/messenger/icon.svg",badge:"/messenger/icon.svg",
-      tag,renotify:true,data:{url},silent:false
+      tag,renotify:true,data:{url},silent:false,
+      requireInteraction:isCall,
+      ...(isCall?{vibrate:[250,120,250,120,400]}:{})
     };
-    if(isCall)options.actions=[{action:"answer",title:"Answer"}];
+    if(isCall)options.actions=[{action:"answer",title:"Answer"},{action:"decline",title:"Decline"}];
     await self.registration.showNotification(title,options);
   })());
 });
@@ -50,7 +52,7 @@ self.addEventListener("notificationclick",event=>{
     // Both the path and call ID must be safe even when another script sent push.
     const target=/^\/messenger\/call\.html\?call=[0-9a-f-]{36}$/i.test(saved)
       ?saved:"/messenger/";
-    const url=new URL(target,self.location.origin).href;
+    const url=new URL(event.action==="decline"&&target!=="/messenger/"?target+"&decline=1":target,self.location.origin).href;
     const windows=await self.clients.matchAll({type:"window",includeUncontrolled:true});
     // A call notification MUST open its own call link, not an unrelated chat tab.
     if(target!=="/messenger/"){await self.clients.openWindow(url);return;}
