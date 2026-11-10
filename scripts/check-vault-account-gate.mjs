@@ -75,7 +75,7 @@ test("Vault and public catalog preserve active prices while University is closed
  const pricing=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
  const account=readFileSync(new URL("../account.html",import.meta.url),"utf8");
  for(const [key,price] of [["beans","$4.99 / 7 days"],["getMore","$9.99 one-time"],
-   ["nblUsage","$7.00 one-time"],["studiosCredits","$8.99 one-time"]]){
+   ["nblUsage","$10 minimum top-up"],["studiosCredits","$8.99 one-time"]]){
    assert.ok(plans.includes('price:"'+price+'"'),key+" canonical value missing");
    assert.ok(html.includes('data-nbl-plan-value="'+key+'.price"'),"Vault missing "+key);
    assert.ok(pricing.includes('data-nbl-plan-value="'+key+'.price"'),"Catalog missing "+key);
