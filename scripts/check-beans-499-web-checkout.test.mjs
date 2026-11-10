@@ -4,10 +4,12 @@ import {readFileSync} from "node:fs";
 const header=readFileSync("nbl-world-header.js","utf8");
 const account=readFileSync("account.html","utf8");
 
-test("current $4.99 seven-day Starter price is not connected to stale monthly checkout",()=>{
+test("current $4.99 seven-day Starter is connected to authenticated membership checkout",()=>{
   assert.match(account,/data-account-billing-plan="beans"/);
   assert.match(account,/Beans Starter · \$4\.99 \/ 7 days/);
-  assert.match(account,/data-account-billing-plan="beans" disabled aria-disabled="true"/);
+  assert.match(account,/data-account-billing-plan="beans"/);
+  assert.doesNotMatch(account,/data-account-billing-plan="beans" disabled/);
+  for(const plan of ["nbl_basic","nbl_plus","founders_deluxe"])assert.match(account,new RegExp(`data-account-billing-plan="${plan}"`));
   assert.doesNotMatch(account,/Beans · \$4\.99\/month/);
   assert.match(account,/window.NBLBillingBridge\?\.checkout\?\.\(plan\)/);
   assert.match(header,/getNblBeansAuthToken\(\)/);
