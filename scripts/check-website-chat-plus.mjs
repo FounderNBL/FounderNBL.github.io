@@ -66,7 +66,7 @@ requireText(js,'data-nbl-billing-plan="foundation_student_continuation" disabled
 requireText(plans,'foundationUniversity:Object.freeze',"Canonical Foundation + University first month price is missing.");
 for(const plan of ['foundation','full_foundation','full_nblu','nblu_continuation']) requireText(js,`data-nbl-billing-plan="${plan}"`,`Pricing drawer action missing: ${plan}`);
 requireText(js,'${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}',"Get More drawer price is missing.");
-for(const value of ['$4.99/month','300 successful replies','$14.99/month','$9.99/month','$34.99 one-time','$9.99 one-time','+500 successful replies','$29.99 one-time','$54.99 one-time','$449.99 one-time']){
+for(const value of ['$4.99 / 7 days','$20/month','$40/month','$100/month','$14.99/month','$9.99/month','$34.99 one-time','$9.99 one-time','+500 successful replies','$29.99 one-time','$54.99 one-time','$449.99 one-time']){
   requireText(plans,value,`Canonical locked product value is missing: ${value}`);
 }
 requireText(js,'verified membership is required to send them.',"Account entitlement notice is missing.");
