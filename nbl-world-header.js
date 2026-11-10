@@ -1964,7 +1964,7 @@
     beansDisclaimerTimer=window.setTimeout(()=>{
       beansDisclaimer.hidden=true;
       beansDisclaimerTimer=null;
-      const intro="Free Beans requires a free NBL account. No subscription is needed for free replies.";
+      const intro="Free Beans: 20 replies in the first 48 hours, basic intelligence only. No card required; expired replies do not reset.";
       if(beansStatus.textContent===intro) beansStatus.textContent="";
     },2000);
     setModalIsolation(beansPanel,true);
