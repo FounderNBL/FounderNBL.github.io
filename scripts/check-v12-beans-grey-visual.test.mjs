@@ -28,7 +28,7 @@ test("Grey stays locked while official artwork is displayed only behind protecte
 });
 test("fresh cache keys load new styles and scripts on real entry pages",()=>{
  assert.match(read("index.html"),/nbl-world-header\.css\?v=20261024-v12-final-parity/);
- assert.match(read("index.html"),/nbl-world-header\.js\?v=20261105-beans-experience/);
+ assert.match(read("index.html"),/nbl-world-header\.js\?v=20261109-live-memberships/);
  assert.match(read("university-campus.html"),/url=https:\/\/nblschool\.com\//);
 });
 
@@ -48,7 +48,10 @@ test("website Beans retires the old Grey/Messenger chooser while retaining PDF a
  assert.match(js,/data-nbl-tool="pdf-local"/);
  assert.match(js,/NblDevicePdf/);
  assert.match(js,/nblpdf/);
- for(const page of ["account.html","books.html","clothing.html","nbl-kids.html","pricing.html","stories.html","studios.html"]){
+ for(const page of ["account.html","pricing.html"]){
+   assert.match(read(page),/nbl-world-header\.js\?v=20261109-live-memberships/);
+ }
+ for(const page of ["books.html","clothing.html","nbl-kids.html","stories.html","studios.html"]){
    assert.match(read(page),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
  }
  assert.match(read("university.html"),/src="\/nbl-university-early-interest\.js/);
