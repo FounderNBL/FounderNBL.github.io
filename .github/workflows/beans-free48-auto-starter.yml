@@ -1,0 +1,20 @@
+name: Website free Beans and auto Starter choice
+on:
+  pull_request:
+    paths:
+      - "account.html"
+      - "nbl-product-plans.js"
+      - "scripts/check-beans-free48-auto-starter.test.mjs"
+      - ".github/workflows/beans-free48-auto-starter.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  account-billing-choices:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/check-beans-free48-auto-starter.test.mjs
