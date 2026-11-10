@@ -9,6 +9,14 @@ test("old .org University routes no longer expose coursework or student records"
     }
   }
   const admission=await (await page.request.get("/university.html")).text();
-  expect(admission).toContain("Sign up &amp; continue to payment");
+  // .org only advertises FREE notifications while NBL University is closed.
+  // Checkout, tuition and coursework must not leak into the public landing page.
+  expect(admission).toContain("The school is under construction.");
+  expect(admission).toContain("we are not accepting tuition");
+  expect(admission).toContain("Sign up for free opening updates");
+  expect(admission).toContain("Join free notification list");
+  expect(admission).toContain("data-nbl-university-interest-form");
+  expect(admission).toContain('href="https://nblschool.com/"');
+  expect(admission).not.toContain("Sign up &amp; continue to payment");
   expect(admission).not.toContain("data-coursework-pdf");
 });
