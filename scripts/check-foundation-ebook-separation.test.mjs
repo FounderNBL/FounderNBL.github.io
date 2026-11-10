@@ -19,7 +19,7 @@ test("$29.99 Foundation Materials contains only 2 physical books and first month
  assert.match(pricing,/University is under construction/);
  assert.match(cashier,/No ebooks, digital course materials, coursework, or University enrollment are included\./);
  assert.match(header,/Two physical books and one month of Beans; no ebooks or University materials included/);
- assert.match(terms,/one-time with two physical books and one month of Beans; ebooks and University course access are not included/);
+ assert.match(terms,/University is under construction and school payments are closed/);
  assert.doesNotMatch(pricing,/Two physical books and digital course materials plus the first month of Beans/);
  assert.doesNotMatch(header,/Two books, course materials and one month of Beans/);
 });
