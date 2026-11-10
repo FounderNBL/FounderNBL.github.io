@@ -700,6 +700,10 @@ async function startVideoCall(){
   const threadId=state.selectedId;
   const userId=state.clerk?.user?.id,generation=authSyncGeneration;
   const button=$("[data-chat-video-call]");button.disabled=true;
+  // Reserve the caller's call window directly on the tap. Opening after async
+  // network calls is blocked as a popup by many mobile browsers.
+  const callWindow=window.open("","_blank");
+  if(callWindow){callWindow.document.title="NBL Pulse · Connecting call";callWindow.document.body.textContent="Connecting your NBL video call…";}
   callFeedback("Preparing your private video call…");
   status("Preparing your private video call…");
   try{
@@ -720,10 +724,12 @@ async function startVideoCall(){
       throw Error("Invalid NBL call invitation.");
     // In-app invitation is delivered inside the same protected direct conversation.
     await social({action:"send",threadId,message:"NBL video call invitation: "+url.href});
-    callFeedback("Video invitation sent in this conversation. Open the invitation below to join.");
-    status("Video invitation sent in your NBL conversation.");
+    if(callWindow&&!callWindow.closed)callWindow.location.replace(url.href);
+    callFeedback("Calling… Your private video room is ready.");
+    status("Calling… The other member will receive an incoming-call alert if notifications are enabled.");
     await openThread(threadId);
   }catch(error){
+    if(callWindow&&!callWindow.closed)callWindow.close();
     const message=error?.message||"NBL video call could not start.";
     callFeedback(message,true);status(message);
   }
