@@ -52,7 +52,9 @@ self.addEventListener("notificationclick",event=>{
     // Both the path and call ID must be safe even when another script sent push.
     const target=/^\/messenger\/call\.html\?call=[0-9a-f-]{36}$/i.test(saved)
       ?saved:"/messenger/";
-    const url=new URL(event.action==="decline"&&target!=="/messenger/"?target+"&decline=1":target,self.location.origin).href;
+    const safeUrl=new URL(target,self.location.origin);
+    if(event.action==="decline"&&target!=="/messenger/")safeUrl.searchParams.set("decline","1");
+    const url=safeUrl.href;
     const windows=await self.clients.matchAll({type:"window",includeUncontrolled:true});
     // A call notification MUST open its own call link, not an unrelated chat tab.
     if(target!=="/messenger/"){await self.clients.openWindow(url);return;}
