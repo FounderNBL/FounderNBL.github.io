@@ -89,6 +89,17 @@
           <div class="card metric"><strong id="topUpRemaining">—</strong><span>Get More replies remaining</span></div>
         </div>
         <p class="status"><strong>Free Beans:</strong> 20 successful replies over 48 hours from free account start; basic intelligence only. No card required, no daily reset. After the first limit is reached, select a paid membership to continue. Existing paid choices: $4.99 Starter checkout or $20/month Basic.</p>
+        <section id="beansAutoStarter" class="card" aria-labelledby="beansAutoStarterTitle" hidden>
+          <h3 id="beansAutoStarterTitle">Continue after your 48-hour free Beans access</h3>
+          <p class="status">Free Beans includes 20 successful replies over 48 hours. No card is required to start. You may stop there, buy NBL Basic for $20/month now, or choose an optional automatic Starter transition.</p>
+          <p class="status"><strong>If you authorize card billing:</strong> No charge today. At the end of your 48 free hours, Stripe charges $4.99 for seven days of Beans Starter. Unless you cancel or upgrade, NBL Basic starts at $20/month after those seven days. Cancel before the first charge to pay nothing.</p>
+          <div id="beansAutoStarterOptin">
+            <label for="beansAutoStarterConsent"><input type="checkbox" id="beansAutoStarterConsent" autocomplete="off"> I authorize NBL to save my card and automatically charge $4.99 after my free 48 hours, followed by $20/month after seven Starter days unless I cancel or upgrade.</label>
+            <div class="row"><button type="button" id="beansAutoStarterSave">Save card &amp; schedule Starter · $0 today</button></div>
+          </div>
+          <div class="row"><button type="button" id="beansAutoStarterCancel" hidden>Cancel scheduled Starter charge</button></div>
+          <p id="beansAutoStarterStatus" class="status" role="status" aria-live="polite">Checking automatic Starter status…</p>
+        </section>
         <div class="account-categories" aria-label="Membership categories">
 <details class="account-category"><summary><strong>Beans & add-ons</strong><small>Chat plans and additional replies</small></summary><div class="row"><button type="button" data-account-billing-plan="beans">Beans Starter · $4.99 / 7 days</button>
 <button type="button" data-account-billing-plan="nbl_plus">NBL Plus · $40/month (not University)</button>
@@ -543,6 +554,8 @@
       const end=meter.paidPeriodEnd?new Date(meter.paidPeriodEnd):null;
       const endText=end&&!Number.isNaN(end.getTime())?" · current period through "+end.toLocaleDateString():"";
       membershipStatus.textContent=(meter.privileged?"Founder reserve":String(meter.membershipStatus||"free").replaceAll("_"," "))+endText;
+      const introCard=document.getElementById("beansAutoStarter");
+      if(introCard)introCard.hidden=Boolean(meter.privileged)||String(meter.membershipStatus||"none")!=="none";
       return meter;
     };
 
@@ -570,6 +583,77 @@
       }
     };
     membershipButtons.forEach(button=>button.addEventListener("click",()=>openCheckout(button.dataset.accountBillingPlan||"",button)));
+
+    // Separate, optional future-billing consent. Never auto-enroll when a free
+    // user signs up: only this explicit checkbox + Stripe Setup Checkout may
+    // authorize a future charge, and the signed webhook schedules it.
+    const starterBox=document.getElementById("beansAutoStarter");
+    const starterOptin=document.getElementById("beansAutoStarterOptin");
+    const starterConsent=document.getElementById("beansAutoStarterConsent");
+    const starterSave=document.getElementById("beansAutoStarterSave");
+    const starterCancel=document.getElementById("beansAutoStarterCancel");
+    const starterStatus=document.getElementById("beansAutoStarterStatus");
+    const STARTER_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link";
+    const starterRequest=async(action,extra={})=>{
+      const t=await token();
+      if(!t)throw new Error("Sign in before managing future Beans billing.");
+      const response=await fetch(STARTER_API,{
+        method:"POST",cache:"no-store",
+        headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:"Bearer "+t},
+        body:JSON.stringify({action,...extra})
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(payload.message||"Could not verify future billing. No new charge was authorized.");
+      return payload;
+    };
+    const renderStarterAuto=async()=>{
+      if(!starterBox)return;
+      try{
+        const state=await starterRequest("starter_auto_status");
+        const enrolled=String(state.state||"not_enrolled");
+        starterOptin.hidden=enrolled!=="not_enrolled";
+        starterCancel.hidden=!["scheduled","pending"].includes(enrolled);
+        const when=state.freeExpiresAt?new Date(state.freeExpiresAt):null;
+        const date=when&&!Number.isNaN(when.getTime())?when.toLocaleString():"after the 48-hour free period";
+        starterStatus.textContent=enrolled==="scheduled"
+          ?"Your card is authorized. $4.99 Starter is scheduled for "+date+". You may cancel before the first charge."
+          :enrolled==="pending"
+            ?"Card authorization is pending. No charge has been made. You may cancel the pending setup."
+            :enrolled==="canceled"
+              ?"Automatic Starter canceled. No scheduled $4.99 charge from this enrollment."
+              :"Free Beans: "+String(state.freeUsed||0)+" of 20 replies used. Access ends "+date+" or after the twentieth reply. No card is required.";
+      }catch(e){starterStatus.textContent=e?.message||"Starter status unavailable.";}
+    };
+    starterSave?.addEventListener("click",async()=>{
+      if(!starterConsent?.checked){
+        starterStatus.textContent="Please check the authorization box to schedule the $4.99 Starter charge.";
+        return;
+      }
+      starterSave.disabled=true;
+      starterStatus.textContent="Opening Stripe to save your card. Nothing is charged today…";
+      try{
+        const response=await starterRequest("starter_auto_enroll",{
+          consent:true,consentVersion:"beans-intro-2026-11-10"
+        });
+        const url=new URL(response.checkoutUrl||"");
+        if(url.protocol!=="https:"||url.hostname!=="checkout.stripe.com")
+          throw new Error("Secure Stripe card setup is not available.");
+        location.assign(url.href);
+      }catch(e){starterStatus.textContent=e?.message||"Could not start card setup.";starterSave.disabled=false;}
+    });
+    starterCancel?.addEventListener("click",async()=>{
+      starterCancel.disabled=true;
+      starterStatus.textContent="Canceling the scheduled Starter charge…";
+      try{
+        const result=await starterRequest("starter_auto_cancel");
+        starterStatus.textContent=result.state==="canceled"
+          ?"Scheduled Starter charge canceled. No $4.99 charge will be made for this enrollment."
+          :"No automatic Starter is scheduled.";
+        await renderStarterAuto();
+      }catch(e){starterStatus.textContent=e?.message||"Could not confirm cancellation."; }
+      finally{starterCancel.disabled=false;}
+    });
+    
 
     const renderDeliveries=async()=>{
       deliveries.replaceChildren();
@@ -710,7 +794,7 @@
     };
 
     try{
-      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderConnect()]);
+      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderConnect(),renderStarterAuto()]);
       if(checkoutParams.get("checkout")==="success"){
         for(let attempt=0;attempt<3;attempt++){
           await new Promise(resolve=>setTimeout(resolve,1500));
