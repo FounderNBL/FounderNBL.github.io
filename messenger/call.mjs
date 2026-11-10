@@ -123,7 +123,18 @@ async function boot(){
   c.addListener?.(()=>{
    if(c.user?.id!==owner||!c.isSignedIn){void leave();status("Account changed. Call closed for privacy.");$("#join").disabled=true;}
   });
-  status("Ready. Tap Join video call. Your browser will ask to use your camera and microphone.");
+  const params=new URL(location.href).searchParams;
+  if(params.get("decline")==="1"){
+   $("#join").disabled=true;
+   try{await videoRequest("finish");status("Call declined.");}
+   catch(error){status(error?.message||"This call is no longer available.");}
+   return;
+  }
+  if(params.get("outgoing")==="1"){
+   status("Calling your NBL member… Connecting video.");
+   // On browsers requiring a separate permission gesture the Join button remains available.
+   void join();
+  }else status("Incoming NBL video call. Tap Join to answer.");
  }catch(error){status(error?.message||"NBL account connection unavailable.");$("#join").disabled=true;}
 }
 $("#join").addEventListener("click",()=>{void join();});
@@ -135,6 +146,10 @@ $("#microphone").addEventListener("click",async()=>{
  try{await call.microphone.toggle();$("#microphone").textContent=call.microphone.state.status==="enabled"?"Mute microphone":"Unmute microphone";}
  catch{status("Could not change microphone.");}
 });
-$("#leave").addEventListener("click",()=>{void leave();});
+$("#leave").addEventListener("click",async()=>{
+ try{await videoRequest("finish");}catch{}
+ await leave();
+ status("NBL video call ended.");
+});
 window.addEventListener("pagehide",()=>{if(joined)void leave();});
 void boot();

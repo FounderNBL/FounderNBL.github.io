@@ -64,13 +64,13 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261109-pulse-calling'),
+assert.ok(app.includes('/messenger/app.js?v=20261109-live-ringing'),
   "Pulse Messenger must load the current account and call handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
 assert.match(js, /callButton.hidden=!ready\|\|state.selected\?\.thread_type!=="direct"/);
 assert.match(js, /const callWindow=window\.open\("","_blank"\)/);
-assert.match(js, /callWindow\.location\.replace\(url\.href\)/);
+assert.match(js, /callWindow\.location\.replace\(callerUrl\.href\)/);
 assert.doesNotMatch(js,/callButton\.hidden[^;]*state\.me\?\.role/);
 assert.match(js, /Recent direct messages only: up to 200 threads and the latest 100 messages per thread/);
 assert.match(app, /href="\/account\.html"/);
@@ -82,7 +82,7 @@ assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.match(js, /navigator\.contacts\?\.select/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261109-pulse-calling/);
+assert.match(sw, /nbl-messenger-shell-20261109-live-ringing/);
 assert.match(sw,/messenger\/messenger-skin.css/);
 
 
@@ -132,7 +132,11 @@ const callPage=read("messenger/call.html"), callJs=read("messenger/call.mjs");
 assert.match(app,/data-chat-video-call hidden/);
 assert.match(js,/async function startVideoCall\(\)/);
 assert.match(js,/action:"start",threadId/);
-assert.match(js,/action:"send",threadId,message:"NBL video call invitation: "/);
+assert.doesNotMatch(js,/action:"send",threadId,message:"NBL video call invitation: "/);
+assert.match(js,/callerUrl\.searchParams\.set\("outgoing","1"\)/);
+assert.match(js,/incomingRingTimer=setInterval/);
+assert.match(sw,/action:"decline",title:"Decline"/);
+assert.match(read("messenger/call.mjs"),/params\.get\("decline"\)==="1"/);
 assert.match(js,/IS_CALL_ID/);
 assert.match(callPage,/id="microphone"/);
 assert.match(callPage,/id="camera"/);
@@ -143,6 +147,6 @@ assert.match(callJs,/access\.callType!==PRIVATE_CALL_TYPE/);
 assert.match(callJs,/client\.call\(PRIVATE_CALL_TYPE,callId\)/);
 assert.doesNotMatch(callJs,/client\.call\(access\.callType,callId\)|client\.call\("default"/);
 assert.match(callPage,/NBL Private · Member-only video/);
-assert.match(callPage,/call\.mjs\?v=20261108-nbl-private/);
+assert.match(callPage,/call\.mjs\?v=20261109-live-ringing/);
 assert.doesNotMatch(js,/STREAM_API_SECRET|VIDEO_SECRET/);
 console.log("PASS: NBL Messenger draft video invitation uses direct chats and secured call service.");

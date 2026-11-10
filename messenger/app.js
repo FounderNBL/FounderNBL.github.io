@@ -26,9 +26,10 @@ const callFeedback=(message,failed=false)=>{
 };
 const lastSeenMessages=new Map();
 const incomingCallsSeen=new Set();
-let incomingCall=null, incomingScanBusy=false;
+let incomingCall=null, incomingScanBusy=false, incomingRingTimer=null;
 function incomingCallUrl(id){return "https://newbeansland.org/messenger/call.html?call="+encodeURIComponent(id);}
 function hideIncomingCall(){
+  if(incomingRingTimer!==null){clearInterval(incomingRingTimer);incomingRingTimer=null;}
   incomingCall=null;
   const panel=$("[data-chat-incoming-call]");
   if(panel)panel.hidden=true;
@@ -49,12 +50,12 @@ async function videoCallAction(action,callId){
 }
 async function showIncomingCall(callId,from){
   if(!IS_CALL_ID.test(callId)||incomingCallsSeen.has(callId)||incomingCall)return;
-  incomingCallsSeen.add(callId);
   const userId=state.clerk?.user?.id,generation=authSyncGeneration;
   try{
     const access=await videoCallAction("join",callId);
     if(!userId||userId!==state.clerk?.user?.id||generation!==authSyncGeneration||incomingCall)return;
     if(access.callType!=="nbl_private"||access.callId!==callId||access.user?.id!==userId)return;
+    incomingCallsSeen.add(callId);
     incomingCall={callId,from};
     const panel=$("[data-chat-incoming-call]");
     $("[data-chat-incoming-from]").textContent=from?"Video call from @"+from:"An NBL member is calling";
@@ -63,6 +64,10 @@ async function showIncomingCall(callId,from){
     panel.hidden=false;
     // Browser autoplay rules can suppress in-page sounds; phone alerts use device settings.
     window.NBLInfinitySound?.play("people");
+    incomingRingTimer=setInterval(()=>{
+      if(incomingCall&&document.visibilityState==="visible")
+        window.NBLInfinitySound?.play("people");
+    },3500);
   }catch{
     // An expired, blocked, or forged invitation must never trigger the call screen.
   }
@@ -722,9 +727,12 @@ async function startVideoCall(){
     if(url.origin!=="https://newbeansland.org"||url.pathname!=="/messenger/call.html"
       ||!IS_CALL_ID.test(url.searchParams.get("call")||""))
       throw Error("Invalid NBL call invitation.");
-    // In-app invitation is delivered inside the same protected direct conversation.
-    await social({action:"send",threadId,message:"NBL video call invitation: "+url.href});
-    if(callWindow&&!callWindow.closed)callWindow.location.replace(url.href);
+    // The server has already stored and delivered exactly one invitation.
+    // Navigate into the caller's NBL video room; no duplicate chat message/push.
+    const callerUrl=new URL(url.href);
+    callerUrl.searchParams.set("outgoing","1");
+    if(callWindow&&!callWindow.closed)callWindow.location.replace(callerUrl.href);
+    else{window.location.assign(callerUrl.href);return;}
     callFeedback("Calling… Your private video room is ready.");
     status("Calling… The other member will receive an incoming-call alert if notifications are enabled.");
     await openThread(threadId);
