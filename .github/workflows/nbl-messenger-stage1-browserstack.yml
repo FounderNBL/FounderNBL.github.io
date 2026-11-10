@@ -1,11 +1,9 @@
 name: NBL Messenger Stage 1 — one real Android BrowserStack smoke
 
+# RETIRED: BrowserStack trial has ended. Historical workflow kept only for audit.
+# No PR, schedule, or manual invocation can start a paid/credentialed device session.
+# Restore only after explicit Founder authorization and actual provider access.
 on:
-  pull_request:
-    paths:
-      - "messenger/**"
-      - "scripts/browserstack-messenger-stage1.mjs"
-      - ".github/workflows/nbl-messenger-stage1-browserstack.yml"
   workflow_dispatch:
 
 permissions:
@@ -17,7 +15,7 @@ concurrency:
 
 jobs:
   android-messenger:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    if: ${{ false }} # Provider retired — no Android/device session
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
