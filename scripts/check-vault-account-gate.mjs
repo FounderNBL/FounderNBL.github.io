@@ -52,11 +52,11 @@ test("NBL Vault is the inclusive Beans pricing and per-tool allowance center",()
  checks(/function renderToolUsage\(source\)/);
  checks(/source\?\.customer\?\.tools\?\.entries/);
  checks(/renderToolUsage\(data\)/);
- checks(/12\), file understanding \(8\), code\/data \(3\), PDF\/file creation \(3\), image creation \(2\), and Beans voice \(12\)/);
- checks(/\$4\.99\/month/);
+ checks(/Beans-only access for seven days/);
+ checks(/\$4\.99 for seven days/);
  checks(/\$9\.99 one-time/);
  checks(/not an extra fee for each NBL tool/);
- checks(/NBL pays to run Beans/);
+ checks(/NBL covers the cost of the service/);
  checks(/data-nbl-plan-value="beans.price"/);
  checks(/data-nbl-plan-value="getMore.price"/);
  assert.doesNotMatch(html,/Get More[^<]*\$2/);
