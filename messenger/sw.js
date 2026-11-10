@@ -1,5 +1,5 @@
 // Public app shell only. NEVER cache identity, messages, or Supabase responses.
-const CACHE = "nbl-messenger-shell-20261109-member-video";
+const CACHE = "nbl-messenger-shell-20261109-pulse-calling";
 const SHELL = ["/messenger/","/messenger/app.css","/messenger/messenger-skin.css","/messenger/app.js","/messenger/icon.svg","/messenger/manifest.webmanifest"];
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
