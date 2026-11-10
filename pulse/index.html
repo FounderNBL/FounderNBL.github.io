@@ -44,6 +44,7 @@
 <link rel="stylesheet" href="/pulse/pulse-reference-ui.css?v=20261109-no-city">
 <link rel="stylesheet" href="/pulse/pulse-live-design.css?v=20261110-visual-release">
 <script type="module" src="/pulse/pulse-live-design.mjs?v=20261110-visual-release"></script>
+<script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
 </head><body class="pulse-body">
 <header class="pulse-topbar" aria-label="NBL Pulse site navigation">
   <a class="pulse-company-logo" href="/" aria-label="New Beansland home"><img src="/NBL-Brand.png" alt="" width="40" height="40"><span>NBL</span></a>
@@ -70,21 +71,35 @@
       </details>
     </div>
     <details class="pulse-connect" id="connectProviders">
-      <summary class="btn primary">Connect <span aria-hidden="true">▾</span></summary>
+      <summary class="btn small">Connect account <span aria-hidden="true">▾</span></summary>
       <div class="pulse-connect-menu">
-        <strong>Connect or invite</strong>
-        <a href="https://accounts.newbeansland.org/user?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F"><b>f</b><span>Facebook <small>Manage Facebook login in your NBL account</small></span></a>
-        <a href="https://accounts.newbeansland.org/user?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F"><b>G</b><span>Google <small>Manage Google login in your NBL account</small></span></a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F" target="_blank" rel="noopener noreferrer"><b>f</b><span>Facebook share <small>Invite people to NBL Pulse</small></span></a>
-        <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;su=Join%20me%20on%20NBL%20Pulse&amp;body=Join%20me%20at%20https%3A%2F%2Fnewbeansland.org%2Fpulse%2F" target="_blank" rel="noopener noreferrer"><b>✉</b><span>Gmail <small>Send an invitation</small></span></a>
-        <a href="https://wa.me/?text=Join%20me%20on%20NBL%20Pulse%20https%3A%2F%2Fnewbeansland.org%2Fpulse%2F" target="_blank" rel="noopener noreferrer"><b>✆</b><span>WhatsApp <small>Send an invitation</small></span></a>
-        <button id="copyPulseInvite" type="button"><b>◎</b><span>Instagram share <small>Use your phone’s share menu or copy an invite link</small></span></button>
-        <p>Account linking uses NBL sign-in. Sending an invite does not connect a social account.</p>
+        <strong>Account connections</strong>
+        <a href="https://accounts.newbeansland.org/user?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F"><b>f</b><span>Facebook <small>Manage Facebook sign-in in your NBL account</small></span></a>
+        <a href="https://accounts.newbeansland.org/user?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F"><b>G</b><span>Google <small>Manage Google sign-in in your NBL account</small></span></a>
+        <p>Account connections are optional. Inviting friends needs no social-account connection.</p>
+      </div>
+    </details>
+    <details class="pulse-invite" id="pulseInvitePanel">
+      <summary class="btn primary">Invite Friends <span aria-hidden="true">▾</span></summary>
+      <div class="pulse-invite-menu" aria-label="Invite friends to NBL Pulse">
+        <strong>Invite friends to NBL Pulse</strong>
+        <p>Send this NBL invitation through an app you already use. Your friend can create a free NBL account and join Pulse.</p>
+        <button type="button" id="copyPulseInvite" class="pulse-invite-primary"><span aria-hidden="true">↗</span> Share to an app <small>Instagram, TikTok, Messenger, Snapchat and other supported apps</small></button>
+        <button type="button" id="pulseCopyInvite" class="pulse-invite-copy"><span aria-hidden="true">⧉</span> Copy invite link</button>
+        <div class="pulse-invite-direct" aria-label="More ways to share">
+          <a data-pulse-invite="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F" target="_blank" rel="noopener noreferrer">Facebook post</a>
+          <a data-pulse-invite="whatsapp" href="https://wa.me/?text=Join%20me%20on%20NBL%20Pulse%3A%20https%3A%2F%2Fnewbeansland.org%2Fpulse%2F" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <a data-pulse-invite="sms" href="sms:?body=Join%20me%20on%20NBL%20Pulse%3A%20https%3A%2F%2Fnewbeansland.org%2Fpulse%2F">Text message</a>
+          <a data-pulse-invite="email" href="mailto:?subject=Join%20me%20on%20NBL%20Pulse&amp;body=Join%20me%20on%20NBL%20Pulse%3A%20https%3A%2F%2Fnewbeansland.org%2Fpulse%2F">Email</a>
+        </div>
+        <p class="pulse-invite-disclaimer">Choose a recipient in your sharing app. Pulse never reads your contacts or sends messages without you.</p>
+        <output id="pulseInviteFeedback" aria-live="polite" role="status"></output>
+        <a class="pulse-invite-url" href="https://newbeansland.org/pulse/">newbeansland.org/pulse/</a>
       </div>
     </details>
   </div>
   <p class="status" id="socialStatus" role="status" aria-live="polite">Checking your NBL account…</p>
-  <div class="signin-panel" id="guest"><p>Sign in with your NBL account to post and connect.</p><a class="btn primary" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in to NBL</a></div>
+  <div class="signin-panel" id="guest"><p>Join NBL Pulse to post, connect and follow friends.</p><a class="btn primary" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in to NBL</a> <a class="btn small" id="pulseSignUp" href="https://accounts.newbeansland.org/sign-up?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F">Create free NBL account</a></div>
   <section id="socialApp" hidden aria-label="NBL Pulse activity feeds"><div class="pulse-grid"><aside class="pulse-sidebar">
   <h2><svg class="pulse-mark" viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h13l7-13 10 28 9-31 9 27 7-11h19"/></svg> NBL Pulse<span aria-hidden="true">™</span></h2>
   <nav class="social-tabs" aria-label="Choose an activity feed">
