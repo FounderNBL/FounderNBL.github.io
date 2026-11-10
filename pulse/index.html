@@ -12,6 +12,7 @@
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261108-provider-video">
+<link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261109-member-first-standalone">
 <script type="module" src="/messenger/social-v1.mjs?v=20261108-instagram-share"></script>
 <style>
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
@@ -23,12 +24,12 @@
 .pulse-rail{display:grid;gap:14px}.pulse-rail h2{font-size:1.14rem;color:#f1d6ff;margin:0 0 10px}.pulse-rail p{color:#b7a7c9;font-size:.88rem;line-height:1.6}.pulse-rail a{color:#dca6ff;font-weight:900}
 .pulse-body :is(button,a,textarea,input):focus-visible{outline:3px solid #deb4ff;outline-offset:2px}
 .pulse-message-top{line-height:0;display:inline-flex;align-items:center}.pulse-message-top img{border-radius:9px}
-.pulse-message-tab{display:flex!important;align-items:center;justify-content:center;min-height:65px}.pulse-message-tab img{width:46px;height:46px;object-fit:contain}
+.pulse-message-tab{display:flex!important;align-items:center;justify-content:center;gap:8px;min-height:65px;text-decoration:none}.pulse-message-tab:hover{background:#302045}.pulse-message-tab img{width:46px;height:46px;object-fit:contain}
 .pulse-messenger-rail{padding:8px!important}.pulse-messenger-rail a{display:block;border-radius:14px;overflow:hidden}.pulse-messenger-rail img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain}
 .pulse-messenger-rail a:hover{box-shadow:0 0 0 2px #ad79ec}
-.pulse-messenger-panel{min-height:600px;border-radius:16px;overflow:hidden;background:#071421;border:1px solid #694484}
-#pulseMessengerFrame{display:block;width:100%;min-height:660px;height:75vh;max-height:990px;border:0;background:#071421}
-@media(max-width:680px){#pulseMessengerFrame{height:80vh;min-height:620px}.pulse-message-tab{min-height:50px}.pulse-message-tab img{width:32px;height:32px}}
+
+
+
 .pulse-avatar,.social-avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;background:#241535;border:2px solid #9550d5}
 .pulse-avatar-settings{position:relative}.pulse-avatar-settings[open]{z-index:7}.pulse-avatar-settings>summary{cursor:pointer}
 .pulse-avatar-settings input{display:block;max-width:280px;margin:8px 0;color:#fff}.pulse-avatar-settings label{font-size:.78rem}
@@ -39,12 +40,12 @@
 @media(max-width:680px){.pulse-topbar{padding:10px}.pulse-topbar nav{gap:8px}.pulse-topbar nav a{font-size:.7rem}.pulse-topbar nav a:nth-child(3){display:none}.pulse-topbar strong{font-size:.82rem}.pulse-grid{display:block}.pulse-sidebar{position:static;padding:10px}.pulse-sidebar h2{display:none}.pulse-sidebar .social-tabs{flex-direction:row;overflow-x:auto}.pulse-sidebar .social-tabs button,.pulse-sidebar .social-tabs a{width:auto;flex:none;font-size:.8rem;white-space:nowrap;padding:10px}.pulse-live{margin:8px 2px 0;padding:8px 0}.pulse-rail{display:none}.pulse-main .social-compose,.pulse-main .social-list{padding:13px}}
 .pulse-connect{position:relative;z-index:19;align-self:center}.pulse-connect>summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;list-style:none;padding:12px 18px;font-weight:800}.pulse-connect>summary::-webkit-details-marker{display:none}.pulse-connect-menu{position:absolute;right:0;top:calc(100% + 9px);z-index:21;width:min(350px,calc(100vw - 32px));padding:14px;border:1px solid #945ac4;border-radius:16px;background:#190e2a;box-shadow:0 12px 44px #000a;display:grid;gap:5px}.pulse-connect-menu>strong{color:#f3ddff;margin-bottom:7px}.pulse-connect-menu>a,.pulse-connect-menu>button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:10px;border:0;border-radius:10px;background:#261638;color:#fff;text-decoration:none;font:inherit;cursor:pointer}.pulse-connect-menu :is(a,button):hover{background:#492366}.pulse-connect-menu b{font-size:1.1rem;display:grid;place-items:center;flex:none;border-radius:50%;width:34px;height:34px;background:#60328d}.pulse-connect-menu small{display:block;font-size:.72rem;color:#ddc7ec;margin-top:3px}.pulse-connect-menu p{font-size:.75rem;color:#c4b0d8;margin:8px 2px 0}.pulse-composer-who{display:flex;align-items:center;gap:10px;margin-bottom:12px;color:#dfb7ff;font-weight:800}#videoLinkArea{margin-top:14px}#videoLink{display:block;width:100%;background:#20142f;color:#fff;border:1px solid #68457e;border-radius:9px;padding:12px}.pulse-video-rights{font-size:.83rem;display:flex!important;gap:8px;align-items:center;font-weight:500!important}.pulse-video-rights input{accent-color:#a746fa}.pulse-body .social-card{padding:18px}.pulse-body .social-author-row{padding-bottom:8px}.pulse-body .social-actions button{border-radius:999px}@media(max-width:680px){.pulse-connect{width:100%}.pulse-connect>summary{width:100%;justify-content:center}.pulse-connect-menu{left:0;right:auto}}
 </style></head><body class="pulse-body">
-<header class="pulse-topbar"><a href="/"><img src="/NBL-Brand.png" alt="New Beansland" width="40" height="40"> NBL</a><strong>⌁ NBL PULSE MESSENGER</strong><nav><a href="/">Home</a><a class="pulse-message-top" href="/pulse/?messages=1" aria-label="Open NBL Messenger inside Pulse"><img src="/messenger/icon.svg" width="34" height="34" alt="NBL Messenger"></a><a href="/studios.html">Studios</a><a href="/account.html">Account</a></nav></header>
+<header class="pulse-topbar"><a href="/"><img src="/NBL-Brand.png" alt="New Beansland" width="40" height="40"> NBL</a><strong>⌁ NBL PULSE</strong><nav><a href="/">Home</a><a class="pulse-message-top" href="/messenger/" aria-label="Open NBL Messenger in its own screen"><img src="/messenger/icon.svg" width="34" height="34" alt="NBL Messenger"></a><a href="/studios.html">Studios</a><a href="/account.html">Account</a></nav></header>
 <main class="social-shell pulse-shell">
   <div class="preview-bar" role="note">NBL PULSE · LIVE on New Beansland · Community posts, comments and friends</div>
   <div class="social-intro">
     <div><p class="eyebrow">NEW BEANSLAND · THE SOCIAL SIDE</p><h1>NBL Pulse™</h1>
-    <p class="social-subtitle">Your feed. Your friends. Your messages.</p></div>
+    <p class="social-subtitle">Your feed. Your friends. Your world.</p></div>
     <div class="social-identity" id="identity" hidden>
       <img id="identityAvatar" class="pulse-avatar" src="/messenger/icon.svg" width="54" height="54" alt="My NBL profile picture">
       <span id="identityHandle">NBL member</span><button id="signOut" type="button" class="btn small">Sign out</button>
@@ -70,7 +71,7 @@
     </details>
   </div>
   <p class="status" id="socialStatus" role="status" aria-live="polite">Checking your NBL account…</p>
-  <div class="signin-panel" id="guest"><p>Sign in with your NBL account to post, message and call.</p><a class="btn primary" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in to NBL</a></div>
+  <div class="signin-panel" id="guest"><p>Sign in with your NBL account to post and connect.</p><a class="btn primary" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in to NBL</a></div>
   <section id="socialApp" hidden aria-label="NBL Pulse activity feeds"><div class="pulse-grid"><aside class="pulse-sidebar"><h2>⌁ NBL Pulse</h2>
     <nav class="social-tabs" aria-label="Choose an activity feed">
       <button data-feed="foryou" type="button" aria-pressed="true">For You</button>
@@ -78,8 +79,8 @@
       <button data-feed="user" type="button" aria-pressed="false">My Posts</button>
       <button data-feed="friends" type="button" aria-pressed="false">Friends</button>
       <button data-feed="notification" type="button" aria-pressed="false">Notifications</button>
-      <button data-feed="messages" type="button" aria-pressed="false" class="pulse-message-tab" aria-label="Messages"><img src="/messenger/icon.svg" width="46" height="46" alt=""></button>
-    </nav><div class="pulse-live"><strong>● Go Live</strong><p>Live broadcasting belongs here. It unlocks after cost, safety and usage limits pass.</p><button type="button" disabled>Go Live · setup pending</button></div></aside><div class="pulse-main"><section id="messengerPanel" class="pulse-messenger-panel" hidden aria-label="NBL private messages"><iframe id="pulseMessengerFrame" title="NBL Messenger private messages and calls" loading="lazy" allow="camera; microphone; clipboard-write" referrerpolicy="same-origin"></iframe></section><section class="pulse-stories"><h2>Stories</h2><p>Stories are coming later. Every post you see in Pulse is from a real member.</p></section>
+      <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="46" height="46" alt="">Messenger</a>
+    </nav><div class="pulse-live"><strong>● Go Live</strong><p>Live broadcasting belongs here. It unlocks after cost, safety and usage limits pass.</p><button type="button" disabled>Go Live · setup pending</button></div></aside><div class="pulse-main"><section class="pulse-stories"><h2>Stories</h2><p>Stories are coming later. Every post you see in Pulse is from a real member.</p></section>
     <section class="social-list" id="sharedPost" aria-labelledby="sharedPostTitle" hidden>
       <h2 id="sharedPostTitle">Shared NBL post</h2>
       <div id="sharedPostContent" aria-live="polite"></div>
@@ -117,7 +118,7 @@
       <div class="social-list-head"><h2 id="feedTitle">For You</h2><button id="refreshFeed" class="btn small" type="button">Refresh</button></div>
       <div id="feedItems" aria-live="polite"><p class="hint">Loading Stream Feeds…</p></div>
     </section>
-</div><aside class="pulse-rail"><section><h2>Welcome to Pulse</h2><p>Follow people, post updates, react, comment and discover original NBL posts.</p></section><section><h2>Pulse Live</h2><p>Direct livestreaming will open in Pulse after server-side spend limits are enforced.</p></section><section class="pulse-messenger-rail"><a href="/pulse/?messages=1" aria-label="Open NBL Messenger private messages in Pulse"><img src="/messenger/icon.svg" width="512" height="512" alt="NBL Messenger" loading="lazy"></a></section></aside></div>
+</div><aside class="pulse-rail"><section><h2>Welcome to Pulse</h2><p>Follow people, post updates, react, comment and discover original NBL posts.</p></section><section><h2>Pulse Live</h2><p>Direct livestreaming will open in Pulse after server-side spend limits are enforced.</p></section><section class="pulse-messenger-rail"><a href="/messenger/" aria-label="Open the NBL Messenger app separately"><img src="/messenger/icon.svg" width="512" height="512" alt="NBL Messenger" loading="lazy"></a></section></aside></div>
   </section>
 </main>
 <footer>NBL Pulse™ · <a href="/university-campus.html#nbl-social">Protected University</a></footer>

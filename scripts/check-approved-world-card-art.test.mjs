@@ -82,3 +82,16 @@ test("Founder-approved Pulse replaces homepage company spotlight while standalon
  assert.ok(!viewer.includes("download>"));
  assert.ok(!viewer.includes("NBL_Company_Profile_Page2_World_Team_Updated.pdf"));
 });
+
+test("Pulse and Messenger fit the screen without cropping artwork or touching the six original world cards",()=>{
+ const door=source.slice(source.indexOf('<section class="pulse-world-door"'),source.indexOf('</section>',source.indexOf('<section class="pulse-world-door"'))+10);
+ assert.match(door,/class="social-door-grid"/);
+ assert.match(door,/href="\/pulse\/"/);
+ assert.match(door,/href="\/messenger\/"/);
+ assert.match(source,/\.pulse-world-door \.social-door-grid\{[\s\S]*?grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+ assert.match(source,/\.pulse-world-door \.social-door-grid \.world-card\{[\s\S]*?min-width:0;width:100%;max-width:none/);
+ assert.match(source,/\.pulse-world-door \.social-door-grid \.world-card \.media\{[\s\S]*?aspect-ratio:4\/3/);
+ assert.match(source,/\.pulse-world-door \.social-door-grid \.world-card \.media img,[\s\S]*?object-fit:contain;object-position:center/);
+ assert.match(source,/@media\(max-width:760px\)\{[\s\S]*?\.pulse-world-door \.social-door-grid\{grid-template-columns:1fr/);
+ assert.match(source,/\.pulse-world-door \.social-door-grid \.world-card \.card-body\{[\s\S]*?min-height:0;height:auto/);
+});
