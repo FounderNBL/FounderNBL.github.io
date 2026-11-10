@@ -52,11 +52,11 @@ test("NBL Vault is the inclusive Beans pricing and per-tool allowance center",()
  checks(/function renderToolUsage\(source\)/);
  checks(/source\?\.customer\?\.tools\?\.entries/);
  checks(/renderToolUsage\(data\)/);
- checks(/12\), file understanding \(8\), code\/data \(3\), PDF\/file creation \(3\), image creation \(2\), and Beans voice \(12\)/);
- checks(/\$4\.99\/month/);
+ checks(/Beans-only access for seven days/);
+ checks(/\$4\.99 for seven days/);
  checks(/\$9\.99 one-time/);
  checks(/not an extra fee for each NBL tool/);
- checks(/NBL pays to run Beans/);
+ checks(/NBL covers the cost of the service/);
  checks(/data-nbl-plan-value="beans.price"/);
  checks(/data-nbl-plan-value="getMore.price"/);
  assert.doesNotMatch(html,/Get More[^<]*\$2/);
@@ -74,7 +74,7 @@ test("Vault and public catalog preserve active prices while University is closed
  const plans=readFileSync(new URL("../nbl-product-plans.js",import.meta.url),"utf8");
  const pricing=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
  const account=readFileSync(new URL("../account.html",import.meta.url),"utf8");
- for(const [key,price] of [["beans","$4.99/month"],["getMore","$9.99 one-time"],
+ for(const [key,price] of [["beans","$4.99 / 7 days"],["getMore","$9.99 one-time"],
    ["nblUsage","$7.00 one-time"],["studiosCredits","$8.99 one-time"]]){
    assert.ok(plans.includes('price:"'+price+'"'),key+" canonical value missing");
    assert.ok(html.includes('data-nbl-plan-value="'+key+'.price"'),"Vault missing "+key);

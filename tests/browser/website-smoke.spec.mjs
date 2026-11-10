@@ -218,8 +218,10 @@ test.describe("New Beansland web app browser smoke", () => {
       await expect(page.locator("details.nbl-drawer-category:not([hidden])")).toHaveCount(1);
       await expect(page.locator("details.nbl-drawer-category[hidden]")).toHaveCount(2);
       await page.locator("details.nbl-drawer-category:not([hidden]) summary").click();
-      await expect(page.getByRole("button",{name:"Choose Beans",exact:true})).toBeVisible();
-      await expect(page.getByRole("button",{name:"NBL Plus checkout pending",exact:true})).toBeDisabled();
+      await expect(page.getByRole("button",{name:"Beans Starter",exact:true})).toBeDisabled();
+      await expect(page.getByRole("button",{name:"NBL Basic",exact:true})).toBeDisabled();
+       await expect(page.getByRole("button",{name:"NBL Plus",exact:true})).toBeDisabled();
+       await expect(page.getByRole("button",{name:"Founder's Deluxe",exact:true})).toBeDisabled();
       await expect(page.getByRole("button",{name:/Get \+500 replies/i})).toBeVisible();
       await expect(page.getByRole("button",{name:"University membership checkout pending",exact:true})).toBeHidden();
       if(mobile)await page.getByRole("button",{name:"Close Beans menu"}).click();

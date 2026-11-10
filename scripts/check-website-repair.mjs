@@ -194,7 +194,7 @@ forbidText(books,"amazon.com/People-Zoo-Jamel-Hawkins-ebook","People Zoo digital
 forbidText(books,'<div class="store-cover">', "Oversized duplicate decorative book-cover panels returned to Books.");
 
 
-for(const value of ['$4.99/month','300 successful replies','$9.99/month','$9.99 one-time','+500 successful replies','$29.99 one-time','$34.99 one-time','$54.99 one-time','$184.99 one-time','$449.99 one-time','$14.99/month']){
+for(const value of ['$4.99 / 7 days','$20/month','$40/month','$100/month','$9.99/month','$9.99 one-time','+500 successful replies','$29.99 one-time','$34.99 one-time','$54.99 one-time','$184.99 one-time','$449.99 one-time','$14.99/month']){
   requireText(plans,value,`Canonical locked plan value is missing: ${value}`);
 }
 const planFields=["beans.price","nblPlus.price","nblUsage.price","fullNbluDiy.price","beans.replies","beans.renewal","beansUniversity.price","foundationStudentContinuation.price","foundationUniversity.price","getMore.price","getMore.replies","foundationProgram.price","foundationProgram.renewal","guidedFoundation.price","fullNblu.price","nbluContinuation.price"].map(dataNblPlanValue=>({dataset:{nblPlanValue:dataNblPlanValue},textContent:""}));
@@ -209,12 +209,12 @@ for(const field of planFields){
 }
 requireText(header,"NBL_PRODUCT_PLANS.getMore.expiry","Drawer does not use the canonical non-expiring reply-balance wording.");
 requireText(header,"NBL_PRODUCT_PLANS.foundationProgram.price","Public search does not use the canonical Foundation Program price.");
-requireText(terms,'data-nbl-plan-value="foundationProgram.price"',"Terms do not use the canonical Foundation Program price.");
-requireText(terms,'data-nbl-plan-value="guidedFoundation.price"',"Terms do not use the canonical Guided Foundation price.");
-requireText(terms,'data-nbl-plan-value="fullNbluDiy.price"',"Terms omit the $184.99 DIY Full NBLU offer.");
-requireText(terms,'data-nbl-plan-value="nblPlus.price"',"Terms omit the distinct $29.99 NBL Plus offer.");
-requireText(terms,'data-nbl-plan-value="fullNblu.price"',"Terms do not use the canonical Full NBLU price.");
-requireText(terms,'data-nbl-plan-value="nbluContinuation.price"',"Terms do not use the canonical Full NBLU owner continuation price.");
+requireText(terms,"Beans Starter costs $4.99 for seven days","Terms must describe the Starter price.");
+requireText(terms,"NBL Basic costs $20/month","Terms must describe NBL Basic.");
+requireText(terms,"NBL Plus costs $40/month","Terms must describe NBL Plus.");
+requireText(terms,"Deluxe costs $100/month","Terms must describe Founder’s Deluxe.");
+requireText(terms,"University is under construction","Terms must preserve the University closed state.");
+requireText(terms,"school payments are closed","Terms must preserve the University payment closure.");
 requireText(terms,"the independent University campus is hosted at nblschool.com","Terms must keep school academics on the independent domain.");
 // Founder override: .org has exactly one tuition page; school academic UI lives on nblschool.com.
 requireText(university,'id="early-registration"',"University free signup form is missing.");
@@ -249,12 +249,12 @@ requireText(header,'button.disabled=initialDisabled.get(button)??true',"Billing 
 requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout control is missing.");
 requireText(header,'/billing/checkout',"Chat checkout is not routed through the server gateway.");
 requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
-requireText(support,'data-nbl-plan-value="foundationProgram.price"',"Support does not show the canonical Foundation price.");
+requireText(support,"Beans Starter costs $4.99 for seven days","Support must show Starter terms.");
 requireText(support,'href="/university.html#enroll"',"Support does not direct enrollment to .org.");
 requireText(support,'href="https://nblschool.com/"',"Support must link directly to independent NBL University school.");
 forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
 requireText(support,"Signed-in website checkout is available from Membership &amp; plans in your NBL account for verified products","Support does not document verified signed-in Beans checkout.");
-requireText(terms,"Signed-in Beans checkout uses the existing NBL account","Terms do not document authenticated Beans checkout.");
+requireText(terms,"Stripe processes card payments through NBL","Terms must explain Stripe card processing.");
 requireText(privacy,"signed-in website checkout is handed off to Stripe","Privacy does not document Stripe checkout handling.");
 requireText(deletion,"Deleting NBL application data does not cancel an active Stripe subscription","Account deletion does not explain active subscription cancellation.");
 for(const staleBillingCopy of ["website checkout/payment rails for the Chat plans are not currently available","website checkout/payment rails for these plans are not currently available","The public Chat-plan catalog is not a website checkout"]){
@@ -263,7 +263,7 @@ for(const staleBillingCopy of ["website checkout/payment rails for the Chat plan
   forbidText(privacy,staleBillingCopy,"Privacy still says checkout is unavailable.");
   forbidText(deletion,staleBillingCopy,"Account deletion still says checkout is unavailable.");
 }
-requireText(terms,"Beans includes limited free replies.","Terms omit the limited free Beans allowance.");
+requireText(terms,"Beans Starter costs $4.99 for seven days","Terms omit current Starter terms.");
 requireText(privacy,'data-nbl-plan-value="getMore.replies"',"Privacy does not use canonical reply allowances.");
 requireText(deletion,'data-nbl-plan-value="getMore.price"',"Account deletion information omits the canonical Get More catalog.");
 requireText(privacy,"Sign-in and password/security controls are handled by Clerk.","Privacy does not preserve Clerk-owned security.");
