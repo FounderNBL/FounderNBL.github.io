@@ -41,6 +41,8 @@
 .pulse-connect{position:relative;z-index:19;align-self:center}.pulse-connect>summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;list-style:none;padding:12px 18px;font-weight:800}.pulse-connect>summary::-webkit-details-marker{display:none}.pulse-connect-menu{position:absolute;right:0;top:calc(100% + 9px);z-index:21;width:min(350px,calc(100vw - 32px));padding:14px;border:1px solid #945ac4;border-radius:16px;background:#190e2a;box-shadow:0 12px 44px #000a;display:grid;gap:5px}.pulse-connect-menu>strong{color:#f3ddff;margin-bottom:7px}.pulse-connect-menu>a,.pulse-connect-menu>button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:10px;border:0;border-radius:10px;background:#261638;color:#fff;text-decoration:none;font:inherit;cursor:pointer}.pulse-connect-menu :is(a,button):hover{background:#492366}.pulse-connect-menu b{font-size:1.1rem;display:grid;place-items:center;flex:none;border-radius:50%;width:34px;height:34px;background:#60328d}.pulse-connect-menu small{display:block;font-size:.72rem;color:#ddc7ec;margin-top:3px}.pulse-connect-menu p{font-size:.75rem;color:#c4b0d8;margin:8px 2px 0}.pulse-composer-who{display:flex;align-items:center;gap:10px;margin-bottom:12px;color:#dfb7ff;font-weight:800}#videoLinkArea{margin-top:14px}#videoLink{display:block;width:100%;background:#20142f;color:#fff;border:1px solid #68457e;border-radius:9px;padding:12px}.pulse-video-rights{font-size:.83rem;display:flex!important;gap:8px;align-items:center;font-weight:500!important}.pulse-video-rights input{accent-color:#a746fa}.pulse-body .social-card{padding:18px}.pulse-body .social-author-row{padding-bottom:8px}.pulse-body .social-actions button{border-radius:999px}@media(max-width:680px){.pulse-connect{width:100%}.pulse-connect>summary{width:100%;justify-content:center}.pulse-connect-menu{left:0;right:auto}}
 </style>
 <link rel="stylesheet" href="/pulse/pulse-reference-ui.css?v=20261109-no-city">
+<link rel="stylesheet" href="/pulse/pulse-live-design.css?v=20261110-visual-release">
+<script type="module" src="/pulse/pulse-live-design.mjs?v=20261110-visual-release"></script>
 </head><body class="pulse-body">
 <header class="pulse-topbar" aria-label="NBL Pulse site navigation">
   <a class="pulse-company-logo" href="/" aria-label="New Beansland home"><img src="/NBL-Brand.png" alt="" width="40" height="40"><span>NBL</span></a>
@@ -48,6 +50,7 @@
     <a href="/chat.html">Beans</a><a href="/pulse/" class="pulse-site-current" aria-current="page"><svg class="pulse-mark" viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h13l7-13 10 28 9-31 9 27 7-11h19"/></svg> Pulse</a>
     <a href="/studios.html">Studios</a><a href="/studio/">Music</a><a href="/books.html">Books</a>
   </nav>
+  <details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user">My Posts</button><button type="button" data-feed="friends">Friends</button><a href="/account.html">My account</a><a href="/messenger/">NBL Messenger</a></div></details>
   <nav class="pulse-account-nav" aria-label="Your NBL account"><a class="pulse-message-top" href="/messenger/" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="34" height="34" alt=""></a><a class="pulse-account-link" href="/account.html">My Account</a></nav>
 </header>
 <main class="social-shell pulse-shell">
@@ -90,10 +93,21 @@
     <button data-feed="friends" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♧</span><span>Friends</span></button>
     <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
     <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="30" height="30" alt=""><span>Messenger</span></a>
+    <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Pulse post"><span aria-hidden="true">＋</span><span>Create</span></a>
   </nav>
   <div class="pulse-live" hidden aria-hidden="true"><strong>● Go Live</strong><p>Live is not available until server-side safety and spending limits are approved.</p><button type="button" disabled>Go Live · setup pending</button></div>
   <a class="pulse-create-shortcut" href="#composeTitle" aria-label="Jump to create a Pulse post"><span aria-hidden="true">＋</span> Create Post</a>
-</aside><div class="pulse-main"><section class="pulse-stories" aria-label="Stories coming soon"><div class="pulse-story-soon"><span class="pulse-story-ring" aria-hidden="true">＋</span><div><h2>Stories</h2><p>Member stories will appear here when this feature opens. No made-up profiles.</p></div><span class="pulse-soon-label">Coming soon</span></div></section>
+</aside><div class="pulse-main"><section class="pulse-stories" aria-label="Stories coming soon">
+      <div class="pulse-highlights" aria-label="NBL destinations and upcoming stories">
+        <div class="pulse-highlight pulse-highlight-pending" title="Member stories are coming soon"><span class="pulse-highlight-circle pulse-story-ring" aria-hidden="true">＋</span><span>Your Story</span><small>Coming soon</small></div>
+        <a class="pulse-highlight" href="/books.html"><span class="pulse-highlight-circle"><img src="/NBL-Brand.png" alt="" loading="lazy"></span><span>NBL Books</span></a>
+        <a class="pulse-highlight" href="/clothing.html"><span class="pulse-highlight-circle pulse-highlight-text">NBL</span><span>Clothing</span></a>
+        <a class="pulse-highlight" href="/studio/"><span class="pulse-highlight-circle pulse-highlight-text" aria-hidden="true">♫</span><span>NBL Music</span></a>
+        <a class="pulse-highlight" href="/studios.html"><span class="pulse-highlight-circle pulse-highlight-text" aria-hidden="true">▣</span><span>NBL Studios</span></a>
+        <a class="pulse-highlight" href="/messenger/"><span class="pulse-highlight-circle"><img src="/messenger/icon.svg" alt="" loading="lazy"></span><span>Messenger</span></a>
+      </div>
+      <p class="pulse-story-caption">Explore New Beansland. Member stories are coming soon.</p>
+    </section>
     <section class="social-list" id="sharedPost" aria-labelledby="sharedPostTitle" hidden>
       <h2 id="sharedPostTitle">Shared NBL post</h2>
       <div id="sharedPostContent" aria-live="polite"></div>
@@ -101,20 +115,35 @@
     <section class="social-compose" aria-labelledby="composeTitle">
       <h2 id="composeTitle">Create a post</h2>
       <div class="pulse-composer-who"><img id="composerAvatar" class="social-avatar" src="/messenger/icon.svg" width="46" height="46" alt="Your NBL profile picture"><span id="composerHandle">Your NBL account</span></div>
-      <form id="postForm"><label for="postText">Your post</label>
-        <textarea id="postText" rows="3" maxlength="1500" placeholder="What’s on your mind?"></textarea>
-        <label for="postMedia">Add photos or a video from your device</label>
-        <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" multiple>
-        <p class="social-feedback" id="mediaSelection" role="status">Up to 4 photos (8 MB each) or 1 MP4/WebM video (40 MB).</p>
-        <div id="videoLinkArea">
-          <label for="videoLink">Or share a YouTube, Facebook or Instagram video</label>
-          <input id="videoLink" type="url" inputmode="url" placeholder="Paste your public video link" autocomplete="off">
-          <label class="pulse-video-rights"><input id="videoShareRights" type="checkbox"> I own or have permission to share this video</label>
-          <p class="social-feedback">Public videos play in Pulse when their provider allows embedding.</p>
+      <form id="postForm">
+        <label class="pulse-visually-hidden" for="postText">Your post</label>
+        <textarea id="postText" rows="2" maxlength="1500" placeholder="What’s on your mind?"></textarea>
+        <div class="pulse-compose-actions">
+          <button type="button" class="pulse-compose-tool" data-pulse-compose="photo"><span aria-hidden="true">▧</span> Photo</button>
+          <button type="button" class="pulse-compose-tool" data-pulse-compose="video"><span aria-hidden="true">▣</span> Video</button>
+          <button type="button" class="pulse-compose-tool" data-pulse-compose="link"><span aria-hidden="true">↗</span> Video link</button>
+          <button class="btn primary pulse-submit" type="submit">Post</button>
         </div>
-        <div class="compose-bottom"><small id="postCount">0 / 1500</small><button class="btn primary" type="submit">Post</button></div>
+        <div id="pulseComposerExtra" class="pulse-composer-extra" hidden>
+          <label for="postMedia">Add photos or a video from your device</label>
+          <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" multiple>
+          <p class="social-feedback" id="mediaSelection" role="status">Up to 4 photos (8 MB each) or 1 MP4/WebM video (40 MB).</p>
+          <div id="videoLinkArea">
+            <label for="videoLink">Or share a YouTube, Facebook or Instagram video</label>
+            <input id="videoLink" type="url" inputmode="url" placeholder="Paste your public video link" autocomplete="off">
+            <label class="pulse-video-rights"><input id="videoShareRights" type="checkbox"> I own or have permission to share this video</label>
+            <p class="social-feedback">Public videos play in Pulse when their provider allows embedding.</p>
+          </div>
+        </div>
+        <div class="compose-bottom"><small id="postCount">0 / 1500</small></div>
       </form>
     </section>
+    <article class="pulse-welcome-post" aria-label="Welcome to NBL Pulse">
+      <div class="pulse-welcome-author"><img src="/NBL-Brand.png" width="42" height="42" alt=""><span><strong>NBL Pulse</strong><small>The social home for New Beansland</small></span></div>
+      <p>Welcome to NBL Pulse. Real people, real conversations, your community. Share what's happening in New Beansland.</p>
+      <div class="pulse-welcome-art"><img src="/NBL-Brand.png" alt="New Beansland brand" loading="lazy"><strong>NEW BEANSLAND</strong><small>STORIES · QUESTIONS · WORLDS</small></div>
+      <a href="#composeTitle" class="pulse-welcome-cta">Create your first post <span aria-hidden="true">＋</span></a>
+    </article>
     <section class="social-list" id="friendsPanel" aria-labelledby="friendsTitle" hidden>
       <h2 id="friendsTitle">Friends in New Beansland</h2>
       <p class="hint">Send a request by NBL username. Only people who accept become friends. No Facebook contacts are imported.</p>
@@ -132,6 +161,10 @@
       <div id="feedItems" aria-live="polite"><p class="hint">Loading Stream Feeds…</p></div>
     </section>
 </div><aside class="pulse-rail" aria-label="Pulse community sidebar">
+  <section class="pulse-featured-card" aria-label="Featured NBL destination">
+    <div class="pulse-rail-heading"><span>Featured on NBL</span><span class="pulse-featured-tag">NBL Studios</span></div>
+    <a href="/studios.html" class="pulse-featured-media"><img src="/NBL-Brand.png" width="300" height="180" alt="NBL brand"><span>Explore NBL Studios <span aria-hidden="true">↗</span></span></a>
+  </section>
   <section class="pulse-rail-card pulse-rail-activity"><h2><svg class="pulse-mark" viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h13l7-13 10 28 9-31 9 27 7-11h19"/></svg> Around Pulse</h2>
     <p>See posts from real members and keep up with your NBL community.</p>
     <button type="button" data-feed="notification" class="pulse-rail-action">Your notifications <span aria-hidden="true">›</span></button>
@@ -150,5 +183,6 @@
 </aside></div>
   </section>
 </main>
+<div class="pulse-features"><strong>〰 NBL Pulse™</strong><span>Connect. Create. Explore New Beansland.</span><span>♧ Follows &amp; Community</span><span>▣ Posts, photos &amp; video</span><span>✉ NBL Messenger</span></div>
 <footer>NBL Pulse™ · <a href="/university-campus.html#nbl-social">Protected University</a></footer>
 </body></html>
