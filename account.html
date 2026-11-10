@@ -89,10 +89,10 @@
           <div class="card metric"><strong id="topUpRemaining">—</strong><span>Get More replies remaining</span></div>
         </div>
         <div class="account-categories" aria-label="Membership categories">
-<details class="account-category"><summary><strong>Beans & add-ons</strong><small>Chat plans and additional replies</small></summary><div class="row"><button type="button" data-account-billing-plan="beans" disabled aria-disabled="true">Beans Starter · $4.99 / 7 days</button>
-<button type="button" data-account-billing-plan="nbl_plus" disabled aria-disabled="true" title="Premium Beans checkout held pending LOCKE verification">NBL Plus · $40/month (not University)</button>
-<button type="button" data-account-billing-plan="nbl_basic" disabled aria-disabled="true">NBL Basic · $20/month</button>
-<button type="button" data-account-billing-plan="founders_deluxe" disabled aria-disabled="true">Founder’s Deluxe · $100/month</button>
+<details class="account-category"><summary><strong>Beans & add-ons</strong><small>Chat plans and additional replies</small></summary><div class="row"><button type="button" data-account-billing-plan="beans">Beans Starter · $4.99 / 7 days</button>
+<button type="button" data-account-billing-plan="nbl_plus">NBL Plus · $40/month (not University)</button>
+<button type="button" data-account-billing-plan="nbl_basic">NBL Basic · $20/month</button>
+<button type="button" data-account-billing-plan="founders_deluxe">Founder’s Deluxe · $100/month</button>
 <button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button></div></details>
 <details class="account-category"><summary><strong>University &amp; Teachers</strong><small>School under construction · Free notifications</small></summary>
 <div class="row"><p class="status">New Beansland University is under construction and will be opening soon. No University tuition or Foundation program payments are being accepted. <a href="/university.html#early-registration">Sign up free for the opening notification</a>.</p></div></details>
@@ -548,7 +548,11 @@
     const openCheckout=async(plan,button)=>{
       // Plan availability is set by the verified release gate, not by a
       // failed checkout's cleanup handler or manual DOM changes.
-      if(button.disabled||!["beans","topup_500"].includes(plan)) return;
+      if(button.disabled||!["beans","nbl_basic","nbl_plus","founders_deluxe","topup_500"].includes(plan)) return;
+      if(["nbl_basic","nbl_plus","founders_deluxe"].includes(plan)){
+        const label={nbl_basic:"NBL Basic at $20/month",nbl_plus:"NBL Plus at $40/month",founders_deluxe:"Founder’s Deluxe at $100/month"}[plan];
+        if(!window.confirm(`Continue with ${label}? If upgrading Beans Starter during Days 1–6, your $4.99 Starter payment is credited against the first month.`))return;
+      }
       button.disabled=true;
       membershipStatus.textContent="Preparing secure Stripe checkout…";
       try{
