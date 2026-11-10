@@ -1,0 +1,20 @@
+name: Website real GitHub Beans route
+on:
+  pull_request:
+    paths:
+      - "nbl-world-header.js"
+      - "index.html"
+      - "scripts/check-github-beans-live-route.test.mjs"
+      - ".github/workflows/website-github-beans-route.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-beans-route:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/check-github-beans-live-route.test.mjs
