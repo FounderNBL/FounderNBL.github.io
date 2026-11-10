@@ -1,5 +1,6 @@
 // Live production health only. No local source assertion, build, simulator, AI call,
 // signed-in data, checkout, app version, or deployment synchronization.
+// NBL University and its campus remain outside inspection by Founder instruction.
 // 403/429/Cloudflare challenges are UNVERIFIED, never fabricated outages or green proof.
 import {test,expect} from "@playwright/test";
 
@@ -7,9 +8,7 @@ const urls=[
   ["New Beansland","https://newbeansland.org/"],
   ["Beans public doorway","https://newbeansland.org/chat.html"],
   ["NBL Messenger","https://newbeansland.org/messenger/"],
-  ["NBL University admissions","https://newbeansland.org/university.html"],
   ["NBL World","https://nblworld.com/"],
-  ["Independent University campus","https://nblschool.com/"],
   ["NBL Books","https://books.newbeansland.org/"]
 ];
 function challenge(status,html){

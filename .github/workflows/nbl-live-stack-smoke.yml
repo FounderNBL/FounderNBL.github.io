@@ -2,6 +2,7 @@ name: NBL Health Inspector - Live Stack Check
 
 # Run fresh, low-cost production connection evidence before any merge.
 # No app builds, deployments, payments, AI calls, secrets or privileged writes.
+# NBL University / campus inspections are held until Founder reauthorizes.
 on:
   pull_request:
     branches: [main]
@@ -35,7 +36,6 @@ jobs:
             "https://newbeansland.org/books.html",
             "https://newbeansland.org/reader.html",
             "https://newbeansland.org/chat.html",
-            "https://newbeansland.org/university.html",
             "https://nblworld.com/"
           ];
           const records = [];
@@ -111,7 +111,7 @@ jobs:
 
           // Negative access checks: no accounts or payments; Core must reject
           // these unauthenticated requests BEFORE any protected backend.
-          for(const route of ["university","social","billing"]){
+          for(const route of ["social","billing"]){
             const name="NBL Core "+route+" anonymous boundary";
             try{
               const response=await pull(CORE+"/"+route,{

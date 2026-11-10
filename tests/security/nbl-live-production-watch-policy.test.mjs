@@ -32,9 +32,19 @@ test("health monitoring is scheduled against live websites, not triggered by rel
   assert.doesNotMatch(head,/\n  push:/);
   assert.match(head,/17 \* \* \* \*/);
   assert.match(head,/23 14 \* \* \*/);
-  assert.match(workflow,/https:\/\/nblschool\.com\//);
+  assert.doesNotMatch(workflow,/https:\/\/nblschool\.com\//);
   assert.match(workflow,/https:\/\/newbeansland\.org\/messenger\//);
   assert.match(workflow,/https:\/\/books\.newbeansland\.org\//);
   assert.match(workflow,/npx playwright test tests\/browser\/live-site-health\.spec\.mjs/);
   assert.doesNotMatch(workflow,/NBL_EXPECT_BILLING_LIVE|Wait for the deployed Chat asset/);
+});
+
+test("NBLU inspection hold excludes campus and University from every public website maintenance runner",()=>{
+ const spec=readFileSync("tests/browser/live-site-health.spec.mjs","utf8");
+ const smoke=readFileSync(".github/workflows/nbl-live-stack-smoke.yml","utf8");
+ for(const source of [workflow,spec,smoke]){
+  assert.doesNotMatch(source,/https:\/\/nblschool\.com\//);
+  assert.doesNotMatch(source,/https:\/\/newbeansland\.org\/university\.html/);
+ }
+ assert.doesNotMatch(smoke,/for\(const route of \[[^\]]*"university"/);
 });
