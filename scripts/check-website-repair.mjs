@@ -105,7 +105,15 @@ for(const filename of findHtml(rootPath)){
   const headerScript=html.indexOf("nbl-world-header.js");
   if(headerScript>=0){
     const catalogScript=html.indexOf("nbl-product-plans.js");
-    if(catalogScript<0||catalogScript>headerScript){
+    // The University is explicitly CLOSED for tuition. Its free email-notice
+    // page uses the shared header but intentionally has no paid-plan catalog.
+    // Do not weaken this requirement for any other website route.
+    const isClosedUniversityNotice=path.relative(rootPath,filename)==="university.html"
+      && html.includes("nbl-university-early-interest.js")
+      && html.includes("we are not accepting tuition")
+      && html.includes("Join free notification list")
+      && !html.includes("Sign up &amp; continue to payment");
+    if((catalogScript<0||catalogScript>headerScript)&&!isClosedUniversityNotice){
       console.error("[website-repair] FAIL: shared header loads without its earlier canonical catalog in",path.relative(rootPath,filename));
       failed=true;
     }
