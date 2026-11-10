@@ -5,6 +5,20 @@ function initializePulseVisualControls(){
   const upload=document.querySelector("#postMedia");
   const videoLink=document.querySelector("#videoLink");
   if(!composer||!extra||!upload||!videoLink)return;
+  const feedItems=document.querySelector("#feedItems");
+  const feedTitle=document.querySelector("#feedTitle");
+  const welcome=document.querySelector(".pulse-welcome-post");
+  if(feedItems&&feedTitle&&welcome){
+    const syncWelcome=()=>{
+      const hasRealPosts=Boolean(feedItems.querySelector(".social-card"));
+      const forYou=feedTitle.textContent.trim()==="For You";
+      const isQuiet=Boolean(feedItems.querySelector(".social-empty"));
+      welcome.hidden=!forYou||hasRealPosts||!isQuiet;
+    };
+    new MutationObserver(syncWelcome).observe(feedItems,{childList:true});
+    new MutationObserver(syncWelcome).observe(feedTitle,{childList:true,subtree:true,characterData:true});
+    syncWelcome();
+  }
   const acceptAll="image/jpeg,image/png,image/webp,video/mp4,video/webm";
   for(const button of document.querySelectorAll("[data-pulse-compose]")){
     button.addEventListener("click",()=>{
