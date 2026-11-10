@@ -1,0 +1,23 @@
+name: Website Beans 48h free and starter consent
+on:
+  pull_request:
+    paths:
+      - "account.html"
+      - "pricing.html"
+      - "terms.html"
+      - "nbl-product-plans.js"
+      - "nbl-world-header.js"
+      - "scripts/check-beans-48hour-website.test.mjs"
+      - ".github/workflows/beans-48hour-website.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/check-beans-48hour-website.test.mjs
