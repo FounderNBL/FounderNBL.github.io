@@ -543,10 +543,10 @@
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
 <details class="nbl-drawer-category"><summary><strong>Beans &amp; add-ons</strong><small>Starter · Basic · Plus · Deluxe · replies</small></summary><div class="nbl-drawer-category-content">
-<article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>Beans only for seven days, followed by NBL Basic at $20/month unless cancelled or upgraded during days 1–6. Eligible upgrades credit $4.99.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans" disabled aria-disabled="true">Beans Starter</button></article>
-<article><strong>${NBL_PRODUCT_PLANS.allInOne.name} · ${NBL_PRODUCT_PLANS.allInOne.price}</strong><span>Beans and eligible NBL services.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nbl_basic" disabled aria-disabled="true">NBL Basic</button></article>
-<article><strong>${NBL_PRODUCT_PLANS.nblPlus.name} · ${NBL_PRODUCT_PLANS.nblPlus.price}</strong><span>Higher included NBL service allowances; University separate.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nbl_plus" disabled aria-disabled="true">NBL Plus</button></article>
-<article><strong>${NBL_PRODUCT_PLANS.foundersDeluxe.name} · ${NBL_PRODUCT_PLANS.foundersDeluxe.price}</strong><span>Highest NBL membership tier.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="founders_deluxe" disabled aria-disabled="true">Founder's Deluxe</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.beans.name} · ${NBL_PRODUCT_PLANS.beans.price}</strong><span>Beans only for seven days, followed by NBL Basic at $20/month unless cancelled or upgraded during days 1–6. Eligible upgrades credit $4.99.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans">Beans Starter</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.allInOne.name} · ${NBL_PRODUCT_PLANS.allInOne.price}</strong><span>Beans and eligible NBL services.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nbl_basic">NBL Basic</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.nblPlus.name} · ${NBL_PRODUCT_PLANS.nblPlus.price}</strong><span>Higher included NBL service allowances; University separate.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="nbl_plus">NBL Plus</button></article>
+<article><strong>${NBL_PRODUCT_PLANS.foundersDeluxe.name} · ${NBL_PRODUCT_PLANS.foundersDeluxe.price}</strong><span>Highest NBL membership tier.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="founders_deluxe">Founder's Deluxe</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.getMore.name} · ${NBL_PRODUCT_PLANS.getMore.price}</strong><span>${NBL_PRODUCT_PLANS.getMore.replies}. ${NBL_PRODUCT_PLANS.getMore.expiry}</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="topup_500">Get +500 replies</button></article>
 <article><strong>${NBL_PRODUCT_PLANS.nblUsage.name} · ${NBL_PRODUCT_PLANS.nblUsage.price}</strong><span>500 separately purchased NBL Usage credits.</span><a href="/vault.html#credits">NBL credit details</a></article></div></details>
 <details class="nbl-drawer-category" hidden style="display:none!important"><summary><strong>University & teachers</strong><small>Campus packages · Professor Grey · continuation</small></summary><div class="nbl-drawer-category-content"><article><strong>${NBL_PRODUCT_PLANS.beansUniversity.name} · ${NBL_PRODUCT_PLANS.beansUniversity.price}</strong><span>Combined Beans + University membership. Renews at $14.99/month until cancelled or changed.</span><button class="nbl-billing-action" type="button" data-nbl-billing-plan="beans_university" disabled aria-disabled="true" title="University checkout verification pending">University membership checkout pending</button></article>
@@ -2387,6 +2387,10 @@
   });
 
   const runBillingAction=async({plan=null,portal=false}={})=>{
+    if(!portal&&["nbl_basic","nbl_plus","founders_deluxe"].includes(plan)){
+      const label={nbl_basic:"NBL Basic $20/month",nbl_plus:"NBL Plus $40/month",founders_deluxe:"Founder’s Deluxe $100/month"}[plan];
+      if(!window.confirm(`Continue with ${label}? Your $4.99 Starter payment counts toward your upgrade during Days 1–6.`))return;
+    }
     // Restore each control to its original status; held University/Foundation
     // checkout must never become clickable after an unrelated failed checkout.
     const initialDisabled=new Map(billingButtons.map(button=>[button,button.disabled]));
