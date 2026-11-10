@@ -1,0 +1,24 @@
+name: NBL Pulse cross-app invite
+on:
+  pull_request:
+    paths:
+      - "pulse/index.html"
+      - "pulse/pulse-invites.mjs"
+      - "pulse/pulse-invites.css"
+      - "messenger/social-v1.mjs"
+      - "scripts/check-pulse-invites.test.mjs"
+      - ".github/workflows/pulse-invites.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  invitation-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node --test scripts/check-pulse-invites.test.mjs
+      - run: node scripts/check-nbl-social-v1.mjs
+      - run: node scripts/check-pulse-reference-layout.mjs

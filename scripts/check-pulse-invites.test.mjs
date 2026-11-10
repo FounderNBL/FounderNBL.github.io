@@ -1,0 +1,74 @@
+import {test} from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+import {PULSE_INVITE_URL,PULSE_INVITE_MESSAGE,inviteDestinations,copyInviteLink,shareInvite} from "../pulse/pulse-invites.mjs";
+const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
+const html=read("pulse/index.html"),css=read("pulse/pulse-invites.css");
+const engine=read("messenger/social-v1.mjs");
+test("one NBL-branded invitation, no backend provider address or contact import",()=>{
+  assert.equal(PULSE_INVITE_URL,"https://newbeansland.org/pulse/");
+  assert.equal(PULSE_INVITE_MESSAGE,"Join me on NBL Pulse: "+PULSE_INVITE_URL);
+  assert.ok(!/supabase|stream-io|user_id|access_token/i.test(PULSE_INVITE_URL));
+  assert.match(html,/id="pulseInvitePanel"/);
+  assert.match(html,/id="copyPulseInvite"/);
+  assert.match(html,/id="pulseCopyInvite"/);
+  assert.match(html,/id="pulseInviteFeedback"/);
+  assert.match(html,/pulse\/pulse-invites\.mjs\?v=20261110-cross-app/);
+  assert.match(html,/pulse\/pulse-invites\.css\?v=20261110-cross-app/);
+  assert.doesNotMatch(engine,/document\.querySelector\("#copyPulseInvite"\)\?\.addEventListener/, "No competing invitation handlers");
+  assert.doesNotMatch(html,/friends-list|user_friends|contacts\.read|friends_permission/i);
+});
+test("direct fallback destinations all use ONLY the Pulse invitation",()=>{
+  const targets=inviteDestinations();
+  assert.deepEqual(Object.keys(targets),["facebook","whatsapp","sms","email"]);
+  assert.equal(new URL(targets.facebook).searchParams.get("u"),PULSE_INVITE_URL);
+  assert.equal(new URL(targets.whatsapp).searchParams.get("text"),PULSE_INVITE_MESSAGE);
+  assert.ok(targets.sms.startsWith("sms:?body="));
+  assert.equal(decodeURIComponent(targets.sms.split("body=")[1]),PULSE_INVITE_MESSAGE);
+  assert.ok(targets.email.startsWith("mailto:?subject="));
+  assert.equal(new URL(targets.email).searchParams.get("body"),PULSE_INVITE_MESSAGE);
+  for(const platform of Object.keys(targets))assert.match(html,new RegExp('data-pulse-invite="'+platform+'"'));
+  assert.match(html,/Instagram, TikTok, Messenger, Snapchat/);
+  assert.match(html,/Choose a recipient in your sharing app/);
+});
+test("new members are offered real NBL sign-up and a Pulse return destination",()=>{
+  assert.match(html,/id="pulseSignUp" href="https:\/\/accounts\.newbeansland\.org\/sign-up\?redirect_url=https%3A%2F%2Fnewbeansland\.org%2Fpulse%2F"/);
+  assert.match(engine,/function signInURL\(\)/);
+  assert.match(engine,/ACCOUNT_PORTAL\+"\/sign-in\?redirect_url="/);
+  assert.match(html,/id="guest"/);
+  assert.match(html,/id="socialApp" hidden/);
+});
+test("mobile layout, visible links and existing post engine remain intact",()=>{
+  assert.match(css,/@media\(max-width:760px\)/);
+  assert.match(html,/id="postForm"/);
+  assert.match(html,/id="feedItems"/);
+  assert.match(html,/id="friendsPanel"/);
+  assert.match(engine,/async function publishPost\(event\)/);
+  assert.match(engine,/feed\.addActivity/);
+  assert.match(html,/href="\/messenger\/"/);
+});
+test("native share sends only on the user's button action; cancellation does not send",async()=>{
+  let shared=null;const messages=[];
+  const result=await shareInvite({navigatorApi:{share:async data=>{shared=data;}},doc:null,report:x=>messages.push(x)});
+  assert.equal(result,"chooser");
+  assert.equal(shared.url,PULSE_INVITE_URL);
+  assert.equal(shared.title,"Join me on NBL Pulse");
+  assert.match(messages[0],/Check the app you chose/);
+  const canceled=[];
+  const x=await shareInvite({navigatorApi:{share:async()=>{const err=new Error("no");err.name="AbortError";throw err;}},doc:null,report:y=>canceled.push(y)});
+  assert.equal(x,"canceled");
+  assert.match(canceled[0],/Nothing was sent/);
+});
+test("copy fallback does not pretend to send a message",async()=>{
+  let copied=null;const msgs=[];
+  const nav={clipboard:{writeText:async str=>{copied=str;}}};
+  assert.equal(await copyInviteLink(nav.clipboard,null),true);
+  assert.equal(copied,PULSE_INVITE_URL);
+  const result=await shareInvite({navigatorApi:nav,doc:null,report:x=>msgs.push(x)});
+  assert.equal(result,"copied");
+  assert.match(msgs[0],/Paste it/);
+  assert.equal(await copyInviteLink(null,null),false);
+  const manual=[];
+  assert.equal(await shareInvite({navigatorApi:{},doc:null,report:x=>manual.push(x)}),"manual");
+  assert.match(manual[0],/https:\/\/newbeansland\.org\/pulse\//);
+});
