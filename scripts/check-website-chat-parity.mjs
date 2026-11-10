@@ -98,7 +98,7 @@ requireText(header,'data-nbl-drawer-grey hidden',"Preserved Professor Grey entry
 requireText(header,'data-nbl-drawer-tools',"Website-standard Beans tools entry is missing.");
 requireText(header,'data-nbl-drawer-plans',"Website-standard Membership & Plans entry is missing.");
 requireText(header,'${NBL_PRODUCT_PLANS.beans.price} Beans · Get More · NBL Usage credits',"Beans assistant menu must show only Beans-specific membership.");
-requireText(plans,'beans:Object.freeze({name:"Beans"',"Beans base-tier display name must be Beans, not human NBL Chat.");
+requireText(plans,'beans:Object.freeze({name:"Beans Starter"',"Beans seven-day Starter name is missing.");
 requireText(plans,'price:"$4.99 / 7 days"',"Canonical Beans plan price is missing.");
 requireText(plans,'price:"$29.99 one-time"',"Correct one-time Foundation Materials price is missing.");
 requireText(plans,'beansUniversity:Object.freeze',"Combined Beans + University plan is missing.");
