@@ -649,7 +649,7 @@
         <p class="nbl-beans-note" data-nbl-beans-disclaimer style="margin-top:10px">
           Signed-in chats may be stored with your NBL account and processed by service providers to provide Beans. Beans can make mistakes, so verify important information and do not rely on Beans alone for legal, medical, financial, or safety decisions. <a href="/privacy.html" style="color:inherit;text-decoration:underline">Privacy</a>
         </p>
-        <p class="nbl-beans-status" data-nbl-beans-status role="status">Free Beans requires a free NBL account. No subscription is needed for free replies.</p>
+        <p class="nbl-beans-status" data-nbl-beans-status role="status">Free Beans: 20 replies for up to 48 hours from account start. Basic intelligence only, no card required, and no daily reset.</p>
         <p class="nbl-beans-note" data-nbl-beans-auth-note hidden>Want to talk to Beans? <a href="https://accounts.newbeansland.org/sign-in" data-nbl-beans-signin>Sign in</a> or <a href="https://accounts.newbeansland.org/sign-up" data-nbl-beans-signup>create a free account</a>. Public NBL pages stay open.</p>
       </section>
 
@@ -1964,7 +1964,7 @@
     beansDisclaimerTimer=window.setTimeout(()=>{
       beansDisclaimer.hidden=true;
       beansDisclaimerTimer=null;
-      const intro="Free Beans requires a free NBL account. No subscription is needed for free replies.";
+      const intro="Free Beans: 20 replies for up to 48 hours from account start. Basic intelligence only, no card required, and no daily reset.";
       if(beansStatus.textContent===intro) beansStatus.textContent="";
     },2000);
     setModalIsolation(beansPanel,true);
