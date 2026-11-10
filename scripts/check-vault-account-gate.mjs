@@ -89,7 +89,7 @@ test("Vault and public catalog preserve active prices while University is closed
 test("NBL service currencies stay separate; no extra fee or leaked operating reserve",()=>{
  const customer=html.split('<section class="panel" id="founder" hidden>')[0];
  assert.match(customer,/not.*deduction from purchased NBL Usage or NBL Studios credits/i);
- assert.match(customer,/NBL Usage credits.*not.*monthly Beans tool-use counter/is);
+ assert.match(customer,/NBL Usage credits.*not.*monthly Beans tool-use allowances/is);
  assert.match(customer,/NBL Studios quotes the required.*NBL Studios Credits/is);
  assert.match(customer,/NBL replies, monthly tool allowances, NBL Usage credits and NBL Studios Credits each have distinct terms/);
  assert.doesNotMatch(customer,/\$5(?:\.00)? (?:provider|service) reserve|internal operating profit|supplier invoices/i);
