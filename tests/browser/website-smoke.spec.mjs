@@ -245,19 +245,20 @@ test.describe("New Beansland web app browser smoke", () => {
     expect(signUp.pathname).toBe("/sign-up");
   });
 
-  test("one University World Card opens one tuition form and the independent campus link",async({page})=>{
+  test("University World Card opens a free-notifications page, not tuition checkout",async({page})=>{
     await open("/",page);
     const card=page.locator('.world-grid .world-card[href="university.html"]');
     await expect(card).toHaveCount(1);
     await card.click();
     await expect(page).toHaveURL(/\/university\.html$/);
-    await expect(page.getByRole("heading",{name:"Welcome to NBL University."})).toBeVisible();
-    await expect(page.locator("#nblu-one-entry")).toHaveCount(1);
-    await expect(page.locator("#nblu-program option")).toHaveCount(8);
-    await page.locator("#nblu-program").selectOption("full_nblu_diy");
-    await expect(page.locator("#nblu-offer-price")).toHaveText("$184.99 once");
+    await expect(page.getByRole("heading",{name:"The school is under construction."})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Sign up for free opening updates"})).toBeVisible();
+    await expect(page.locator("form[data-nbl-university-interest-form]")).toHaveCount(1);
+    await expect(page.locator("#interestKind option")).toHaveCount(3);
+    await expect(page.getByRole("button",{name:"Join free notification list"})).toBeVisible();
+    await expect(page.getByText("No payment is required or accepted.",{exact:false})).toBeVisible();
     await expect(page.locator('a[href="https://nblschool.com/"]')).toHaveCount(1);
-    await expect(page.locator("[data-campus-gate],[data-study-lab],[data-coursework-pdf]")).toHaveCount(0);
+    await expect(page.locator("#nblu-one-entry,#nblu-program,#nblu-offer-price,[data-campus-gate],[data-study-lab],[data-coursework-pdf]")).toHaveCount(0);
   });
 
   test("old .org campus addresses forward to the independent school, not another classroom",async({page})=>{
