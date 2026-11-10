@@ -1,0 +1,28 @@
+/* Pulse member-to-member invites: no third-party permissions or contact imports. */
+.pulse-body .pulse-invite{position:relative;z-index:34;align-self:center}
+.pulse-body .pulse-invite>summary{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:10px 16px;border:1px solid #ba59f8;border-radius:99px;background:linear-gradient(130deg,#9922e0,#5a1b99);color:#fff;box-shadow:0 4px 15px #7112c548;cursor:pointer;font-weight:800;list-style:none;white-space:nowrap}
+.pulse-body .pulse-invite>summary::-webkit-details-marker{display:none}
+.pulse-body .pulse-invite>summary:hover{filter:brightness(1.12)}
+.pulse-body .pulse-invite-menu{position:absolute;top:calc(100% + 10px);right:0;width:min(390px,calc(100vw - 22px));max-height:min(80vh,650px);overflow-y:auto;display:grid;gap:11px;padding:20px;background:#1b1329;border:1px solid #9856c0;border-radius:18px;box-shadow:0 18px 50px #000d;color:#f5eafd}
+.pulse-body .pulse-invite-menu>strong{font-size:1.02rem;color:#fff}
+.pulse-body .pulse-invite-menu>p{margin:0;font-size:.8rem;line-height:1.5;color:#d7c6e7}
+.pulse-body .pulse-invite-menu button{display:flex;align-items:center;flex-wrap:wrap;gap:7px;width:100%;min-height:45px;padding:11px 13px;border-radius:12px;background:#30203f;border:1px solid #72418e;color:#f5eaff;text-align:left;cursor:pointer;font-weight:800}
+.pulse-body .pulse-invite-menu button:hover{background:#422855}
+.pulse-body .pulse-invite-menu button.pulse-invite-primary{background:linear-gradient(105deg,#9d20ea,#651aaf);border-color:#bd5fff;color:#fff}
+.pulse-body .pulse-invite-primary small{display:block;flex-basis:100%;font-size:.72rem;font-weight:500;line-height:1.4;color:#eed4fb}
+.pulse-body .pulse-invite-direct{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.pulse-body .pulse-invite-direct a{display:flex;align-items:center;justify-content:center;min-height:43px;text-align:center;padding:9px 7px;border:1px solid #5c4376;border-radius:10px;text-decoration:none;background:#2c1d3e;color:#e9d7ff;font-size:.78rem;font-weight:700}
+.pulse-body .pulse-invite-direct a:hover{border-color:#c676ff;color:#fff}
+.pulse-body #pulseInviteFeedback{display:block;min-height:1.3em;font-size:.8rem;color:#ecc5ff;line-height:1.4}
+.pulse-body .pulse-invite-url{display:block;text-align:center;font-size:.79rem;color:#d1a0ff;text-decoration:underline;overflow-wrap:anywhere}
+.pulse-body #guest #pulseSignUp{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;padding:10px 17px;text-decoration:none}
+.pulse-body .pulse-invite-disclaimer{font-size:.73rem!important;color:#bcb0cb!important}
+@media(max-width:760px){
+ .pulse-body .pulse-invite{width:auto;flex:none}
+ .pulse-body .pulse-invite>summary{padding:9px 13px;min-height:39px;font-size:.75rem}
+ .pulse-body .pulse-invite-menu{right:0;top:calc(100% + 7px);padding:15px}
+}
+@media(max-width:410px){
+ .pulse-body .pulse-invite>summary{padding:9px 11px;font-size:.72rem}
+ .pulse-body .pulse-invite-menu{width:calc(100vw - 20px)}
+}
