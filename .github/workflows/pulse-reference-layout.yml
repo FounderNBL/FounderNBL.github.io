@@ -1,0 +1,21 @@
+name: NBL Pulse screenshot-layout gate
+on:
+  pull_request:
+    paths:
+      - pulse/index.html
+      - pulse/pulse-reference-ui.css
+      - scripts/check-pulse-reference-layout.mjs
+      - .github/workflows/pulse-reference-layout.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  layout-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/check-pulse-reference-layout.mjs
+      - run: node scripts/check-nbl-social-v1.mjs
