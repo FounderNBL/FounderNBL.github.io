@@ -93,7 +93,21 @@
 <button type="button" data-account-billing-plan="nbl_plus">NBL Plus · $40/month (not University)</button>
 <button type="button" data-account-billing-plan="nbl_basic">NBL Basic · $20/month</button>
 <button type="button" data-account-billing-plan="founders_deluxe">Founder’s Deluxe · $100/month</button>
-<button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button></div></details>
+<button type="button" data-account-billing-plan="topup_500">Get More · $9.99</button></div>
+<section class="card" aria-label="48-hour free Beans introduction" style="margin-top:15px;max-width:720px">
+  <h3>Free Beans: 20 replies over 48 hours</h3>
+  <p>Sign up with email. No card required. Free Beans uses the basic intelligence level only. Free access ends after 20 successful replies or 48 hours from the start of your NBL free account, whichever comes first.</p>
+  <p>Want Starter to start automatically? You can <strong>choose to save a card</strong> below. There is no charge while free Beans is active. Unless you cancel or upgrade, $4.99 is charged at the end of your 48 hours for seven days of Beans Starter. Seven days later, NBL Basic costs $20/month until canceled. You can cancel the future charge before the free window ends.</p>
+  <label style="display:flex;align-items:start;gap:9px;margin:12px 0">
+    <input type="checkbox" id="introBillingConsent" style="margin-top:5px">
+    <span>I agree to save my card for an automatic $4.99 charge at the end of my 48-hour free window, and then $20/month beginning seven days after that charge unless I cancel or upgrade.</span>
+  </label>
+  <div class="row">
+    <button type="button" id="introSaveCard">Save card for automatic Starter</button>
+    <button type="button" id="introCancelFuture">Cancel scheduled Starter</button>
+  </div>
+  <p class="status" role="status" id="introBillingStatus">Free access needs no card and does not charge automatically without your authorization.</p>
+</section></details>
 <details class="account-category"><summary><strong>University &amp; Teachers</strong><small>School under construction · Free notifications</small></summary>
 <div class="row"><p class="status">New Beansland University is under construction and will be opening soon. No University tuition or Foundation program payments are being accepted. <a href="/university.html#early-registration">Sign up free for the opening notification</a>.</p></div></details>
 </div>
@@ -569,6 +583,61 @@
       }
     };
     membershipButtons.forEach(button=>button.addEventListener("click",()=>openCheckout(button.dataset.accountBillingPlan||"",button)));
+    // Optional explicit consent for the automatic $4.99 Starter transition.
+    // A free Clerk signup never saves a card or authorizes payment.
+    const introConsent=document.getElementById("introBillingConsent");
+    const introSave=document.getElementById("introSaveCard");
+    const introCancel=document.getElementById("introCancelFuture");
+    const introStatus=document.getElementById("introBillingStatus");
+    const introRequest=async(body)=>{
+      const t=await token();
+      if(!t)throw new Error("Sign in before managing Starter.");
+      const response=await fetch("https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link",{
+        method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json",Authorization:"Bearer "+t},
+        body:JSON.stringify(body),cache:"no-store"
+      });
+      const payload=await response.json().catch(()=>({}));
+      if(!response.ok)throw new Error(payload.message||payload.code||"Starter billing is unavailable.");
+      return payload;
+    };
+    const renderIntro=async()=>{
+      try{
+        const info=await introRequest({action:"starter_auto_status"});
+        const expired=info.freeExpiresAt&&Date.parse(info.freeExpiresAt)<=Date.now();
+        const time=info.freeExpiresAt?new Date(info.freeExpiresAt).toLocaleString():"your first free chat";
+        const state=String(info.state||"not_enrolled");
+        const descriptions={
+          not_enrolled:"No card authorized. Free Beans expires "+time+" (20 replies maximum).",
+          pending:"Card authorization is awaiting Stripe confirmation. No future charge is scheduled yet.",
+          scheduled:"Automatic Starter is scheduled for "+time+". You can cancel the future charge below.",
+          canceled:"Starter auto-conversion canceled. No future Starter charge is scheduled.",
+          started:"Your paid Starter period has begun. Use Manage billing to cancel renewal."
+        };
+        introStatus.textContent=descriptions[state]||"Intro billing status: "+state;
+        introSave.disabled=expired||state!=="not_enrolled";
+        introCancel.disabled=!["pending","scheduled"].includes(state);
+        introConsent.disabled=introSave.disabled;
+      }catch(error){introStatus.textContent=error?.message||"Starter status could not be loaded.";introSave.disabled=true;}
+    };
+    introSave.onclick=async()=>{
+      if(!introConsent.checked){introStatus.textContent="You must agree to both scheduled charges before saving a card.";return;}
+      introSave.disabled=true;introStatus.textContent="Opening Stripe to authorize a card. No charge today…";
+      try{
+        const result=await introRequest({action:"starter_auto_enroll",consent:true,consentVersion:"beans-intro-2026-11-10"});
+        if(result.route!=="stripe_setup_checkout"||!result.checkoutUrl?.startsWith("https://checkout.stripe.com/"))throw new Error("Secure card setup failed.");
+        location.assign(result.checkoutUrl);
+      }catch(error){introStatus.textContent=error?.message||"Card authorization unavailable.";await renderIntro();}
+    };
+    introCancel.onclick=async()=>{
+      introCancel.disabled=true;introStatus.textContent="Canceling future Starter…";
+      try{
+        const result=await introRequest({action:"starter_auto_cancel"});
+        introStatus.textContent=result.state==="canceled"?"Future Starter charge canceled.":"No future Starter charge is scheduled.";
+      }catch(error){introStatus.textContent=error?.message||"Could not verify cancellation. Retry or contact support.";}
+      await renderIntro();
+    };
+    renderIntro();
+
 
     const renderDeliveries=async()=>{
       deliveries.replaceChildren();
