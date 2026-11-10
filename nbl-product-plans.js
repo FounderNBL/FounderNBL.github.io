@@ -1,6 +1,7 @@
 (()=>{
   "use strict";
   const plans=Object.freeze({
+    free:Object.freeze({name:"Free Beans",price:"$0",status:"LIVE",replies:"Up to 20 successful replies during the first 48 hours of the free NBL account. Cheapest intelligence only. No card needed, no daily reset."}),
     beans:Object.freeze({name:"Beans Starter",price:"$4.99 / 7 days",status:"LIVE",replies:"Beans-only access for 7 days; no included paid NBL creation services.",renewal:"Day 7 converts to NBL Basic at $20/month unless cancelled or upgraded during the first six days; requires informed customer consent."}),
     allInOne:Object.freeze({name:"NBL Basic",price:"$20/month",status:"LIVE",replies:"Beans and eligible NBL services within monthly plan allowances",images:"Included where enabled under plan allowances",videos:"Included where enabled under plan allowances",searches:"Included within plan limits, not billed per ordinary search",voice:"Included where enabled under plan allowances"}),
     nblPlus:Object.freeze({name:"NBL Plus",price:"$40/month",status:"LIVE",benefits:"Higher allowances, targeted at twice NBL Basic for eligible services."}),
