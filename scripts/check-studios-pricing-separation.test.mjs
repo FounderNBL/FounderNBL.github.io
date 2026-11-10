@@ -32,7 +32,7 @@ test("Studios now has an independent film/video door and protected creator",()=>
  assert.doesNotMatch(studioClient,/RUNWAY_API_KEY|SUPABASE_SERVICE_ROLE_KEY/);
 });
 test("Active services retain approved prices; closed University rates stay out of public offers",()=>{
- for(const value of ["$4.99 / 7 days","$20/month","$40/month","$100/month","$9.99 one-time","$7.00 one-time","$8.99 one-time"])assert.ok(plans.includes(value),value);
+ for(const value of ["$4.99 / 7 days","$20/month","$40/month","$100/month","$9.99 one-time","$10 minimum top-up","$8.99 one-time"])assert.ok(plans.includes(value),value);
  assert.match(plans,/studiosCredits:Object.freeze/);
  assert.match(plans,/studiosSupport:Object.freeze/);
  assert.match(creator,/data-nbl-plan-value="studiosCredits.price"/);
