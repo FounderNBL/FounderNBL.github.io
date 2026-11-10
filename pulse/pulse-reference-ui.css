@@ -460,3 +460,6 @@
 }
 @media(max-width:420px){.pulse-body .pulse-topbar>a.pulse-company-logo span{font-size:1rem}.pulse-body .pulse-account-nav .pulse-account-link{font-size:0;min-width:32px}.pulse-body .pulse-account-nav .pulse-account-link::after{content:"☻";font-size:1.12rem}}
 @media(prefers-reduced-motion:reduce){.pulse-body .pulse-sidebar .social-tabs button{transition:none}}
+
+/* The independent community links rail is useful, unlike the disabled Live panel. */
+.pulse-body .pulse-rail section:nth-child(2){display:block}
