@@ -3,7 +3,7 @@ name: NBL Website Health Inspector
 # Monitor the deployed websites, NOT source pushes or release pipelines.
 on:
   schedule:
-    # Lightweight production route inspection every hour.
+    # Lightweight production route inspection every hour. NBLU held by Founder.
     - cron: "17 * * * *"
     # Targeted LIVE website browser inspection once per day (no build/version tests).
     - cron: "23 14 * * *"
@@ -75,9 +75,7 @@ jobs:
             "https://newbeansland.org/studio/"
             "https://newbeansland.org/account.html"
             "https://newbeansland.org/messenger/"
-            "https://newbeansland.org/university.html"
             "https://nblworld.com/"
-            "https://nblschool.com/"
             "https://books.newbeansland.org/"
           )
 
