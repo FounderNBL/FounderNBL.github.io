@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark"><title>NBL Tools Lab | NBL Studios | New Beansland</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1018;--card:#151e29;--card2:#1a2636;--border:#34465b;--text:#f5f4f0;--muted:#b7c5d1;--gold:#f5c25a;--gold2:#d89b35;--blue:#3b7292;--good:#a0e0b0;--bad:#ffa5a5}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 50% 0%,#19334a 0%,#0b1018 46%);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}[hidden]{display:none!important}a{color:var(--gold)}.wrap{max-width:1120px;margin:0 auto;padding:18px 18px 70px}.mast{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0 16px}.logo{display:flex;gap:12px;align-items:center}.emblem{border:2px solid var(--gold);height:52px;width:52px;display:grid;place-items:center;border-radius:16px;font-size:22px;font-weight:900;color:var(--gold)}.logo strong{display:block;font-size:19px;line-height:1.2}.subtle{color:var(--muted);font-size:13px}.tag{font-size:12px;color:var(--good);border:1px solid #41684c;border-radius:99px;padding:6px 10px;text-align:center}h1{font-size:clamp(29px,5vw,46px);line-height:1.13;margin:14px 0 8px}h2{font-size:22px;margin:0 0 12px}h3{font-size:18px;margin:10px 0}.lead{color:var(--muted);max-width:740px;margin:0 0 22px}.tabs{display:flex;gap:9px;flex-wrap:wrap;margin:25px 0 18px}.tab{border:1px solid var(--border);background:#172335;color:var(--text);padding:11px 17px;border-radius:12px;font-weight:650;min-height:44px}.tab[aria-selected=true]{background:var(--gold);color:#15110a;border-color:var(--gold)}.panel[hidden]{display:none}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.card{border:1px solid var(--border);border-radius:18px;padding:20px;background:linear-gradient(150deg,#192535,#111923)}.span{grid-column:1/-1}.kicker{text-transform:uppercase;font-size:11px;letter-spacing:.14em;font-weight:750;color:var(--gold);margin-bottom:6px}.hint{font-size:13px;color:var(--muted)}.field{display:flex;flex-direction:column;gap:6px;margin:12px 0}.field label{font-size:13px;color:#e7eff9;font-weight:700}.field input,.field select,.field textarea{background:#0b1522;border:1px solid #4d6278;color:var(--text);padding:11px 12px;border-radius:10px;min-width:0;width:100%}.field textarea{height:180px;resize:vertical;font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}.inline{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.inline>*{flex:1;min-width:160px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--gold);color:#15100a;background:var(--gold);padding:11px 16px;border-radius:10px;font-weight:760;min-height:44px;text-decoration:none}.btn.secondary{background:#182639;color:var(--gold)}.btn:disabled{opacity:.5;cursor:not-allowed}.status{margin:10px 0;min-height:22px;font-size:14px;color:var(--good)}.status[data-error]{color:var(--bad)}.preview{display:grid;place-items:center;min-height:230px;background:repeating-conic-gradient(#d0d4d7 0% 25%,#f2f3f4 0% 50%) 50%/24px 24px;border-radius:12px;overflow:hidden;border:1px solid #69809a}.preview img{display:block;max-height:330px;max-width:100%;object-fit:contain}.note{border-left:3px solid var(--gold);padding:9px 12px;background:#283126;font-size:13px;color:#f0e1bf;margin:14px 0}.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.stat{background:#101925;border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-size:13px}.inventory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.item{border:1px solid var(--border);border-radius:10px;padding:12px;background:#101b28}.item strong{display:block}.item small{display:block;color:var(--muted);margin:4px 0}.pill{display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#111;background:#d5d6db;border-radius:4px;padding:2px 6px}.pill.build{background:#f0c96a}.pill.review{background:#8bcae0}.pill.skip{background:#f8a5a5}.bullets{color:var(--muted);margin:7px 0 0;padding-left:23px}.bullets li{margin:7px 0}.footer{margin-top:24px;color:var(--muted);font-size:13px}.sr{position:absolute;left:-9999px}input[type=range]{accent-color:var(--gold)}:focus-visible{outline:3px solid #fbcc74;outline-offset:3px}@media(max-width:740px){.grid,.inventory{grid-template-columns:1fr}.mast{align-items:flex-start}.card{padding:16px}.wrap{padding:12px 12px 65px}.tab{flex:1}}
+
+#nbl-graphics .field input,#nbl-art-sources .field select{max-width:100%}#nbl-graphics .status,#nbl-art-sources .status{overflow-wrap:anywhere}#nbl-manifest .card{border-color:var(--gold)}
+</style>
+</head>
+<body><main class="wrap">
+<header class="mast"><div class="logo"><span class="emblem">NBL</span><div><strong>NBL Tools Lab</strong><span class="subtle">Official NBL assets · local-first creative tools</span></div></div><span class="tag">Local-first · No API keys</span></header>
+<h1>Useful tools. NBL controls.</h1><p class="lead">Use your own images or load official public NBL artwork from this website. Create new NBL graphics, convert and optimize images, export asset manifests, and use developer utilities. Processing stays in your browser; NBL artwork loads only when you request it. No paid APIs, checkout, or AI model.</p>
+<div class="tabs" role="tablist" aria-label="Tool categories">
+<button class="tab" role="tab" id="t-image" aria-selected="true" aria-controls="p-image" data-tab="image">Image lab</button>
+<button class="tab" role="tab" id="t-dev" aria-selected="false" aria-controls="p-dev" data-tab="dev">Developer lab</button>
+<button class="tab" role="tab" id="t-catalog" aria-selected="false" aria-controls="p-catalog" data-tab="catalog">50-site audit</button>
+<button class="tab" role="tab" id="t-plan" aria-selected="false" aria-controls="p-plan" data-tab="plan">Build roadmap</button>
+</div>
+<section class="panel" id="p-image" role="tabpanel" aria-labelledby="t-image">
+<div class="grid">
+<div class="card"><div class="kicker">Real working feature · local</div><h2>Resize, convert & compress</h2><p class="hint">Upload your own image and export it as JPEG, PNG or WebP. The image stays in your browser; no server, account, or outside service.</p>
+<div class="field"><label for="img-file">Choose an image</label><input id="img-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif,image/bmp"></div>
+<div class="inline"><div class="field"><label for="max-side">Maximum side (pixels)</label><input id="max-side" type="number" value="1600" min="100" max="8000" step="100"></div><div class="field"><label for="out-format">Output format</label><select id="out-format"><option value="image/webp">WebP (smaller)</option><option value="image/jpeg">JPEG</option><option value="image/png">PNG (lossless)</option></select></div></div>
+<div class="field"><label for="quality">Quality <span id="quality-value">82</span>% (JPEG/WebP only)</label><input id="quality" type="range" min="30" max="100" value="82"></div>
+<div class="row"><button class="btn" id="img-process" disabled>Process image</button><a class="btn secondary" id="img-download" download hidden>Download result</a></div><p class="status" id="img-status" role="status" aria-live="polite">Choose an image to begin.</p><div class="row" id="img-stats"></div>
+</div>
+<div class="card"><div class="kicker">Preview</div><h2>Before / after</h2><div class="preview"><img id="img-preview" alt="Input image preview" hidden><span id="img-placeholder" style="color:#29353f;font-weight:750">Your image appears here</span></div><div class="kicker" style="margin-top:14px">Most recent output</div><div class="preview" style="min-height:100px"><img id="export-image" alt="Processed image output" hidden><span id="export-placeholder" style="color:#29353f;font-weight:750">Process to see a result</span></div><div class="row" style="margin-top:14px"><button class="btn secondary" id="reset-image">Clear image</button></div>
+<div class="note">The optional background tool below is for <b>plain, nearly uniform backgrounds only</b>. It is not an AI subject cutter; complex photographs still need a separately licensed segmentation model.</div></div>
+<div class="card span"><div class="kicker">Real working beta · local</div><h2>Remove a solid-color background</h2><p class="hint">Example: cut out a logo or drawing against a solid white backdrop. The tool detects the background color at the top-left corner and removes only connected areas near that color. Use PNG output for transparency.</p>
+<div class="inline"><div class="field"><label for="tolerance">Color tolerance: <span id="tolerance-value">35</span></label><input id="tolerance" type="range" min="5" max="160" value="35"></div><div class="field"><label for="bg-max">Max image side</label><input id="bg-max" type="number" value="1400" min="200" max="4000" step="100"></div></div>
+<div class="row"><button class="btn" id="cutout" disabled>Make transparent PNG</button><a class="btn secondary" id="cutout-download" download hidden>Download transparent PNG</a></div><p id="cutout-status" class="status" role="status" aria-live="polite"></p></div>
+
+<div class="card span" id="nbl-art-sources"><div class="kicker">NBL official assets · optional same-site load</div><h2>Work with real NBL artwork</h2><p class="hint">On newbeansland.org, select a currently public, official NBL image. Only that image is fetched from our own website. All resizing, editing and exports still run in your browser. Offline, use the image upload above instead. No third-party API or credit charges.</p>
+<div class="inline"><div class="field"><label for="nbl-art">NBL artwork</label><select id="nbl-art"><option value="studios">NBL Studios</option><option value="university">NBL University</option><option value="books">NBL Books</option><option value="music">NBL Music Productions</option><option value="clothing">NBL Clothing Co.</option><option value="games">NBL Games</option><option value="pulse">NBL Pulse</option><option value="messenger">NBL Messenger</option></select></div><div class="field"><label>&nbsp;</label><button id="load-nbl-art" class="btn" type="button">Load official NBL image</button></div></div>
+<p id="nbl-art-status" class="status" role="status" aria-live="polite">Or upload any image you own above.</p></div>
+<div class="card span" id="nbl-graphics"><div class="kicker">NBL Graphic Composer · local image generation, not diffusion AI</div><h2>Create NBL-ready graphics</h2><p class="hint">Make original branded backgrounds without a source image, or combine your own/official art with headline text. The composer maintains image proportions—no stretched Beans, Grey, logos, or World Cards.</p>
+<div class="inline"><div class="field"><label for="nbl-preset">Canvas size</label><select id="nbl-preset"><option value="1600x900">World Card · 1600 × 900</option><option value="1200x1200">Square · 1200 × 1200</option><option value="1080x1350">Portrait promo · 1080 × 1350</option><option value="1080x1920">Story · 1080 × 1920</option><option value="1280x720">Video thumbnail · 1280 × 720</option><option value="1600x2400">Book/Poster · 1600 × 2400</option></select></div><div class="field"><label for="nbl-fit">Image placement</label><select id="nbl-fit"><option value="contain">Keep entire artwork (no crop)</option><option value="cover">Fill canvas (center crop)</option><option value="none">Generate brand background only</option></select></div></div>
+<div class="inline"><div class="field"><label for="nbl-title">Headline</label><input id="nbl-title" maxlength="90" value="NEW BEANSLAND" placeholder="NBL Studios"></div><div class="field"><label for="nbl-subtitle">Supporting line</label><input id="nbl-subtitle" maxlength="150" value="Where ideas become worlds." placeholder="Coming soon"></div></div>
+<div class="row"><button class="btn" id="nbl-compose" type="button">Create graphic (free)</button><a class="btn secondary" id="nbl-compose-download" download hidden>Save NBL graphic PNG</a></div>
+<p id="nbl-compose-status" class="status" role="status" aria-live="polite">Choose a size and create an original NBL graphic. No GPU needed.</p></div>
+</div></section>
+<section class="panel" id="p-dev" role="tabpanel" aria-labelledby="t-dev" hidden><div class="grid">
+<div class="card span" id="nbl-manifest"><div class="kicker">NBL project handoff · local file</div><h2>Export an NBL asset manifest</h2><p class="hint">Create a small JSON handoff describing the image you're working on. This records your NBL department, selected dimensions, filename, and notes; it does not upload the image or change any repository.</p>
+<div class="inline"><div class="field"><label for="nbl-manifest-dept">Department</label><select id="nbl-manifest-dept"><option>NBL Studios</option><option>NBL Books</option><option>NBL University</option><option>NBL Music Productions</option><option>NBL Clothing Co.</option><option>NBL Pulse</option><option>NBL Messenger</option><option>Beans</option><option>NBL Games</option></select></div><div class="field"><label for="nbl-manifest-name">Project name</label><input id="nbl-manifest-name" maxlength="80" value="NBL Graphics" placeholder="World Card refresh"></div></div>
+<div class="field"><label for="nbl-manifest-note">Notes (optional)</label><input id="nbl-manifest-note" maxlength="300" placeholder="Image used, revision instructions, etc."></div>
+<div class="row"><button class="btn" type="button" id="nbl-export-manifest">Create manifest JSON</button><a class="btn secondary" id="nbl-manifest-download" download hidden>Save manifest</a></div>
+<p id="nbl-manifest-status" class="status" role="status" aria-live="polite">Nothing is sent to a server.</p></div><div class="card"><div class="kicker">Real working feature · local</div><h2>JSON cleaner</h2><div class="field"><label for="json-text">JSON to format, minify or validate</label><textarea id="json-text" placeholder='{"beans":true,"virgo":"NBL"}' spellcheck="false"></textarea></div><div class="row"><button class="btn" id="json-pretty">Pretty print</button><button class="btn secondary" id="json-min">Minify</button><button class="btn secondary" id="json-check">Validate</button></div><p class="status" id="json-status" role="status"></p></div>
+<div class="card"><div class="kicker">Real working feature · local</div><h2>Regex tester</h2><div class="field"><label for="regex-pattern">Regular expression</label><input id="regex-pattern" placeholder="NBL|Beans" spellcheck="false"></div><div class="field"><label for="regex-flags">Flags</label><input id="regex-flags" value="gi" spellcheck="false" maxlength="8"></div><div class="field"><label for="regex-text">Test text</label><textarea id="regex-text" placeholder="Beans and Virgo are part of NBL."></textarea></div><button class="btn" id="regex-run">Find matches</button><p class="status" id="regex-status" role="status"></p><pre id="regex-result" class="hint" style="white-space:pre-wrap;overflow-wrap:anywhere"></pre></div>
+<div class="card"><div class="kicker">Real working feature · local</div><h2>File SHA-256 fingerprint</h2><div class="field"><label for="hash-file">Choose a file to hash on your device</label><input id="hash-file" type="file"></div><button class="btn" id="hash-run">Calculate SHA-256</button><p class="status" id="hash-status" role="status"></p><output id="hash-result" class="hint" style="display:block;overflow-wrap:anywhere"></output><p class="hint">Requires a modern browser with Web Crypto support. Hashes do not prove a file is safe; they help compare exact bytes.</p></div>
+<div class="card"><div class="kicker">Real working feature · local</div><h2>URL encoding tools</h2><div class="field"><label for="url-text">Text or URL segment</label><textarea id="url-text" placeholder="NBL tools & images"></textarea></div><div class="row"><button class="btn" id="url-encode">Encode</button><button class="btn secondary" id="url-decode">Decode</button></div><p class="status" id="url-status" role="status"></p></div></div></section>
+<section class="panel" id="p-catalog" role="tabpanel" aria-labelledby="t-catalog" hidden><div class="card"><div class="kicker">Screenshot inventory · 50 entries</div><h2>What we can learn from that post</h2><p class="hint">This is capability triage, not permission to copy anyone's source code, branding, user data, paywalled documents or media. “Build” means the function has a realistic independent implementation; it does not mean the website's proprietary code is licensed.</p>
+<div class="inline"><div class="field"><label for="cat-query">Search entries</label><input id="cat-query" placeholder="PDF, research, image..." autocomplete="off"></div><div class="field"><label for="cat-filter">Decision</label><select id="cat-filter"><option value="all">All 50</option><option value="build">Build independently</option><option value="review">Review license / integration</option><option value="skip">Skip or avoid</option></select></div></div><p class="hint" id="cat-count"></p><div class="row"><button class="btn secondary" type="button" id="cat-export">Export filtered NBL build inventory (JSON)</button></div><p id="cat-export-status" class="status" role="status" aria-live="polite"></p><div class="inventory" id="cat-items"></div></div></section>
+<section class="panel" id="p-plan" role="tabpanel" aria-labelledby="t-plan" hidden><div class="grid"><div class="card"><div class="kicker">Already in NBL</div><h2>Reuse before rebuilding</h2><ul class="bullets"><li><b>NBL Reader:</b> local EPUB and PDF support already exists on the public website source.</li><li><b>NBL PDF Reader:</b> on-device PDF viewing and optional OCR already exist in source.</li><li><b>Book Creator:</b> draft book export and reader integration already exist.</li><li><b>Inspector:</b> do not create a duplicate BEANS security/maintenance system.</li></ul><p class="hint">Existing files were inspected read-only. No deploy or app modifications occurred.</p></div>
+<div class="card"><div class="kicker">Working now, in this zip</div><h2>Stage 1 · NBL-connected lab</h2><ul class="bullets"><li>Image resize + convert + compress</li><li>Simple solid-color background removal</li><li>JSON and regex utilities</li><li>Local file SHA-256 + URL encoding</li><li>All 50 screenshot entries classified and exportable</li><li>Official NBL artwork picker, procedural branded graphics, and manifest export</li></ul><p class="hint">No paid API calls, no login, no external dependencies. NBL image picker reads from this site when clicked.</p></div>
+<div class="card"><div class="kicker">Next independent modules</div><h2>Stage 2 · genuine upgrades</h2><ul class="bullets"><li>AI cutouts: rembg + verified commercially usable model weights</li><li>PDF merge/split: pdf-lib integrated into NBL Reader</li><li>Academic search: OpenAlex + Crossref metadata with caching and source citations</li><li>Books: Project Gutenberg's permitted catalog and licensing checks</li><li>Graphic editing: annotate, crop and layered exports</li></ul></div>
+<div class="card"><div class="kicker">Safety & costs</div><h2>Guardrails</h2><ul class="bullets"><li>Use open-source licenses properly, keep notices, review model weights separately.</li><li>Never scrape protected/paywalled books or bypass access restrictions.</li><li>Do not put private API credentials in client-side JavaScript or GitHub.</li><li>Never automatically upload user files; make every external lookup opt-in and clear.</li><li>Put future server integrations behind auth, limits and cost metering.</li><li>Keep the Android AAB and University launch unchanged until explicitly approved.</li></ul></div></div></section>
+<footer class="footer">NBL Tools Lab • Browser-local tools; only official art requests access this site's image files • No AI inference, billing, or uploads • Founder review build.</footer>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),status=(id,msg,error=false)=>{const e=$(id);e.textContent=msg;if(error)e.setAttribute('data-error','');else e.removeAttribute('data-error')};
+for(const b of document.querySelectorAll('[data-tab]'))b.addEventListener('click',()=>{const k=b.dataset.tab;for(const t of document.querySelectorAll('[data-tab]'))t.setAttribute('aria-selected',String(t===b));for(const p of document.querySelectorAll('.panel'))p.hidden=p.id!=='p-'+k;});
+let currentFile=null,inputUrl=null,resultUrl=null,cutoutUrl=null;
+const revoke=u=>{if(u)URL.revokeObjectURL(u)};
+const formatBytes=n=>n>=1024*1024?(n/(1024*1024)).toFixed(2)+' MB':(n/1024).toFixed(1)+' KB';
+const resetImage=()=>{revoke(inputUrl);revoke(resultUrl);revoke(cutoutUrl);inputUrl=resultUrl=cutoutUrl=null;currentFile=null;$('img-file').value='';$('img-preview').hidden=true;$('img-placeholder').hidden=false;$('export-image').hidden=true;$('export-placeholder').hidden=false;$('img-process').disabled=$('cutout').disabled=true;$('img-download').hidden=$('cutout-download').hidden=true;$('img-stats').replaceChildren();status('img-status','Choose an image to begin.');status('cutout-status','');};
+$('reset-image').addEventListener('click',resetImage);
+$('quality').addEventListener('input',()=>{$('quality-value').textContent=$('quality').value});$('tolerance').addEventListener('input',()=>{$('tolerance-value').textContent=$('tolerance').value});
+$('img-file').addEventListener('change',()=>{const file=$('img-file').files?.[0];resetOutputs();if(!file)return resetImage();if(file.size>30*1024*1024){resetImage();return status('img-status','File too large for this starter (30 MB limit).',true)};if(!file.type.startsWith('image/')){resetImage();return status('img-status','Choose an image.',true)};currentFile=file;revoke(inputUrl);inputUrl=URL.createObjectURL(file);$('img-preview').src=inputUrl;$('img-preview').hidden=false;$('img-placeholder').hidden=true;$('img-process').disabled=$('cutout').disabled=false;status('img-status',`${file.name} • ${formatBytes(file.size)} ready`);});
+function resetOutputs(){revoke(resultUrl);revoke(cutoutUrl);resultUrl=cutoutUrl=null;$('img-download').hidden=$('cutout-download').hidden=true;$('export-image').hidden=true;$('export-placeholder').hidden=false;$('img-stats').replaceChildren();status('cutout-status','');}
+function loadImage(file){return new Promise((res,rej)=>{const im=new Image();const url=URL.createObjectURL(file);im.onload=()=>{URL.revokeObjectURL(url);res(im)};im.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('Could not decode image'))};im.src=url;});}
+function renderCanvas(image,side){const max=Number(side);if(!Number.isFinite(max)||max<100||max>8000)throw Error('Invalid size');const ratio=Math.min(1,max/Math.max(image.naturalWidth,image.naturalHeight));const w=Math.max(1,Math.round(image.naturalWidth*ratio)),h=Math.max(1,Math.round(image.naturalHeight*ratio));if(w*h>18e6)throw Error('Image dimensions exceed safe prototype limit');const cv=document.createElement('canvas');cv.width=w;cv.height=h;const ctx=cv.getContext('2d',{willReadFrequently:true});if(!ctx)throw Error('Canvas unavailable');ctx.drawImage(image,0,0,w,h);return [cv,ctx,w,h];}
+function blobFromCanvas(canvas,type,quality){return new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('Export not supported in this browser')),type,quality));}
+function addStat(msg){const e=document.createElement('span');e.className='stat';e.textContent=msg;$('img-stats').append(e)}
+function downloadFile(blob,suffix,anchor){const u=URL.createObjectURL(blob);const stem=(currentFile?.name||'NBL-image').replace(/\.[^.]+$/,'').replace(/[^A-Za-z0-9_-]/g,'_').slice(0,60);const a=$(anchor);a.href=u;a.download=`${stem}-${suffix}`;a.hidden=false;return u;}
+$('img-process').addEventListener('click',async()=>{if(!currentFile)return;const b=$('img-process');b.disabled=true;status('img-status','Processing locally...');try{const im=await loadImage(currentFile);const [cv,ctx,w,h]=renderCanvas(im,$('max-side').value);const format=$('out-format').value;if(format==='image/jpeg'){ctx.globalCompositeOperation='destination-over';ctx.fillStyle='#ffffff';ctx.fillRect(0,0,w,h);}const blob=await blobFromCanvas(cv,format,Number($('quality').value)/100);revoke(resultUrl);resultUrl=downloadFile(blob,format==='image/jpeg'?'optimized.jpg':format==='image/png'?'optimized.png':'optimized.webp','img-download');$('export-image').src=resultUrl;$('export-image').hidden=false;$('export-placeholder').hidden=true;$('img-stats').replaceChildren();addStat(`Original ${formatBytes(currentFile.size)}`);addStat(`Result ${formatBytes(blob.size)}`);addStat(`${w} × ${h}`);const change=Math.round((1-blob.size/currentFile.size)*100);addStat(change>=0?`${change}% smaller`:`${-change}% larger`);status('img-status','Image processed. Choose Download result.');}catch(e){status('img-status',e.message||'Processing failed',true)}finally{b.disabled=false}});
+$('cutout').addEventListener('click',async()=>{if(!currentFile)return;const b=$('cutout');b.disabled=true;status('cutout-status','Scanning boundary pixels locally...');await new Promise(r=>setTimeout(r,25));try{const im=await loadImage(currentFile);const [cv,ctx,w,h]=renderCanvas(im,$('bg-max').value);const data=ctx.getImageData(0,0,w,h),px=data.data;const base=[px[0],px[1],px[2]];const tol=Number($('tolerance').value);const tol2=tol*tol*3;const seen=new Uint8Array(w*h);const queue=new Int32Array(w*h);let head=0,tail=0;const near=i=>{const p=i*4,dr=px[p]-base[0],dg=px[p+1]-base[1],db=px[p+2]-base[2];return dr*dr+dg*dg+db*db<=tol2};function add(i){if(!seen[i]&&near(i)){seen[i]=1;queue[tail++]=i;}}for(let x=0;x<w;x++){add(x);add((h-1)*w+x)}for(let y=0;y<h;y++){add(y*w);add(y*w+w-1)}while(head<tail){const i=queue[head++],x=i%w,y=(i/w)|0;if(x) add(i-1);if(x<w-1)add(i+1);if(y)add(i-w);if(y<h-1)add(i+w)}for(let i=0;i<w*h;i++)if(seen[i])px[i*4+3]=0;ctx.putImageData(data,0,0);const blob=await blobFromCanvas(cv,'image/png');revoke(cutoutUrl);cutoutUrl=downloadFile(blob,'transparent.png','cutout-download');$('export-image').src=cutoutUrl;$('export-image').hidden=false;$('export-placeholder').hidden=true;status('cutout-status',`Done: removed ${Math.round(100*tail/(w*h))}% of pixels connected to the corner color; check the result before using.`);}catch(e){status('cutout-status',e.message||'Cutout failed',true)}finally{b.disabled=false}});
+$('json-pretty').addEventListener('click',()=>formatJson(2));$('json-min').addEventListener('click',()=>formatJson(0));$('json-check').addEventListener('click',()=>formatJson(null));function formatJson(indent){try{let o=JSON.parse($('json-text').value);if(indent!==null)$('json-text').value=JSON.stringify(o,null,indent);status('json-status','Valid JSON ✓')}catch(e){status('json-status',e.message,true)}}
+$('regex-run').addEventListener('click',()=>{try{const pat=$('regex-pattern').value,fl=$('regex-flags').value,text=$('regex-text').value;if(pat.length>220||text.length>20000)throw Error('Limit: pattern 220 chars; text 20,000 chars');const flags=fl.includes('g')?fl:fl+'g';const re=new RegExp(pat,flags);const hits=[...text.matchAll(re)].slice(0,100);$('regex-result').textContent=hits.map((m,i)=>`${i+1}. "${m[0]}" at ${m.index}`).join('\n')||'No matches';status('regex-status',`${hits.length} match(es) shown (max 100)`)}catch(e){status('regex-status',e.message,true)}});
+$('hash-run').addEventListener('click',async()=>{const f=$('hash-file').files?.[0];if(!f)return status('hash-status','Choose a file first.',true);if(!crypto?.subtle)return status('hash-status','This browser does not expose Web Crypto here; use localhost or HTTPS.',true);try{status('hash-status','Hashing locally...');const buf=await f.arrayBuffer();const hash=await crypto.subtle.digest('SHA-256',buf);$('hash-result').textContent=[...new Uint8Array(hash)].map(x=>x.toString(16).padStart(2,'0')).join('');status('hash-status',`${f.name} • SHA-256 calculated`)}catch(e){status('hash-status',e.message,true)}});
+$('url-encode').addEventListener('click',()=>{try{$('url-text').value=encodeURIComponent($('url-text').value);status('url-status','Encoded')}catch(e){status('url-status',e.message,true)}});$('url-decode').addEventListener('click',()=>{try{$('url-text').value=decodeURIComponent($('url-text').value);status('url-status','Decoded')}catch(e){status('url-status',e.message,true)}});
+// Capability audit: statuses are build decisions, not endorsements or legal determinations.
+const catalog=[
+['12ft.io','Paywall bypass','skip','Do not reproduce access-bypass methods.'],['libgen.is','Book downloads','skip','Do not source unauthorized copyrighted books.'],['sci-hub.se','Paper downloads','skip','Use lawful open-access sources instead.'],['alternativeto.net','Software alternatives','build','Create an original NBL software comparison directory.'],['justwatch.com','Media discovery','review','Own catalog UI; licensed feeds and deep links must be evaluated.'],['archive.org','Archive discovery','review','Metadata and public/licensed items only; check reuse rights.'],['gutenberg.org','Public-domain reading','build','Add source-and-jurisdiction-aware public-domain discovery.'],['pdfdrive.com','PDF file search','skip','Risk of unauthorized copyrighted copies; not a source backend.'],['openculture.com','Open-learning links','review','Curate original links with permission and attribution.'],['wolframalpha.com','Math answers','build','Use a licensed or independent math engine (e.g. SymPy).'],
+['photopea.com','Image editor','build','Implement our own image editing UI, not proprietary source.'],['squoosh.app','Image compression','build','Browser-native resize/compress now; Squoosh Apache-2 later.'],['remove.bg','Background removal','build','Use independently licensed segmentation code and model weights.'],['cleanup.pictures','Object cleanup','review','Potential local inpainting; verify model rights/cost first.'],['unscreen.com','Video background cutout','review','Heavy compute/model licensing; later.'],['carbon.now.sh','Code snapshots','build','Render syntax-styled code to PNG locally.'],['ray.so','Code screenshots','build','Alternative UI theme built from scratch.'],['shots.so','Mockup generation','build','Canvas/social mockups without copying templates.'],['smartmockups.com','Product previews','review','Use owned/authorized template artwork.'],['haveibeenpwned.com','Breach lookup','review','Use authorized API and privacy-preserving queries; no scraping.'],
+['virustotal.com','Security scanning','review','Independent local checks; API terms restrict republishing.'],['privnote.com','Expiring messages','review','Encrypted messages with proper key handling and deletion.'],['temp-mail.org','Temporary email','skip','Not needed for NBL core; spam/privacy tradeoffs.'],['file.io','Expiring file links','review','Possible NBL secure share with clear retention and abuse controls.'],['archive.ph','Web snapshots','skip','Do not build paywall circumvention workflow.'],['similarsites.com','Related sites','review','Original topic classification/index only, no copied datasets.'],['radio.garden','Radio discovery','review','Only stations licensed to stream and embed.'],['everynoise.com','Music discovery','review','Use licensed metadata; do not scrape catalog.'],['tunefind.com','Song credits','review','Original music credits and licensed discovery links.'],['musicforprogramming.net','Background music','review','Use original, licensed NBL Music recordings.'],
+['mynoise.net','Ambient sound','build','Generate original procedural ambient sounds.'],['coffitivity.com','Coffee ambience','build','Use own or properly licensed ambience audio.'],['elicit.org','Research assistant','build','Source-cited NBL Research using legitimate metadata.'],['consensus.app','Evidence search','build','Original evidence summaries with citations and disclaimers.'],['connectedpapers.com','Citation graph','build','Graph from open metadata, not copied proprietary data.'],['semanticscholar.org','Scientific paper search','review','Official API with terms and rate limit compliance.'],['scispace.com','Paper comprehension','build','NBL Reader + citations + permission-aware summaries.'],['summarize.tech','Video summaries','review','User-authorized transcripts and platform terms.'],['phind.com','Coding Q&A','build','Add source-cited developer help behind existing NBL tools.'],['regex101.com','Regex tester','build','Local tester in this starter.'],
+['codebeautify.org','Code utilities','build','Local formatters and validators.'],['jsonformatter.org','JSON formatting','build','Local JSON utilities in this starter.'],['explainshell.com','Shell explanations','build','Offline command vocabulary and safe explanatory parser.'],['raindrop.io','Bookmark manager','build','Private NBL collections with export.'],['downdetector.com','Service outages','review','Own status monitoring; do not reuse their reports without rights.'],['tineye.com','Reverse image lookup','review','Use authorized engines or opt-in own perceptual hash database.'],['fast.com','Speed testing','build','Build controlled network benchmark with user consent.'],['smallpdf.com','PDF editing','build','Merge/split/rotate using pdf-lib after NBL Reader integration.'],['ilovepdf.com','PDF editing','build','Same PDF capability; no need duplicate.'],['10minutemail.com','Disposable inbox','skip','Not a priority for secure, account-based NBL.'] ];
+function renderCatalog(){const q=$('cat-query').value.trim().toLowerCase(),filter=$('cat-filter').value;const list=catalog.map((x,i)=>({i:i+1,x})).filter(o=>(filter==='all'||o.x[2]===filter)&&(!q||o.x.join(' ').toLowerCase().includes(q)));$('cat-count').textContent=`Showing ${list.length} of ${catalog.length} examples`;const root=$('cat-items');root.replaceChildren();for(const o of list){const card=document.createElement('div');card.className='item';const hd=document.createElement('strong');hd.textContent=`${o.i}. ${o.x[0]}`;const t=document.createElement('small');t.textContent=o.x[1]+' — '+o.x[3];const pill=document.createElement('span');pill.className='pill '+o.x[2];pill.textContent=o.x[2]==='build'?'Build independent':o.x[2]==='review'?'Review terms':'Skip';card.append(hd,t,pill);root.append(card)}}$('cat-query').addEventListener('input',renderCatalog);$('cat-filter').addEventListener('change',renderCatalog);renderCatalog();
+
+/* NBL-native asset import. An explicit click fetches from the SAME origin only. */
+const officialNblArt={
+ studios:'/NBL_Studios.png',
+ university:'/NBL_University.png',
+ books:'/NBL_Books.png',
+ music:'/NBL_Music_Productions%20(1).png',
+ clothing:'/NBL_Clothing_Co.png',
+ games:'/NBL_Games.png',
+ pulse:'/NBL_Pulse_World_Card.png',
+ messenger:'/NBL_Messenger_Beans_Worldcard.png'
+};
+$('load-nbl-art').addEventListener('click',async()=>{
+ const b=$('load-nbl-art');b.disabled=true;
+ try{
+   if(location.protocol==='file:')throw Error('NBL asset library works on newbeansland.org; offline, use Upload above.');
+   const path=officialNblArt[$('nbl-art').value];if(!path)throw Error('Unknown asset.');
+   const url=new URL(path,location.origin);if(url.origin!==location.origin)throw Error('Only same-site NBL artwork is allowed.');
+   status('nbl-art-status','Loading official image from this NBL website...');
+   const res=await fetch(url.href,{credentials:'same-origin'});
+   if(!res.ok)throw Error('NBL asset unavailable (HTTP '+res.status+'). Upload your saved copy instead.');
+   const blob=await res.blob();if(!blob.type.startsWith('image/')||blob.size>30*1024*1024)throw Error('Image format or file size unsupported.');
+   const filename=decodeURIComponent(path.split('/').pop());
+   const file=new File([blob],filename,{type:blob.type});
+   // Do not mutate the FileList; use exactly the same editor pipeline as upload.
+   resetOutputs();revoke(inputUrl);inputUrl=URL.createObjectURL(file);currentFile=file;
+   $('img-file').value='';$('img-preview').src=inputUrl;$('img-preview').hidden=false;
+   $('img-placeholder').hidden=true;$('img-process').disabled=$('cutout').disabled=false;
+   status('img-status',filename+' • '+formatBytes(file.size)+' ready for local editing');
+   status('nbl-art-status','Loaded '+filename+'. No third-party service contacted.');
+ }catch(e){status('nbl-art-status',e.message||'Image loading failed',true)}
+ finally{b.disabled=false}
+});
+/* NBL original graphics: deterministic canvas composition, zero AI requests. */
+function nblCanvasBackground(ctx,w,h){
+ const bg=ctx.createLinearGradient(0,0,w,h);
+ bg.addColorStop(0,'#06101d');bg.addColorStop(.56,'#142b40');bg.addColorStop(1,'#050914');
+ ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);
+ const orb=ctx.createRadialGradient(w*.72,h*.23,0,w*.72,h*.23,w*.7);
+ orb.addColorStop(0,'rgba(225,169,66,.41)');orb.addColorStop(1,'rgba(225,169,66,0)');
+ ctx.fillStyle=orb;ctx.fillRect(0,0,w,h);
+ ctx.strokeStyle='rgba(240,192,99,.15)';ctx.lineWidth=Math.max(1,w/1250);
+ for(let i=0;i<18;i++){const t=i/17;ctx.beginPath();ctx.moveTo(w*(t-.16),0);ctx.lineTo(w*(t+.28),h);ctx.stroke()}
+}
+function wrapCanvasText(ctx,text,maxWidth,maxLines){
+ const words=String(text||'').trim().split(/\s+/).filter(Boolean),lines=[];let line='';
+ for(const word of words){
+  const next=line?line+' '+word:word;
+  if(ctx.measureText(next).width>maxWidth&&line){lines.push(line);line=word;if(lines.length>=maxLines)break}
+  else line=next;
+ }
+ if(lines.length<maxLines&&line)lines.push(line);
+ return lines;
+}
+$('nbl-compose').addEventListener('click',async()=>{
+ const b=$('nbl-compose');b.disabled=true;
+ try{
+ const [w,h]=$('nbl-preset').value.split('x').map(Number);
+ if(!w||!h||w*h>8e6)throw Error('Invalid canvas dimensions.');
+ const cv=document.createElement('canvas');cv.width=w;cv.height=h;
+ const ctx=cv.getContext('2d');if(!ctx)throw Error('Canvas unavailable.');
+ nblCanvasBackground(ctx,w,h);
+ let included=false;
+ if(currentFile&&$('nbl-fit').value!=='none'){
+   const im=await loadImage(currentFile);
+   const fit=$('nbl-fit').value;
+   const k=fit==='cover'?Math.max(w/im.naturalWidth,h/im.naturalHeight):Math.min(w/im.naturalWidth,h/im.naturalHeight);
+   const iw=Math.round(im.naturalWidth*k),ih=Math.round(im.naturalHeight*k);
+   ctx.drawImage(im,(w-iw)/2,(h-ih)/2,iw,ih);included=true;
+ }
+ // Readable caption backing (never alter the source file).
+ const shadow=ctx.createLinearGradient(0,h*.50,0,h);
+ shadow.addColorStop(0,'rgba(0,0,0,0)');shadow.addColorStop(1,'rgba(1,8,16,.94)');
+ ctx.fillStyle=shadow;ctx.fillRect(0,0,w,h);
+ ctx.textBaseline='middle';ctx.textAlign='left';
+ const pad=Math.round(w*.065),title=$('nbl-title').value.trim(),sub=$('nbl-subtitle').value.trim();
+ if(title){
+  let size=Math.round(Math.min(w*.073,h*.14,112));
+  ctx.font='800 '+size+'px system-ui,sans-serif';
+  while(size>20&&wrapCanvasText(ctx,title,w-2*pad,3).some(x=>ctx.measureText(x).width>w-2*pad)){size-=2;ctx.font='800 '+size+'px system-ui,sans-serif'}
+  const lines=wrapCanvasText(ctx,title,w-2*pad,3);
+  ctx.shadowColor='rgba(0,0,0,.65)';ctx.shadowBlur=Math.round(w*.016);
+  const start=h*.78-(lines.length-1)*size*1.10;
+  ctx.fillStyle='#f8d28a';for(let i=0;i<lines.length;i++)ctx.fillText(lines[i],pad,start+i*size*1.12);
+  ctx.shadowBlur=0;
+ }
+ if(sub){
+  const f=Math.max(16,Math.round(Math.min(w*.031,h*.045,44)));
+  ctx.font='500 '+f+'px system-ui,sans-serif';ctx.fillStyle='#ffffff';
+  const lines=wrapCanvasText(ctx,sub,w-2*pad,2);
+  for(let i=0;i<lines.length;i++)ctx.fillText(lines[i],pad,h*.90+i*f*1.15);
+ }
+ ctx.fillStyle='#e4b55c';ctx.fillRect(pad,Math.round(h*.11),Math.round(w*.15),Math.max(3,Math.round(h*.006)));
+ const blob=await blobFromCanvas(cv,'image/png');
+ revoke(resultUrl);resultUrl=URL.createObjectURL(blob);
+ $('export-image').src=resultUrl;$('export-image').hidden=false;$('export-placeholder').hidden=true;
+ const link=$('nbl-compose-download');link.href=resultUrl;link.download='NBL-'+$('nbl-preset').value+'-graphic.png';link.hidden=false;
+ $('img-download').hidden=true;$('cutout-download').hidden=true;
+ status('nbl-compose-status','NBL graphic created locally: '+w+' × '+h+', '+formatBytes(blob.size)+(included?' with supplied art.':'.'));
+ }catch(e){status('nbl-compose-status',e.message||'Graphic creation failed',true)}
+ finally{b.disabled=false}
+});
+let nblManifestUrl=null,nblInventoryUrl=null;
+$('nbl-export-manifest').addEventListener('click',()=>{
+ try{
+  const record={
+    schema:'nbl.tools-lab.asset-manifest.v1',
+    department:$('nbl-manifest-dept').value,
+    project:$('nbl-manifest-name').value.trim()||'Untitled NBL project',
+    sourceImage:currentFile?{name:currentFile.name,sizeBytes:currentFile.size,type:currentFile.type}:null,
+    canvasPreset:$('nbl-preset').value,
+    imagePlacement:$('nbl-fit').value,
+    headline:$('nbl-title').value.trim(),
+    supportingLine:$('nbl-subtitle').value.trim(),
+    notes:$('nbl-manifest-note').value.trim(),
+    exportedAt:new Date().toISOString(),
+    note:'Project handoff only; does not contain image bytes or prove publication.'
+  };
+  revoke(nblManifestUrl);nblManifestUrl=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json'}));
+  const a=$('nbl-manifest-download');a.href=nblManifestUrl;a.download='nbl-asset-manifest.json';a.hidden=false;
+  status('nbl-manifest-status','Manifest prepared locally. Choose Save manifest.');
+ }catch(e){status('nbl-manifest-status',e.message||'Export failed',true)}
+});
+$('cat-export').addEventListener('click',()=>{
+ try{
+ const q=$('cat-query').value.trim().toLowerCase(),f=$('cat-filter').value;
+ const rows=catalog.map(([site,capability,decision,notes],i)=>({rank:i+1,site,capability,decision,notes}))
+   .filter(o=>(f==='all'||o.decision===f)&&(!q||[o.site,o.capability,o.decision,o.notes].join(' ').toLowerCase().includes(q)));
+ const data={name:'NBL Tools Lab capability inventory',source:'Desk PR #101 prototype',scope:'Research and proposed independent builds only; not implemented third-party products',exportedAt:new Date().toISOString(),count:rows.length,entries:rows};
+ revoke(nblInventoryUrl);nblInventoryUrl=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+ const a=document.createElement('a');a.href=nblInventoryUrl;a.download='nbl-tools-capability-inventory.json';a.click();
+ status('cat-export-status',rows.length+' inventory entries exported locally.');
+ }catch(e){status('cat-export-status',e.message||'Export failed',true)}
+});
+
+})();
+</script></body></html>
