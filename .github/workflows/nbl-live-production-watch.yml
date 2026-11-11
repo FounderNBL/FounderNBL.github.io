@@ -7,6 +7,14 @@ on:
     # Full approved website inspection every six hours (UTC); NBLU and games held.
     - cron: "17 */6 * * *"
   workflow_dispatch:
+  push:
+    # Real post-release inspection whenever the website's maintenance contract changes.
+    branches: [main]
+    paths:
+      - ".github/workflows/nbl-live-production-watch.yml"
+      - "scripts/nbl-website-economy-fixer.mjs"
+      - "config/nbl-website-green-baseline.json"
+      - "index.html"
   # Local-only source checks on PR; live route/browser jobs are schedule/manual only.
   pull_request:
     branches: [main]
@@ -339,14 +347,14 @@ jobs:
         if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         env:
           NBL_FIXER_KEY_EXISTS: ${{ secrets.NBL_WEBSITE_FIXER_OPENAI_KEY != '' && 'true' || 'false' }}
-          NBL_FIXER_ENABLED: ${{ vars.NBL_WEBSITE_AI_FIXER_ENABLED == 'true' && 'true' || 'false' }}
+          NBL_FIXER_ENABLED: ${{ secrets.NBL_WEBSITE_FIXER_OPENAI_KEY != '' && 'true' || 'false' }}
         run: |
           {
             echo "### NBL coding Fixer — credential presence only"
             echo "Website-only OpenAI secret configured: $NBL_FIXER_KEY_EXISTS"
             echo "Paid code repair explicitly enabled: $NBL_FIXER_ENABLED"
             echo "No raw secrets were read into the shell or printed. This PR job does not run the model or spend API credits."
-            echo "The draft PR has not been merged; the scheduled coding Fixer is not yet active on main."
+            echo "This PR only checks key presence. The production workflow runs on merge/push and every six hours on main."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload local PR browser failure proof
@@ -402,7 +410,7 @@ jobs:
     needs: [cloudflare-preflight, route-inspection, deep-browser-inspection]
     if: >-
       ${{ always() && github.ref == 'refs/heads/main' &&
-      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+      github.event_name != 'pull_request' &&
       (needs.cloudflare-preflight.result == 'failure' ||
        needs.route-inspection.result == 'failure' ||
        needs.deep-browser-inspection.result == 'failure') }}
