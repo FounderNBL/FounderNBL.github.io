@@ -38,7 +38,7 @@ jobs:
 
       - name: Check GREEN contract, official art and bot-challenge policies
         run: |
-          node --test scripts/nbl-website-green.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
+          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-fixer.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
             scripts/check-official-social-world-cards.test.mjs
           node scripts/nbl-website-green.mjs source
 
@@ -330,7 +330,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Verify saved GREEN contract, approved artwork and challenge handling
         run: |
-          node --test scripts/nbl-website-green.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
+          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-fixer.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
             scripts/check-official-social-world-cards.test.mjs
           node scripts/nbl-website-green.mjs source
       - name: Source-only approved browser regression, excluding NBLU and games
