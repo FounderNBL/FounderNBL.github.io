@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "purpose": "NBL website coding Fixer scope and budget; source-only, draft PR after same-run independent verification",
+  "homeRepository": "FounderNBL/FounderNBL.github.io",
+  "allowedReadOnlyProject": "newbeansland.org",
+  "allowedEditPaths": [
+    "index.html",
+    "nbl-world-header.js",
+    "nbl-world-header.css",
+    "messenger/index.html",
+    "messenger/messenger-skin.css",
+    "pulse/index.html",
+    "scripts/check-official-social-world-cards.test.mjs",
+    "tests/browser/nbl-green-visual.spec.mjs"
+  ],
+  "allowedRemembranceDir": "maintenance/verified-lessons/",
+  "maxFiles": 4,
+  "maxChangedLines": 250,
+  "maxPatchBytes": 65000,
+  "maxModelAttempts": 1,
+  "aiDefault": "off_until_existing_site_key_and_explicit_enable",
+  "requireOriginalFailure": true,
+  "requireIndependentRetest": true,
+  "changeDestination": "draft_pr_only",
+  "protected": [
+    "University/NBLU/Grey/Virgo",
+    "Playground",
+    "Desk",
+    "games",
+    "billing/Stripe/prices",
+    "LOCKE/identity grants",
+    "secrets",
+    "workflows",
+    "production deployments",
+    "paid provider changes"
+  ],
+  "requireFounderReviewBeforeMerge": true
+}
