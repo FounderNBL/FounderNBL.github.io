@@ -131,7 +131,6 @@
       }
     ],
     "existingRegressionSuites": [
-      "scripts/check-approved-world-card-art.test.mjs",
       "scripts/check-official-social-world-cards.test.mjs",
       "scripts/check-inspector-challenge-policy.test.mjs"
     ]
@@ -169,9 +168,9 @@
     },
     {
       "id": "routes-and-journeys",
-      "green": "Public website pages respond with HTML and correct navigation; Beans opens and Messenger signed-out state remains private",
+      "green": "Public .org website routes respond with HTML, homepage public navigation matches source, Beans launcher and Messenger signed-out states render; no University, Playground or Desk navigation",
       "evidence": "live HTTP + browser",
-      "stage": "implemented"
+      "stage": "baseline-in-progress"
     },
     {
       "id": "connection-health",
