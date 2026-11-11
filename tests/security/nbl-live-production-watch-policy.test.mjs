@@ -31,11 +31,11 @@ test("the live website uses the Founder-approved six-hour full inspection and no
   const head=workflow.split("permissions:")[0];
   assert.doesNotMatch(head,/\n  push:/);
   // Founder now requires a FULL site-wide inspection every six hours, not hourly.
-  assert.match(head,/17 \\*\\/6 \\* \\* \\*/);
+  assert.match(head,/17 \*\/6 \* \* \*/);
   assert.equal(head.includes('23 14 * * *'), false);
-  assert.doesNotMatch(head,/17 \\* \\* \\* \\*/);
-  assert.doesNotMatch(workflow,/run_deep|date -u \\+%H/);
-  assert.match(workflow,/if: \\$\\{\\{ github\\.event_name != 'pull_request' \\$\\}\\}/);
+  assert.doesNotMatch(head,/17 \* \* \* \*/);
+  assert.doesNotMatch(workflow,/run_deep|date -u \+%H/);
+  assert.ok(workflow.includes("github.event_name != 'pull_request'"));
   assert.doesNotMatch(workflow,/https:\/\/nblschool\.com\//);
   assert.match(workflow,/https:\/\/newbeansland\.org\/messenger\//);
   assert.match(workflow,/https:\/\/books\.newbeansland\.org\//);
