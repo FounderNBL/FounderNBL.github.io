@@ -27,9 +27,10 @@ test("reuse canonical Cloudflare Inspector credential, never require a duplicate
   assert.doesNotMatch(workflow,/run:\s*.*echo.*\$\{\{\s*secrets\./);
 });
 
-test("the live website uses the Founder-approved six-hour full inspection and no release-push monitoring",()=>{
+test("the live website inspects every six hours and after website maintenance changes without deploying",()=>{
   const head=workflow.split("permissions:")[0];
-  assert.doesNotMatch(head,/\n  push:/);
+  assert.match(head,/\n  push:\s*\n\s+branches: \[main\]/);
+  assert.match(head,/17 \*\/6 \* \* \*/);
   // Founder now requires a FULL site-wide inspection every six hours, not hourly.
   assert.match(head,/17 \*\/6 \* \* \*/);
   assert.equal(head.includes('23 14 * * *'), false);
