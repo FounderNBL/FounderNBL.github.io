@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {applyEdits,recipeEdits,parseProposedEdits,estimateCost,assembleContext,askLuna,MODEL,MAX_OUTPUT_TOKENS} from "./nbl-website-economy-fixer.mjs";
+import {applyEdits,recipeEdits,parseProposedEdits,estimateCost,assembleContext,askLuna,replayReviewedLesson,MODEL,MAX_OUTPUT_TOKENS} from "./nbl-website-economy-fixer.mjs";
 import {readFileSync} from "node:fs";
+import {createHash} from "node:crypto";
 const incident={eligible:true,targetRepo:"FounderNBL/FounderNBL.github.io",
  selected:[{id:"art:pulse",file:"index.html",reason:"wrong approved image"}]};
 test("NBL uses an actual low-cost model, limited to a single request and small output",()=>{
@@ -72,4 +73,32 @@ test("The real API call is one tightly bounded request and never exposes keys",a
  assert.equal(count,1);
  assert.equal(answer.estimatedUSD,0.001);
  assert.equal(answer.proposal.status,"hold");
+});
+
+test("NBL replays a verified historical code patch without a model call",()=>{
+ const diff="diff --git a/index.html b/index.html\nindex 111..222 100644\n--- a/index.html\n+++ b/index.html\n@@ -1 +1 @@\n-old\n+new\n";
+ const lesson={id:"website-green-123456789abc",status:"independent_tests_verified_source_repair",
+   approval:"Founder must review draft PR; only merged lessons are available on main",
+   patchSha256:createHash("sha256").update(diff).digest("hex"),unifiedDiff:diff};
+ let invokes=0;
+ const recovered=replayReviewedLesson({...incident,incident:"website-green-123456789abc"},"/repair",{
+  list:()=>["website-green-123456789abc.json"],
+  read:()=>JSON.stringify(lesson),
+  spawn:(cmd,args,opts)=>{invokes++;assert.equal(cmd,"git");assert.ok(args.includes("-C"));
+    assert.equal(opts.input,diff);return {status:0};}
+ });
+ assert.equal(invokes,2);
+ assert.equal(recovered.files[0],"index.html");
+});
+test("NBL rejects a remembered patch when its signature no longer matches",()=>{
+ const diff="diff --git a/index.html b/index.html\nindex 111..222 100644\n--- a/index.html\n+++ b/index.html\n@@ -1 +1 @@\n-old\n+new\n";
+ const lesson={id:"website-green-123456789abc",status:"independent_tests_verified_source_repair",
+  approval:"Founder must review draft PR; only merged lessons are available on main",
+  patchSha256:"0".repeat(64),unifiedDiff:diff};
+ const x=replayReviewedLesson({...incident,incident:"website-green-123456789abc"},"/repair",{
+  list:()=>["website-green-123456789abc.json"],
+  read:()=>JSON.stringify(lesson),
+  spawn:()=>{throw Error("must not attempt git apply");}
+ });
+ assert.equal(x,null);
 });
