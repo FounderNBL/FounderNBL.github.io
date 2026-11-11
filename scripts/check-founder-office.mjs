@@ -1,102 +1,28 @@
-import { readFile, stat } from "node:fs/promises";
-import vm from "node:vm";
+import {readFile,stat} from "node:fs/promises";
 
-const html = await readFile("founder-office.html", "utf8");
-const errors = [];
+const html=await readFile("founder-office.html","utf8");
+const errors=[];
+const must=(v,label)=>{if(!v)errors.push(label)};
+const yes=v=>html.includes(v);
 
-const requireText = (source, text, reason) => {
-  if (!source.includes(text)) errors.push(reason);
-};
-
-const forbidText = (source, text, reason) => {
-  if (source.includes(text)) errors.push(reason);
-};
-
-// Approved office: fixed living-museum room image + hotspots + lightweight 2D object interactions.
-// Keep the old walking/GLB experiments as history, but do not load them in the production office.
-requireText(html, 'class="room-stage"', "Founder Office room stage is missing.");
-requireText(html, 'class="room-image"', "Founder Office room image is missing.");
-requireText(html, 'src="founder-office-room.png"', "Founder Office master room image is missing.");
-
-for (const key of ["graduation","banner","doctorate","masters","family","founder","chair","yolanda","clue"]) {
-  requireText(html, `data-panel="${key}"`, `hotspot '${key}' is missing.`);
+must(yes('<main class="office-reading">'),"Office must remain a readable page");
+must(yes('src="founder-office-room.png"'),"Approved Founder Office room picture missing");
+must(yes('class="reading-grid"'),"Reading item grid missing");
+must(yes('href="/games.html"'),"Museum/game Coming Soon must remain under NBL Games");
+must(yes("3D Museum &amp; Games · Coming Soon"),"3D game must be marked Coming Soon");
+for(const key of ["founder","banner","graduation","doctorate","masters","yolanda","family","chair","desk","light"]){
+ must(yes('id="read-'+key+'"'),"Missing clickable Office story: "+key);
 }
-
-requireText(html, 'data-action="lamp"', "lamp hotspot is missing.");
-requireText(html, 'setLampState((lampState + 1) % 3)', "three-touch lamp sequence is missing.");
-requireText(html, 'panel === "chair" && lampState !== 2', "chair light gate is missing.");
-requireText(html, 'panel === "clue"', "clue-to-lamp behavior is missing.");
-
-requireText(html, 'id="floorBean"', "Beans is not grounded on the office floor/rug.");
-requireText(html, 'id="nblToyLeft"', "left NBL display toy is missing.");
-requireText(html, 'id="nblToyRight"', "right NBL display toy is missing.");
-requireText(html, 'data-floor-figure', "shared floor-figure interaction markers are missing.");
-requireText(html, 'function setupFloorFigure(figure)', "shared Beans/toy interaction is missing.");
-requireText(html, 'floorFigures.forEach(setupFloorFigure)', "not all floor figures use the shared interaction.");
-requireText(html, 'returnFigureHome', "floor figures do not snap back home.");
-
-requireText(html, 'src="/beans_01_wave_nbl.png"', "Beans lightweight image asset is missing from the room.");
-requireText(html, 'src="/NBL-Model-Front.png"', "NBL toy lightweight image asset is missing from the room.");
-requireText(html, 'className = "office-artifact-image"', "museum artifact image preview is missing.");
-
-forbidText(html, 'model-viewer', "Heavy model-viewer dependency returned to the active Founder Office.");
-forbidText(html, '.glb', "A GLB reference returned to the active Founder Office.");
-forbidText(html, 'id="officeCanvas"', "Retired walking-game canvas returned to the approved museum office.");
-forbidText(html, 'id="moveZone"', "Retired BODY joystick returned to the approved museum office.");
-forbidText(html, 'id="lookZone"', "Retired HEAD joystick returned to the approved museum office.");
-
-// The Office must stay on the shared website shell so current Beans remains available here too.
-requireText(html, '<script defer src="/nbl-portal.js"></script>', "NBL portal shell is not wired on Founder Office.");
-requireText(html, '<script defer src="/nbl-world-header.js?v=20261004-shopify"></script>', "shared NBL world/Beans header is not wired on Founder Office.");
-
-// Catch accidental literal escape corruption and other inline JavaScript parse failures.
-const inlineScripts = html
-  .split("<script")
-  .slice(1)
-  .map((block) => {
-    const open = block.indexOf(">");
-    const close = block.indexOf("</script>");
-    if (open < 0 || close < 0) return "";
-    const attrs = block.slice(0, open);
-    if (/\\bsrc\\s*=/.test(attrs)) return "";
-    return block.slice(open + 1, close);
-  })
-  .filter((source) => source.trim());
-
-for (const source of inlineScripts) {
-  try {
-    new vm.Script(source);
-  } catch (error) {
-    errors.push(`inline Founder Office JavaScript does not parse: ${error.message}`);
-  }
+must((html.match(/<details class="reading-card"/g)||[]).length===10,"Office must have exactly ten accessible reading cards");
+must((html.match(/<summary aria-label="Read /g)||[]).length===10,"Every reading card must have a keyboard-accessible summary");
+for(const value of ["GLTFLoader","<model-viewer",".glb","officeCanvas","pointermove","floor-figure","setLampState","data-action=\"lamp\"","data-panel=","class=\"hotspot\"","<canvas","babylon.js"]){
+ must(!yes(value),"Retired 3D/game interaction found: "+value);
 }
-
-const requiredAssets = [
-  "founder-office-room.png",
-  "official-nbl-emblem.png",
-  "beans_01_wave_nbl.png",
-  "NBL-Model-Front.png",
-  "founder-nameplate.png",
-  "founder-doctorate-degree.png",
-  "founder-masters-degree.png",
-  "founder-graduation-remarks.png",
-  "yolanda-family-keepsake.png",
-  "new-beansland-family-photo.png"
-];
-
-for (const path of requiredAssets) {
-  try {
-    const info = await stat(path);
-    if (!info.isFile() || info.size <= 0) errors.push(`asset '${path}' is empty or invalid.`);
-  } catch {
-    errors.push(`required asset '${path}' is missing.`);
-  }
+must(yes('<script defer src="/nbl-portal.js"></script>'),"NBL portal integration missing");
+must(yes('<script defer src="/nbl-world-header.js?v=20261004-shopify"></script>'),"Shared Beans and website header missing");
+must(yes("foundernewbeansland@gmail.com"),"Founder contact was lost");
+for(const path of ["founder-office-room.png","founder-nameplate.png","if-it-is-is-it-banner.png","founder-doctorate-degree.png","founder-masters-degree.png","founder-graduation-remarks.png","yolanda-family-keepsake.png","new-beansland-family-photo.png","desk-clue-plaque.png","nbl-office-lamp.png"]){
+ try{const a=await stat(path);must(a.isFile()&&a.size>0,"Office image is empty: "+path);}catch{errors.push("Office image is missing: "+path)}
 }
-
-if (errors.length) {
-  console.error("Founder’s Office integrity check failed:\n");
-  errors.forEach((error) => console.error(`- ${error}`));
-  process.exit(1);
-}
-
-console.log("Founder’s Office living museum, lamp puzzle, Beans + two shared toy interactions, lightweight assets, Beans shell wiring, and syntax passed.");
+if(errors.length){console.error(errors.map(x=>"- "+x).join("\n"));process.exit(1);}
+console.log("PASS: Founder Office uses image-backed clickable reading cards; game/GLB/puzzle UI absent; NBL header and approved images preserved.");
