@@ -431,6 +431,13 @@ jobs:
         if: ${{ steps.plan.outputs.eligible == 'true' && steps.controls.outputs.enabled == 'true' }}
         run: cp .inspector/website-fixer-incident.json repair-target/.nbl-fixer-incident.json
 
+      - name: Prepare independent browser runtime BEFORE Codex drops elevated permissions
+        if: ${{ steps.plan.outputs.eligible == 'true' && steps.controls.outputs.enabled == 'true' }}
+        run: |
+          set -euo pipefail
+          npm install --no-save @playwright/test@latest
+          npx playwright install --with-deps chromium
+
       - name: FIXER / use real Codex coding software for ONE tightly scoped repair
         id: codex
         if: ${{ steps.plan.outputs.eligible == 'true' && steps.controls.outputs.enabled == 'true' }}
@@ -516,9 +523,8 @@ jobs:
         run: |
           set -euo pipefail
           cd candidate-site
-          npm install --no-save @playwright/test@latest
-          npx playwright install --with-deps chromium
-          npx playwright test tests/browser/nbl-green-visual.spec.mjs --project=chromium --project=mobile-chromium --reporter=json > "$RUNNER_TEMP/nbl-fixer-browser.json"
+          # Playwright was installed before Codex; drop-sudo deliberately prevents apt here.
+          npx --no-install playwright test tests/browser/nbl-green-visual.spec.mjs --project=chromium --project=mobile-chromium --reporter=json > "$RUNNER_TEMP/nbl-fixer-browser.json"
           node --input-type=module -e '
             import fs from "node:fs";
             const r=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+"/nbl-fixer-browser.json","utf8"));
