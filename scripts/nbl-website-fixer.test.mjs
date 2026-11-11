@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
 import {policy,policyCheck,chooseRepairIncident,checkPatch,verifiedLesson} from "./nbl-website-fixer.mjs";
 const patch=path=>"diff --git a/"+path+" b/"+path+"\nindex aaaaa..bbbbb 100644\n--- a/"+path+"\n+++ b/"+path+"\n@@ -1 +1 @@\n-old\n+new\n";
 test("Only approved website files are editable",()=>{
@@ -17,8 +18,7 @@ test("An old Pulse image with approved original PNG is a real repairable source 
  const content={
   "index.html":'<section class="pulse-world-door"><a href="/pulse/"><img src="/pulse/pulse-world.svg"></a></section>',
  };
- const fs=await import("node:fs");
- const read=x=>x in content?Buffer.from(content[x]):fs.readFileSync(new URL("../"+x,import.meta.url));
+ const read=x=>x in content?Buffer.from(content[x]):readFileSync(new URL("../"+x,import.meta.url));
  const inc=chooseRepairIncident([{id:"art:pulse",status:"FAIL",reason:"wrong_art_hash_dimensions_or_route"}],read);
  assert.equal(inc.eligible,true);
  assert.equal(inc.selected[0].file,"index.html");
