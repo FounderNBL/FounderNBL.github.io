@@ -23,7 +23,16 @@
       "/university-campus.html",
       "/campus.html",
       "/games.html",
-      "/nblu/"
+      "/nblu/",
+      "/university/",
+      "/university-enrollment.html",
+      "/nblschool/",
+      "/grey/",
+      "/games/",
+      "/block-boss/",
+      "/campus/",
+      "/playground/",
+      "/desk/"
     ],
     "excludedOperations": [
       "billing and Stripe",
@@ -33,7 +42,22 @@
       "secret downloads",
       "account mutations",
       "deployment",
-      "paid AI calls"
+      "paid AI calls",
+      "Desk and Playground inspection",
+      "University redirects, protected classrooms, Grey and Virgo"
+    ],
+    "allowedRepositories": [
+      "FounderNBL/FounderNBL.github.io"
+    ],
+    "excludedRepositories": [
+      "FounderNBL/nbl-desk",
+      "FounderNBL/New-Beansland-Playground",
+      "FounderNBL/NBL-University"
+    ],
+    "excludedAreas": [
+      "Desk (all paths and reports)",
+      "Playground (all repos, games and frameworks)",
+      "University/NBLU (all pages, routes, APIs, sessions, learning engines, Grey and Virgo)"
     ]
   },
   "source": {
@@ -175,7 +199,7 @@
     },
     {
       "id": "visual-reference",
-      "green": "Desktop and mobile page match Founder-approved reference screenshots",
+      "green": "Approved website-only public reference screenshots excluding University, Desk and Playground",
       "evidence": "approved visual snapshots / diff thresholds",
       "stage": "awaiting approved snapshots"
     },
@@ -191,6 +215,7 @@
     "Cloudflare 403 = real outage",
     "private service 401 = broken LOCKE",
     "website green = no intruder without security logs",
-    "unrun visual screenshots = visual pass"
+    "unrun visual screenshots = visual pass",
+    "testing the University link merely because it appears in the homepage navigation"
   ]
 }
