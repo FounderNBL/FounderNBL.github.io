@@ -4,6 +4,10 @@ on:
     branches: [main]
     paths:
       - "vault.html"
+      - "pricing.html"
+      - "nbl-product-plans.js"
+      - "nbl-usage-topup.mjs"
+      - "scripts/check-nbl-usage-topup.mjs"
       - "scripts/check-vault-account-gate.mjs"
       - "scripts/check-vault-live-negative.mjs"
       - ".github/workflows/nbl-vault-source-gate.yml"
@@ -21,7 +25,7 @@ jobs:
           node-version: "22"
       - name: Inspect static Vault safety invariants
         run: |
-          node --test scripts/check-vault-account-gate.mjs
+          node --test scripts/check-vault-account-gate.mjs scripts/check-nbl-usage-topup.mjs
       - name: Verify deployed Vault denies guests and mutations (no credentials)
         run: |
           node --test scripts/check-vault-live-negative.mjs

@@ -10,7 +10,7 @@
     foundationStudentContinuation:Object.freeze({name:"Foundation Student Continuation",price:"$9.99/month"}),
     foundationUniversity:Object.freeze({name:"Foundation + University (first month)",price:"$34.99 one-time"}),
     getMore:Object.freeze({name:"Get More",price:"$9.99 one-time",replies:"+500 successful replies",expiry:"Purchased reply balance does not expire."}),
-    nblUsage:Object.freeze({name:"NBL Usage — 500 Credits",price:"$7.00 one-time",credits:"500 NBL Usage credits",expiry:"Purchased usage credits do not expire."}),
+    nblUsage:Object.freeze({name:"NBL Usage — Manual Credit Top-Up",price:"$10 minimum top-up",credits:"700 NBL Usage credits per $10 (proposed)",expiry:"Purchased usage credits do not expire.",checkoutStatus:"Held until payment, wallet and debit verification."}),
     foundationProgram:Object.freeze({name:"Foundation Materials + First Month of Beans",price:"$29.99 one-time",renewal:"University is under construction and new school payments are closed."}),
     guidedFoundation:Object.freeze({name:"Guided Foundation",price:"$54.99 one-time"}),
     fullFoundation:Object.freeze({name:"Guided Foundation",price:"$54.99 one-time"}),

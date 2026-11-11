@@ -75,7 +75,7 @@ test("Vault and public catalog preserve active prices while University is closed
  const pricing=readFileSync(new URL("../pricing.html",import.meta.url),"utf8");
  const account=readFileSync(new URL("../account.html",import.meta.url),"utf8");
  for(const [key,price] of [["beans","$4.99 / 7 days"],["getMore","$9.99 one-time"],
-   ["nblUsage","$7.00 one-time"],["studiosCredits","$8.99 one-time"]]){
+   ["nblUsage","$10 minimum top-up"],["studiosCredits","$8.99 one-time"]]){
    assert.ok(plans.includes('price:"'+price+'"'),key+" canonical value missing");
    assert.ok(html.includes('data-nbl-plan-value="'+key+'.price"'),"Vault missing "+key);
    assert.ok(pricing.includes('data-nbl-plan-value="'+key+'.price"'),"Catalog missing "+key);
@@ -89,7 +89,7 @@ test("Vault and public catalog preserve active prices while University is closed
 test("NBL service currencies stay separate; no extra fee or leaked operating reserve",()=>{
  const customer=html.split('<section class="panel" id="founder" hidden>')[0];
  assert.match(customer,/not.*deduction from purchased NBL Usage or NBL Studios credits/i);
- assert.match(customer,/NBL Usage credits.*not.*monthly Beans tool-use counter/is);
+ assert.match(customer,/NBL Usage credits.*not.*monthly Beans tool-use allowances/is);
  assert.match(customer,/NBL Studios quotes the required.*NBL Studios Credits/is);
  assert.match(customer,/NBL replies, monthly tool allowances, NBL Usage credits and NBL Studios Credits each have distinct terms/);
  assert.doesNotMatch(customer,/\$5(?:\.00)? (?:provider|service) reserve|internal operating profit|supplier invoices/i);
