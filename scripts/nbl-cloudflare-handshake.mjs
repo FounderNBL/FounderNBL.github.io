@@ -5,8 +5,7 @@ import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
 
 export const ZONES = Object.freeze([
-  Object.freeze({host:"newbeansland.org",id:"3f9747314e81a8e990175ce87362b68c"}),
-  Object.freeze({host:"nblworld.com",id:"66cc8be3f3ac488482c234d16f97ac55"})
+  Object.freeze({host:"newbeansland.org",id:"3f9747314e81a8e990175ce87362b68c"})
 ]);
 
 export function classifyZoneResponse({status,payload,expected}){
