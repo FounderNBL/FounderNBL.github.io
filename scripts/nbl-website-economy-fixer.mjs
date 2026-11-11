@@ -1,7 +1,9 @@
 // NBL Economy Fixer: real source edits, first by verified local recipe,
 // otherwise ONE small GPT-6 Luna Responses API request. Never a dummy agent.
 // Does not commit, push, deploy, broaden scope or use private customer data.
-import {readFileSync,writeFileSync,mkdirSync} from "node:fs";
+import {readFileSync,writeFileSync,mkdirSync,readdirSync} from "node:fs";
+import {spawnSync} from "node:child_process";
+import {createHash} from "node:crypto";
 import {join,resolve,dirname} from "node:path";
 import {fileURLToPath} from "node:url";
 import {policy,policyCheck,checkPatch} from "./nbl-website-fixer.mjs";
@@ -57,6 +59,44 @@ export function recipeEdits(incident,read,base){
  }
  return edits.length?edits:null;
 }
+// Reapply only merged, independently tested code already remembered in the
+// website's versioned main branch. Git verifies the exact patch against source.
+export function replayReviewedLesson(incident,base,{
+  read=readFileSync,list=readdirSync,spawn=spawnSync
+}={}){
+ if(!incident?.eligible||!incident.incident)return null;
+ const memoryDir=join(base,policy.allowedRemembranceDir);
+ let names=[];
+ try{names=list(memoryDir).filter(s=>/^website-green-[a-f0-9]{12}\.json$/.test(s)).slice(0,12);}
+ catch{return null;}
+ const allowed=new Set(incident.selected.map(x=>checkedPath(x.file)));
+ for(const name of names){
+  try{
+   const lesson=JSON.parse(read(join(memoryDir,name),"utf8"));
+   if(lesson.id!==incident.incident||
+     lesson.status!=="independent_tests_verified_source_repair"||
+     lesson.approval!=="Founder must review draft PR; only merged lessons are available on main"||
+     typeof lesson.unifiedDiff!=="string"||
+     lesson.unifiedDiff.length>policy.maxPatchBytes)continue;
+   const digest=createHash("sha256").update(lesson.unifiedDiff).digest("hex");
+   const guard=checkPatch(lesson.unifiedDiff);
+   if(!guard.ok||lesson.patchSha256!==digest||
+     guard.paths.some(p=>!allowed.has(p)))continue;
+   const args=["-C",base,"apply","--check","-"];
+   const checked=spawn("git",args,{input:lesson.unifiedDiff,encoding:"utf8",timeout:12000});
+   if(checked.status!==0)continue;
+   const patched=spawn("git",["-C",base,"apply","-"],{
+      input:lesson.unifiedDiff,encoding:"utf8",timeout:12000});
+   if(patched.status!==0)throw Error("reviewed_lesson_apply_failed");
+   return {reason:"replayed approved source patch "+lesson.id,files:guard.paths,
+     lessonId:lesson.id};
+  }catch(e){
+   if(e.message==="reviewed_lesson_apply_failed")throw e;
+  }
+ }
+ return null;
+}
+
 export function assembleContext(incident,base,read=readFileSync){
  policyCheck();
  if(!incident?.eligible||incident.targetRepo!==policy.homeRepository||
@@ -73,8 +113,14 @@ export function assembleContext(incident,base,read=readFileSync){
  const theme=read(join(base,"nbl-world-header.css"),"utf8").slice(0,1900);
  let lessons="";
  try{
-  const memory=read(join(base,"maintenance/verified-lessons/approved-world-card-art-2026.json"),"utf8");
-  lessons=memory.slice(0,2800);
+  const folder=join(base,policy.allowedRemembranceDir);
+  const names=readdirSync(folder).filter(x=>/^[a-z0-9-]+\.json$/.test(x)).slice(0,4);
+  lessons=names.map(name=>{
+   try{const value=JSON.parse(read(join(folder,name),"utf8"));
+     const {unifiedDiff,...summary}=value;
+     return JSON.stringify({...summary,codePatchExcerpt:typeof unifiedDiff==="string"?unifiedDiff.slice(0,1200):null});
+   }catch{return "";}
+  }).join("\n").slice(0,4200);
  }catch{}
  const s=JSON.stringify({
   authorizedFiles:paths,failures:incident.selected,
@@ -139,22 +185,28 @@ export async function run({base=join(root,"repair-target"),read=readFileSync,wri
  const incident=JSON.parse(read(join(root,".inspector/website-fixer-incident.json"),"utf8"));
  if(!incident.eligible||incident.targetRepo!==policy.homeRepository)
   throw Error("no_verified_site_incident");
- const local=recipeEdits(incident,read,base);
- let result,how,usage=null;
- if(local){result={status:"edit",edits:local,reason:"independently verified art provenance recipe"};how="verified_local_recipe";}
- else{
-  const ai=await ask(incident,base,{read});
-  result=ai.proposal;usage={model:ai.model,tokens:ai.tokens,estimatedUSD:ai.estimatedUSD};
-  how="small_model_"+MODEL;
+ const remembered=replayReviewedLesson(incident,base,{read});
+ let files,how,usage=null,reason="";
+ if(remembered){files=remembered.files;how="reviewed_git_patch";reason=remembered.reason;}
+ else {
+  const local=recipeEdits(incident,read,base);
+  let result;
+  if(local){result={status:"edit",edits:local,reason:"independently verified art provenance recipe"};how="verified_local_recipe";}
+  else{
+   const ai=await ask(incident,base,{read});
+   result=ai.proposal;usage={model:ai.model,tokens:ai.tokens,estimatedUSD:ai.estimatedUSD};
+   how="small_model_"+MODEL;
+  }
+  if(result.status!=="edit")throw Error("fixer_cannot_propose_safe_patch");
+  const incidentPaths=new Set(incident.selected.map(x=>checkedPath(x.file)));
+  // Even an allowed file is wrong if it is unrelated to THIS incident.
+  if(result.edits.some(e=>!incidentPaths.has(e.path)))
+    throw Error("proposed_edit_outside_current_incident");
+  files=applyEdits(base,result.edits,{read,write});
+  reason=result.reason;
  }
- if(result.status!=="edit")throw Error("fixer_cannot_propose_safe_patch");
- const incidentPaths=new Set(incident.selected.map(x=>checkedPath(x.file)));
- // Even an allowed file is wrong if it is unrelated to THIS incident.
- if(result.edits.some(e=>!incidentPaths.has(e.path)))
-   throw Error("proposed_edit_outside_current_incident");
- const files=applyEdits(base,result.edits,{read,write});
- const receipt={schema:1,incident:incident.incident,engine:how,modelCalls:local?0:1,
-  files,reason:result.reason,usage,at:new Date().toISOString(),testStatus:"AWAITING_INDEPENDENT_RETEST"};
+ const receipt={schema:1,incident:incident.incident,engine:how,modelCalls:usage?1:0,
+  files,reason,usage,at:new Date().toISOString(),testStatus:"AWAITING_INDEPENDENT_RETEST"};
  mkdirSync(join(root,".inspector"),{recursive:true});
  write(join(root,".inspector/website-fixer-coding.json"),JSON.stringify(receipt,null,2)+"\n");
  console.log("NBL_ECONOMY_FIXER",JSON.stringify({engine:how,files,modelCalls:receipt.modelCalls,
