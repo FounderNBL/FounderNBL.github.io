@@ -106,8 +106,14 @@ export function assembleContext(incident,base,read=readFileSync){
  const parts=[];
  for(const p of paths){
   const content=read(join(base,p),"utf8");
-  if(content.length>16000)throw Error("target_source_exceeds_safe_context");
-  parts.push("PATH: "+p+"\nBEGIN_UNTRUSTED_SOURCE\n"+content+"\nEND_UNTRUSTED_SOURCE");
+  if(content.length>120000)throw Error("target_source_exceeds_safe_context");
+  // NBL's real homepage/header are large. Send bounded relevant source excerpts,
+  // never the entire repo or a costly model-sized dump.
+  const known=contract.source.requiredMarkers.filter(m=>m.file===p).flatMap(m=>m.all);
+  const pivot=known.map(k=>content.indexOf(k)).find(n=>n>=0)??0;
+  const start=content.length>15000?Math.max(0,pivot-3000):0;
+  const excerpt=content.length>15000?content.slice(start,start+12000):content;
+  parts.push("PATH: "+p+" (source excerpt offset "+start+" of "+content.length+")\nBEGIN_UNTRUSTED_SOURCE\n"+excerpt+"\nEND_UNTRUSTED_SOURCE");
  }
  const relevant=contract.source.requiredMarkers.filter(m=>paths.includes(m.file));
  const theme=read(join(base,"nbl-world-header.css"),"utf8").slice(0,1900);
