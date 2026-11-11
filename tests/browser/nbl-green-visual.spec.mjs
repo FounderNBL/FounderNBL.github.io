@@ -30,7 +30,7 @@ test("Pulse and Messenger have exact approved artwork, separate links, and uncro
    const img=node.locator(".media img");
    await expect(img).toHaveAttribute("src",src);
    await expect(img).toHaveCSS("object-fit","contain");
-   await expect.poll(async()=>img.evaluate(i=>i.complete&&i.naturalWidth===width&&i.naturalHeight===height)).toBe(true);
+   await expect.poll(async()=>img.evaluate((i,size)=>i.complete&&i.naturalWidth===size.width&&i.naturalHeight===size.height,{width,height})).toBe(true);
    await expect(node).toBeVisible();
    const clipped=await node.evaluate(el=>{
      const r=el.getBoundingClientRect();
