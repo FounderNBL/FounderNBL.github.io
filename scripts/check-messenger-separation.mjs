@@ -39,7 +39,7 @@ assert.match(website, /class="nav-pulse-launch"/);
 assert.doesNotMatch(website, /people talking to people/i);
 assert.match(website,/class="world-card messenger-world-card/);
 assert.match(website,/href="\/messenger\/"/);
-assert.match(website, /src="\/messenger\/icon\.svg"/);
+assert.ok(website.includes('src="https://cdn.shopify.com/s/files/1/1014/2230/1474/files/NBL_Messenger_Beans_Worldcard.jpg?v=1794414396"'),"Messenger homepage card should use Founder-approved Beans artwork");
 assert.match(app, /data-chat-featured-founder hidden/);
 assert.match(js, /action:"find_users",q:"NBLFounderOfficial"/);
 assert.match(js, /user\.verified===true/); // discoverable without Beans
