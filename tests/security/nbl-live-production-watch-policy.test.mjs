@@ -27,16 +27,21 @@ test("reuse canonical Cloudflare Inspector credential, never require a duplicate
   assert.doesNotMatch(workflow,/run:\s*.*echo.*\$\{\{\s*secrets\./);
 });
 
-test("health monitoring is scheduled against live websites, not triggered by release/code pushes",()=>{
+test("the live website inspects every six hours and after website maintenance changes without deploying",()=>{
   const head=workflow.split("permissions:")[0];
-  assert.doesNotMatch(head,/\n  push:/);
-  assert.match(head,/17 \* \* \* \*/);
+  assert.ok(head.includes("\n  push:") && head.includes("branches: [main]"));
+  assert.match(head,/17 \*\/6 \* \* \*/);
+  // Founder now requires a FULL site-wide inspection every six hours, not hourly.
+  assert.match(head,/17 \*\/6 \* \* \*/);
   assert.equal(head.includes('23 14 * * *'), false);
-  assert.ok(workflow.includes('run_deep'));
-  assert.ok(workflow.includes('date -u +%H'));
+  assert.doesNotMatch(head,/17 \* \* \* \*/);
+  assert.doesNotMatch(workflow,/run_deep|date -u \+%H/);
+  assert.ok(workflow.includes("github.event_name != 'pull_request'"));
   assert.doesNotMatch(workflow,/https:\/\/nblschool\.com\//);
   assert.match(workflow,/https:\/\/newbeansland\.org\/messenger\//);
-  assert.match(workflow,/https:\/\/books\.newbeansland\.org\//);
+  assert.match(workflow,/https:\/\/newbeansland\.org\/pulse\//);
+  assert.doesNotMatch(workflow,/https:\/\/books\.newbeansland\.org\//);
+  assert.doesNotMatch(workflow,/https:\/\/nblworld\.com\//);
   assert.match(workflow,/npx playwright test tests\/browser\/live-site-health\.spec\.mjs/);
   assert.doesNotMatch(workflow,/NBL_EXPECT_BILLING_LIVE|Wait for the deployed Chat asset/);
 });

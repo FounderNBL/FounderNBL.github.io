@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "purpose": "NBL website coding Fixer scope and budget; source-only, draft PR after same-run independent verification",
+  "homeRepository": "FounderNBL/FounderNBL.github.io",
+  "allowedReadOnlyProject": "newbeansland.org",
+  "allowedEditPaths": [
+    "index.html",
+    "nbl-world-header.js",
+    "nbl-world-header.css",
+    "messenger/index.html",
+    "messenger/messenger-skin.css",
+    "pulse/index.html",
+    "scripts/check-official-social-world-cards.test.mjs",
+    "tests/browser/nbl-green-visual.spec.mjs"
+  ],
+  "allowedRemembranceDir": "maintenance/verified-lessons/",
+  "maxFiles": 4,
+  "maxChangedLines": 250,
+  "maxPatchBytes": 20000,
+  "maxModelAttempts": 1,
+  "aiDefault": "one_small_model_request_only_on_reproduced_allowed_source_failure",
+  "requireOriginalFailure": true,
+  "requireIndependentRetest": true,
+  "changeDestination": "draft_pr_only",
+  "protected": [
+    "University/NBLU/Grey/Virgo",
+    "Playground",
+    "Desk",
+    "games",
+    "billing/Stripe/prices",
+    "LOCKE/identity grants",
+    "secrets",
+    "workflows",
+    "production deployments",
+    "paid provider changes"
+  ],
+  "requireFounderReviewBeforeMerge": true,
+  "verifiedMemory": {
+    "format": "reviewed Unified Diff + source finding identifiers + hash + independent test receipt",
+    "rules": "Only store entire validated source diff after independent tests, under 20kB. Reproduce the same issue before reusing; approved lesson is not a direct execution permission."
+  },
+  "cheapRepair": {
+    "engine": "NBL own patch engine",
+    "knownRepairOrder": [
+      "replay integrity-checked prior verified patch",
+      "approved local deterministic recipe",
+      "GPT-6 Luna exact-substring edits (one call)"
+    ],
+    "model": "gpt-6-luna",
+    "maxModelRequestsPerIncident": 1,
+    "modelMaxOutputTokens": 2200,
+    "modelMaxInputCharacters": 28000,
+    "standaloneProviderRequestsOnHealthyRun": 0,
+    "requiresGitHubActionsKey": "NBL_WEBSITE_FIXER_OPENAI_KEY",
+    "deployment": "never_auto",
+    "noExtraSubscription": true
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "id": "world-card-approved-art-2026",
+  "status": "reviewed_source_precedent",
+  "origin": "website PR #572 merged; NOT an autonomous maintenance-agent fix",
+  "issue": "Pulse and Messenger World cards displayed stale placeholder SVGs despite green source tests",
+  "rootCause": "Source-only tests asserted old image references and did not compare official image hashes",
+  "affectedFiles": [
+    "index.html",
+    "scripts/check-official-social-world-cards.test.mjs"
+  ],
+  "fixPrinciple": "Use exact approved public PNGs and their hashes, keep links, sizing and object-fit:contain; independently verify source and deployed image bytes",
+  "evidence": {
+    "pr": "https://github.com/FounderNBL/FounderNBL.github.io/pull/572",
+    "sourceTest": "scripts/check-official-social-world-cards.test.mjs",
+    "liveVisual": "unverified_until_approved_snapshot"
+  },
+  "safety": "Never inspect University, Playground, or Desk to fix website art",
+  "rememberedOn": "2026-11-11"
+}
