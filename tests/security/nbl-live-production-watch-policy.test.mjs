@@ -38,7 +38,9 @@ test("the live website uses the Founder-approved six-hour full inspection and no
   assert.ok(workflow.includes("github.event_name != 'pull_request'"));
   assert.doesNotMatch(workflow,/https:\/\/nblschool\.com\//);
   assert.match(workflow,/https:\/\/newbeansland\.org\/messenger\//);
-  assert.match(workflow,/https:\/\/books\.newbeansland\.org\//);
+  assert.match(workflow,/https:\/\/newbeansland\.org\/pulse\//);
+  assert.doesNotMatch(workflow,/https:\/\/books\.newbeansland\.org\//);
+  assert.doesNotMatch(workflow,/https:\/\/nblworld\.com\//);
   assert.match(workflow,/npx playwright test tests\/browser\/live-site-health\.spec\.mjs/);
   assert.doesNotMatch(workflow,/NBL_EXPECT_BILLING_LIVE|Wait for the deployed Chat asset/);
 });
