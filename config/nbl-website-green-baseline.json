@@ -49,10 +49,11 @@
       },
       {
         "id": "beans-identity",
-        "file": "index.html",
+        "file": "nbl-world-header.js",
         "all": [
-          "/beans_01_wave_nbl.png",
-          "id=\"nbl-beans-panel\""
+          "beans_01_wave_nbl.png",
+          "nbl-beans-panel",
+          "data-nbl-beans-presence"
         ]
       },
       {
