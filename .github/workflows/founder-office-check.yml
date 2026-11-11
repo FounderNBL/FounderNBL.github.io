@@ -1,48 +1,28 @@
-name: Founder’s Office check
-
+name: Founder’s Office reading page check
 on:
   pull_request:
     paths:
       - "founder-office.html"
-      - "founder-office-3d.js"
-      - "founder-office-3d.css"
-      - "enter/index.html"
       - "scripts/check-founder-office.mjs"
       - ".github/workflows/founder-office-check.yml"
-      - "*.glb"
-      - "assets/3d/models/**"
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "founder-office.html"
-      - "founder-office-3d.js"
-      - "founder-office-3d.css"
-      - "enter/index.html"
       - "scripts/check-founder-office.mjs"
       - ".github/workflows/founder-office-check.yml"
-      - "*.glb"
-      - "assets/3d/models/**"
-
 permissions:
   contents: read
-
 jobs:
   verify-office:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "22"
-
-      - name: Check JavaScript syntax
+      - name: Validate Office read-only layout and existing image files
         run: |
-          node --check founder-office-3d.js
           node --check scripts/check-founder-office.mjs
-
-      - name: Verify room controls, puzzle, and real assets
-        run: node scripts/check-founder-office.mjs
+          node scripts/check-founder-office.mjs
