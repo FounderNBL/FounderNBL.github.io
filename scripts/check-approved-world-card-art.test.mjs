@@ -72,7 +72,7 @@ test("Founder-approved Pulse replaces homepage company spotlight while standalon
  assert.ok(!source.includes('href="company-profile.html"'),"remove old homepage business profile entry");
  assert.ok(source.includes('id="nbl-pulse-door"'),"Pulse replaces only the old spotlight");
  assert.ok(source.includes('href="/pulse/"'),"Pulse world card must open the separate social destination");
- assert.ok(source.includes('src="/pulse/pulse-world.svg"'),"Pulse has original NBL artwork, not an invented profile photo");
+ assert.ok(source.includes('src="/NBL_Pulse_World_Card.png"'),"Pulse must display the exact Founder-approved World-card PNG");
  assert.ok(!source.includes('href="kayes-cubs.html"'));
  assert.ok(viewer.includes('src="/'+art+'"'),"standalone one-page company profile still displays");
  assert.ok(viewer.includes('class="profile-art"'));
