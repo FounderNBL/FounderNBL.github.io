@@ -2,868 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#07101d">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#081420">
   <title>Founder’s Office | New Beansland</title>
-  <meta name="description" content="Enter the interactive Founder’s Office of New Beansland and discover the lamp puzzle, chair message, family history, certificates, clues, and the story of Founder Jamel Hawkins.">
+  <meta name="description" content="The Founder’s Office at New Beansland: read the stories behind the family, certificates, photographs, memories, and ideas.">
   <link rel="canonical" href="https://newbeansland.org/founder-office.html">
   <style>
-    :root {
-      --navy: #07101d;
-      --navy-soft: #0c1b2d;
-      --gold: #d7b45a;
-      --gold-bright: #ffe39a;
-      --cream: #f5ecd8;
-      --panel: rgba(5, 12, 22, 0.94);
-      --room-ratio: 1.5; /* 3:2 */
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-      background: #02050a;
-      color: var(--cream);
-      font-family: Georgia, "Times New Roman", serif;
-    }
-
-    button,
-    a {
-      font: inherit;
-    }
-
-    button {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .visually-hidden {
-      position: absolute !important;
-      width: 1px !important;
-      height: 1px !important;
-      padding: 0 !important;
-      margin: -1px !important;
-      overflow: hidden !important;
-      clip: rect(0, 0, 0, 0) !important;
-      white-space: nowrap !important;
-      border: 0 !important;
-    }
-
-    [hidden] {
-      display: none !important;
-    }
-
-    body {
-      display: grid;
-      place-items: center;
-    }
-
-    .office-page {
-      position: fixed;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 50%, rgba(20, 34, 52, 0.36), transparent 58%),
-        #02050a;
-    }
-
-    /*
-      The stage always stays 3:2, matching founder-office-room.png.
-      It fits completely inside every screen without scrolling.
-    */
-    .room-stage {
-      position: relative;
-      width: min(100vw, calc(100dvh * var(--room-ratio)));
-      height: min(100dvh, calc(100vw / var(--room-ratio)));
-      aspect-ratio: 3 / 2;
-      overflow: hidden;
-      isolation: isolate;
-      background: #07101d;
-      box-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
-    }
-
-    .room-image {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: fill;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none;
-      transition: filter 900ms ease, transform 900ms ease;
-    }
-
-    /* Lamp-controlled atmosphere */
-    .warmth,
-    .gold-bloom,
-    .chair-aura {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 850ms ease, filter 850ms ease;
-    }
-
-    .warmth {
-      background:
-        radial-gradient(circle at 60% 57%,
-          rgba(255, 213, 119, 0.34) 0%,
-          rgba(255, 174, 70, 0.18) 12%,
-          rgba(255, 153, 46, 0.08) 26%,
-          transparent 48%);
-      mix-blend-mode: screen;
-    }
-
-    .gold-bloom {
-      background:
-        radial-gradient(ellipse at 50% 51%, rgba(255, 221, 135, 0.14), transparent 42%),
-        linear-gradient(90deg, rgba(255, 202, 86, 0.05), transparent 28%, transparent 72%, rgba(255, 202, 86, 0.05));
-      box-shadow:
-        inset 0 0 85px rgba(255, 192, 70, 0.08),
-        inset 0 0 18px rgba(255, 223, 151, 0.08);
-      mix-blend-mode: screen;
-    }
-
-    .chair-aura {
-      inset: auto;
-      left: 42%;
-      top: 43%;
-      width: 16%;
-      height: 23%;
-      border-radius: 50%;
-      background: radial-gradient(circle,
-        rgba(255, 230, 157, 0.72) 0%,
-        rgba(255, 195, 72, 0.30) 24%,
-        rgba(255, 177, 41, 0.10) 48%,
-        transparent 74%);
-      filter: blur(6px);
-      mix-blend-mode: screen;
-    }
-
-    .chair-crest {
-      position: absolute;
-      z-index: 4;
-      left: 47.25%;
-      top: 47.25%;
-      width: 5.5%;
-      aspect-ratio: 1;
-      object-fit: contain;
-      pointer-events: none;
-      filter: sepia(.18) saturate(1.25) drop-shadow(0 2px 4px rgba(0,0,0,.7));
-      opacity: .92;
-    }
-
-    body.light-stage-1 .room-image {
-      filter: brightness(1.035) saturate(1.05);
-    }
-
-    body.light-stage-1 .warmth {
-      opacity: 0.48;
-    }
-
-    body.light-stage-1 .gold-bloom {
-      opacity: 0.32;
-    }
-
-    body.light-stage-1 .chair-aura {
-      opacity: 0.30;
-      animation: chair-breathe 2.8s ease-in-out infinite;
-    }
-
-    body.light-stage-2 .room-image {
-      filter: brightness(1.10) saturate(1.12) contrast(1.02);
-    }
-
-    body.light-stage-2 .warmth {
-      opacity: 0.92;
-    }
-
-    body.light-stage-2 .gold-bloom {
-      opacity: 0.88;
-    }
-
-    body.light-stage-2 .chair-aura {
-      opacity: 0.88;
-      filter: blur(4px);
-      animation: chair-breathe 1.8s ease-in-out infinite;
-    }
-
-    @keyframes chair-breathe {
-      0%, 100% { transform: scale(0.96); }
-      50% { transform: scale(1.08); }
-    }
-
-    /* Invisible interactive regions positioned by percentages */
-    .hotspot {
-      position: absolute;
-      z-index: 5;
-      left: var(--x);
-      top: var(--y);
-      width: var(--w);
-      height: var(--h);
-      padding: 0;
-      border: 0;
-      border-radius: 12px;
-      background: transparent;
-      cursor: pointer;
-      touch-action: manipulation;
-    }
-
-    .hotspot::after {
-      content: "";
-      position: absolute;
-      inset: -3px;
-      border: 1px solid transparent;
-      border-radius: inherit;
-      transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
-    }
-
-    .hotspot:hover::after,
-    .hotspot:focus-visible::after {
-      border-color: rgba(255, 222, 138, 0.72);
-      background: rgba(255, 210, 100, 0.035);
-      box-shadow:
-        0 0 16px rgba(255, 201, 87, 0.30),
-        inset 0 0 14px rgba(255, 210, 110, 0.08);
-      outline: none;
-    }
-
-    .hotspot:focus-visible {
-      outline: none;
-    }
-
-    .hotspot[data-panel="chair"][aria-disabled="true"] {
-      cursor: not-allowed;
-    }
-
-    .hotspot.pulse::after {
-      animation: target-pulse 1.15s ease-in-out 2;
-    }
-
-    @keyframes target-pulse {
-      0%, 100% {
-        border-color: transparent;
-        box-shadow: none;
-      }
-      50% {
-        border-color: var(--gold-bright);
-        box-shadow:
-          0 0 28px rgba(255, 217, 116, 0.85),
-          inset 0 0 18px rgba(255, 219, 120, 0.28);
-      }
-    }
-
-    /* Secret alignment helper: add ?debug=1 to the page URL */
-    body.debug-hotspots .hotspot {
-      background: rgba(0, 170, 255, 0.16);
-      border: 1px dashed #73dcff;
-    }
-
-    body.debug-hotspots .hotspot::before {
-      content: attr(aria-label);
-      position: absolute;
-      left: 0;
-      bottom: 100%;
-      padding: 2px 5px;
-      background: #00131d;
-      color: #b7efff;
-      font: 10px/1.2 Arial, sans-serif;
-      white-space: nowrap;
-    }
-
-    .home-button {
-      position: fixed;
-      z-index: 30;
-      top: max(12px, env(safe-area-inset-top));
-      left: max(12px, env(safe-area-inset-left));
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 42px;
-      padding: 8px 13px;
-      border: 1px solid rgba(215, 180, 90, 0.55);
-      border-radius: 999px;
-      color: var(--cream);
-      background: rgba(3, 9, 17, 0.78);
-      backdrop-filter: blur(10px);
-      text-decoration: none;
-      box-shadow: 0 8px 26px rgba(0, 0, 0, 0.34);
-    }
-
-    .home-button:hover,
-    .home-button:focus-visible {
-      color: #fff3c7;
-      border-color: var(--gold-bright);
-      outline: none;
-    }
-
-    .orientation-message {
-      position: fixed;
-      z-index: 32;
-      left: 50%;
-      bottom: max(16px, calc(env(safe-area-inset-bottom) + 10px));
-      transform: translateX(-50%);
-      width: min(90vw, 390px);
-      padding: 10px 16px;
-      border: 1px solid rgba(215, 180, 90, 0.55);
-      border-radius: 999px;
-      color: #fff1c7;
-      background: rgba(3, 9, 17, 0.86);
-      backdrop-filter: blur(10px);
-      text-align: center;
-      font-family: Arial, sans-serif;
-      font-size: 0.91rem;
-      letter-spacing: 0.01em;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.48);
-      display: none;
-    }
-
-    @media (orientation: portrait) and (max-width: 900px) {
-      .orientation-message {
-        display: block;
-      }
-    }
-
-    .toast {
-      position: fixed;
-      z-index: 45;
-      left: 50%;
-      bottom: max(72px, calc(env(safe-area-inset-bottom) + 62px));
-      transform: translate(-50%, 18px);
-      width: min(90vw, 520px);
-      padding: 11px 16px;
-      border: 1px solid rgba(215, 180, 90, 0.58);
-      border-radius: 12px;
-      color: #fff3cc;
-      background: rgba(4, 10, 19, 0.94);
-      text-align: center;
-      font-family: Arial, sans-serif;
-      font-size: 0.95rem;
-      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.58);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 230ms ease, transform 230ms ease;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-
-    /* Popup */
-    .modal {
-      position: fixed;
-      z-index: 100;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding:
-        max(18px, env(safe-area-inset-top))
-        max(18px, env(safe-area-inset-right))
-        max(18px, env(safe-area-inset-bottom))
-        max(18px, env(safe-area-inset-left));
-      background: rgba(0, 3, 8, 0.76);
-      backdrop-filter: blur(7px);
-    }
-
-    .modal-card {
-      position: relative;
-      width: min(92vw, 720px);
-      max-height: min(84dvh, 760px);
-      overflow: auto;
-      padding: clamp(22px, 4vw, 38px);
-      border: 1px solid rgba(215, 180, 90, 0.70);
-      border-radius: 18px;
-      background:
-        linear-gradient(145deg, rgba(15, 31, 49, 0.98), rgba(4, 11, 21, 0.99));
-      box-shadow:
-        0 30px 90px rgba(0, 0, 0, 0.78),
-        inset 0 0 50px rgba(215, 180, 90, 0.04);
-    }
-
-    .modal-card::before {
-      content: "";
-      position: absolute;
-      inset: 8px;
-      pointer-events: none;
-      border: 1px solid rgba(215, 180, 90, 0.22);
-      border-radius: 12px;
-    }
-
-    .modal-close {
-      position: sticky;
-      z-index: 3;
-      top: 0;
-      float: right;
-      width: 42px;
-      height: 42px;
-      margin: -8px -8px 4px 14px;
-      border: 1px solid rgba(215, 180, 90, 0.58);
-      border-radius: 50%;
-      color: #fff3cc;
-      background: rgba(2, 8, 16, 0.92);
-      cursor: pointer;
-    }
-
-    .modal-close:hover,
-    .modal-close:focus-visible {
-      border-color: var(--gold-bright);
-      outline: none;
-    }
-
-    .modal-kicker {
-      margin: 0 0 8px;
-      color: var(--gold);
-      font-family: Arial, sans-serif;
-      font-size: 0.77rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-    }
-
-    .modal-title {
-      margin: 0;
-      color: #fff1c7;
-      font-size: clamp(1.7rem, 5vw, 2.65rem);
-      line-height: 1.05;
-    }
-
-    .modal-subtitle {
-      margin: 9px 0 22px;
-      color: #e4c978;
-      font-size: clamp(1rem, 2.7vw, 1.18rem);
-      font-style: italic;
-    }
-
-    .modal-body {
-      color: #eee4cf;
-      font-family: Arial, sans-serif;
-      font-size: clamp(0.98rem, 2.5vw, 1.08rem);
-      line-height: 1.68;
-    }
-
-    .modal-body p {
-      margin: 0 0 1em;
-    }
-
-    .modal-body ul {
-      margin: 0 0 1em;
-      padding-left: 1.25em;
-    }
-
-    .modal-body strong {
-      color: #ffe6a6;
-    }
-
-    .modal-body a {
-      color: #ffe39a;
-      text-underline-offset: 3px;
-    }
-
-    .closing-line {
-      margin-top: 1.35em !important;
-      padding-top: 1em;
-      border-top: 1px solid rgba(215, 180, 90, 0.28);
-      color: #ffe4a1;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 1.08em;
-      font-style: italic;
-    }
-
-    /* Artifact presentation: the room stays immersive when a framed item is picked up. */
-    .modal-card.artifact-card {
-      width: min(94vw, 820px);
-      border-radius: 7px;
-      color: #241a0d;
-      background:
-        radial-gradient(circle at 18% 12%, rgba(255,255,255,.72), transparent 26%),
-        repeating-linear-gradient(0deg, rgba(91,62,26,.025) 0 1px, transparent 1px 4px),
-        linear-gradient(135deg, #fffaf0 0%, #f4e7c8 58%, #ead6aa 100%);
-      border: 10px solid #4d3216;
-      outline: 2px solid #d7b45a;
-      outline-offset: -7px;
-      box-shadow: 0 34px 100px rgba(0,0,0,.84), inset 0 0 0 2px rgba(255,236,181,.8), inset 0 0 70px rgba(116,76,23,.12);
-    }
-    .modal-card.artifact-card::before {
-      inset: 14px;
-      border: 1px solid rgba(111,75,29,.38);
-      border-radius: 1px;
-    }
-    .artifact-card .modal-close { color:#fff3cc; background:#24170c; border-color:#b88a3d; }
-    .artifact-card .modal-kicker { color:#74501f; text-align:center; letter-spacing:.22em; }
-    .artifact-card .modal-title { color:#24180b; text-align:center; font-size:clamp(1.65rem,5vw,2.8rem); }
-    .artifact-card .modal-subtitle { color:#76531f; text-align:center; }
-    .artifact-card .modal-body { color:#302417; font-family:Georgia,"Times New Roman",serif; }
-    .artifact-card .modal-body strong { color:#4e3514; }
-    .artifact-card .modal-body a { color:#5f421b; }
-    .artifact-card .closing-line { color:#5d4018; border-top-color:rgba(111,75,29,.3); text-align:center; }
-    .artifact-card .modal-body::after {
-      content:"NEW BEANSLAND";
-      display:block; width:max-content; margin:26px auto 4px; padding:10px 14px 8px;
-      border:2px double rgba(111,75,29,.55); border-radius:50%;
-      color:rgba(91,61,24,.72); font:700 .68rem/1 Arial,sans-serif; letter-spacing:.16em;
-      transform:rotate(-3deg);
-    }
-
-    /* Lightweight living-museum artifact presentation. No GLBs are loaded in production. */
-    .office-artifact-image {
-      width: min(100%, 620px);
-      margin: 0 auto 22px;
-      padding: 10px;
-      border: 1px solid rgba(215, 180, 90, .35);
-      border-radius: 14px;
-      background: radial-gradient(circle at 50% 35%, rgba(255, 226, 153, .10), transparent 48%), #07101d;
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, .38);
-    }
-
-    .office-artifact-image img {
-      display: block;
-      width: 100%;
-      max-height: min(52vh, 520px);
-      object-fit: contain;
-      border-radius: 9px;
-      background: transparent;
-    }
-
-    .office-artifact-image p {
-      margin: 8px 0 0;
-      color: #cdbf9f;
-      text-align: center;
-      font: 700 .74rem/1.4 Arial, sans-serif;
-      letter-spacing: .04em;
-    }
-
-    /* Beans and the two NBL display toys live on the floor/rug.
-       All three use the same lightweight pick-up / drag / snap-home interaction. */
-    .floor-figure {
-      --figure-dx: 0px;
-      --figure-dy: 0px;
-      --figure-tilt: 0deg;
-      position: absolute;
-      z-index: 8;
-      left: var(--figure-x);
-      top: var(--figure-y);
-      width: var(--figure-w);
-      height: var(--figure-h);
-      min-width: 54px;
-      min-height: 76px;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      transform: translate3d(var(--figure-dx), var(--figure-dy), 0) rotate(var(--figure-tilt));
-      transform-origin: 50% 90%;
-      transition:
-        transform 560ms cubic-bezier(.2,.82,.2,1),
-        filter 180ms ease;
-      filter: drop-shadow(0 10px 9px rgba(0, 0, 0, .50));
-      cursor: grab;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .floor-figure img {
-      display: block;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      object-position: center bottom;
-      pointer-events: none;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-
-    .floor-figure.is-held {
-      z-index: 26;
-      transition:
-        transform 30ms linear,
-        filter 120ms ease;
-      filter:
-        drop-shadow(0 18px 14px rgba(0, 0, 0, .68))
-        drop-shadow(0 0 13px rgba(255, 220, 133, .30));
-      cursor: grabbing;
-    }
-
-    .floor-figure:focus-visible {
-      outline: 2px solid var(--gold-bright);
-      outline-offset: 3px;
-      border-radius: 12px;
-    }
-
-    .floor-figure-tip {
-      position: absolute;
-      left: 50%;
-      bottom: -25px;
-      transform: translateX(-50%);
-      width: max-content;
-      max-width: 150px;
-      padding: 5px 8px;
-      border: 1px solid rgba(215, 180, 90, .38);
-      border-radius: 999px;
-      color: #fff0c4;
-      background: rgba(3, 9, 17, .88);
-      font: 700 10px/1.1 Arial, sans-serif;
-      letter-spacing: .02em;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 160ms ease;
-    }
-
-    .floor-figure:hover .floor-figure-tip,
-    .floor-figure:focus-visible .floor-figure-tip,
-    .floor-figure.is-held .floor-figure-tip {
-      opacity: 1;
-    }
-
-    .floor-toy-right img {
-      transform: scaleX(-1);
-    }
-
-    @media (max-width: 620px) {
-      .home-button {
-        min-height: 38px;
-        padding: 7px 11px;
-        font-size: 0.87rem;
-      }
-
-      .modal-card {
-        border-radius: 14px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        scroll-behavior: auto !important;
-        animation-duration: 0.001ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.001ms !important;
-      }
-    }
+    :root{color-scheme:dark;--navy:#081420;--panel:#102134;--gold:#e3bf72;--cream:#f4ecda;--muted:#c9cbce}
+    *,*::before,*::after{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(ellipse at 50% 0%,#162b42 0%,#081420 55%,#050b13 100%);color:var(--cream);font:17px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:#f5d89a}
+    a:focus-visible,summary:focus-visible{outline:3px solid #ffe29b;outline-offset:4px}
+    .office-reading{width:min(1100px,calc(100% - 36px));margin:auto;padding:110px 0 70px}
+    .office-back{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border:1px solid #ad8e52;border-radius:999px;text-decoration:none;background:#111e2e;color:#f4dfb7;font-weight:700;font-size:.88rem}
+    .office-intro{text-align:center;max-width:770px;margin:32px auto 30px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.22em;color:var(--gold);font-size:.74rem;font-weight:800}
+    h1{font:700 clamp(2.2rem,7vw,4.3rem)/1.1 Georgia,"Times New Roman",serif;letter-spacing:-.025em;margin:10px 0 17px}
+    .office-intro p:last-child{color:var(--muted);margin:0 auto;max-width:680px}
+    .office-room{margin:0 auto 36px;border:1px solid #9d8358;border-radius:20px;overflow:hidden;background:#060c13;box-shadow:0 22px 65px #0008}
+    .office-room img{display:block;width:100%;height:auto;max-height:600px;object-fit:contain}
+    .office-room figcaption{background:#0c1c2c;color:#d9d2c4;padding:12px 20px;text-align:center;font-size:.85rem}
+    .reading-heading{margin:0 0 8px;font:700 clamp(1.55rem,4vw,2.2rem)/1.15 Georgia,"Times New Roman",serif}
+    .reading-instructions{color:var(--muted);margin:0 0 22px}
+    .reading-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+    .reading-card{background:linear-gradient(145deg,#13273d,#0c1827);border:1px solid #6b5a40;border-radius:16px;overflow:hidden;min-width:0}
+    .reading-card[open]{border-color:#d7b45a;box-shadow:0 15px 36px #0006}
+    .reading-card summary{cursor:pointer;display:flex;align-items:center;gap:15px;list-style:none;min-height:120px;padding:15px}
+    .reading-card summary::-webkit-details-marker{display:none}
+    .reading-card summary:hover{background:#1d3148}
+    .reading-thumb{width:88px;height:88px;flex:0 0 88px;display:grid;place-items:center;overflow:hidden;border-radius:11px;background:#f0e5d0}
+    .reading-thumb img{width:100%;height:100%;object-fit:contain}
+    .reading-summary{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+    .reading-kicker{text-transform:uppercase;letter-spacing:.13em;color:var(--gold);font-size:.64rem;font-weight:800}
+    .reading-summary strong{font:700 1.19rem/1.25 Georgia,"Times New Roman",serif;color:#fff1d5}
+    .reading-subtitle{color:#c8cdd3;font-size:.78rem;line-height:1.35}
+    .reading-open{display:grid;place-items:center;width:32px;height:32px;border:1px solid #be9d59;border-radius:50%;font-size:1.25rem;font-weight:700;flex:0 0 32px;color:var(--gold)}
+    .reading-card[open] .reading-open{transform:rotate(45deg)}
+    .reading-content{padding:19px 22px 24px;border-top:1px solid #6b5a40}
+    .reading-art{margin:0 0 18px;display:grid;place-items:center;background:#f4ecdc;border-radius:12px;overflow:hidden;max-height:340px}
+    .reading-art img{max-width:100%;width:auto;max-height:340px;object-fit:contain}
+    .reading-prose{color:#ece5d8;font-size:.91rem;line-height:1.7}
+    .reading-prose p{margin:0 0 14px}
+    .reading-prose ul{padding-left:23px}
+    .reading-prose strong{color:#ffe5a7}
+    .reading-prose .closing-line{font-family:Georgia,"Times New Roman",serif;border-top:1px solid #695336;padding-top:13px;color:#f4d396;font-style:italic}
+    .future-project{margin:44px 0 0;padding:22px 25px;border:1px solid #69573e;border-radius:16px;background:#101e2d}
+    .future-project h2{font:700 1.3rem Georgia,"Times New Roman",serif;margin:0 0 6px}
+    .future-project p{margin:0;color:#d3d0ca}
+    .future-project a{font-weight:800}
+    @media(max-width:680px){.office-reading{width:min(100% - 22px,580px);padding-top:94px}.reading-grid{grid-template-columns:1fr}.reading-card summary{min-height:104px;padding:12px;gap:11px}.reading-thumb{height:72px;width:72px;flex-basis:72px}.reading-open{height:28px;width:28px;flex-basis:28px}.reading-content{padding:16px}.office-intro{margin:25px auto 26px}.office-room{border-radius:12px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
   </style>
   <script defer src="/nbl-portal.js"></script>
   <link rel="stylesheet" href="/nbl-world-header.css?v=20260930-billing-rc1">
   <script defer src="/nbl-product-plans.js?v=20260929"></script>
   <script defer src="/nbl-world-header.js?v=20261004-shopify"></script>
 </head>
-
 <body>
-  <main class="office-page" aria-label="Interactive New Beansland Founder’s Office">
-    <section class="visually-hidden" aria-labelledby="officePageTitle">
-      <h1 id="officePageTitle">The New Beansland Founder’s Office</h1>
-      <p>An interactive About page for Founder Jamel Hawkins. Explore the one-room-light lamp puzzle, the empty chair, family keepsakes, academic certificates, the desk clue, and the connected story of New Beansland.</p>
-    </section>
-    <a class="home-button" href="home.html" aria-label="Return to the New Beansland homepage">
-      <span aria-hidden="true">←</span>
-      <span>Home</span>
-    </a>
-
-    <section class="room-stage" aria-label="Touch the meaningful objects in the Founder’s Office">
-      <img
-        class="room-image"
-        src="founder-office-room.png"
-        alt="The New Beansland Founder’s Office with an empty chair, desk, lamp, family photo, Yolanda keepsake, framed degrees, Graduation Remarks, and the If it is is it banner."
-        draggable="false"
-      >
-
-      <div class="warmth" aria-hidden="true"></div>
-      <div class="gold-bloom" aria-hidden="true"></div>
-      <div class="chair-aura" aria-hidden="true"></div>
-
-      <img
-        class="chair-crest"
-        src="/official-nbl-emblem.png"
-        alt=""
-        aria-hidden="true"
-        loading="eager"
-        decoding="async"
-      >
-
-      <button
-        id="nblToyLeft"
-        class="floor-figure floor-toy-left"
-        type="button"
-        data-floor-figure
-        style="--figure-x: 25.0%; --figure-y: 73.0%; --figure-w: 9.5%; --figure-h: 22.0%;"
-        aria-label="Pick up the left NBL display toy"
-        title="NBL Toy · pick up"
-      >
-        <img src="/NBL-Model-Front.png" alt="" aria-hidden="true" draggable="false">
-        <span class="floor-figure-tip" aria-hidden="true">NBL Toy · drag & release</span>
-      </button>
-
-      <button
-        id="floorBean"
-        class="floor-figure floor-bean"
-        type="button"
-        data-floor-figure
-        style="--figure-x: 45.5%; --figure-y: 72.0%; --figure-w: 9.0%; --figure-h: 23.0%;"
-        aria-label="Pick up Beans from the rug"
-        title="Beans · pick up"
-      >
-        <img src="/beans_01_wave_nbl.png" alt="" aria-hidden="true" draggable="false">
-        <span class="floor-figure-tip" aria-hidden="true">Beans · drag & release</span>
-      </button>
-
-      <button
-        id="nblToyRight"
-        class="floor-figure floor-toy-right"
-        type="button"
-        data-floor-figure
-        style="--figure-x: 65.5%; --figure-y: 73.0%; --figure-w: 9.5%; --figure-h: 22.0%;"
-        aria-label="Pick up the right NBL display toy"
-        title="NBL Toy 2 · pick up"
-      >
-        <img src="/NBL-Model-Front.png" alt="" aria-hidden="true" draggable="false">
-        <span class="floor-figure-tip" aria-hidden="true">NBL Toy 2 · drag & release</span>
-      </button>
-
-      <!-- WALL -->
-      <button
-        class="hotspot"
-        style="--x: 6.4%; --y: 24.2%; --w: 14.7%; --h: 29.5%;"
-        data-panel="graduation"
-        aria-label="Open the framed Graduation Remarks"
-      ></button>
-
-      <button
-        class="hotspot"
-        style="--x: 35.5%; --y: 21.8%; --w: 29.3%; --h: 25.7%;"
-        data-panel="banner"
-        aria-label="Open the If it is is it New Beansland story"
-      ></button>
-
-      <button
-        class="hotspot"
-        style="--x: 68.2%; --y: 25.8%; --w: 10.3%; --h: 23.6%;"
-        data-panel="doctorate"
-        aria-label="Open the Founder doctorate degree"
-      ></button>
-
-      <button
-        class="hotspot"
-        style="--x: 79.1%; --y: 25.8%; --w: 11.3%; --h: 23.6%;"
-        data-panel="masters"
-        aria-label="Open the Founder master’s degree"
-      ></button>
-
-      <!-- DESK / CHAIR -->
-      <button
-        class="hotspot"
-        style="--x: 19.2%; --y: 50.5%; --w: 11.2%; --h: 21.3%;"
-        data-panel="family"
-        aria-label="Open the New Beansland family story"
-      ></button>
-
-      <button
-        class="hotspot"
-        style="--x: 30.5%; --y: 56.4%; --w: 13.8%; --h: 12.3%;"
-        data-panel="founder"
-        aria-label="Open Founder information"
-      ></button>
-
-      <button
-        class="hotspot"
-        style="--x: 43.3%; --y: 45.5%; --w: 14.3%; --h: 28.2%;"
-        data-panel="chair"
-        aria-label="Open the Still Walking chair message"
-        aria-disabled="true"
-      ></button>
-
-      <button
-        class="hotspot"
-        id="lampHotspot"
-        style="--x: 55.7%; --y: 46.2%; --w: 9.7%; --h: 25.5%;"
-        data-action="lamp"
-        aria-label="Touch the one-room light lamp"
-        aria-pressed="false"
-      ></button>
-
-      <button
-        class="hotspot"
-        style="--x: 64.1%; --y: 52.0%; --w: 10.2%; --h: 18.7%;"
-        data-panel="yolanda"
-        aria-label="Open the Yolanda family keepsake"
-      ></button>
-
-      <button
-        class="hotspot"
-        style="--x: 42.5%; --y: 70.7%; --w: 15.0%; --h: 10.7%;"
-        data-panel="clue"
-        aria-label="Read the clue on the front of the desk"
-      ></button>
-    </section>
-
-    <div class="orientation-message" role="status">
-      For a better experience, turn your phone sideways.
-    </div>
-
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  </main>
-
-  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
-    <article class="modal-card">
-      <button id="modalClose" class="modal-close" type="button" aria-label="Close this information">✕</button>
-      <p id="modalKicker" class="modal-kicker"></p>
-      <h1 id="modalTitle" class="modal-title"></h1>
-      <p id="modalSubtitle" class="modal-subtitle"></p>
-      <div id="modalBody" class="modal-body"></div>
-    </article>
-  </div>
-
-  <script>
-    (() => {
-      "use strict";
-
-      /*
-        To see the invisible hotspot boxes while aligning them, open:
-        founder-office.html?debug=1
-      */
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("debug") === "1") {
-        document.body.classList.add("debug-hotspots");
-      }
-
-      const artifactPanels = new Set(["graduation", "doctorate", "masters"]);
-
-      const roomPanels = {
-        founder: {
-          image: "/founder-nameplate.png",
-          imageLabel: "Founder nameplate",
-          kicker: "Founder",
-          title: "Jamel Hawkins",
-          subtitle: "Still walking. Still building.",
-          body: `
-            <p>New Beansland was built by Founder — the mind behind the stories, questions, worlds, and experiments that live here.</p>
+  <main class="office-reading">
+    <a class="office-back" href="/" aria-label="Return to New Beansland home">← New Beansland</a>
+    <header class="office-intro">
+      <p class="eyebrow">New Beansland · Founder’s Room</p>
+      <h1>Founder’s Office</h1>
+      <p>The people, memories, documents and ideas behind New Beansland. Choose an item below to read its story. No game or puzzle is required.</p>
+    </header>
+    <figure class="office-room">
+      <img src="founder-office-room.png" alt="The Founder’s Office: desk, empty chair, family keepsakes, academic records and framed artwork" decoding="async">
+      <figcaption>The Office is a place for reading and reflection.</figcaption>
+    </figure>
+    <section aria-labelledby="officeReadTitle">
+      <h2 id="officeReadTitle" class="reading-heading">Explore the Office</h2>
+      <p class="reading-instructions">Select any item to open its picture and read more. Everything is available without unlocking anything.</p>
+      <div class="reading-grid">
+<details class="reading-card" id="read-founder">
+  <summary aria-label="Read Jamel Hawkins">
+    <span class="reading-thumb"><img src="/founder-nameplate.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">Founder</span><strong>Jamel Hawkins</strong><span class="reading-subtitle">Still walking. Still building.</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/founder-nameplate.png" alt="Founder nameplate" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>New Beansland was built by Founder — the mind behind the stories, questions, worlds, and experiments that live here.</p>
             <p>This space connects books, ideas, philosophy, imagination, memory, and lived experience into one universe. It is not just a website. It is a room full of paths.</p>
             <p>Some lead to stories. Some lead to questions. Some lead to worlds. All of them lead back to intention.</p>
             <p><strong>Contact the Founder</strong><br>
             <a href="mailto:foundernewbeansland@gmail.com">foundernewbeansland@gmail.com</a></p>
             <p>Official X, YouTube, and additional New Beansland links can be added here as they are connected.</p>
-            <p class="closing-line">Builder of New Beansland. Keeper of the walk.</p>
-          `
-        },
+            <p class="closing-line">Builder of New Beansland. Keeper of the walk.</p></div>
+  </div>
+</details>
 
-        banner: {
-          kicker: "About New Beansland",
-          title: "If it is is it?",
-          subtitle: "Stories. Questions. Worlds.",
-          body: `
-            <p>New Beansland is a creative home built for people who do not just look — they notice.</p>
+<details class="reading-card" id="read-banner">
+  <summary aria-label="Read If it is is it?">
+    <span class="reading-thumb"><img src="/if-it-is-is-it-banner.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">About New Beansland</span><strong>If it is is it?</strong><span class="reading-subtitle">Stories. Questions. Worlds.</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/if-it-is-is-it-banner.png" alt="If it is is it banner" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>New Beansland is a creative home built for people who do not just look — they notice.</p>
             <p>It is a place where storytelling, philosophy, imagination, memory, and meaning can live together. The books are not isolated projects. They are connected rooms in a larger universe.</p>
             <ul>
               <li><strong>Stories</strong> for the worlds we enter.</li>
@@ -872,18 +110,34 @@
               <li><strong>Voices</strong> for the people, ideas, and presence inside it all.</li>
             </ul>
             <p>New Beansland was built by Founder as a living creative structure — a place where the books connect, the ideas continue, and the walk keeps going.</p>
-            <p class="closing-line">This is not just a page. It is a world under construction.</p>
-          `
-        },
+            <p class="closing-line">This is not just a page. It is a world under construction.</p></div>
+  </div>
+</details>
 
-        doctorate: {
-          image: "/founder-doctorate-degree.png",
-          imageLabel: "Founder doctorate degree",
-          kicker: "Founder Academic Record",
-          title: "Doctor of Narrative Architecture",
-          subtitle: "New Beansland Institute of Evidence-Based Practice",
-          body: `
-            <p>This degree represents advanced study in perception, narrative systems, worldbuilding, civic imagination, and narrative architecture.</p>
+<details class="reading-card" id="read-graduation">
+  <summary aria-label="Read Graduation Remarks">
+    <span class="reading-thumb"><img src="/founder-graduation-remarks.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">Framed Record</span><strong>Graduation Remarks</strong><span class="reading-subtitle">A speech about the work behind the walk.</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/founder-graduation-remarks.png" alt="Founder Graduation Remarks" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>This frame preserves the Founder’s Graduation Remarks as part of the office’s official history.</p>
+            <p>The message is not that the work is finished. The message is that learning how to question, inspect, imagine, and build created a responsibility to keep going.</p>
+            <p>The degree marks an achievement. The remarks explain what the achievement is for.</p>
+            <p class="closing-line">The ceremony ended. The walk did not.</p></div>
+  </div>
+</details>
+
+<details class="reading-card" id="read-doctorate">
+  <summary aria-label="Read Doctor of Narrative Architecture">
+    <span class="reading-thumb"><img src="/founder-doctorate-degree.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">Founder Academic Record</span><strong>Doctor of Narrative Architecture</strong><span class="reading-subtitle">New Beansland Institute of Evidence-Based Practice</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/founder-doctorate-degree.png" alt="Founder doctorate degree" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>This degree represents advanced study in perception, narrative systems, worldbuilding, civic imagination, and narrative architecture.</p>
             <p><strong>Areas of distinction</strong></p>
             <ul>
               <li>Story structure and universe design</li>
@@ -893,18 +147,19 @@
               <li>Connecting thought to lived experience</li>
             </ul>
             <p>It recognizes the ability to take an idea apart, understand its structure, and build a world strong enough to hold it.</p>
-            <p class="closing-line">In imagination he built.</p>
-          `
-        },
+            <p class="closing-line">In imagination he built.</p></div>
+  </div>
+</details>
 
-        masters: {
-          image: "/founder-masters-degree.png",
-          imageLabel: "Founder master’s degree",
-          kicker: "Founder Academic Record",
-          title: "Master of Applied Skepticism",
-          subtitle: "Analogical Systems · Inquiry · Evidence",
-          body: `
-            <p>This degree supports the first. It represents training in applied skepticism, analogical reasoning, inquiry, evidence, and recognizing when an idea or comparison does not fit.</p>
+<details class="reading-card" id="read-masters">
+  <summary aria-label="Read Master of Applied Skepticism">
+    <span class="reading-thumb"><img src="/founder-masters-degree.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">Founder Academic Record</span><strong>Master of Applied Skepticism</strong><span class="reading-subtitle">Analogical Systems · Inquiry · Evidence</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/founder-masters-degree.png" alt="Founder master’s degree" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>This degree supports the first. It represents training in applied skepticism, analogical reasoning, inquiry, evidence, and recognizing when an idea or comparison does not fit.</p>
             <p><strong>Core disciplines</strong></p>
             <ul>
               <li>Category recognition</li>
@@ -914,346 +169,84 @@
               <li>Knowing what room you are in</li>
             </ul>
             <p>Together, the degrees tell the story: first learn how to identify broken reasoning, then learn how to build better systems, stories, and worlds.</p>
-            <p class="closing-line">In skepticism he trusted. In understanding he built.</p>
-          `
-        },
+            <p class="closing-line">In skepticism he trusted. In understanding he built.</p></div>
+  </div>
+</details>
 
-        graduation: {
-          image: "/founder-graduation-remarks.png",
-          imageLabel: "Founder Graduation Remarks",
-          kicker: "Framed Record",
-          title: "Graduation Remarks",
-          subtitle: "A speech about the work behind the walk.",
-          body: `
-            <p>This frame preserves the Founder’s Graduation Remarks as part of the office’s official history.</p>
-            <p>The message is not that the work is finished. The message is that learning how to question, inspect, imagine, and build created a responsibility to keep going.</p>
-            <p>The degree marks an achievement. The remarks explain what the achievement is for.</p>
-            <p class="closing-line">The ceremony ended. The walk did not.</p>
-          `
-        },
-
-        yolanda: {
-          image: "/yolanda-family-keepsake.png",
-          imageLabel: "Yolanda family keepsake",
-          kicker: "Family Keepsake",
-          title: "For You, Mom",
-          subtitle: "Yolanda · The one-room light",
-          body: `
-            <p>You are my first love, my forever angel, and the reason I am who I am. Everything I do, I do for you.</p>
-            <p>The office lighting carries a quiet Easter egg from the line:</p>
+<details class="reading-card" id="read-yolanda">
+  <summary aria-label="Read For You, Mom">
+    <span class="reading-thumb"><img src="/yolanda-family-keepsake.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">Family Keepsake</span><strong>For You, Mom</strong><span class="reading-subtitle">Yolanda · The one-room light</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/yolanda-family-keepsake.png" alt="Yolanda family keepsake" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>You are my first love, my forever angel, and the reason I am who I am. Everything I do, I do for you.</p>
+            <p>The keepsake honors the line:</p>
             <p><strong>“Mama, you were magic in a one-room light.”</strong></p>
-            <p>This keepsake explains where the Founder came from. The lamp does not merely light the room; it ties the room back to Yolanda.</p>
-            <p class="closing-line">I love you.</p>
-          `
-        },
+            <p>This keepsake explains where the Founder came from. The lamp pictured in the office ties the room back to Yolanda.</p>
+            <p class="closing-line">I love you.</p></div>
+  </div>
+</details>
 
-        family: {
-          image: "/new-beansland-family-photo.png",
-          imageLabel: "New Beansland family photograph",
-          kicker: "New Beansland Family",
-          title: "Who Walks With Me",
-          subtitle: "The family was not assembled. It accumulated.",
-          body: `
-            <p>The framed photograph represents the New Beansland family — not a collection of interchangeable characters, but a family in which every member has a distinct origin, voice, personality, role, and place.</p>
+<details class="reading-card" id="read-family">
+  <summary aria-label="Read Who Walks With Me">
+    <span class="reading-thumb"><img src="/new-beansland-family-photo.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">New Beansland Family</span><strong>Who Walks With Me</strong><span class="reading-subtitle">The family was not assembled. It accumulated.</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/new-beansland-family-photo.png" alt="New Beansland family photograph" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>The framed photograph represents the New Beansland family — not a collection of interchangeable characters, but a family in which every member has a distinct origin, voice, personality, role, and place.</p>
             <p>Some arrived early. Some arrived later. Some were expected. Some became part of the environment before anyone realized the room had changed.</p>
             <p>The photograph grounds the office in the truth that the worlds were not built alone.</p>
-            <p class="closing-line">Different paths. One family.</p>
-          `
-        },
+            <p class="closing-line">Different paths. One family.</p></div>
+  </div>
+</details>
 
-        chair: {
-          image: "/official-nbl-emblem.png",
-          imageLabel: "Official New Beansland emblem",
-          kicker: "Still Walking",
-          title: "The Chair Is Empty",
-          subtitle: "The Founder is not absent.",
-          body: `
-            <p>The empty chair represents presence and purpose.</p>
+<details class="reading-card" id="read-chair">
+  <summary aria-label="Read The Chair Is Empty">
+    <span class="reading-thumb"><img src="/founder-office-room.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">Still Walking</span><strong>The Chair Is Empty</strong><span class="reading-subtitle">The Founder is not absent.</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/founder-office-room.png" alt="The Founder Office with an empty chair" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>The empty chair represents presence and purpose.</p>
             <p>The Founder is still walking, still building, and still moving through New Beansland. The chair does not mark disappearance. It marks work that continues beyond the room.</p>
-            <p class="closing-line">Still building. Still thinking. Still walking.</p>
-          `
-        },
+            <p class="closing-line">Still building. Still thinking. Still walking.</p></div>
+  </div>
+</details>
 
-        clue: {
-          kicker: "Clue",
-          title: "If it’s too dark, use a light.",
-          subtitle: "The room is telling you what to touch.",
-          body: `
-            <p>The lamp works in three touches:</p>
-            <ul>
-              <li><strong>First touch:</strong> the room begins to wake.</li>
-              <li><strong>Second touch:</strong> the walk is fully lit and the chair unlocks.</li>
-              <li><strong>Third touch:</strong> the room returns to rest.</li>
-            </ul>
-            <p class="closing-line">One room. One light.</p>
-          `
-        }
-      };
+<details class="reading-card" id="read-desk">
+  <summary aria-label="Read The Desk">
+    <span class="reading-thumb"><img src="/desk-clue-plaque.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">Founder’s Office</span><strong>The Desk</strong><span class="reading-subtitle">Where the work continues</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/desk-clue-plaque.png" alt="Founder’s desk plaque" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>The Founder’s desk is a working place, not a display case. This is where New Beansland’s ideas, books, stories, and questions keep becoming something real.</p><p class="closing-line">Work lives here.</p></div>
+  </div>
+</details>
 
-      const modal = document.getElementById("modal");
-      const modalCard = modal.querySelector(".modal-card");
-      const modalClose = document.getElementById("modalClose");
-      const modalKicker = document.getElementById("modalKicker");
-      const modalTitle = document.getElementById("modalTitle");
-      const modalSubtitle = document.getElementById("modalSubtitle");
-      const modalBody = document.getElementById("modalBody");
-      const toast = document.getElementById("toast");
-      const lampHotspot = document.getElementById("lampHotspot");
-      const chairHotspot = document.querySelector('[data-panel="chair"]');
-      const roomStage = document.querySelector(".room-stage");
-      let lastFocused = null;
-      let lampState = 0;
-      let toastTimer = null;
-
-      function showToast(message) {
-        window.clearTimeout(toastTimer);
-        toast.textContent = message;
-        toast.classList.add("show");
-        toastTimer = window.setTimeout(() => {
-          toast.classList.remove("show");
-        }, 2600);
-      }
-
-      function openPanel(panelName) {
-        const panel = roomPanels[panelName];
-        if (!panel) return;
-
-        lastFocused = document.activeElement;
-        modalKicker.textContent = panel.kicker;
-        modalTitle.textContent = panel.title;
-        modalSubtitle.textContent = panel.subtitle;
-        modalBody.innerHTML = panel.body;
-        modalCard.classList.toggle("artifact-card", artifactPanels.has(panelName));
-
-        if (panel.image) {
-          const imageWrap = document.createElement("div");
-          imageWrap.className = "office-artifact-image";
-
-          const preview = document.createElement("img");
-          preview.src = panel.image;
-          preview.alt = panel.imageLabel || panel.title;
-          preview.loading = "eager";
-          preview.decoding = "async";
-
-          const imageHelp = document.createElement("p");
-          imageHelp.textContent = panel.imageLabel || panel.title;
-
-          imageWrap.append(preview, imageHelp);
-          modalBody.prepend(imageWrap);
-        }
-
-        modal.hidden = false;
-        document.body.style.overflow = "hidden";
-        modalClose.focus();
-      }
-
-      function closePanel() {
-        modal.hidden = true;
-        document.body.style.overflow = "";
-        if (lastFocused && typeof lastFocused.focus === "function") {
-          lastFocused.focus();
-        }
-      }
-
-      function pulseLamp() {
-        lampHotspot.classList.remove("pulse");
-        void lampHotspot.offsetWidth;
-        lampHotspot.classList.add("pulse");
-        window.setTimeout(() => lampHotspot.classList.remove("pulse"), 2500);
-      }
-
-      function setLampState(nextState) {
-        lampState = nextState;
-        document.body.classList.remove("light-stage-1", "light-stage-2");
-
-        if (lampState === 1) {
-          document.body.classList.add("light-stage-1");
-          lampHotspot.setAttribute("aria-pressed", "true");
-          chairHotspot.setAttribute("aria-disabled", "true");
-          showToast("The room is waking up. One more touch.");
-        } else if (lampState === 2) {
-          document.body.classList.add("light-stage-2");
-          lampHotspot.setAttribute("aria-pressed", "true");
-          chairHotspot.setAttribute("aria-disabled", "false");
-          chairHotspot.classList.add("pulse");
-          window.setTimeout(() => chairHotspot.classList.remove("pulse"), 2500);
-          showToast("The walk is lit. The chair is ready.");
-        } else {
-          lampHotspot.setAttribute("aria-pressed", "false");
-          chairHotspot.setAttribute("aria-disabled", "true");
-          showToast("The room returns to rest.");
-        }
-      }
-
-      /*
-        Beans and both NBL display toys share one interaction:
-        pick up / drag anywhere inside the room, release, and the figure eases back home.
-        A quick tap gives the same lightweight lift/glow without loading a 3D model.
-      */
-      const floorFigures = [...document.querySelectorAll("[data-floor-figure]")];
-
-      function setupFloorFigure(figure) {
-        let pointerId = null;
-        let startX = 0;
-        let startY = 0;
-        let baseRect = null;
-        let stageRect = null;
-        let moved = false;
-
-        const setFigureOffset = (x, y, tilt = 0) => {
-          figure.style.setProperty("--figure-dx", `${x}px`);
-          figure.style.setProperty("--figure-dy", `${y}px`);
-          figure.style.setProperty("--figure-tilt", `${tilt}deg`);
-        };
-
-        const returnFigureHome = () => {
-          pointerId = null;
-          figure.classList.remove("is-held");
-          setFigureOffset(0, 0, 0);
-        };
-
-        const liftFigure = () => {
-          figure.classList.add("is-held");
-          setFigureOffset(0, -14, 0);
-          window.setTimeout(returnFigureHome, 220);
-        };
-
-        figure.addEventListener("pointerdown", (event) => {
-          if (pointerId !== null || !roomStage) return;
-          pointerId = event.pointerId;
-          startX = event.clientX;
-          startY = event.clientY;
-          baseRect = figure.getBoundingClientRect();
-          stageRect = roomStage.getBoundingClientRect();
-          moved = false;
-          figure.classList.add("is-held");
-          figure.setPointerCapture(event.pointerId);
-          event.preventDefault();
-          event.stopPropagation();
-        });
-
-        figure.addEventListener("pointermove", (event) => {
-          if (event.pointerId !== pointerId || !baseRect || !stageRect) return;
-
-          const rawX = event.clientX - startX;
-          const rawY = event.clientY - startY;
-          if (Math.abs(rawX) > 3 || Math.abs(rawY) > 3) moved = true;
-
-          const margin = 6;
-          const minX = stageRect.left + margin - baseRect.left;
-          const maxX = stageRect.right - margin - baseRect.right;
-          const minY = stageRect.top + margin - baseRect.top;
-          const maxY = stageRect.bottom - margin - baseRect.bottom;
-
-          const nextX = Math.max(minX, Math.min(maxX, rawX));
-          const nextY = Math.max(minY, Math.min(maxY, rawY));
-          const tilt = Math.max(-8, Math.min(8, nextX / 24));
-          setFigureOffset(nextX, nextY, tilt);
-
-          event.preventDefault();
-          event.stopPropagation();
-        });
-
-        const finishFigureDrag = (event) => {
-          if (event.pointerId !== pointerId) return;
-          try {
-            if (figure.hasPointerCapture(event.pointerId)) {
-              figure.releasePointerCapture(event.pointerId);
-            }
-          } catch {
-            // The browser may already have released the pointer.
-          }
-          returnFigureHome();
-          event.preventDefault();
-          event.stopPropagation();
-        };
-
-        figure.addEventListener("pointerup", finishFigureDrag);
-        figure.addEventListener("pointercancel", finishFigureDrag);
-        figure.addEventListener("lostpointercapture", () => {
-          if (pointerId !== null) returnFigureHome();
-        });
-
-        figure.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          if (moved) {
-            moved = false;
-            return;
-          }
-          liftFigure();
-        });
-
-        figure.addEventListener("keydown", (event) => {
-          if (!["Enter", " "].includes(event.key)) return;
-          event.preventDefault();
-          liftFigure();
-        });
-      }
-
-      floorFigures.forEach(setupFloorFigure);
-
-      document.querySelectorAll(".hotspot").forEach((hotspot) => {
-        hotspot.addEventListener("click", () => {
-          const action = hotspot.dataset.action;
-          const panel = hotspot.dataset.panel;
-
-          if (action === "lamp") {
-            setLampState((lampState + 1) % 3);
-            return;
-          }
-
-          if (panel === "chair" && lampState !== 2) {
-            showToast("The chair is locked. The clue points to the light.");
-            pulseLamp();
-            return;
-          }
-
-          if (panel === "clue") {
-            openPanel(panel);
-            window.setTimeout(pulseLamp, 350);
-            return;
-          }
-
-          openPanel(panel);
-        });
-      });
-
-      modalClose.addEventListener("click", closePanel);
-
-      modal.addEventListener("click", (event) => {
-        if (event.target === modal) closePanel();
-      });
-
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape" && !modal.hidden) {
-          closePanel();
-        }
-      });
-
-      /*
-        Keep keyboard focus inside the popup while it is open.
-      */
-      modal.addEventListener("keydown", (event) => {
-        if (event.key !== "Tab") return;
-
-        const focusable = modal.querySelectorAll(
-          'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        if (!focusable.length) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      });
-    })();
-  </script>
+<details class="reading-card" id="read-light">
+  <summary aria-label="Read The One-Room Light">
+    <span class="reading-thumb"><img src="/nbl-office-lamp.png" alt="" loading="lazy" decoding="async"></span>
+    <span class="reading-summary"><span class="reading-kicker">Family &amp; Memory</span><strong>The One-Room Light</strong><span class="reading-subtitle">A story behind the lamp</span></span>
+    <span class="reading-open" aria-hidden="true">+</span>
+  </summary>
+  <div class="reading-content">
+    <figure class="reading-art"><img src="/nbl-office-lamp.png" alt="The office lamp" loading="lazy" decoding="async"></figure>
+    <div class="reading-prose"><p>The lamp in the Founder’s Office represents the memory of Yolanda and the words, “Mama, you were magic in a one-room light.”</p><p>There is nothing to unlock. This is simply one of the stories that gives the room its meaning.</p><p class="closing-line">One room. One light.</p></div>
+  </div>
+</details>
+      </div>
+    </section>
+    <aside class="future-project" aria-label="Future museum and games">
+      <h2>3D Museum &amp; Games · Coming Soon</h2>
+      <p>The interactive museum project remains under construction with <a href="/games.html">NBL Games</a>. The Founder’s Office is for reading.</p>
+    </aside>
+  </main>
 </body>
 </html>
