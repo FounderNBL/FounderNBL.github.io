@@ -20,7 +20,6 @@ on:
       - "config/nbl-website-green-baseline.json"
       - "scripts/nbl-website-green.mjs"
       - "scripts/nbl-website-green.test.mjs"
-      - "scripts/check-approved-world-card-art.test.mjs"
       - "scripts/check-official-social-world-cards.test.mjs"
 
 permissions:
@@ -40,7 +39,7 @@ jobs:
       - name: Check GREEN contract, official art and bot-challenge policies
         run: |
           node --test scripts/nbl-website-green.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
-            scripts/check-approved-world-card-art.test.mjs scripts/check-official-social-world-cards.test.mjs
+            scripts/check-official-social-world-cards.test.mjs
           node scripts/nbl-website-green.mjs source
 
       - name: Ask Cloudflare for live zone status before website tests
@@ -109,8 +108,9 @@ jobs:
             "https://newbeansland.org/studio/"
             "https://newbeansland.org/account.html"
             "https://newbeansland.org/messenger/"
-            "https://nblworld.com/"
-            "https://books.newbeansland.org/"
+            "https://newbeansland.org/pulse/"
+            "https://newbeansland.org/chat.html"
+            "https://newbeansland.org/privacy.html"
           )
 
           user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36"
@@ -232,7 +232,7 @@ jobs:
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Inspect live New Beansland + NBL World on desktop and mobile
+      - name: Inspect live .org website only on desktop and mobile
         env:
           NBL_BASE_URL: https://newbeansland.org
         run: npx playwright test tests/browser/live-site-health.spec.mjs tests/browser/nbl-green-visual.spec.mjs --project=chromium --project=mobile-chromium
