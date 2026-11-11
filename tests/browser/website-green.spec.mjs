@@ -14,9 +14,12 @@ async function pageOrUnverified(page,path="/"){
 }
 test("The six NBL World cards remain laid out without opening held destinations",async({page})=>{
   await pageOrUnverified(page);
-  const cards=page.locator(".world-grid .world-card");
-  await expect(cards).toHaveCount(6);
-  // Inspect public homepage presentation only, NOT the held University/game links.
+  // Public storefront links only. Never inspect University or games, even as cards.
+  const cards=page.locator('.world-grid .world-card[href="clothing.html"],'+
+    '.world-grid .world-card[href="books.html"],'+
+    '.world-grid .world-card[href="studio/"],'+
+    '.world-grid .world-card[href="studios.html"]');
+  await expect(cards).toHaveCount(4);
   const sizes=await cards.evaluateAll(nodes=>nodes.map(n=>({
     width:n.getBoundingClientRect().width,height:n.getBoundingClientRect().height
   })));
