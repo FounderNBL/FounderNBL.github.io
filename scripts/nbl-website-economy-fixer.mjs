@@ -148,6 +148,10 @@ export async function run({base=join(root,"repair-target"),read=readFileSync,wri
   how="small_model_"+MODEL;
  }
  if(result.status!=="edit")throw Error("fixer_cannot_propose_safe_patch");
+ const incidentPaths=new Set(incident.selected.map(x=>checkedPath(x.file)));
+ // Even an allowed file is wrong if it is unrelated to THIS incident.
+ if(result.edits.some(e=>!incidentPaths.has(e.path)))
+   throw Error("proposed_edit_outside_current_incident");
  const files=applyEdits(base,result.edits,{read,write});
  const receipt={schema:1,incident:incident.incident,engine:how,modelCalls:local?0:1,
   files,reason:result.reason,usage,at:new Date().toISOString(),testStatus:"AWAITING_INDEPENDENT_RETEST"};
