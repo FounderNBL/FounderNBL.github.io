@@ -27,13 +27,15 @@ test("reuse canonical Cloudflare Inspector credential, never require a duplicate
   assert.doesNotMatch(workflow,/run:\s*.*echo.*\$\{\{\s*secrets\./);
 });
 
-test("health monitoring is scheduled against live websites, not triggered by release/code pushes",()=>{
+test("the live website uses the Founder-approved six-hour full inspection and no release-push monitoring",()=>{
   const head=workflow.split("permissions:")[0];
   assert.doesNotMatch(head,/\n  push:/);
-  assert.match(head,/17 \* \* \* \*/);
+  // Founder now requires a FULL site-wide inspection every six hours, not hourly.
+  assert.match(head,/17 \\*\\/6 \\* \\* \\*/);
   assert.equal(head.includes('23 14 * * *'), false);
-  assert.ok(workflow.includes('run_deep'));
-  assert.ok(workflow.includes('date -u +%H'));
+  assert.doesNotMatch(head,/17 \\* \\* \\* \\*/);
+  assert.doesNotMatch(workflow,/run_deep|date -u \\+%H/);
+  assert.match(workflow,/if: \\$\\{\\{ github\\.event_name != 'pull_request' \\$\\}\\}/);
   assert.doesNotMatch(workflow,/https:\/\/nblschool\.com\//);
   assert.match(workflow,/https:\/\/newbeansland\.org\/messenger\//);
   assert.match(workflow,/https:\/\/books\.newbeansland\.org\//);
