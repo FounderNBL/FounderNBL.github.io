@@ -5,9 +5,18 @@ on:
   schedule:
     # Lightweight production route inspection every hour. NBLU held by Founder.
     - cron: "17 * * * *"
-    # Targeted LIVE website browser inspection once per day (no build/version tests).
-    - cron: "23 14 * * *"
+    # The daily deep browser check joins the 14:00 UTC hourly inspection.
   workflow_dispatch:
+  # Local-only source checks on PR; live route/browser jobs are schedule/manual only.
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/nbl-live-production-watch.yml"
+      - "tests/browser/**"
+      - "playwright.config.mjs"
+      - "reader.html"
+      - "nbl-reader.js"
+      - "index.html"
 
 permissions:
   contents: read
@@ -16,9 +25,22 @@ permissions:
 jobs:
   cloudflare-preflight:
     name: Cloudflare · security handshake first
+    if: ${{ github.event_name != 'pull_request' }}
+    outputs:
+      run_deep: ${{ steps.daily_deep_scope.outputs.run_deep }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
+      - name: Decide deep browser inspection in this hourly run
+        id: daily_deep_scope
+        shell: bash
+        run: |
+          # Manual request always includes deep; routine deep runs at 14 UTC.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$(date -u +%H)" = "14" ]; then
+            echo "run_deep=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_deep=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Check out Inspector configuration
         uses: actions/checkout@v7
 
@@ -180,7 +202,7 @@ jobs:
   deep-browser-inspection:
     name: Health Inspector · external desktop + mobile
     needs: cloudflare-preflight
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '23 14 * * *' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.cloudflare-preflight.outputs.run_deep == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -242,3 +264,57 @@ jobs:
           if [ -n "$existing" ]; then
             gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Automated external browser checks completed without a test failure. Do not auto-close this incident: a Cloudflare-challenged test may be UNVERIFIED, and independent visitor/device proof is required. Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           fi
+
+      # Consolidated from former daily internal-source-browser workflow.
+      # Reuse the Chromium install from the external inspection on the same runner.
+      - name: Inspect local website source in desktop and mobile browsers
+        if: always()
+        run: npx playwright test --project=chromium --project=mobile-chromium
+
+      - name: Document local browser inspection boundary
+        if: always()
+        run: |
+          {
+            echo "## Inspector - local source evidence"
+            echo "Local source PASS does not prove live deployment, customer checkout or real device access."
+            echo "Cloudflare stays in front of all production-route checks."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Preserve local browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nbl-internal-source-browser-failures
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  local-source-pr:
+    # Local source validation remains available to PRs; never visit production in this job.
+    if: ${{ github.event_name == 'pull_request' }}
+    name: Inspector · local source PR regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - run: npm install --no-save @playwright/test@latest
+      - run: npx playwright install --with-deps chromium
+      - name: Test source-only desktop and mobile browsers
+        run: npx playwright test --project=chromium --project=mobile-chromium
+      - name: Upload local PR browser failure proof
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nbl-local-source-pr-failures
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14
