@@ -34,7 +34,12 @@ test("Patches cannot rename or replace binaries",()=>{
 test("Only independently verified source and browser retests become reusable lessons",()=>{
  const incident={eligible:true,incident:"scoped-123",selected:[{id:"art:pulse",reason:"old art"}]};
  const verdict=checkPatch(patch("index.html"));
- assert.throws(()=>verifiedLesson(incident,verdict,{sourceTests:"PASS",independentRetest:"SKIP"}));
- const good=verifiedLesson(incident,verdict,{sourceTests:"PASS",originalFailureReproduced:true,independentRetest:"PASS"});
+ assert.throws(()=>verifiedLesson(incident,verdict,{sourceTests:"PASS",independentRetest:"SKIP"},patch("index.html")));
+ const good=verifiedLesson(incident,verdict,{sourceTests:"PASS",originalFailureReproduced:true,independentRetest:"PASS"},patch("index.html"));
  assert.equal(good.status,"independent_tests_verified_source_repair");
+ assert.equal(good.unifiedDiff,patch("index.html"));
+ assert.equal(good.patchSha256,verdict.sha256);
+ assert.ok(good.reuseRule.includes("Reproduce"));
+ assert.throws(()=>verifiedLesson(incident,verdict,{sourceTests:"PASS",originalFailureReproduced:true,independentRetest:"PASS"},patch("account.html")),
+   /memory_patch_not_the_independently_approved_source_change/);
 });
