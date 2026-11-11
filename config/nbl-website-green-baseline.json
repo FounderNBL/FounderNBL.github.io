@@ -1,0 +1,195 @@
+{
+  "schema": 1,
+  "name": "New Beansland live website — approved GREEN contract",
+  "repository": "FounderNBL/FounderNBL.github.io",
+  "site": "https://newbeansland.org",
+  "statusPolicy": {
+    "PASS": "Specific evidence matches the saved approved contract. Scope must be identified.",
+    "FAIL": "Reproducible mismatch or confirmed failing public response; Founder-visible incident.",
+    "UNVERIFIED": "Unavailable credentials, bot challenge, missing real-device or identity proof. Never count as green.",
+    "fullGreen": "Only when all required coverage areas have independently verified PASS evidence; no PASS inferred from successful workflow."
+  },
+  "schedule": {
+    "utcCron": "17 */6 * * *",
+    "mode": "one_existing_website_health_inspector",
+    "manual": true,
+    "deploy": false,
+    "repair": false
+  },
+  "scope": {
+    "allowedPublicHost": "newbeansland.org",
+    "excludedPaths": [
+      "/university.html",
+      "/university-campus.html",
+      "/campus.html",
+      "/games.html",
+      "/nblu/"
+    ],
+    "excludedOperations": [
+      "billing and Stripe",
+      "University/Grey/Virgo inspection",
+      "games/Block Boss",
+      "protected/private data",
+      "secret downloads",
+      "account mutations",
+      "deployment",
+      "paid AI calls"
+    ]
+  },
+  "source": {
+    "requiredMarkers": [
+      {
+        "id": "homepage-title",
+        "file": "index.html",
+        "all": [
+          "<title>New Beansland",
+          "id=\"nbl-pulse-door\"",
+          "class=\"pulse-world-door\""
+        ]
+      },
+      {
+        "id": "beans-identity",
+        "file": "index.html",
+        "all": [
+          "/beans_01_wave_nbl.png",
+          "id=\"nbl-beans-panel\""
+        ]
+      },
+      {
+        "id": "account-door",
+        "file": "account.html",
+        "all": [
+          "<title>My Account",
+          "accounts.newbeansland.org"
+        ]
+      },
+      {
+        "id": "pulse-door",
+        "file": "pulse/index.html",
+        "all": [
+          "NBL Pulse"
+        ]
+      },
+      {
+        "id": "messenger-private-entrance",
+        "file": "messenger/index.html",
+        "all": [
+          "data-chat-guest",
+          "data-chat-app hidden",
+          "NBL Messenger"
+        ]
+      },
+      {
+        "id": "security-source-control",
+        "file": ".github/workflows/codeql.yml",
+        "all": [
+          "CodeQL"
+        ]
+      }
+    ],
+    "officialWorldArt": [
+      {
+        "id": "pulse",
+        "route": "/pulse/",
+        "sourceImage": "NBL_Pulse_World_Card.png",
+        "sha256": "7f0833f25852a2839cdbbdbdfeb3a26481acb3c674e9cb32d62079bb8af7b6e1",
+        "width": 1672,
+        "height": 941
+      },
+      {
+        "id": "messenger",
+        "route": "/messenger/",
+        "sourceImage": "NBL_Messenger_Beans_Worldcard.png",
+        "sha256": "0c6041b211aa0b1f4d32db4108a0ad440f9ea069d51ccfba7609d8a6fab1fdd7",
+        "width": 1254,
+        "height": 1254
+      }
+    ],
+    "existingRegressionSuites": [
+      "scripts/check-approved-world-card-art.test.mjs",
+      "scripts/check-official-social-world-cards.test.mjs",
+      "scripts/check-inspector-challenge-policy.test.mjs"
+    ]
+  },
+  "production": {
+    "publicPages": [
+      "/",
+      "/chat.html",
+      "/account.html",
+      "/pulse/",
+      "/messenger/",
+      "/books.html",
+      "/stories.html",
+      "/founder-office.html",
+      "/studio/",
+      "/privacy.html"
+    ],
+    "coreHealth": "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core/health",
+    "expectedCore": {
+      "service": "NBL Core",
+      "gateway": true,
+      "publicBeans": true,
+      "publicChat": "nbl-foundation-runtime",
+      "signedChat": "nbl-chat-gateway"
+    },
+    "staticArt": true,
+    "onlyReadRequests": true
+  },
+  "coverage": [
+    {
+      "id": "visual-identity",
+      "green": "Correct approved Pulse and Messenger PNG bytes and dimensions, no cropping, correct navigation on desktop/mobile",
+      "evidence": "source hash + live image hash + browser DOM",
+      "stage": "implemented"
+    },
+    {
+      "id": "routes-and-journeys",
+      "green": "Public website pages respond with HTML and correct navigation; Beans opens and Messenger signed-out state remains private",
+      "evidence": "live HTTP + browser",
+      "stage": "implemented"
+    },
+    {
+      "id": "connection-health",
+      "green": "NBL Core gateway and public Beans report healthy; Cloudflare zone configuration can be read and confirms active",
+      "evidence": "live health GET + existing Cloudflare-first handshake",
+      "stage": "implemented"
+    },
+    {
+      "id": "source-security",
+      "green": "No known credential markers in selected public pages, existing CodeQL and auth-isolation regression protection preserved",
+      "evidence": "source checks; independent security workflows",
+      "stage": "partial"
+    },
+    {
+      "id": "LOCKE",
+      "green": "Unauthenticated user is rejected, correct role/entitlement allowed, wrong account cannot access another account's records",
+      "evidence": "real scoped two-account access test without reading customer data",
+      "stage": "awaiting safe authenticated test"
+    },
+    {
+      "id": "intrusion-detection",
+      "green": "No unreviewed high-severity security alerts or unexplained protected changes in GitHub, Cloudflare, Clerk and Supabase",
+      "evidence": "provider audit logs, authenticated read-only",
+      "stage": "awaiting provider-level evidence"
+    },
+    {
+      "id": "visual-reference",
+      "green": "Desktop and mobile page match Founder-approved reference screenshots",
+      "evidence": "approved visual snapshots / diff thresholds",
+      "stage": "awaiting approved snapshots"
+    },
+    {
+      "id": "performance",
+      "green": "Page responsiveness and errors remain inside approved budgets",
+      "evidence": "repeatable browser performance history",
+      "stage": "measurement-first"
+    }
+  ],
+  "prohibitedInference": [
+    "passing source test = deployed live site",
+    "Cloudflare 403 = real outage",
+    "private service 401 = broken LOCKE",
+    "website green = no intruder without security logs",
+    "unrun visual screenshots = visual pass"
+  ]
+}
