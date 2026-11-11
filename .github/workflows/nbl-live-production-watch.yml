@@ -335,6 +335,20 @@ jobs:
           node scripts/nbl-website-green.mjs source
       - name: Source-only approved browser regression, excluding NBLU and games
         run: npx playwright test tests/browser/nbl-green-visual.spec.mjs tests/browser/beans-presence.spec.mjs tests/browser/messenger-clerk-isolation.spec.mjs --project=chromium --project=mobile-chromium
+      - name: Show Fixer credential readiness without exposing any secret
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        env:
+          NBL_FIXER_KEY_EXISTS: ${{ secrets.NBL_WEBSITE_FIXER_OPENAI_KEY != '' && 'true' || 'false' }}
+          NBL_FIXER_ENABLED: ${{ vars.NBL_WEBSITE_AI_FIXER_ENABLED == 'true' && 'true' || 'false' }}
+        run: |
+          {
+            echo "### NBL coding Fixer — credential presence only"
+            echo "Website-only OpenAI secret configured: $NBL_FIXER_KEY_EXISTS"
+            echo "Paid code repair explicitly enabled: $NBL_FIXER_ENABLED"
+            echo "No raw secrets were read into the shell or printed. This PR job does not run the model or spend API credits."
+            echo "The draft PR has not been merged; the scheduled coding Fixer is not yet active on main."
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Upload local PR browser failure proof
         if: failure()
         uses: actions/upload-artifact@v7
