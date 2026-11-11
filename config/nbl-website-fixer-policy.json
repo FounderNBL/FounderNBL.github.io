@@ -16,7 +16,7 @@
   "allowedRemembranceDir": "maintenance/verified-lessons/",
   "maxFiles": 4,
   "maxChangedLines": 250,
-  "maxPatchBytes": 65000,
+  "maxPatchBytes": 20000,
   "maxModelAttempts": 1,
   "aiDefault": "off_until_existing_site_key_and_explicit_enable",
   "requireOriginalFailure": true,
@@ -34,5 +34,9 @@
     "production deployments",
     "paid provider changes"
   ],
-  "requireFounderReviewBeforeMerge": true
+  "requireFounderReviewBeforeMerge": true,
+  "verifiedMemory": {
+    "format": "reviewed Unified Diff + source finding identifiers + hash + independent test receipt",
+    "rules": "Only store entire validated source diff after independent tests, under 20kB. Reproduce the same issue before reusing; approved lesson is not a direct execution permission."
+  }
 }
