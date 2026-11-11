@@ -8,8 +8,8 @@ const urls=[
   ["New Beansland","https://newbeansland.org/"],
   ["Beans public doorway","https://newbeansland.org/chat.html"],
   ["NBL Messenger","https://newbeansland.org/messenger/"],
-  ["NBL World","https://nblworld.com/"],
-  ["NBL Books","https://books.newbeansland.org/"]
+  ["NBL Pulse","https://newbeansland.org/pulse/"],
+  ["NBL Account","https://newbeansland.org/account.html"]
 ];
 function challenge(status,html){
   return status===401||status===403||status===429||
