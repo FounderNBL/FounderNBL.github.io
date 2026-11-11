@@ -8,12 +8,14 @@ on:
       - NBL_Studios.png
       - NBL_Clothing_Co.png
       - scripts/check-approved-world-card-art.test.mjs
+      - scripts/check-official-social-world-cards.test.mjs
       - .github/workflows/nbl-world-card-art.yml
   push:
     branches: [main]
     paths:
       - index.html
       - scripts/check-approved-world-card-art.test.mjs
+      - scripts/check-official-social-world-cards.test.mjs
       - .github/workflows/nbl-world-card-art.yml
   workflow_dispatch:
 permissions:
@@ -27,4 +29,4 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
-      - run: node --test scripts/check-approved-world-card-art.test.mjs
+      - run: node --test scripts/check-approved-world-card-art.test.mjs scripts/check-official-social-world-cards.test.mjs
