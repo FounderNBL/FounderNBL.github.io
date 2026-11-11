@@ -12,7 +12,7 @@ export function policyCheck(p=policy){
  if(p.version!==1||p.homeRepository!=="FounderNBL/FounderNBL.github.io"||
     !Array.isArray(p.allowedEditPaths)||p.allowedEditPaths.length<2||
     p.maxModelAttempts!==1||p.maxFiles>4||p.maxChangedLines>250||
-    p.maxPatchBytes>65000||p.requireIndependentRetest!==true||
+    p.maxPatchBytes>20000||p.requireIndependentRetest!==true||
     p.changeDestination!=="draft_pr_only"||p.requireFounderReviewBeforeMerge!==true)
    throw Error("repair_scope_or_budget_invalid");
  for(const path of p.allowedEditPaths){
@@ -86,15 +86,24 @@ export function checkPatch(diff, p=policy){
  if(lines>p.maxChangedLines)return {ok:false,why:"too_many_changed_lines"};
  return {ok:true,paths:touched,changedLines:lines,sha256:sha(diff)};
 }
-export function verifiedLesson(incident,verdict,verification){
+export function verifiedLesson(incident,verdict,verification,patchText){
  if(!incident?.eligible||!verdict?.ok||verification?.sourceTests!=="PASS"||
     verification?.originalFailureReproduced!==true||verification?.independentRetest!=="PASS")
   throw Error("unverified_cannot_become_memory");
+ // Store the actual approved, independently tested code, not merely a checksum.
+ // Do not trust caller-provided verdict or memory text without rechecking the diff.
+ const fresh=checkPatch(patchText);
+ if(!fresh.ok||fresh.sha256!==verdict.sha256||
+    JSON.stringify(fresh.paths)!==JSON.stringify(verdict.paths))
+  throw Error("memory_patch_not_the_independently_approved_source_change");
  return {
   schema:1,id:incident.incident,status:"independent_tests_verified_source_repair",
   originalIssue:incident.selected.map(s=>({id:s.id,reason:s.reason})),
-  rootCause:"See the specific patch and test evidence in the linked draft PR",
-  changedPaths:verdict.paths,patchSha256:verdict.sha256,
+  rootCauseEvidence:"Confirmed failing source contract: "+incident.selected.map(s=>s.id).join(", "),
+  changedPaths:fresh.paths,
+  patchSha256:fresh.sha256,
+  unifiedDiff:patchText,
+  reuseRule:"Reproduce the same source defect, verify the design authority and independently retest before proposing a similar patch; never blindly replay code.",
   testedBy:"NBL website source suite plus independent same-run browser validation",
   sourceReceipt:verification.sourceReceipt||null,
   githubRun:process.env.GITHUB_RUN_ID||null,
@@ -127,7 +136,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
    const incident=JSON.parse(readFileSync(join(root,".inspector/website-fixer-incident.json"),"utf8"));
    const diff=readFileSync(arg,"utf8"),verdict=checkPatch(diff);
    const proof=JSON.parse(readFileSync(join(root,".inspector/website-fixer-retest.json"),"utf8"));
-   const lesson=verifiedLesson(incident,verdict,proof);
+   const lesson=verifiedLesson(incident,verdict,proof,diff);
    mkdirSync(join(root,policy.allowedRemembranceDir),{recursive:true});
    writeFileSync(join(root,policy.allowedRemembranceDir,lesson.id+".json"),JSON.stringify(lesson,null,2)+"\n");
    console.log("NBL_FIXER_LESSON",JSON.stringify({id:lesson.id,verified:true}));
