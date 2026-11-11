@@ -1539,7 +1539,7 @@
           return;
         }
       }catch(error){
-        if(forceOpenAi) beansStatus.textContent=error?.message||"OpenAI voice is temporarily unavailable.";
+        if(forceOpenAi) beansStatus.textContent=error?.message||"Beans' official voice is temporarily unavailable.";
       }
     }
     try{browserSpeakBeans(value);}catch(error){beansStatus.textContent=error?.message||"Read aloud is not available.";}
@@ -2192,8 +2192,8 @@
       }
       beansVoiceMode=!beansVoiceMode;
       beansStatus.textContent=beansVoiceMode
-        ?"OpenAI voice mode is on. Tap the mic to talk; Beans will speak replies."
-        :"OpenAI voice mode is off.";
+        ?"Beans voice mode is on. Tap the mic to talk; Beans will speak with his official voice."
+        :"Beans voice mode is off.";
       return;
     }
     if(tool==="read"){
