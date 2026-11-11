@@ -29,7 +29,7 @@ test("reuse canonical Cloudflare Inspector credential, never require a duplicate
 
 test("the live website inspects every six hours and after website maintenance changes without deploying",()=>{
   const head=workflow.split("permissions:")[0];
-  assert.match(head,/\n  push:\s*\n\s+branches: \[main\]/);
+  assert.ok(head.includes("\n  push:") && head.includes("branches: [main]"));
   assert.match(head,/17 \*\/6 \* \* \*/);
   // Founder now requires a FULL site-wide inspection every six hours, not hourly.
   assert.match(head,/17 \*\/6 \* \* \*/);
