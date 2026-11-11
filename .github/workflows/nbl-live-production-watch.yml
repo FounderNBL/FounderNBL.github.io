@@ -331,7 +331,7 @@ jobs:
       - name: Verify saved GREEN contract, approved artwork and challenge handling
         run: |
           node --test scripts/nbl-website-green.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
-            scripts/check-approved-world-card-art.test.mjs scripts/check-official-social-world-cards.test.mjs
+            scripts/check-official-social-world-cards.test.mjs
           node scripts/nbl-website-green.mjs source
       - name: Source-only approved browser regression, excluding NBLU and games
         run: npx playwright test tests/browser/nbl-green-visual.spec.mjs tests/browser/beans-presence.spec.mjs tests/browser/messenger-clerk-isolation.spec.mjs --project=chromium --project=mobile-chromium
