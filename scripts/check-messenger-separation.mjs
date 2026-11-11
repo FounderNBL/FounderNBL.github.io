@@ -39,7 +39,7 @@ assert.match(website, /class="nav-pulse-launch"/);
 assert.doesNotMatch(website, /people talking to people/i);
 assert.match(website,/class="world-card messenger-world-card/);
 assert.match(website,/href="\/messenger\/"/);
-assert.match(website, /src="\/messenger\/icon\.svg"/);
+assert.match(website, /class="world-card messenger-world-card reveal"[^>]*>[\s\S]*?<img src="\/NBL_Messenger_Beans_Worldcard\.png"/);
 assert.match(app, /data-chat-featured-founder hidden/);
 assert.match(js, /action:"find_users",q:"NBLFounderOfficial"/);
 assert.match(js, /user\.verified===true/); // discoverable without Beans
