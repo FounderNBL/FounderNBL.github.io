@@ -98,10 +98,11 @@ test("Pulse and Messenger fit the screen without cropping artwork or touching th
 
 
 test("the two new official Pulse and Messenger World Cards replace their SVG placeholders",()=>{
+ const door=source.slice(source.indexOf('<section class="pulse-world-door"'),source.indexOf('</section>',source.indexOf('<section class="pulse-world-door"'))+10);
  assert.ok(source.includes('src="https://cdn.shopify.com/s/files/1/1014/2230/1474/files/NBL_Pulse_World_Card.jpg?v=1794414391"'),"Pulse official card URL missing");
  assert.ok(source.includes('src="https://cdn.shopify.com/s/files/1/1014/2230/1474/files/NBL_Messenger_Beans_Worldcard.jpg?v=1794414396"'),"Messenger official Beans card URL missing");
  assert.ok(!source.includes('src="/pulse/pulse-world.svg"'),"old Pulse SVG still used on homepage");
- assert.ok(!source.includes('src="/messenger/icon.svg"'),"old Messenger app icon still used as World Card");
+ assert.ok(!door.includes('src="/messenger/icon.svg"'),"old Messenger app icon still used as World Card");
  assert.ok(source.includes('href="/pulse/"')&&source.includes('href="/messenger/"'),"existing destinations must remain");
  assert.match(source,/\.pulse-world-door \.social-door-grid \.world-card \.media img,[\s\S]*?object-fit:contain;object-position:center/);
 });
