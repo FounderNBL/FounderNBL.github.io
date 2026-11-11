@@ -361,6 +361,39 @@ jobs:
           retention-days: 14
 
 
+  fixer-api-key-preflight:
+    # An isolated, no-checkout, read-only API ping verifies key authentication.
+    # No model inference, repo execution, patching, or paid Codex call.
+    name: Fixer API credential authentication (no model usage)
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions: {}
+    steps:
+      - name: Authenticate against the OpenAI models metadata endpoint
+        env:
+          NBL_API_KEY: ${{ secrets.NBL_WEBSITE_FIXER_OPENAI_KEY }}
+        run: |
+          set -euo pipefail
+          set +x
+          if [ -z "$NBL_API_KEY" ]; then
+            echo "OPENAI_FIXER_AUTH UNVERIFIED: repository Actions secret not available"
+            exit 1
+          fi
+          status="$(curl --silent --show-error --max-time 15 --output /dev/null --write-out '%{http_code}' \
+            --header "Authorization: Bearer $NBL_API_KEY" \
+            --header "Accept: application/json" \
+            "https://api.openai.com/v1/models")" || status="000"
+          if [ "$status" = "200" ]; then
+            echo "OPENAI_FIXER_AUTH PASS: project credential authenticated (metadata request; zero inference calls)"
+          elif [ "$status" = "401" ]; then
+            echo "::error::OPENAI_FIXER_AUTH FAIL: credential rejected by OpenAI (HTTP 401)"
+            exit 1
+          else
+            echo "::warning::OPENAI_FIXER_AUTH UNVERIFIED: metadata endpoint returned HTTP $status. Project key may be scope-restricted or service temporarily unavailable."
+          fi
+          echo "No key material or API payload was stored or printed." >> "$GITHUB_STEP_SUMMARY"
+
   coding-fixer:
     # Same GitHub workflow run as the Inspector. A PASS or a mere 403/429 is not
     # a license to spend money or edit source. It only works on a reproduced,
