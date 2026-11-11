@@ -31,7 +31,9 @@ test("health monitoring is scheduled against live websites, not triggered by rel
   const head=workflow.split("permissions:")[0];
   assert.doesNotMatch(head,/\n  push:/);
   assert.match(head,/17 \* \* \* \*/);
-  assert.match(head,/23 14 \* \* \*/);
+  assert.equal(head.includes('23 14 * * *'), false);
+  assert.ok(workflow.includes('run_deep'));
+  assert.ok(workflow.includes('date -u +%H'));
   assert.doesNotMatch(workflow,/https:\/\/nblschool\.com\//);
   assert.match(workflow,/https:\/\/newbeansland\.org\/messenger\//);
   assert.match(workflow,/https:\/\/books\.newbeansland\.org\//);
