@@ -632,8 +632,8 @@
                 <button type="button" data-nbl-tool="code"><strong>Code / data analysis</strong><span>Run Python in a secure OpenAI container · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="artifact"><strong>Create a PDF / file</strong><span>Build a downloadable PDF, document, spreadsheet, CSV, or presentation · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="image"><strong>Beans · Create an image</strong><span>Ask Beans to create an image with NBL’s existing OpenAI tool · eligible membership required</span></button>
-                <button type="button" data-nbl-tool="voice-mode"><strong>OpenAI voice mode</strong><span>Speak with Beans and hear replies · eligible membership required</span></button>
-                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>OpenAI voice with verified access; browser voice otherwise</span></button>
+                <button type="button" data-nbl-tool="voice-mode"><strong>Beans voice mode</strong><span>Speak with Beans and hear his official voice · eligible membership required</span></button>
+                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>Beans’ official voice with verified access; browser voice otherwise</span></button>
               </div>
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
               <input data-nbl-still-camera type="file" accept="image/*" capture="environment" hidden>
@@ -1513,7 +1513,7 @@
         }
       },{once:true});
       beansVoiceRecorder.start();
-      beansStatus.textContent="Listening with OpenAI voice… tap the mic again to stop.";
+      beansStatus.textContent="Beans is listening… tap the mic again to stop.";
     }catch{
       stopBeansVoiceTracks();
       browserBeansDictation();
@@ -2187,7 +2187,7 @@
     if(tool==="voice-mode"){
       setBeansToolMenu(false);
       if(!(await plusVoiceEligible())){
-        beansStatus.textContent="OpenAI voice mode requires verified membership. The mic still supports browser dictation.";
+        beansStatus.textContent="Beans voice mode requires verified membership. The mic still supports browser dictation.";
         return;
       }
       beansVoiceMode=!beansVoiceMode;
