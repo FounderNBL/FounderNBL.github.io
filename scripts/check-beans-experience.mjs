@@ -6,7 +6,7 @@ const host=read("nbl-world-header.js");
 const ui=read("nbl-beans-experience.js");
 const css=read("nbl-beans-experience.css");
 const requireText=(s,needle)=>assert.ok(s.includes(needle),"Missing Beans experience contract: "+needle);
-requireText(host,'src="/nbl-beans-experience.js?v=20261107-five-free"');
+requireText(host,'src="/nbl-beans-experience.js?v=20261112-five-new-art"');
 requireText(ui,"data-nbl-customize-open");
 requireText(ui,"data-nbl-customize-tab");
 requireText(ui,"data-nbl-customize-photo");
@@ -17,11 +17,11 @@ requireText(ui,"const allowedTypes=new Set");
 requireText(ui,'["image/png","image/jpeg","image/webp","image/gif"]');
 requireText(ui,"file.size>8*1024*1024");
 for(const [key,file] of Object.entries({
- standard:"beans_01_wave_nbl.png",
- crossed:"beans_02_arms_crossed_messenger.png",
- jersey:"beans_03_jersey_wave.png",
- cargoWave:"beans_04_cargo_wave_messenger.png",
- cargoPoint:"beans_05_cargo_point_messenger.png"
+ standard:"Beans_Hi_Basic.png",
+ crossed:"Beans_Crossarmed.png",
+ jersey:"Beans_Hi_Soccer.png",
+ cargoWave:"Beans_Hi_Cargo.png",
+ cargoPoint:"Beans_Peace_Sign.png"
 })){
  requireText(ui,`${key}:Object.freeze({src:"/${file}"`);
  requireText(ui,`data-nbl-look="${key}"`);
@@ -72,9 +72,9 @@ function inspectTransparentCharacterPng(name){
 }
 
 for(const name of [
- "beans_01_wave_nbl.png","beans_02_arms_crossed_messenger.png",
- "beans_03_jersey_wave.png","beans_04_cargo_wave_messenger.png",
- "beans_05_cargo_point_messenger.png"
+ "Beans_Hi_Basic.png","Beans_Crossarmed.png",
+ "Beans_Hi_Soccer.png","Beans_Hi_Cargo.png",
+ "Beans_Peace_Sign.png"
 ]) inspectTransparentCharacterPng(name);
 requireText(ui,"3. Premium wardrobe");
 requireText(ui,"data-nbl-premium-outfits disabled aria-disabled");

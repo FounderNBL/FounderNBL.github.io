@@ -162,7 +162,7 @@ test.describe("New Beansland web app browser smoke", () => {
     const launcher = page.getByRole("button", { name: "Open Beans" });
     await expect(launcher).toBeVisible();
     const launcherImage = launcher.locator("img");
-    await expect(launcherImage).toHaveAttribute("src", "/beans_01_wave_nbl.png");
+    await expect(launcherImage).toHaveAttribute("src", "/Beans_Hi_Basic.png");
     await expect.poll(async () => launcherImage.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
     await launcher.click();
 
@@ -184,7 +184,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(drawer.getByRole("link",{name:/Privacy & AI notice/})).toHaveAttribute("href","/privacy.html");
     if(mobile)await page.getByRole("button",{name:"Close Beans menu"}).click();
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
-    await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src","/beans_01_wave_nbl.png");
+    await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src","/Beans_Hi_Basic.png");
     await expect(page.getByRole("tab",{name:"Beans"})).toBeHidden();
     await expect(page.locator("[data-nbl-quick-toggle]")).toBeHidden();
     await expect(page.locator("[data-nbl-quick-selector]")).toBeHidden();
