@@ -1,20 +1,32 @@
 name: NBL Website Health Inspector
 
-# Existing production Health Inspector is the ONE scheduled site-wide GREEN monitor.
-# Source/visual/health evidence must match config/nbl-website-green-baseline.json.
+# One NBL Maintenance Department: full website checks only on relevant changes/manual run.
+# Six-hour cron is a two-GET, model-free heartbeat; no deep scheduled sweep.
 on:
   schedule:
-    # Full approved website inspection every six hours (UTC); NBLU and games held.
+    # Minimal anonymous heartbeat only. No University, Desk, Playground or games.
     - cron: "17 */6 * * *"
   workflow_dispatch:
   push:
-    # Real post-release inspection whenever the website's maintenance contract changes.
+    # Run the deep website inspection only for relevant main source changes.
     branches: [main]
     paths:
       - ".github/workflows/nbl-live-production-watch.yml"
+      - ".github/workflows/nbl-maintenance-shared-events.yml"
       - "scripts/nbl-website-economy-fixer.mjs"
+      - "scripts/nbl-maintenance-heartbeat.mjs"
+      - "scripts/nbl-maintenance-heartbeat.test.mjs"
       - "config/nbl-website-green-baseline.json"
-      - "index.html"
+      - "**/*.html"
+      - "**/*.js"
+      - "**/*.mjs"
+      - "**/*.css"
+      - "!university/**"
+      - "!nblu/**"
+      - "!games/**"
+      - "!campus/**"
+      - "!playground/**"
+      - "!desk/**"
   # Local-only source checks on PR; live route/browser jobs are schedule/manual only.
   pull_request:
     branches: [main]
@@ -29,15 +41,44 @@ on:
       - "scripts/nbl-website-green.mjs"
       - "scripts/nbl-website-green.test.mjs"
       - "scripts/check-official-social-world-cards.test.mjs"
+      - "scripts/nbl-maintenance-heartbeat.mjs"
+      - "scripts/nbl-maintenance-heartbeat.test.mjs"
+      - ".github/workflows/nbl-maintenance-shared-events.yml"
 
 permissions:
   contents: read
   issues: write
 
 jobs:
+  security-heartbeat:
+    name: Low-cost six-hour HTTPS + Core readiness heartbeat
+    if: ${{ github.event_name == 'schedule' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout approved anonymous heartbeat
+        uses: actions/checkout@v4
+
+      - name: Verify heartbeat does not inspect held scopes or customer data
+        run: node --test scripts/nbl-maintenance-heartbeat.test.mjs
+
+      - name: Check two live endpoints, no model or private records
+        run: node scripts/nbl-maintenance-heartbeat.mjs
+
+      - name: Save heartbeat evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nbl-cheap-heartbeat-${{ github.run_id }}
+          path: .nbl-maintenance/heartbeat.json
+          if-no-files-found: warn
+          retention-days: 14
+
   cloudflare-preflight:
     name: Cloudflare · security handshake first
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'schedule' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
@@ -46,7 +87,7 @@ jobs:
 
       - name: Check GREEN contract, official art and bot-challenge policies
         run: |
-          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
+          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
             scripts/check-official-social-world-cards.test.mjs
           node scripts/nbl-website-green.mjs source
 
@@ -222,7 +263,7 @@ jobs:
   deep-browser-inspection:
     name: Health Inspector · external desktop + mobile
     needs: cloudflare-preflight
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.event_name != 'pull_request' && github.event_name != 'schedule' }}
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -338,7 +379,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Verify saved GREEN contract, approved artwork and challenge handling
         run: |
-          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
+          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
             scripts/check-official-social-world-cards.test.mjs
           node scripts/nbl-website-green.mjs source
       - name: Source-only approved browser regression, excluding NBLU and games
@@ -410,7 +451,7 @@ jobs:
     needs: [cloudflare-preflight, route-inspection, deep-browser-inspection]
     if: >-
       ${{ always() && github.ref == 'refs/heads/main' &&
-      github.event_name != 'pull_request' &&
+      github.event_name != 'pull_request' && github.event_name != 'schedule' &&
       (needs.cloudflare-preflight.result == 'failure' ||
        needs.route-inspection.result == 'failure' ||
        needs.deep-browser-inspection.result == 'failure') }}
