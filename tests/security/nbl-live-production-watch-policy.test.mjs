@@ -13,8 +13,13 @@ test("runner route recovery cannot close live route incidents", () => {
   assert.match(routeInspection, /Open or update route incident/);
 });
 
-test("Cloudflare preflight must precede ALL external Inspector visits",()=>{
-  assert.match(workflow,/jobs:\s*\n  cloudflare-preflight:/);
+test("Cloudflare preflight must precede ALL deep external route/browser inspections",()=>{
+  assert.match(workflow,/jobs:\s*\n  security-heartbeat:/);
+  assert.match(workflow,/\n  cloudflare-preflight:/);
+  // The isolated anonymous heartbeat intentionally does not require a full
+  // Cloudflare preflight. Both deep jobs still do.
+  assert.match(workflow,/route-inspection:\s*\n[\s\S]*?needs: cloudflare-preflight/);
+  assert.match(workflow,/deep-browser-inspection:\s*\n[\s\S]*?needs: cloudflare-preflight/);
   assert.equal((workflow.match(/needs: cloudflare-preflight/g)||[]).length,2);
   assert.match(workflow,/node scripts\/nbl-cloudflare-handshake\.mjs/);
   assert.match(workflow,/actions\/download-artifact@v[78]/);
