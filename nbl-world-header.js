@@ -2840,4 +2840,13 @@
       beansToolsMenu.querySelector('[data-nbl-tool="pdf-local"]')?.click();
     },0);
   }
+  // Optional website-only local model research: no impact on the Android AAB,
+  // shared NBL Core provider routing, signed-in chat, or paid API allowances.
+  if(document.getElementById("nbl-beans-panel")){
+    const researchScript=document.createElement("script");
+    researchScript.src="/nbl-beans-hf-panel.js?v=20261112";
+    researchScript.defer=true;
+    document.head.appendChild(researchScript);
+  }
+
 })();
