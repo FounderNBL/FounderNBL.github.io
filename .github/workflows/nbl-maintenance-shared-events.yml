@@ -1,0 +1,123 @@
+name: NBL Maintenance Department — shared event source inspection
+
+# One central, versioned tool for Beans, Pulse and Messenger.
+# The caller repository supplies only an enum; NO secrets, paid model, data
+# access, deployment or write permission is available to this workflow.
+on:
+  workflow_call:
+    inputs:
+      component:
+        description: Exact maintenance department component
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  affected-source:
+    name: Verify changed component — ${{ inputs.component }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: nbl-event-maintenance-${{ github.repository }}-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
+    steps:
+      - name: Verify caller repository belongs to the four-repo maintenance allowlist
+        env:
+          NBL_COMPONENT: ${{ inputs.component }}
+          NBL_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$NBL_COMPONENT:$NBL_REPO" in
+            beans:FounderNBL/Beans|pulse:FounderNBL/Pulse|messenger:FounderNBL/NBL-Messenger)
+              echo "Authorized NBL event: $NBL_COMPONENT in $NBL_REPO";;
+            *)
+              echo "::error::NBL Maintenance Department rejected an unapproved component/repository pair"
+              exit 1;;
+          esac
+
+      - name: Read only the caller's changed repository source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Use Node 22 for offline deterministic source checks
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: INSPECT / run real tests specific to the affected repository
+        id: checks
+        env:
+          NBL_COMPONENT: ${{ inputs.component }}
+        run: |
+          set -euo pipefail
+          case "$NBL_COMPONENT" in
+            beans)
+              # Five-cue Walking With the Person source, existing personality
+              # assertions, 2500 canonical/vendor parity, Other You separation.
+              # No University/Course tests or paid inference.
+              node --test scripts/check-beans-native-dialogue.test.mjs scripts/check-one-nbl-foundation-parity.test.mjs
+              ;;
+            pulse)
+              node --check web/messenger/social-v1.mjs
+              node --check web/messenger/social-video-connect.mjs
+              node --check web/messenger/app.js
+              node --check web/messenger/call.mjs
+              node web/scripts/check-source.mjs
+              ;;
+            messenger)
+              npm test
+              node --check messenger/app.js
+              node --check messenger/call.mjs
+              node --check messenger/sw.js
+              ;;
+          esac
+
+      - name: Record PASS, FAIL or UNVERIFIED, never claim an unrun repair
+        if: always()
+        env:
+          NBL_COMPONENT: ${{ inputs.component }}
+          NBL_CHECK_RESULT: ${{ steps.checks.outcome }}
+          NBL_REPO: ${{ github.repository }}
+          NBL_SHA: ${{ github.sha }}
+          NBL_EVENT: ${{ github.event_name }}
+          NBL_RUN: ${{ github.run_id }}
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import {mkdirSync,writeFileSync,appendFileSync} from "node:fs";
+          const result=process.env.NBL_CHECK_RESULT;
+          const status=result==="success"?"PASS":result==="failure"?"FAIL":"UNVERIFIED";
+          const report={
+            schema:1,department:"NBL Maintenance Department",
+            component:process.env.NBL_COMPONENT,
+            repository:process.env.NBL_REPO,
+            event:process.env.NBL_EVENT,sha:process.env.NBL_SHA,
+            runId:process.env.NBL_RUN,checkedAt:new Date().toISOString(),
+            status,repairAttempted:false,modelCalls:0,
+            sourceChecks:"real_offline_source_tests",
+            excluded:["University","Playground","Desk","games","billing","Other You activation"],
+            limitation:"This is a code-change event inspection, not proof of live user-journey behavior or a repaired source defect."
+          };
+          mkdirSync(".nbl-maintenance",{recursive:true});
+          writeFileSync(".nbl-maintenance/event-report.json",JSON.stringify(report,null,2)+"\n");
+          if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            "## NBL Maintenance Department — "+status+"\n\n"+
+            "Component: "+report.component+" · Trigger: "+report.event+
+            " · No model call, no secret or private message inspected.\n\n"+
+            "Scope: only this repository's changed approved source. "+
+            "A FAIL is not a completed repair.\n");
+          console.log("NBL_EVENT_INSPECTION",JSON.stringify({component:report.component,status,runId:report.runId}));
+          NODE
+
+      - name: Preserve the actual event evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nbl-maintenance-${{ inputs.component }}-${{ github.run_id }}
+          path: .nbl-maintenance/event-report.json
+          if-no-files-found: warn
+          retention-days: 14

@@ -13,8 +13,13 @@ test("runner route recovery cannot close live route incidents", () => {
   assert.match(routeInspection, /Open or update route incident/);
 });
 
-test("Cloudflare preflight must precede ALL external Inspector visits",()=>{
-  assert.match(workflow,/jobs:\s*\n  cloudflare-preflight:/);
+test("Cloudflare preflight must precede ALL deep external route/browser inspections",()=>{
+  assert.match(workflow,/jobs:\s*\n  security-heartbeat:/);
+  assert.match(workflow,/\n  cloudflare-preflight:/);
+  // The isolated anonymous heartbeat intentionally does not require a full
+  // Cloudflare preflight. Both deep jobs still do.
+  assert.match(workflow,/route-inspection:\s*\n[\s\S]*?needs: cloudflare-preflight/);
+  assert.match(workflow,/deep-browser-inspection:\s*\n[\s\S]*?needs: cloudflare-preflight/);
   assert.equal((workflow.match(/needs: cloudflare-preflight/g)||[]).length,2);
   assert.match(workflow,/node scripts\/nbl-cloudflare-handshake\.mjs/);
   assert.match(workflow,/actions\/download-artifact@v[78]/);
@@ -27,22 +32,21 @@ test("reuse canonical Cloudflare Inspector credential, never require a duplicate
   assert.doesNotMatch(workflow,/run:\s*.*echo.*\$\{\{\s*secrets\./);
 });
 
-test("the live website inspects every six hours and after website maintenance changes without deploying",()=>{
+test("only a cheap security heartbeat is scheduled; full browser inspection follows relevant website changes",()=>{
   const head=workflow.split("permissions:")[0];
   assert.ok(head.includes("\n  push:") && head.includes("branches: [main]"));
   assert.match(head,/17 \*\/6 \* \* \*/);
-  // Founder now requires a FULL site-wide inspection every six hours, not hourly.
-  assert.match(head,/17 \*\/6 \* \* \*/);
-  assert.equal(head.includes('23 14 * * *'), false);
   assert.doesNotMatch(head,/17 \* \* \* \*/);
-  assert.doesNotMatch(workflow,/run_deep|date -u \+%H/);
-  assert.ok(workflow.includes("github.event_name != 'pull_request'"));
+  assert.match(workflow,/  security-heartbeat:\n[\s\S]*?github\.event_name == 'schedule'/);
+  assert.match(workflow,/node scripts\/nbl-maintenance-heartbeat\.mjs/);
+  assert.match(workflow,/  cloudflare-preflight:\n[\s\S]*?github\.event_name != 'schedule'/);
+  assert.match(workflow,/  deep-browser-inspection:\n[\s\S]*?github\.event_name != 'schedule'/);
+  assert.match(workflow,/npx playwright test tests\/browser\/live-site-health\.spec\.mjs/);
+  for(const held of ["!university/**","!nblu/**","!games/**","!playground/**","!desk/**"])
+    assert.ok(head.includes(held),"Held source must not trigger full site sweep: "+held);
   assert.doesNotMatch(workflow,/https:\/\/nblschool\.com\//);
-  assert.match(workflow,/https:\/\/newbeansland\.org\/messenger\//);
-  assert.match(workflow,/https:\/\/newbeansland\.org\/pulse\//);
   assert.doesNotMatch(workflow,/https:\/\/books\.newbeansland\.org\//);
   assert.doesNotMatch(workflow,/https:\/\/nblworld\.com\//);
-  assert.match(workflow,/npx playwright test tests\/browser\/live-site-health\.spec\.mjs/);
   assert.doesNotMatch(workflow,/NBL_EXPECT_BILLING_LIVE|Wait for the deployed Chat asset/);
 });
 
