@@ -243,3 +243,11 @@ footer a{color:#eac682}
 .incoming-call-card [data-chat-incoming-decline]{border-color:#8d6571;background:#3b2736;color:#ffe5e9}
 .incoming-call-card [data-chat-incoming-decline]:hover{background:#523040}
 @media(max-width:790px){.conversation-head>.video-call-primary{margin-left:auto;padding:8px 10px;min-height:40px}.conversation-head>.video-call-primary span{display:none}.conversation-head>.thread-menu{margin-left:0}.sidebar .notification-settings{margin:16px 3px}.incoming-video-call{padding:15px}}
+
+/* Find real conversations quickly, without exposing private messages to external search. */
+.thread-search{position:relative;display:flex;align-items:center;margin:0 3px 15px;color:#c0cad5}
+.thread-search svg{position:absolute;left:13px;z-index:1;pointer-events:none}
+.thread-search input{width:100%;min-height:43px;padding:10px 15px 10px 41px;border:1px solid #3e5063;border-radius:13px;background:#1b2b3d;color:#fff;font-size:.84rem;outline-offset:2px}
+.thread-search input:focus{border-color:#dfb774;box-shadow:0 0 0 2px #c7964e30}
+.thread-search input::placeholder{color:#aebaca}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
