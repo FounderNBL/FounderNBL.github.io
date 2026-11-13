@@ -22,7 +22,7 @@
     films:'/NBL-Films%20(1).png?v=047cbdd6',
     music:'/NBL-Music%20(2).png?v=246fee0f',
     studios:'/NBL-Studios%20(1).png?v=ef98576f',
-    homepage:'/assets/site/homepage/nbl-night-campus-2026.jpg?v=20261113',
+    homepage:'/assets/site/homepage/nbl-night-campus-2026.png?v=20261113',
     doctorFront:'/assets/books/doctor-rocketship/standard-front.png?v=29d94c6f',
     doctorBack:'/assets/books/doctor-rocketship/standard-back.png?v=8820a16c'
   };
