@@ -15,7 +15,7 @@ const usernameForm=document.querySelector("[data-nbl-university-username-form]")
 const usernameInput=usernameForm?.querySelector('[name="username"]');
 const usernameStatus=usernameForm?.querySelector("[data-nbl-university-username-status]");
 const signin=()=> "https://accounts.newbeansland.org/sign-in?redirect_url="+
- encodeURIComponent("https://newbeansland.org/university.html#early-registration");
+ encodeURIComponent("https://newbeansland.org/university-updates.html#early-registration");
 const setStatus=text=>{status.textContent=text;};
 let running=false;
 const setRunning=value=>{
