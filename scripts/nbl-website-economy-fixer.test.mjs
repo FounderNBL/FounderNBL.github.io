@@ -163,3 +163,23 @@ test("Ranked memory retries safely when earlier candidate patch does not match e
  assert.equal(applied,1);
  assert.equal(out.lessonId,"website-green-bbbbbbbbbbbb");
 });
+
+test("Later independently verified failures lower a remembered recipe's score",()=>{
+ const patch="diff --git a/index.html b/index.html\nindex 111..222 100644\n--- a/index.html\n+++ b/index.html\n@@ -1 +1 @@\n-old\n+new\n";
+ const id="website-green-aaaaaaaaaaaa";
+ const entry=JSON.stringify({id,status:"independent_tests_verified_source_repair",
+  approval:"Founder must review draft PR; only merged lessons are available on main",
+  originalIssue:[{id:"art:pulse"}],changedPaths:["index.html"],
+  patchSha256:createHash("sha256").update(patch).digest("hex"),
+  unifiedDiff:patch,successCount:1,failureCount:0});
+ const basic={list:()=>[id+".json"],read:()=>entry};
+ const before=rankReviewedLessons({...incident,incident:id},"/repair",basic);
+ const after=rankReviewedLessons({...incident,incident:id},"/repair",{
+  ...basic,historyCounts:{[id]:{success:0,failure:3}}
+ });
+ assert.equal(before.length,1);
+ assert.equal(after.length,1);
+ assert.ok(after[0].score<before[0].score);
+ assert.equal(after[0].failureCount,3);
+ assert.equal(after[0].executionAuthorized,false);
+});
