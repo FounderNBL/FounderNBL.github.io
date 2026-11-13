@@ -91,6 +91,11 @@
     <section class="chat-app" data-chat-app hidden aria-label="NBL Messenger">
       <aside class="sidebar">
         <div class="sidebar-heading"><h2>Messages</h2><button class="btn small" type="button" data-chat-refresh>Refresh</button></div>
+        <div class="thread-search">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+          <label for="messenger-thread-filter" class="sr-only">Search conversations</label>
+          <input id="messenger-thread-filter" data-chat-thread-search type="search" placeholder="Search conversations" autocomplete="off">
+        </div>
         <div data-chat-threads aria-label="Your conversations"></div>
         <section class="featured-founder" data-chat-featured-founder hidden aria-label="Meet the New Beansland Founder">
           <div class="featured-founder-avatar" aria-hidden="true">NBL</div>
