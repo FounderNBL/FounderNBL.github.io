@@ -8,6 +8,7 @@ import {join,resolve,dirname} from "node:path";
 import {fileURLToPath} from "node:url";
 import {policy,policyCheck,checkPatch} from "./nbl-website-fixer.mjs";
 import {contract} from "./nbl-website-green.mjs";
+import {readVerifiedRepairOutcomes} from "./nbl-foundation-repair-events.mjs";
 const root=resolve(dirname(fileURLToPath(import.meta.url)),"..");
 export const MODEL="gpt-6-luna";
 export const MAX_OUTPUT_TOKENS=2200;
@@ -63,7 +64,7 @@ export function recipeEdits(incident,read,base){
 // Foundation's verified-memory policy. Only lessons already merged into
 // main are eligible; no second agent/model, self-approval or blind replay.
 // Keep ranking factors aligned with Foundation's verified-repair-memory.
-export function rankReviewedLessons(incident,base,{read=readFileSync,list=readdirSync}={}){
+export function rankReviewedLessons(incident,base,{read=readFileSync,list=readdirSync,historyCounts={}}={}){
  if(!incident?.eligible||!incident.incident||!Array.isArray(incident.selected)||
     incident.targetRepo!==policy.homeRepository)return [];
  const allowed=new Set(incident.selected.map(x=>checkedPath(x.file)));
@@ -90,10 +91,13 @@ export function rankReviewedLessons(incident,base,{read=readFileSync,list=readdi
    const fileOverlap=guard.paths.filter(p=>allowed.has(p)).length;
    // A generic shared file cannot establish a safe reusable correction.
    if(!sameSignature&&(!symptomOverlap||!fileOverlap))continue;
-   const success=Number.isSafeInteger(lesson.successCount)&&lesson.successCount>0&&
-     lesson.successCount<=100000?lesson.successCount:1;
-   const failure=Number.isSafeInteger(lesson.failureCount)&&lesson.failureCount>=0&&
-     lesson.failureCount<=100000?lesson.failureCount:0;
+   const history=historyCounts?.[lesson.id];
+   const provenSuccess=Number.isSafeInteger(history?.success)&&history.success>=0&&history.success<=1000?history.success:0;
+   const provenFailure=Number.isSafeInteger(history?.failure)&&history.failure>=0&&history.failure<=1000?history.failure:0;
+   const success=(Number.isSafeInteger(lesson.successCount)&&lesson.successCount>0&&
+     lesson.successCount<=100000?lesson.successCount:1)+provenSuccess;
+   const failure=(Number.isSafeInteger(lesson.failureCount)&&lesson.failureCount>=0&&
+     lesson.failureCount<=100000?lesson.failureCount:0)+provenFailure;
    const score=50*Number(sameSignature)+Math.min(symptomOverlap,3)*12+
      Math.min(fileOverlap,3)*6+
      20*Number(typeof lesson.sourceRevision==="string"&&/^[a-f0-9]{40}$/.test(lesson.sourceRevision)&&lesson.sourceRevision===process.env.GITHUB_SHA)+
@@ -109,9 +113,9 @@ export function rankReviewedLessons(incident,base,{read=readFileSync,list=readdi
 // against the current approved paths and then the existing independent site,
 // browser and Founder PR gates still apply.
 export function replayReviewedLesson(incident,base,{
-  read=readFileSync,list=readdirSync,spawn=spawnSync
+  read=readFileSync,list=readdirSync,spawn=spawnSync,historyCounts={}
 }={}){
- for(const lesson of rankReviewedLessons(incident,base,{read,list})){
+ for(const lesson of rankReviewedLessons(incident,base,{read,list,historyCounts})){
   const checked=spawn("git",["-C",base,"apply","--check","-"],{
     input:lesson.unifiedDiff,encoding:"utf8",timeout:12000
   });
@@ -220,7 +224,8 @@ export async function run({base=join(root,"repair-target"),read=readFileSync,wri
  const incident=JSON.parse(read(join(root,".inspector/website-fixer-incident.json"),"utf8"));
  if(!incident.eligible||incident.targetRepo!==policy.homeRepository)
   throw Error("no_verified_site_incident");
- const remembered=replayReviewedLesson(incident,base,{read});
+ const historyCounts=await readVerifiedRepairOutcomes().catch(()=>Object.create(null));
+ const remembered=replayReviewedLesson(incident,base,{read,historyCounts});
  let files,how,usage=null,reason="";
  if(remembered){files=remembered.files;how="reviewed_git_patch";reason=remembered.reason;}
  else {
