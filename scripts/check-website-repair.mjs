@@ -251,7 +251,7 @@ requireText(header,'data-nbl-billing-plan="topup_500"',"Get More checkout contro
 requireText(header,'/billing/checkout',"Chat checkout is not routed through the server gateway.");
 requireText(header,'/billing/portal',"Billing management is not routed through the server gateway.");
 requireText(support,"Beans Starter costs $4.99 for seven days","Support must show Starter terms.");
-requireText(support,'href="/university.html#enroll"',"Support does not direct enrollment to .org.");
+forbidText(support,'href="/university.html#enroll"',"Support must not suggest paid University enrollment is open.");
 requireText(support,'href="https://nblschool.com/"',"Support must link directly to independent NBL University school.");
 forbidText(support,"and Full Foundation at","Chat support still markets the retired Full Foundation name.");
 requireText(support,"Signed-in website checkout is available from Membership &amp; plans in your NBL account for verified products","Support does not document verified signed-in Beans checkout.");
