@@ -37,7 +37,7 @@ const assetKey=(id,slot)=>"nbl.beans.local-image.v1."+id+"."+slot;
 
 const style=document.createElement("link");
 style.rel="stylesheet";
-style.href="/nbl-beans-experience.css?v=20261113-compact-composer";
+style.href="/nbl-beans-experience.css?v=20261113-beans-current-main";
 style.dataset.nblBeansExperience="true";
 document.head.appendChild(style);
 
