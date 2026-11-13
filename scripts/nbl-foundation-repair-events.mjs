@@ -126,7 +126,8 @@ async function main(){
   try{coding=JSON.parse(readFileSync(".inspector/website-fixer-coding.json","utf8"));}catch{}
   const rec=buildFoundationAttempt(i,env,coding);
   if(!rec){console.log("NBL_FOUNDATION_REPAIR_ATTEMPT_UNVERIFIED");return;}
-  const out=await upsertGithubIssue(FOUNDATION_OUTCOME_PREFIX+rec.failureId+" "+rec.caseId,renderRecord(rec));
+  // Include immutable run ID: repeated repairs must never overwrite prior outcomes.
+  const out=await upsertGithubIssue(FOUNDATION_OUTCOME_PREFIX+rec.failureId+" "+rec.caseId+" "+env.GITHUB_RUN_ID,renderRecord(rec));
   console.log("NBL_FOUNDATION_RETEST_RECEIPT",out.html_url);
  }
 }
