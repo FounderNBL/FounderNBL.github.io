@@ -485,8 +485,14 @@ function renderThreads(){
   const area=$("[data-chat-threads]");
   area.replaceChildren();
   renderInviteState();
-  if(!state.threads.length){area.append(node("p","hint","No conversations yet. Invite someone to join you."));return;}
-  for(const row of state.threads){
+  const filter=String($("[data-chat-thread-search]")?.value||"").trim().toLowerCase();
+  const visible=state.threads.filter(row=>!filter||displayThread(row).toLowerCase().includes(filter)
+    ||String(row.peer?.handle||"").toLowerCase().includes(filter));
+  if(!visible.length){
+    area.append(node("p","hint",filter?"No conversations match your search.":"No conversations yet. Invite someone to join you."));
+    return;
+  }
+  for(const row of visible){
     const item=node("button","thread"+(row.id===state.selectedId?" selected":""),displayThread(row));
     item.type="button";
     const photo=safeAvatar(row.peer?.avatarUrl);
@@ -825,6 +831,7 @@ async function syncClerkSession(){
   callFeedback("");
   $("[data-chat-threads]").replaceChildren();
   $("[data-chat-search-results]").replaceChildren();
+  $("[data-chat-thread-search]").value="";
   $("[data-chat-featured-founder]").hidden=true;
   $("[data-chat-thread-title]").textContent="Choose a conversation";
   $("[data-chat-thread-kind]").textContent="Messages";
@@ -899,6 +906,7 @@ async function boot(){
     }finally{button.disabled=false;}
   });
   $("[data-chat-refresh]").addEventListener("click",()=>{void refresh();});
+  $("[data-chat-thread-search]").addEventListener("input",renderThreads);
   $("[data-chat-mute]").addEventListener("click",()=>{void toggleMute();});
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
   $("[data-chat-unblock]").addEventListener("click",()=>{void unblockPeer();});
