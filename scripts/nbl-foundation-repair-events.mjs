@@ -88,6 +88,65 @@ export function renderRecord(record){
  return "NBL Foundation Inspector evidence (metadata only; independently verify GitHub run)\n\n"+
   "```json\n"+JSON.stringify(record,null,2)+"\n```\n";
 }
+// READ ONLY. The existing Fixer uses independently checked outcomes from
+// previous real GitHub runs to choose between *already approved* procedures.
+// An Issue body on its own never changes an accuracy score.
+export async function readVerifiedRepairOutcomes({token=process.env.GH_TOKEN||"",
+ fetcher=fetch}={}){
+ const counts=Object.create(null);
+ if(!token)return counts;
+ const request=async path=>{
+  const response=await fetcher(API+path,{method:"GET",
+   headers:{authorization:"Bearer "+token,accept:"application/vnd.github+json",
+    "x-github-api-version":"2022-11-28"},signal:AbortSignal.timeout(10000)});
+  if(!response?.ok)throw Error("foundation_repair_history_unavailable");
+  return response.json();
+ };
+ const all=await request("/issues?state=all&per_page=100");
+ if(!Array.isArray(all))return counts;
+ const pending=all.filter(x=>x?.user?.login==="github-actions[bot]"&&
+   !x.pull_request&&typeof x.title==="string"&&
+   x.title.startsWith(FOUNDATION_OUTCOME_PREFIX)).slice(0,30);
+ for(const item of pending){
+  try{
+   const matched=/^\[NBL FOUNDATION OUTCOME\] (website-green-[a-f0-9]{12}) (website-green-[a-f0-9]{12}) ([1-9][0-9]{0,15})$/.exec(item.title);
+   if(!matched)continue;
+   const raw=typeof item.body==="string"?item.body.match(/(?:^|\n)```json\n([\s\S]{1,15000}?)\n```(?:\n|$)/):null;
+   if(!raw)continue;
+   const x=JSON.parse(raw[1]);
+   const expectedRun=runUrl(matched[3]);
+   if(x.schema!=="nbl.foundation.independent-repair-observation.v1"||
+      x.failureId!==matched[1]||x.caseId!==matched[2]||
+      x.procedureOrigin!=="reviewed-case"||
+      x.procedureId!=="website.source-patch-"+matched[2]||
+      x.attemptRef!==expectedRun||x.scopeEvidenceRef!==expectedRun||
+      x.independentInspectorRef!==expectedRun||
+      x.independentlyObserved!==true||x.autoPromoted!==false||
+      x.approved!==false||!GITHUB_ID.test(x.sourceRevision||"")||
+      x.approvedExpectationRef!==baselineUrl(x.sourceRevision)||
+      !["SUCCESS","FAILED"].includes(x.verdict))continue;
+   const run=await request("/actions/runs/"+matched[3]);
+   if(run.name!=="NBL Website Health Inspector"||
+      run.head_branch!=="main"||run.head_repository?.full_name!==REPO||
+      run.head_sha!==x.sourceRevision||run.status!=="completed"||
+      run.conclusion!=="failure"||!["push","workflow_dispatch"].includes(run.event))continue;
+   const jobs=await request("/actions/runs/"+matched[3]+"/jobs?per_page=100");
+   const fixer=jobs?.jobs?.find(j=>j.name==="Verified .org failure -> NBL local recipe / tiny AI Fixer -> retest");
+   const steps=Array.isArray(fixer?.steps)?fixer.steps:[];
+   const step=name=>steps.find(z=>z.name===name)?.conclusion;
+   if(step("INSPECTOR / independently reproduce and select one repairable source defect")!=="success")continue;
+   const source=step("RETEST / original failure and full approved source regression");
+   const browser=step("RETEST / independent real browser execution desktop + mobile");
+   if(x.verdict==="SUCCESS"&&(source!=="success"||browser!=="success"))continue;
+   if(x.verdict==="FAILED"&&source!=="failure"&&browser!=="failure")continue;
+   const stats=counts[matched[2]]||{success:0,failure:0};
+   if(x.verdict==="SUCCESS")stats.success++;
+   else stats.failure++;
+   counts[matched[2]]=stats;
+  }catch{/* missing history is UNVERIFIED, never self-awarded success */}
+ }
+ return counts;
+}
 export async function upsertGithubIssue(title,body,options={}){
  const token=options.token||process.env.GH_TOKEN||"";
  const fetcher=options.fetcher||fetch;
