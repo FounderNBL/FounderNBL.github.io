@@ -91,7 +91,7 @@ jobs:
       - name: Check website Chat standard regressions
         run: |
           node scripts/check-website-chat-parity.mjs
-          node --test scripts/check-v12-beans-grey-visual.test.mjs
+          node --test scripts/check-v12-beans-grey-visual.test.mjs scripts/check-beans-web-login-layout.test.mjs
       - name: Check website-only repair regressions
         run: node scripts/check-website-repair.mjs
       - name: Verify Clerk-primary member Chat, LOCKE/University and voice security rails
