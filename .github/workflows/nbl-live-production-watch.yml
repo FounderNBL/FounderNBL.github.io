@@ -40,6 +40,8 @@ on:
       - "config/nbl-website-green-baseline.json"
       - "scripts/nbl-website-green.mjs"
       - "scripts/nbl-website-green.test.mjs"
+      - "scripts/nbl-website-green-history.mjs"
+      - "scripts/nbl-website-green-history.test.mjs"
       - "scripts/check-official-social-world-cards.test.mjs"
       - "scripts/nbl-maintenance-heartbeat.mjs"
       - "scripts/nbl-maintenance-heartbeat.test.mjs"
@@ -87,7 +89,7 @@ jobs:
 
       - name: Check GREEN contract, official art and bot-challenge policies
         run: |
-          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
+          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-green-history.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
             scripts/check-official-social-world-cards.test.mjs
           node scripts/nbl-website-green.mjs source
 
@@ -108,6 +110,10 @@ jobs:
   route-inspection:
     name: Health Inspector · live routes
     needs: cloudflare-preflight
+    permissions:
+      contents: read
+      actions: read
+      issues: write
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -124,13 +130,48 @@ jobs:
           path: .inspector
       - name: Inspect public .org pages, exact CDN artwork and NBL Core health
         run: node scripts/nbl-website-green.mjs live
-      - name: Preserve scoped GREEN source/live receipts
+      # The uploaded artifact cannot rely on hidden-directory glob behavior.
+      # Compare previous main-run independent receipts; no model spend or repairs.
+      - name: Preserve and compare independent GREEN reports
+        if: always()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p inspection-records
+          if [ ! -f .inspector/nbl-green-live.json ]; then
+            echo "::error::The Inspector produced no machine-readable live report."
+            exit 1
+          fi
+          cp .inspector/nbl-green-live.json inspection-records/nbl-green-live.json
+          previous=""
+          previous_id=""
+          runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/artifacts?name=nbl-website-green-evidence&per_page=30" --jq '.artifacts[] | select(.expired == false and .workflow_run.head_branch == "main") | .workflow_run.id' 2>/dev/null || true)"
+          for rid in $runs; do
+            if [ "$rid" = "$GITHUB_RUN_ID" ]; then continue; fi
+            prior_dir="$RUNNER_TEMP/nbl-green-prior-$rid"
+            mkdir -p "$prior_dir"
+            if gh run download "$rid" --repo "$GITHUB_REPOSITORY" --name nbl-website-green-evidence --dir "$prior_dir" >/dev/null 2>&1 && [ -f "$prior_dir/nbl-green-live.json" ]; then
+              previous="$prior_dir/nbl-green-live.json"
+              previous_id="$rid"
+              break
+            fi
+          done
+          node scripts/nbl-website-green-history.mjs inspection-records/nbl-green-live.json "$previous" inspection-records/nbl-green-history.json "$previous_id"
+          {
+            echo "### Saved inspection continuity"
+            echo "Current report saved in the nbl-website-green-evidence artifact."
+            echo "Previous main run: ${previous_id:-none verified}; missing history is not a PASS."
+            echo "No extra model call, authorized repair, or approved-content certification."
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve current GREEN report and verified history
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: nbl-website-green-evidence
-          path: .inspector/nbl-green-*.json
-          if-no-files-found: warn
+          path: inspection-records/*.json
+          if-no-files-found: error
           retention-days: 14
 
       - name: Inspect registered production routes
@@ -379,7 +420,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Verify saved GREEN contract, approved artwork and challenge handling
         run: |
-          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
+          node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-green-history.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
             scripts/check-official-social-world-cards.test.mjs
           node scripts/nbl-website-green.mjs source
       - name: Source-only approved browser regression, excluding NBLU and games
