@@ -7,6 +7,7 @@ const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT="https://accounts.newbeansland.org";
 const $=selector=>document.querySelector(selector);
 let clerk=null,client=null,call=null,owner=null,sub=null,joined=false;
+let mediaWarning="";
 const tracks=new Map();
 function status(message){$("#callStatus").textContent=String(message);}
 function validCallId(value){return typeof value==="string"&&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);}
@@ -73,13 +74,14 @@ function renderParticipants(participants){
   tracks.set(p.sessionId,{wrapper,cleanup});
   area.append(wrapper);
  }
- status(participants.length<2?"Connected. Waiting for the other person to join.":"You are connected.");
+ status((participants.length<2?"Connected. Waiting for the other person to join.":"You are connected.")
+  +(mediaWarning?" "+mediaWarning:""));
 }
 async function leave(){
  sub?.unsubscribe();sub=null;clearTracks();
  try{await call?.leave();}catch{}
  try{await client?.disconnectUser();}catch{}
- call=null;client=null;joined=false;
+ call=null;client=null;joined=false;mediaWarning="";
  $("#participants").hidden=true;
  $("#join").hidden=false;$("#leave").hidden=true;$("#camera").hidden=true;$("#microphone").hidden=true;
  status("Call left. Return to Messenger or rejoin while the invite is active.");
@@ -94,13 +96,20 @@ async function join(){
    throw Error("Video session identity verification failed.");
   client=new StreamVideoClient({apiKey:access.key,user:{id:owner},token:access.token});
   call=client.call(PRIVATE_CALL_TYPE,callId);
-  await call.camera.enable();
-  await call.microphone.enable();
+  // A blocked camera or microphone must not prevent the other participant
+  // joining the call. Keep the call available and offer controls to retry.
+  let cameraReady=true,microphoneReady=true;
+  try{await call.camera.enable();}catch{cameraReady=false;}
+  try{await call.microphone.enable();}catch{microphoneReady=false;}
+  mediaWarning=(!cameraReady||!microphoneReady)
+   ?"Camera or microphone permission is off. Use the controls to retry, or check your browser settings.":"";
   await call.join({create:false});
   if(clerk.user?.id!==owner||!clerk.isSignedIn)throw Error("Your NBL account changed.");
   joined=true;
   $("#join").hidden=true;$("#leave").hidden=false;$("#camera").hidden=false;$("#microphone").hidden=false;
   $("#participants").hidden=false;
+  $("#camera").textContent=cameraReady?"Turn camera off":"Turn camera on";
+  $("#microphone").textContent=microphoneReady?"Mute microphone":"Unmute microphone";
   call.setViewport($("#participants"));
   sub=call.state.participants$.subscribe(renderParticipants);
  }catch(error){

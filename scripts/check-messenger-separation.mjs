@@ -64,7 +64,7 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261113-call-ui'),
+assert.ok(app.includes('/messenger/app.js?v=20261113-reliability'),
   "Pulse Messenger must load the current account and call handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
@@ -141,12 +141,21 @@ assert.match(js,/IS_CALL_ID/);
 assert.match(callPage,/id="microphone"/);
 assert.match(callPage,/id="camera"/);
 assert.match(callPage,/id="leave"/);
+for(const [source,fragment,message] of [
+  [js,'linkedOwner===state.clerk?.user?.id',"Device alerts must be account-bound"],
+  [js,'if(enabled)await pushApi({action:"push_subscribe"',"Opted-in devices must re-register"],
+  [js,'if(created)await sub.unsubscribe()',"A failed registration must preserve existing subscriptions"],
+  [js,'Video call invitation expired.',"Expired call invitations cannot appear active"],
+  [js,'const atBottom=area.scrollHeight',"History position should be preserved"],
+  [callJs,'try{await call.camera.enable();}catch{cameraReady=false;}',"Camera permissions cannot prevent joining"],
+  [callJs,'try{await call.microphone.enable();}catch{microphoneReady=false;}',"Mic permissions cannot prevent joining"]
+])assert.ok(source.includes(fragment),message);
 assert.match(callJs,/videoRequest\("join"\)/);
 assert.match(callJs,/const PRIVATE_CALL_TYPE="nbl_private"/);
 assert.match(callJs,/access\.callType!==PRIVATE_CALL_TYPE/);
 assert.match(callJs,/client\.call\(PRIVATE_CALL_TYPE,callId\)/);
 assert.doesNotMatch(callJs,/client\.call\(access\.callType,callId\)|client\.call\("default"/);
 assert.match(callPage,/NBL Private · Member-only video/);
-assert.match(callPage,/call\.mjs\?v=20261109-live-ringing/);
+assert.match(callPage,/call\.mjs\?v=20261113-reliability/);
 assert.doesNotMatch(js,/STREAM_API_SECRET|VIDEO_SECRET/);
 console.log("PASS: NBL Messenger draft video invitation uses direct chats and secured call service.");
