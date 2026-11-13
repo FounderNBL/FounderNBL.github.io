@@ -6,7 +6,7 @@ const read=p=>fs.readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const pricing=read("pricing.html");
 const campus=read("campus.html");
 const campusAlias=read("university-campus.html");
-const university=read("university.html");
+const university=read("university-updates.html");
 const cashier=read("university-storefront.js");
 const header=read("nbl-world-header.js");
 const terms=read("terms.html");
