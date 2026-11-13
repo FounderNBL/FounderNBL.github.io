@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "scope": "NBL live website Beans only",
+  "note": "Merged history is guidance; NEVER executable patch memory",
+  "cases": [
+    {
+      "pr": 584,
+      "status": "merged_source_history_not_verified_replay",
+      "autoReplay": false,
+      "affectedFiles": [
+        "nbl-world-header.js",
+        "account.html",
+        "nbl-world-header.css"
+      ],
+      "problem": "Beans could show sign-in even with an existing shared Clerk session; desktop drawer was hidden or overlapped at laptop widths.",
+      "sourceFix": "Reuse preloaded Clerk singleton, retry transient JWT readiness, align drawer breakpoint 1200px, preserve scrolling.",
+      "prevention": "Retain account session and real browser layout regressions."
+    },
+    {
+      "pr": 586,
+      "status": "merged_source_history_not_verified_replay",
+      "autoReplay": false,
+      "affectedFiles": [
+        "nbl-world-header.js",
+        "nbl-beans-experience.js",
+        "nbl-world-header.css"
+      ],
+      "problem": "Beans welcome stayed large; voice controls squeezed text input.",
+      "sourceFix": "Dismiss welcome after a short interval or interaction; flex text grows while voice/brain controls remain fixed size.",
+      "prevention": "Never conflate displayed intelligence preference with actual server-approved entitlement."
+    },
+    {
+      "pr": 587,
+      "status": "merged_source_history_not_verified_replay",
+      "autoReplay": false,
+      "affectedFiles": [
+        "index.html",
+        "account.html",
+        "nbl-world-header.js"
+      ],
+      "problem": "stale cached assets could hide repaired login and Beans laptop layout.",
+      "sourceFix": "Synchronize entry-page header JS/CSS and nested Beans experience JS/CSS cache versions.",
+      "prevention": "Keep version references and cache regression tests aligned with merged source."
+    }
+  ]
+}
