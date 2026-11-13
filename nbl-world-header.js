@@ -120,10 +120,15 @@
       const clerkDomain=decodeClerkDomain(publishableKey);
       if(!clerkDomain) throw new Error("NBL account connection is unavailable.");
 
-      await loadExternalScript(
-        `https://${clerkDomain}/npm/@clerk/clerk-js@6/dist/clerk.browser.js`,
-        {crossorigin:"anonymous","data-clerk-publishable-key":publishableKey}
-      );
+      // Account pages and other NBL tools may have loaded the SAME Clerk singleton
+      // already. Waiting for a second "load" event on an already loaded <script>
+      // leaves Beans perpetually signed out on that page.
+      if(!window.Clerk){
+        await loadExternalScript(
+          `https://${clerkDomain}/npm/@clerk/clerk-js@6/dist/clerk.browser.js`,
+          {crossorigin:"anonymous","data-clerk-publishable-key":publishableKey}
+        );
+      }
 
       if(!window.Clerk) throw new Error("NBL account connection failed to initialize.");
       await window.Clerk.load();
@@ -140,9 +145,17 @@
   const getNblBeansAuthToken=async()=>{
     try{
       const clerk=await getNblClerk();
-      if(!clerk?.isSignedIn||!clerk.session) return null;
-      const token=await clerk.session.getToken();
-      return typeof token==="string"&&token.trim()?token.trim():null;
+      if(!clerk?.session) return null;
+      // Same tolerant, single-Clerk session policy as the working account
+      // checkout: a short token-cache hiccup is not a sign-out.
+      for(let attempt=0;attempt<3;attempt++){
+        try{
+          const token=await clerk.session.getToken(attempt?{skipCache:true}:undefined);
+          if(typeof token==="string"&&token.trim()) return token.trim();
+        }catch{}
+        if(attempt<2)await new Promise(resolve=>setTimeout(resolve,180));
+      }
+      return null;
     }catch{
       return null;
     }
@@ -1551,12 +1564,11 @@
 
   const getSignedInNblIdentity=async()=>{
     try{
-      const clerk=await getNblClerk();
-      if(!clerk?.isSignedIn||!clerk.session) return null;
+      const token=await getNblBeansAuthToken();
+      const clerk=nblClerk;
+      if(!token||!clerk?.isSignedIn||!clerk.session) return null;
       const userId=String(clerk.user?.id||clerk.session?.user?.id||"signed-in");
-      const token=await clerk.session.getToken();
-      if(typeof token!=="string"||!token.trim()) return null;
-      return {userId,token:token.trim()};
+      return {userId,token};
     }catch{
       return null;
     }
