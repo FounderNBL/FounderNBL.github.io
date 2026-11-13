@@ -1,0 +1,33 @@
+name: NBL website Fixer repair-history source checks
+on:
+  pull_request:
+    paths:
+      - 'scripts/nbl-website-economy-fixer.mjs'
+      - 'scripts/nbl-website-economy-fixer.test.mjs'
+      - 'scripts/nbl-website-fixer.mjs'
+      - 'maintenance/beans-website-repair-history.json'
+      - 'docs/maintenance/WEBSITE_FIXER_PLAYBOOK.md'
+      - '.github/workflows/nbl-website-fixer-lessons.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/nbl-website-economy-fixer.mjs'
+      - 'scripts/nbl-website-economy-fixer.test.mjs'
+      - 'scripts/nbl-website-fixer.mjs'
+      - 'maintenance/beans-website-repair-history.json'
+      - '.github/workflows/nbl-website-fixer-lessons.yml'
+permissions:
+  contents: read
+jobs:
+  repair-history-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate website Fixer patch/memory policy and reviewed history
+        run: |
+          node --check scripts/nbl-website-economy-fixer.mjs
+          node --test scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-website-fixer.test.mjs
