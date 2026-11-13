@@ -65,11 +65,13 @@ test("NBL navigation shares pricing, Studios and music without duplicating authe
  assert.doesNotMatch(studio+pricing,/nblworld\.com|sk_live_/);
 });
 
-test("official homepage hero keeps the full artwork in portrait view without crop",()=>{
- assert.match(home,/src="assets\/site\/homepage\/New_New_homepage\.png"/);
+test("official homepage hero keeps the new approved artwork full-frame at every viewport",()=>{
+ assert.match(home,/src="assets\/site\/homepage\/nbl-night-campus-2026\.png"/);
  assert.match(home,/@media\(max-width:800px\) and \(orientation:portrait\)/);
  assert.match(home,/html body#home \.hero \.hero-media\{position:relative;inset:auto;width:100%;height:auto;max-width:100%;object-fit:contain/);
- assert.match(home,/body#home \.hero \.hero-content\{width:100%;min-height:0/);
+ assert.match(home,/aspect-ratio:1672\/941/);
+ assert.match(home,/html body#home \.hero \.hero-content\{position:absolute!important;width:1px!important/);
+ assert.match(home,/engraved pavement maxims/);
 });
 test("NBL Studios storefront and Creator are video-only, while video input may use an authorized reference image",()=>{
  const studioClient=read("studio/creator.js");

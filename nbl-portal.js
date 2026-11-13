@@ -22,7 +22,7 @@
     films:'/NBL-Films%20(1).png?v=047cbdd6',
     music:'/NBL-Music%20(2).png?v=246fee0f',
     studios:'/NBL-Studios%20(1).png?v=ef98576f',
-    homepage:'/assets/site/homepage/New_New_homepage.png?v=4b17e759',
+    homepage:'/assets/site/homepage/nbl-night-campus-2026.png?v=20261113',
     doctorFront:'/assets/books/doctor-rocketship/standard-front.png?v=29d94c6f',
     doctorBack:'/assets/books/doctor-rocketship/standard-back.png?v=8820a16c'
   };
@@ -138,7 +138,7 @@
       if(!image) return;
       if(title.includes('nbl books')) image.src=ASSET.books;
       else if(title==='the city'||title.includes('the city')) image.src=ASSET.films;
-      else if(title.includes('timmy v')) image.src=ASSET.music;
+      else if(title.includes('nbl music')) image.src=ASSET.music;
       else if(title.includes('clothing')) image.src=ASSET.clothing;
     });
 

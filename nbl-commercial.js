@@ -29,7 +29,7 @@
     if(!img)return;
     if(title.includes('nbl books')) img.src=asset.books;
     else if(title.includes('the city')) img.src=asset.films;
-    else if(title.includes('timmy v')||title.includes('nbl studio')){
+    else if(title.includes('nbl music')){
       img.src=asset.music;
       card.href='studio/';
       const status=card.querySelector('.status');
@@ -37,15 +37,10 @@
       const copy=card.querySelector('.card-body p');
       const enter=card.querySelector('.enter');
       if(status)status.textContent='Open';
-      if(heading)heading.textContent='Timmy V Studios';
-      if(copy)copy.textContent='The New Beansland studio for NBL Studios and NBL Records — music, trailers, commercials and studio media.';
-      if(enter)enter.textContent='Enter Timmy V Studios →';
+      if(heading)heading.textContent='NBL Music Productions';
+      if(copy)copy.textContent='The New Beansland music department for releases and free listening.';
+      if(enter)enter.textContent='Enter NBL Music Productions →';
     }
-  });
-
-  document.querySelectorAll('a[href="coming-soon.html?room=timmy-v"]').forEach(link=>{
-    link.href='studio/';
-    if(link.closest('.nav'))link.textContent='Timmy V Studios';
   });
 
   const sealRow=document.querySelectorAll('.seal-row img');
@@ -113,7 +108,7 @@
       if(t.includes('books')) return 2;
       if(t.includes('clothing')) return 3;
       if(t.includes('city')) return 4;
-      if(t.includes('studio')||t.includes('timmy')) return 5;
+      if(t.includes('studio')||t.includes('music')) return 5;
       if(t.includes('founder')) return 6;
       return 99;
     };
