@@ -535,6 +535,7 @@ jobs:
         if: ${{ steps.plan.outputs.eligible == 'true' }}
         continue-on-error: true
         env:
+          GH_TOKEN: ${{ github.token }}
           NBL_WEBSITE_FIXER_OPENAI_KEY: ${{ secrets.NBL_WEBSITE_FIXER_OPENAI_KEY }}
         run: |
           set -euo pipefail
