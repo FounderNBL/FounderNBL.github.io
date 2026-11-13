@@ -315,5 +315,24 @@ requireText(webFixer,'tools: ["read", "search", "edit", "execute", "github/*", "
 requireText(webFixer,"Do not run paid cloud agent tasks without explicit Founder approval","Website Fixer does not preserve cost approval.");
 forbidText(webInspector,'cloudflare/*',"Website Inspector must never have broad Cloudflare account tools.");
 
+// Founder-approved NBL company identity is one unchanged uploaded gold mark.
+// Department art, Beans character art, Founder seals and protected academic art
+// remain separate; do not replace them with a generic company favicon.
+const officialNblMark="/assets/brand/nbl-official-mark.png";
+for(const path of [
+  "index.html","nbl-world-header.js","nbl-portal.js","nbl-commercial.js",
+  "pulse/index.html","messenger/index.html","site.webmanifest",
+  "lulu/index.html","studio/index.html","clothing.html",
+  "people-zoo.html","purchase-requested.html","404.html","about.html"
+]){
+  const source=read(path);
+  requireText(source,officialNblMark,path+" must use the one Founder-uploaded NBL official mark.");
+  for(const oldMark of ["NBL-Brand.png","NBL-New-Official-Seal.png"]){
+    if(path==="nbl-portal.js") continue; // historical filename keys intentionally redirect to the new mark.
+    forbidText(source,oldMark,path+" still renders an older company logo.");
+  }
+}
+requireText(read("assets/README.md"),"nbl-official-mark.png","Brand library must document canonical mark.");
+
 if(failed) process.exitCode=1;
 else console.log("[website-repair] PASS: .org single tuition/registration cashier; nblschool.com standalone academic destination; authentic NBL account session, chat and checkout holds remain intact.");
