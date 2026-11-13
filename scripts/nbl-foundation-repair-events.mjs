@@ -49,15 +49,18 @@ export function buildFoundationFailure(incident,env){
   inspector:"NBL Website Health Inspector",
   originalFailureReproduced:true,actionPermission:false};
 }
-export function buildFoundationAttempt(incident,env){
+export function buildFoundationAttempt(incident,env,coding=null){
  const core=identifiers(incident,env);
  if(env.NBL_WRITER_OUTCOME!=="success")return null;
  const success=env.NBL_RETEST_VERIFIED==="true"&&env.NBL_RETEST_OUTCOME==="success";
  const tested=success||env.NBL_SOURCE_RETEST_OUTCOME==="failure"||env.NBL_RETEST_OUTCOME==="failure";
  if(!tested)return null;
+ const reused=coding?.engine==="reviewed_git_patch"&&INC_ID.test(coding.reviewedCaseId||"")&&
+   coding.incident===incident.incident?coding.reviewedCaseId:null;
  return {...core,schema:"nbl.foundation.independent-repair-observation.v1",
-  caseId:"first-time-"+env.GITHUB_RUN_ID,attemptRef:runUrl(env.GITHUB_RUN_ID),
-  procedureOrigin:"first-time-proposal",procedureId:"website.source-fixer-"+env.GITHUB_RUN_ID,
+  caseId:reused||"first-time-"+env.GITHUB_RUN_ID,attemptRef:runUrl(env.GITHUB_RUN_ID),
+  procedureOrigin:reused?"reviewed-case":"first-time-proposal",
+  procedureId:reused?"website.source-patch-"+reused:"website.source-fixer-"+env.GITHUB_RUN_ID,
   scopeEvidenceRef:runUrl(env.GITHUB_RUN_ID),
   independentInspectorRef:runUrl(env.GITHUB_RUN_ID),
   observedAt:new Date().toISOString(),independentlyObserved:true,
@@ -119,7 +122,9 @@ async function main(){
   const out=await upsertGithubIssue(FOUNDATION_FAILURE_PREFIX+rec.failureId,renderRecord(rec));
   console.log("NBL_FOUNDATION_INSPECTOR_RECEIPT",out.html_url);
  }else{
-  const rec=buildFoundationAttempt(i,env);
+  let coding=null;
+  try{coding=JSON.parse(readFileSync(".inspector/website-fixer-coding.json","utf8"));}catch{}
+  const rec=buildFoundationAttempt(i,env,coding);
   if(!rec){console.log("NBL_FOUNDATION_REPAIR_ATTEMPT_UNVERIFIED");return;}
   const out=await upsertGithubIssue(FOUNDATION_OUTCOME_PREFIX+rec.failureId+" "+rec.caseId,renderRecord(rec));
   console.log("NBL_FOUNDATION_RETEST_RECEIPT",out.html_url);
