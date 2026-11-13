@@ -8,7 +8,7 @@ const approved=[
  ["NBL_Games.png","1ff58013","games.html"],
  ["NBL_Music_Productions%20(1).png","32e2b3ba","studio/"],
  ["NBL_Studios.png","c342a8ee","studios.html"],
- ["NBL_University.png","5fa210ae","university.html"]
+ ["NBL_University.png","5fa210ae","https://nblschool.com/"]
 ];
 test("exact uploaded assets survive and browser references are cache refreshed",()=>{
  for(const [name,tag,href] of approved){
@@ -42,7 +42,7 @@ test("Founder's six homepage destinations preserve the approved order with Unive
  assert.deepEqual(actual,names,"no extra homepage destinations or reordered cards");
  assert.ok(!grid.includes("The City"),"The City belongs inside Stories, not as a homepage card");
  assert.ok(grid.includes('src="NBL_University.png?v=5fa210ae"'),"University existing art must remain");
- assert.match(grid,/class="world-card official-art reveal" href="university\.html"/,"University full artwork must not be cropped");
+ assert.match(grid,/class="world-card official-art reveal" href="https:\/\/nblschool\.com\/"/,"University full artwork must not be cropped");
  assert.ok(source.includes("object-fit:contain;object-position:center;background:transparent"),"Official art must scale without cropping");
  assert.ok(source.includes("@media(max-width:520px){.world-card.official-art{width:100%;max-width:520px"),"Mobile cards need full-width frames");
  assert.ok(grid.includes('href="studios.html"'),"Studios goes to its video-production page, not the music studio");
