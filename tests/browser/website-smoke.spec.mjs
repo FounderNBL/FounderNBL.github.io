@@ -176,7 +176,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await page.getByRole("button",{name:"Open Beans"}).click();
     const drawer=page.locator("[data-nbl-chat-drawer]");
     await expect(drawer).toBeVisible();
-    await expect(drawer).not.toHaveAttribute("hidden",/./);
+    await expect(drawer).not.toHaveAttribute("hidden","");
     await expect(drawer.locator("[data-nbl-drawer-account-action]")).toHaveText("Sign out");
     await expect(page.locator("[data-nbl-beans-auth-note]")).toBeHidden();
     expect(await page.evaluate(()=>window.NBLAccountBridge.getToken())).toBe("fixture.jwt");
