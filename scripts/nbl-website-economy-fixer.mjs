@@ -241,6 +241,7 @@ export async function run({base=join(root,"repair-target"),read=readFileSync,wri
   reason=result.reason;
  }
  const receipt={schema:1,incident:incident.incident,engine:how,modelCalls:usage?1:0,
+  reviewedCaseId:remembered?.lessonId||null,
   files,reason,usage,at:new Date().toISOString(),testStatus:"AWAITING_INDEPENDENT_RETEST"};
  mkdirSync(join(root,".inspector"),{recursive:true});
  write(join(root,".inspector/website-fixer-coding.json"),JSON.stringify(receipt,null,2)+"\n");
