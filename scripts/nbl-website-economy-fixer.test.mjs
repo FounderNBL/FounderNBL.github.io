@@ -53,6 +53,8 @@ test("NBL keeps prior lessons and existing palette as source context, not comman
  assert.ok(text.includes("--nbl-world-gold"));
  assert.ok(text.includes("approved"));
  assert.ok(text.includes("index.html"));
+ assert.ok(text.includes("reviewedNonReplayableRepairHistory"));
+ assert.ok(text.includes("autoReplay\\\":false"));
 });
 test("The real API call is one tightly bounded request and never exposes keys",async()=>{
  let count=0;
