@@ -14,8 +14,8 @@
   }
 
   const ASSET={
-    brand:'/NBL-Brand.png?v=08394b14',
-    seal:'/NBL-New-Official-Seal.png?v=c52ddcff',
+    brand:'/assets/brand/nbl-official-mark.png?v=9e7ecbb9',
+    seal:'/assets/brand/nbl-official-mark.png?v=9e7ecbb9',
     founder:'/Founders-seal.png?v=be363e50',
     books:'/NBL-Books%20(1).png?v=d1371ad9',
     clothing:'/NBL-Clothing%20(1).png?v=48ce5891',
@@ -87,10 +87,12 @@
 
   function refreshCurrentAssets(){
     const directMap={
+      'NBL-Brand.png':ASSET.brand,
+      'NBL-New-Official-Seal.png':ASSET.brand,
       'nbl-logo.jpg':ASSET.brand,
       'nbl-logo.png':ASSET.brand,
       'nbl-primary-logo.png':ASSET.brand,
-      'nbl-official-seal.png':ASSET.seal,
+      'nbl-official-seal.png':ASSET.brand,
       'official-nbl-emblem.png':ASSET.brand,
       'nbl-books-imprint.png':ASSET.books,
       'NBL-Books.png':ASSET.books,
