@@ -38,7 +38,7 @@ test("website Beans retires the old Grey/Messenger chooser while retaining PDF a
  assert.match(js,/id="nbl-quick-selector"[^>]*hidden inert style="display:none!important"/);
  assert.match(js,/data-nbl-quick="beans"/);
  assert.match(js,/data-nbl-quick="grey"/);
- assert.match(js,/href="\/university\.html" data-nbl-quick="university"/);
+ assert.match(js,/href="https:\/\/nblschool\.com\/" data-nbl-quick="university"/);
  assert.match(js,/src="\/Beans_Hi_Basic\.png"/);
  assert.match(js,/src="\/Professor_Grey\.png"/);
  assert.match(js,/setChatMode\("plus"\); \/\/ Existing Grey authentication \+ LOCKE/);
@@ -56,7 +56,7 @@ test("website Beans retires the old Grey/Messenger chooser while retaining PDF a
  for(const page of ["books.html","clothing.html","nbl-kids.html","stories.html","studios.html"]){
    assert.match(read(page),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
  }
- assert.match(read("university.html"),/src="\/nbl-university-early-interest\.js/);
+ assert.match(read("university-updates.html"),/src="\/nbl-university-early-interest\.js/);
  const appParity=read("nbl-world-header.js");
  assert.doesNotMatch(appParity,/lockeOverride|bypassLocker|universityUnlocked=true/);
 });
