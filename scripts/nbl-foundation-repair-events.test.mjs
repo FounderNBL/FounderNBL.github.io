@@ -82,3 +82,26 @@ test("No GH token cannot write even a trusted receipt",async()=>{
  await assert.rejects(upsertGithubIssue(FOUNDER_APPROVAL_PREFIX+"test","body",{
   token:"",fetcher:async()=>{throw Error("should not fetch");}}),/foundation_repair_handoff_github_token_absent/);
 });
+
+test("Reviewed repair returns to its original historical case, not a fake first-time lesson",()=>{
+ const envs={...env,NBL_WRITER_OUTCOME:"success",
+   NBL_SOURCE_RETEST_OUTCOME:"success",NBL_RETEST_OUTCOME:"success",
+   NBL_RETEST_VERIFIED:"true"};
+ const repeat=buildFoundationAttempt(incident,envs,{
+   engine:"reviewed_git_patch",incident:incident.incident,
+   reviewedCaseId:"website-green-aaaaaaaaaaaa"
+ });
+ assert.equal(repeat.caseId,"website-green-aaaaaaaaaaaa");
+ assert.equal(repeat.procedureOrigin,"reviewed-case");
+ assert.equal(repeat.procedureId,"website.source-patch-website-green-aaaaaaaaaaaa");
+ assert.equal(repeat.verdict,"SUCCESS");
+ const notVerified=buildFoundationAttempt(incident,envs,{
+   engine:"model",incident:incident.incident,reviewedCaseId:"website-green-aaaaaaaaaaaa"
+ });
+ assert.equal(notVerified.procedureOrigin,"first-time-proposal");
+ const mismatched=buildFoundationAttempt(incident,envs,{
+   engine:"reviewed_git_patch",incident:"website-green-ffffffffffff",
+   reviewedCaseId:"website-green-aaaaaaaaaaaa"
+ });
+ assert.equal(mismatched.procedureOrigin,"first-time-proposal");
+});
