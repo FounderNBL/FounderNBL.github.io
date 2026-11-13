@@ -37,7 +37,7 @@ const assetKey=(id,slot)=>"nbl.beans.local-image.v1."+id+"."+slot;
 
 const style=document.createElement("link");
 style.rel="stylesheet";
-style.href="/nbl-beans-experience.css?v=20261112-five-new-art";
+style.href="/nbl-beans-experience.css?v=20261113-compact-composer";
 style.dataset.nblBeansExperience="true";
 document.head.appendChild(style);
 
@@ -55,6 +55,30 @@ suggestions.innerHTML=[
 '<a href="/books.html">▣ <span>Take me to Books</span></a>'
 ].join("");
 presence.insertAdjacentElement("afterend",suggestions);
+
+/* The welcome is a moment, not a permanent chat obstruction. Customization stays in the header. */
+let introCollapsed=false;
+let introTimer=null;
+const collapseIntro=()=>{
+ if(introCollapsed)return;
+ introCollapsed=true;
+ if(introTimer!==null){window.clearTimeout(introTimer);introTimer=null;}
+ regular.classList.add("nbl-beans-intro-collapsed");
+};
+const startIntro=()=>{
+ if(introCollapsed||panel.hidden||introTimer!==null)return;
+ const duration=window.matchMedia("(max-width:600px)").matches?4500:6000;
+ introTimer=window.setTimeout(collapseIntro,duration);
+};
+const introObserver=new MutationObserver(startIntro);
+introObserver.observe(panel,{attributes:true,attributeFilter:["hidden"]});
+if(!panel.hidden)startIntro();
+input.addEventListener("input",()=>{if(input.value.trim())collapseIntro();});
+input.addEventListener("pointerdown",collapseIntro);
+log.addEventListener("scroll",()=>{if(log.scrollTop>15)collapseIntro();},{passive:true});
+suggestions.addEventListener("click",collapseIntro);
+window.addEventListener("pagehide",()=>{if(introTimer!==null)window.clearTimeout(introTimer);introObserver.disconnect();},{once:true});
+
 suggestions.addEventListener("click",event=>{
  const trigger=event.target.closest("[data-nbl-beans-explore]");
  if(trigger){

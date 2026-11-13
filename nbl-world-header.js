@@ -654,7 +654,16 @@
             </div>
             <button class="nbl-quick-toggle" type="button" data-nbl-quick-toggle aria-controls="nbl-quick-selector" aria-expanded="false" aria-label="Retired conversation switcher" hidden inert style="display:none!important" tabindex="-1">⌕</button>
             <textarea id="nbl-beans-input" name="message" rows="2" maxlength="4000" placeholder="Ask Beans anything…" required></textarea>
-            <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans">🎙</button>
+            <div class="nbl-beans-intelligence-wrap">
+              <button class="nbl-beans-intelligence-toggle" type="button" data-nbl-intelligence-toggle aria-label="Beans intelligence settings: Instant" aria-haspopup="true" aria-expanded="false" aria-controls="nbl-beans-intelligence-menu" title="Beans intelligence: Instant"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4a4 4 0 0 0-7 2.6A4 4 0 0 0 4 14a4 4 0 0 0 4 5h1V5.2M12 4a4 4 0 0 1 7 2.6A4 4 0 0 1 20 14a4 4 0 0 1-4 5h-1V5.2M9 8c-2 0-3 1-3 3m12 0c0-2-1-3-3-3M9 15c-1 0-2 1-2 2m8-2c1 0 2 1 2 2"/></svg></button>
+              <div id="nbl-beans-intelligence-menu" class="nbl-beans-intelligence-menu" data-nbl-intelligence-menu hidden role="group" aria-label="Beans intelligence preference">
+                <p>One Beans, three levels. NBL verifies access and selects the actual model.</p>
+                <button type="button" data-nbl-intelligence-level="instant" aria-pressed="true"><strong>Instant</strong><span>Fast, low-cost everyday chat</span></button>
+                <button type="button" data-nbl-intelligence-level="medium" aria-pressed="false"><strong>Medium</strong><span>Request more detailed reasoning; access is checked by NBL</span></button>
+                <button type="button" data-nbl-intelligence-level="high" aria-pressed="false"><strong>High</strong><span>Premium reasoning request; NBL/LOCKE approval required</span></button>
+              </div>
+            </div>
+            <button class="nbl-beans-mic" type="button" data-nbl-beans-mic aria-label="Dictate a message to Beans" title="Speak to Beans"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="2.5" width="6" height="12" rx="3"/><path d="M5.5 11v1a6.5 6.5 0 0 0 13 0v-1M12 18.5V22m-4 0h8"/></svg></button>
             <button class="nbl-beans-stop" type="button" data-nbl-beans-stop aria-label="Stop Beans response" hidden>Stop</button>
             <button class="nbl-beans-send" type="submit">Send</button>
           </div>
@@ -754,6 +763,40 @@
   const beansToolModeLabel=beansPanel.querySelector("[data-nbl-tool-mode-label]");
   const beansToolReset=beansPanel.querySelector("[data-nbl-tool-reset]");
   const beansMic=beansPanel.querySelector("[data-nbl-beans-mic]");
+  const intelligenceToggle=beansPanel.querySelector("[data-nbl-intelligence-toggle]");
+  const intelligenceMenu=beansPanel.querySelector("[data-nbl-intelligence-menu]");
+  let intelligenceMode="instant";
+  const closeIntelligenceMenu=()=>{
+    intelligenceMenu.hidden=true;
+    intelligenceToggle.setAttribute("aria-expanded","false");
+  };
+  intelligenceToggle.addEventListener("click",()=>{
+    const opening=intelligenceMenu.hidden;
+    intelligenceMenu.hidden=!opening;
+    intelligenceToggle.setAttribute("aria-expanded",opening?"true":"false");
+  });
+  intelligenceMenu.addEventListener("click",event=>{
+    const button=event.target.closest("[data-nbl-intelligence-level]");
+    if(!button)return;
+    intelligenceMode=button.dataset.nblIntelligenceLevel;
+    intelligenceMenu.querySelectorAll("[data-nbl-intelligence-level]").forEach(el=>{
+      el.setAttribute("aria-pressed",String(el===button));
+    });
+    const title="Beans intelligence: "+intelligenceMode[0].toUpperCase()+intelligenceMode.slice(1);
+    intelligenceToggle.setAttribute("aria-label",title);
+    intelligenceToggle.title=title;
+    closeIntelligenceMenu();
+    beansStatus.textContent=intelligenceMode==="instant"
+      ?"Instant preferred. Beans handles ordinary conversation with the lowest-cost eligible model."
+      :"Requested "+intelligenceMode+". NBL determines actual model and entitlement; selecting this does not unlock paid access.";
+    beansInput.focus();
+  });
+  intelligenceMenu.addEventListener("keydown",event=>{
+    if(event.key==="Escape"){closeIntelligenceMenu();intelligenceToggle.focus();}
+  });
+  document.addEventListener("pointerdown",event=>{
+    if(!event.target.closest(".nbl-beans-intelligence-wrap"))closeIntelligenceMenu();
+  });
   const beansStop=beansPanel.querySelector("[data-nbl-beans-stop]");
   const chatDrawerTools=beansPanel.querySelector("[data-nbl-drawer-tools]");
   const beansLog=beansPanel.querySelector("[data-nbl-beans-log]");
@@ -2087,7 +2130,7 @@
       if(currentClerkUserId()!==requestedUserId) throw new Error("Your NBL account changed while Beans was preparing the reply. Please send again.");
       if(accountToken) headers.Authorization=`Bearer ${String(accountToken).trim()}`;
       const requestId=(globalThis.crypto?.randomUUID?.()||`web-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-      const requestBody={action:"chat",mode:"beans",clientChannel:"website",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),toolMode:beansToolMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
+      const requestBody={action:"chat",mode:"beans",clientChannel:"website",requestId,conversationId:beansConversationId,timeZone:(Intl.DateTimeFormat().resolvedOptions().timeZone||"UTC"),messages:beansHistory.slice(-12),toolMode:beansToolMode,intelligenceMode,attachments:beansAttachments.map(({name,mime,data})=>({name,mime,data}))};
       const endpoint=NBL_BEANS_WEB_API;
       const response=await fetch(endpoint,{
         method:"POST",
@@ -2776,7 +2819,7 @@
   // Independent presentation layer around the existing real Beans chat.
   // No screenshot-as-a-background, no generated wardrobe, no change to the AI runtime.
   const beansExperienceScript=document.createElement("script");
-  beansExperienceScript.src="/nbl-beans-experience.js?v=20261112-five-new-art";
+  beansExperienceScript.src="/nbl-beans-experience.js?v=20261113-compact-composer";
   beansExperienceScript.async=true;
   document.body.appendChild(beansExperienceScript);
   document.body.classList.add("nbl-world-ready");
