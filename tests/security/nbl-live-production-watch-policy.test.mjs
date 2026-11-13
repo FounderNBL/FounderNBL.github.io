@@ -35,7 +35,8 @@ test("reuse canonical Cloudflare Inspector credential, never require a duplicate
 test("only a cheap security heartbeat is scheduled; full browser inspection follows relevant website changes",()=>{
   const head=workflow.split("permissions:")[0];
   assert.ok(head.includes("\n  push:") && head.includes("branches: [main]"));
-  assert.match(head,/17 \*\/6 \* \* \*/);
+  assert.match(head,/47 1,13 \* \* \*/);
+  assert.doesNotMatch(head,/17 \*\/6 \* \* \*/);
   assert.doesNotMatch(head,/17 \* \* \* \*/);
   assert.match(workflow,/  security-heartbeat:\n[\s\S]*?github\.event_name == 'schedule'/);
   assert.match(workflow,/node scripts\/nbl-maintenance-heartbeat\.mjs/);
