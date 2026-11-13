@@ -1,11 +1,11 @@
 name: NBL Website Health Inspector
 
 # One NBL Maintenance Department: full website checks only on relevant changes/manual run.
-# Six-hour cron is a two-GET, model-free heartbeat; no deep scheduled sweep.
+# Twice-daily lightweight heartbeat only; deep checks are event/manual initiated.
 on:
   schedule:
     # Minimal anonymous heartbeat only. No University, Desk, Playground or games.
-    - cron: "17 */6 * * *"
+    - cron: "47 1,13 * * *"
   workflow_dispatch:
   push:
     # Run the deep website inspection only for relevant main source changes.
@@ -27,7 +27,7 @@ on:
       - "!campus/**"
       - "!playground/**"
       - "!desk/**"
-  # Local-only source checks on PR; live route/browser jobs are schedule/manual only.
+  # PRs run source-only checks; relevant pushes/manual actions run live checks. Cron is light only.
   pull_request:
     branches: [main]
     paths:
@@ -53,7 +53,7 @@ permissions:
 
 jobs:
   security-heartbeat:
-    name: Low-cost six-hour HTTPS + Core readiness heartbeat
+    name: Low-cost twice-daily HTTPS + Core readiness heartbeat
     if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3

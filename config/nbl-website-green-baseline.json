@@ -10,8 +10,8 @@
     "fullGreen": "Only when all required coverage areas have independently verified PASS evidence; no PASS inferred from successful workflow."
   },
   "schedule": {
-    "utcCron": "17 */6 * * *",
-    "mode": "one_existing_website_health_inspector",
+    "utcCron": "47 1,13 * * *",
+    "mode": "twice_daily_two_get_heartbeat__deep_event_only",
     "manual": true,
     "deploy": false,
     "repair": false

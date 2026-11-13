@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {contract,checkContract,checkSource,classifyHttp,summarize} from "./nbl-website-green.mjs";
 
-test("GREEN contract stays tied to approved website and six-hour no-write schedule",()=>{
+test("GREEN contract stays tied to approved website and twice-daily light no-write schedule",()=>{
  assert.deepEqual(checkContract(),[]);
  assert.equal(contract.site,"https://newbeansland.org");
- assert.equal(contract.schedule.utcCron,"17 */6 * * *");
+ assert.equal(contract.schedule.utcCron,"47 1,13 * * *");
  assert.equal(contract.schedule.deploy,false);
  assert.equal(contract.schedule.repair,false);
  assert.equal(contract.production.onlyReadRequests,true);
