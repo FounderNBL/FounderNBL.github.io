@@ -6,7 +6,7 @@ const host=read("nbl-world-header.js");
 const ui=read("nbl-beans-experience.js");
 const css=read("nbl-beans-experience.css");
 const requireText=(s,needle)=>assert.ok(s.includes(needle),"Missing Beans experience contract: "+needle);
-requireText(host,'src="/nbl-beans-experience.js?v=20261113-compact-composer"');
+requireText(host,'src="/nbl-beans-experience.js?v=20261113-beans-current-main"');
 requireText(ui,"data-nbl-customize-open");
 requireText(ui,"nbl-beans-intro-collapsed");
 requireText(ui,"MutationObserver");
