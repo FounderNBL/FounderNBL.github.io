@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {applyEdits,recipeEdits,parseProposedEdits,estimateCost,assembleContext,askLuna,replayReviewedLesson,MODEL,MAX_OUTPUT_TOKENS} from "./nbl-website-economy-fixer.mjs";
+import {applyEdits,recipeEdits,parseProposedEdits,estimateCost,assembleContext,askLuna,replayReviewedLesson,rankReviewedLessons,MODEL,MAX_OUTPUT_TOKENS} from "./nbl-website-economy-fixer.mjs";
 import {readFileSync} from "node:fs";
 import {createHash} from "node:crypto";
 const incident={eligible:true,targetRepo:"FounderNBL/FounderNBL.github.io",
@@ -101,4 +101,65 @@ test("NBL rejects a remembered patch when its signature no longer matches",()=>{
   spawn:()=>{throw Error("must not attempt git apply");}
  });
  assert.equal(x,null);
+});
+
+test("ONE Foundation host ranks up to ten reviewed fixes, never guesses from a coincidentally shared path",()=>{
+ const diff=n=>"diff --git a/index.html b/index.html\nindex 111..222 100644\n--- a/index.html\n+++ b/index.html\n@@ -1 +1 @@\n-old"+n+"\n+new"+n+"\n";
+ const files={};
+ for(let i=0;i<17;i++){
+  const key="website-green-"+i.toString(16).padStart(12,"0");
+  const patch=diff(i);
+  files[key+".json"]=JSON.stringify({
+   id:key,status:"independent_tests_verified_source_repair",
+   approval:"Founder must review draft PR; only merged lessons are available on main",
+   originalIssue:[{id:"art:pulse"}],changedPaths:["index.html"],
+   patchSha256:createHash("sha256").update(patch).digest("hex"),
+   unifiedDiff:patch,successCount:10+i,failureCount:i,
+   sourceRevision:"a".repeat(40)
+  });
+ }
+ const badKey="website-green-eeeeeeeeeeee";
+ files[badKey+".json"]=JSON.stringify({
+  id:badKey,status:"independent_tests_verified_source_repair",
+  approval:"Founder must review draft PR; only merged lessons are available on main",
+  originalIssue:[{id:"unrelated"}],changedPaths:["index.html"],
+  patchSha256:createHash("sha256").update(diff("bad")).digest("hex"),
+  unifiedDiff:diff("bad")
+ });
+ const ranked=rankReviewedLessons({...incident,incident:"website-green-123456789abc"},"/repair",{
+  list:()=>Object.keys(files),read:p=>files[p.split("/").at(-1)]
+ });
+ assert.equal(ranked.length,10);
+ assert.ok(ranked.every(x=>x.executionAuthorized===false));
+ assert.ok(ranked.every(x=>x.caseId!==badKey));
+ assert.ok(ranked.every(x=>x.score>=0));
+ assert.ok(ranked.every(x=>x.paths.includes("index.html")));
+});
+test("Ranked memory retries safely when earlier candidate patch does not match exact current source",()=>{
+ const diff=n=>"diff --git a/index.html b/index.html\nindex 111..222 100644\n--- a/index.html\n+++ b/index.html\n@@ -1 +1 @@\n-old"+n+"\n+new"+n+"\n";
+ const entries={};
+ for(const [id,n,count] of [
+  ["website-green-aaaaaaaaaaaa","wrong",90],
+  ["website-green-bbbbbbbbbbbb","correct",10]
+ ]){
+  const patch=diff(n);
+  entries[id+".json"]=JSON.stringify({
+   id,status:"independent_tests_verified_source_repair",
+   approval:"Founder must review draft PR; only merged lessons are available on main",
+   originalIssue:[{id:"art:pulse"}],changedPaths:["index.html"],
+   patchSha256:createHash("sha256").update(patch).digest("hex"),
+   unifiedDiff:patch,successCount:count,failureCount:0
+  });
+ }
+ let checked=0,applied=0;
+ const out=replayReviewedLesson({...incident,incident:"website-green-cccccccccccc"},"/repair",{
+  list:()=>Object.keys(entries),read:p=>entries[p.split("/").at(-1)],
+  spawn:(cmd,args,opts)=>{
+   if(args.includes("--check")){checked++;return{status:opts.input.includes("-oldcorrect")?0:1};}
+   applied++;assert.match(opts.input,/-oldcorrect/);return{status:0};
+  }
+ });
+ assert.equal(checked,2);
+ assert.equal(applied,1);
+ assert.equal(out.lessonId,"website-green-bbbbbbbbbbbb");
 });
