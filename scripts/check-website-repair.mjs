@@ -16,7 +16,7 @@ const legal=read("nbl-chat-legal.html");
 const terms=read("terms.html");
 const privacy=read("privacy.html");
 const deletion=read("account-deletion.html");
-const university=read("university.html");
+const university=read("university-updates.html");
 const universityArrival=read("university.html");
 const account=read("account.html");
 const universityCheckout=read("university-storefront.js");
@@ -108,7 +108,7 @@ for(const filename of findHtml(rootPath)){
     // The University is explicitly CLOSED for tuition. Its free email-notice
     // page uses the shared header but intentionally has no paid-plan catalog.
     // Do not weaken this requirement for any other website route.
-    const isClosedUniversityNotice=path.relative(rootPath,filename)==="university.html"
+    const isClosedUniversityNotice=path.relative(rootPath,filename)==="university-updates.html"
       && html.includes("nbl-university-early-interest.js")
       && html.includes("we are not accepting tuition")
       && html.includes("Join free notification list")
@@ -161,9 +161,9 @@ requireText(header,"window.history.pushState({...window.history.state,nblChatOve
 requireText(header,"const shouldConsumeHistory=!fromPopState","Closing Chat does not distinguish UI-close from browser Back.");
 requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Chat leaves a duplicate same-page history entry behind.");
 
-requireText(home,"Under Construction · Opening Soon","Homepage must show current University closure.");
-requireText(home,"No University payments.","Homepage must explicitly reject University payments.");
-requireText(home,"Sign up free for a notification","Homepage must advertise only free opening notices.");
+requireText(home,"Free Tours Open · Classes Closed","Homepage must show tours open and University classes closed.");
+requireText(home,"No tuition, enrollment or classes.","Homepage must explicitly reject University payments and classes.");
+requireText(home,"Tour the Real School","Homepage must point visitors to the free University tour.");
 requireText(university,"we are not accepting tuition","University must explicitly refuse tuition while closed.");
 requireText(books,"https://books.newbeansland.org/","Connected NBL Books Payhip custom domain is missing from the bookstore.");
 requireText(books,"Digital · Payhip","Books no longer states the digital Payhip route.");
@@ -216,7 +216,8 @@ requireText(terms,"Deluxe costs $100/month","Terms must describe Founder’s Del
 requireText(terms,"University is under construction","Terms must preserve the University closed state.");
 requireText(terms,"school payments are closed","Terms must preserve the University payment closure.");
 requireText(terms,"the independent University campus is hosted at nblschool.com","Terms must keep school academics on the independent domain.");
-// Founder override: .org has exactly one tuition page; school academic UI lives on nblschool.com.
+// Founder 2026-11-13: .org redirects to the independent campus; free opening notifications remain separate.
+requireText(universityArrival,"url=https://nblschool.com/","University .org landing must redirect to official school.");
 requireText(university,'id="early-registration"',"University free signup form is missing.");
 requireText(university,'data-nbl-university-interest-form',"University signup must use verified interest ledger.");
 requireText(university,'href="https://nblschool.com/"',"Independent University domain link missing.");
