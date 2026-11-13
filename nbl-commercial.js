@@ -8,8 +8,8 @@
   }
 
   const asset={
-    brand:'NBL-Brand.png?v=08394b14',
-    seal:'NBL-New-Official-Seal.png?v=c52ddcff',
+    brand:'/assets/brand/nbl-official-mark.png?v=9e7ecbb9',
+    seal:'/assets/brand/nbl-official-mark.png?v=9e7ecbb9',
     founder:'Founders-seal.png?v=be363e50',
     books:'NBL-Books%20(1).png?v=d1371ad9',
     clothing:'NBL-Clothing%20(1).png?v=48ce5891',
@@ -49,7 +49,7 @@
   });
 
   const sealRow=document.querySelectorAll('.seal-row img');
-  if(sealRow[0]){sealRow[0].src=asset.seal;sealRow[0].alt='New Beansland official seal';}
+  if(sealRow[0]){sealRow[0].src=asset.seal;sealRow[0].alt='New Beansland official mark';}
   if(sealRow[1]){sealRow[1].src=asset.founder;sealRow[1].alt="Founder's seal";}
   const footerMark=document.querySelector('.footer-mark');
   if(footerMark){footerMark.src=asset.brand;footerMark.alt='New Beansland brand mark';}
