@@ -128,11 +128,27 @@ export function assembleContext(incident,base,read=readFileSync){
    }catch{return "";}
   }).join("\n").slice(0,4200);
  }catch{}
+ // Historical merged fixes teach the Fixer what regressed without granting
+ // approval to replay an unverified patch. Strictly bounded and file scoped.
+ let reviewedRepairHistory="";
+ try{
+  const record=JSON.parse(read(join(base,"maintenance/beans-website-repair-history.json"),"utf8"));
+  if(record.schema===1&&Array.isArray(record.cases)){
+   reviewedRepairHistory=record.cases.filter(x=>
+    x.status==="merged_source_history_not_verified_replay"&&x.autoReplay===false&&
+    Array.isArray(x.affectedFiles)&&x.affectedFiles.some(path=>paths.includes(path))
+   ).slice(0,2).map(x=>JSON.stringify({
+    pr:x.pr,problem:x.problem,sourceFix:x.sourceFix,
+    prevention:x.prevention,autoReplay:false
+   })).join("\n").slice(0,1250);
+  }
+ }catch{}
  const s=JSON.stringify({
   authorizedFiles:paths,failures:incident.selected,
   requiredSourceMarkers:relevant,
   officialArt:contract.source.officialWorldArt.map(a=>({id:a.id,sourceImage:a.sourceImage,route:a.route})),
-  existingBrandCSS:theme,verifiedPriorExample:lessons
+  existingBrandCSS:theme,verifiedPriorExample:lessons,
+  reviewedNonReplayableRepairHistory:reviewedRepairHistory
  })+"\n"+parts.join("\n\n");
  if(s.length>MAX_INPUT_CHARS)throw Error("context_limit");
  return s;
