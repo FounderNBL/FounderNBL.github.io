@@ -49,7 +49,8 @@ test.describe("New Beansland web app browser smoke", () => {
     // All six cards must be visually even on both desktop and phone viewports,
     // despite portrait book art and landscape studio, clothing, and games art.
     const layout=await page.locator(".world-grid .world-card").evaluateAll(nodes=>nodes.map(card=>{
-      const {width,height}=card.getBoundingClientRect();
+      // Layout size, excluding transient .reveal scale animations.
+      const width=card.offsetWidth, height=card.offsetHeight;
       const image=card.querySelector(".media img");
       const fill=getComputedStyle(card.querySelector(".media"),"::before").backgroundImage;
       return {width,height,imageSrc:image.getAttribute("src"),fill};
