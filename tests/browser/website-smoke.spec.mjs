@@ -156,6 +156,64 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(beans.locator("#nbl-beans-title")).toContainText("Beans");
   });
 
+  test("signed-in NBL account also appears signed in to desktop Beans, using the shared Clerk singleton", async ({ page }) => {
+    // Model an account already signed into the website before Beans opens.
+    // No real identity, model calls, paid tools or account data are used.
+    await page.setViewportSize({width:1366,height:768});
+    await page.addInitScript(() => {
+      window.Clerk={
+        isSignedIn:true,
+        session:{id:"session_fixture",getToken:async()=>"fixture.jwt"},
+        user:{id:"user_fixture",primaryEmailAddress:{emailAddress:"test@example.org"}},
+        async load(){}, addListener(){}
+      };
+    });
+    await page.route("https://tvypdakofcrlvnwporhh.supabase.co/**", route => route.fulfill({
+      status:200, contentType:"application/json",
+      body:JSON.stringify({conversations:[],messages:[],meter:{}})
+    }));
+    await open("/",page);
+    await page.getByRole("button",{name:"Open Beans"}).click();
+    const drawer=page.locator("[data-nbl-chat-drawer]");
+    await expect(drawer).toBeVisible();
+    await expect(drawer).not.toHaveAttribute("hidden","");
+    await expect(drawer.locator("[data-nbl-drawer-account-action]")).toHaveText("Sign out");
+    await expect(page.locator("[data-nbl-beans-auth-note]")).toBeHidden();
+    expect(await page.evaluate(()=>window.NBLAccountBridge.getToken())).toBe("fixture.jwt");
+  });
+
+  test("laptop-sized Beans fits the screen and its menu can scroll and switch official looks", async ({ page }) => {
+    await page.setViewportSize({width:1024,height:680});
+    await open("/",page);
+    await page.getByRole("button",{name:"Open Beans"}).click();
+    const drawer=page.locator("[data-nbl-chat-drawer]");
+    const toggle=page.getByRole("button",{name:"Open Beans menu"});
+    await expect(toggle).toBeVisible();
+    await expect(drawer).toBeHidden();
+    await toggle.click();
+    await expect(drawer).toBeVisible();
+    await drawer.locator("[data-nbl-drawer-plans]").click();
+    await drawer.locator("details.nbl-drawer-category:not([hidden]) summary").click();
+    const scroll=await drawer.locator(".nbl-chat-drawer-scroll").evaluate(el=>{
+      el.scrollTop=el.scrollHeight;
+      return {top:el.scrollTop,overflow:el.scrollHeight>el.clientHeight};
+    });
+    expect(scroll.overflow).toBe(true);
+    expect(scroll.top).toBeGreaterThan(0);
+    await page.getByRole("button",{name:"Close Beans menu"}).click();
+    const form=await page.locator("[data-nbl-beans-form]").evaluate(el=>{
+      const rect=el.getBoundingClientRect();
+      return {top:rect.top,bottom:rect.bottom,height:rect.height};
+    });
+    expect(form.height).toBeGreaterThan(30);
+    expect(form.bottom).toBeLessThanOrEqual(681);
+    await page.locator("[data-nbl-customize-open]").click();
+    await page.locator('[data-nbl-look="crossed"]').click();
+    await expect(page.locator("[data-nbl-beans-presence] img.nbl-beans-presence-art")).toHaveAttribute("src","/Beans_Crossarmed.png");
+    await page.locator('[data-nbl-look="jersey"]').click();
+    await expect(page.locator("[data-nbl-beans-presence] img.nbl-beans-presence-art")).toHaveAttribute("src","/Beans_Hi_Soccer.png");
+  });
+
   test("Beans AI opens in a real browser", async ({ page }) => {
     await open("/", page);
 
@@ -171,7 +229,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-head .nbl-beans-grey-link")).toHaveCount(0);
     await expect(page.locator(".nbl-beans-head .nbl-beans-people-link")).toHaveCount(0);
     // Desktop Beans shows a standing sidebar; mobile uses its accessible drawer toggle.
-    const mobile=await page.evaluate(()=>matchMedia("(max-width:959px)").matches);
+    const mobile=await page.evaluate(()=>matchMedia("(max-width:1199px)").matches);
     if(mobile)await page.getByRole("button",{name:"Open Beans menu"}).click();
     const drawer=page.locator("[data-nbl-chat-drawer]");
     await expect(drawer).toBeVisible();

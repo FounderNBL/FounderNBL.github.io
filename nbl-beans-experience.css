@@ -47,7 +47,17 @@
     var(--nbl-beans-custom-sidebar,none);
   background-size:cover;background-position:center;
 }
-.nbl-beans-panel .nbl-chat-drawer-item{min-height:48px}
+.nbl-beans-panel .nbl-chat-drawer-scroll{
+  min-height:0;min-width:0;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.nbl-beans-panel .nbl-chat-drawer-item{
+  min-height:60px;height:auto;flex-shrink:0;white-space:normal;
+  padding-top:11px;padding-bottom:11px;line-height:1.35;
+}
+.nbl-beans-panel .nbl-chat-drawer-item small{
+  overflow-wrap:anywhere;white-space:normal;
+}
 .nbl-beans-library-link,
 .nbl-beans-explore-worlds{
   display:block;border:1px solid rgba(214,161,75,.32);border-radius:12px;
@@ -197,14 +207,14 @@
   background:#fff3dd;color:#4e3211;font-weight:750;cursor:pointer;
 }
 .nbl-beans-reset{width:100%;margin:17px 0 4px}
-@media(min-width:960px){
+@media(min-width:1200px){
   .nbl-beans-panel .nbl-beans-card{min-width:0}
   .nbl-beans-panel .nbl-chat-drawer{
     position:absolute;left:0;top:80px;bottom:0;z-index:5;
     width:clamp(250px,22vw,304px);transform:none!important;
     box-shadow:0 0 18px rgba(0,0,0,.12);transition:none;
   }
-  .nbl-beans-panel .nbl-chat-drawer[hidden]{display:flex!important}
+  /* Desktop menu visibility is synchronized by JS; never show a [hidden] menu. */
   .nbl-beans-panel .nbl-chat-drawer-shade{display:none!important}
   .nbl-beans-panel .nbl-chat-drawer-toggle{display:none}
   .nbl-beans-panel #nbl-chat-panel-beans{
@@ -212,7 +222,7 @@
   }
   .nbl-beans-panel .nbl-chat-drawer-head button{display:none}
 }
-@media(max-width:959px){
+@media(max-width:1199px){
   .nbl-beans-panel .nbl-beans-card{
     height:calc(100dvh - 20px);min-height:0!important;
   }
@@ -248,4 +258,24 @@
 }
 @media(prefers-reduced-motion:reduce){
   .nbl-beans-panel .nbl-chat-drawer{transition:none}
+}
+
+/* Fit the existing Beans screen on shorter laptop windows and browser zoom.
+   Do not let welcome art/shortcut rows push the actual chat composer offscreen. */
+@media(max-height:760px){
+ .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-presence{
+   min-height:100px;max-height:134px;margin:7px 10px 0;
+   padding:6px 12px;gap:10px;
+ }
+ .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-presence-art{
+   width:clamp(86px,12vw,125px);height:115px;max-width:36%;
+ }
+ .nbl-beans-hero-copy h3{font-size:clamp(1.08rem,2vw,1.7rem);margin:4px 0}
+ .nbl-beans-hero-copy p{font-size:.73rem;line-height:1.25}
+ .nbl-beans-hero-tag{font-size:.62rem;padding:3px 9px}
+ .nbl-beans-shortcuts{padding:6px 10px;gap:5px}
+ .nbl-beans-shortcuts button,.nbl-beans-shortcuts a{
+   min-height:35px;padding:5px 8px;font-size:.74rem;
+ }
+ .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-log{min-height:70px}
 }

@@ -59,7 +59,7 @@ suggestions.addEventListener("click",event=>{
  const trigger=event.target.closest("[data-nbl-beans-explore]");
  if(trigger){
   explore.open=true;
-  if(window.matchMedia("(max-width:959px)").matches){
+  if(window.matchMedia("(max-width:1199px)").matches){
    const toggle=panel.querySelector("[data-nbl-chat-drawer-toggle]");
    if(toggle?.getAttribute("aria-expanded")!=="true")toggle?.click();
   }
