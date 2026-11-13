@@ -162,7 +162,7 @@ requireText(header,'data-nbl-university-pdf-form',"Student PDF intake form is mi
 requireText(header,'action:"university_submit_pdf"',"Student PDF intake is not routed to the University TEST/Registrar backend.");
 
 // Core world doors used by the Android pocket version must remain available on web.
-for(const route of ["/","/books.html","/stories.html","/founder-office.html","/studio/","/university.html"]){
+for(const route of ["/","/books.html","/stories.html","/founder-office.html","/studio/","https://nblschool.com/"]){
   requireText(header,route,`World route missing from website header: ${route}`);
 }
 
