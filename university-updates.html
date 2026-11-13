@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06111d">
+<meta name="description" content="New Beansland University is under construction and opening soon. Free sign-up for a school opening notification. No tuition or paid enrollment is being accepted.">
+<title>NBL University · Free Opening Notifications | New Beansland</title>
+<link rel="canonical" href="https://newbeansland.org/university-updates.html">
+<link rel="icon" type="image/png" href="/NBL-New-Official-Seal.png">
+<style>
+:root{color-scheme:dark;--gold:#f0c56f;--cream:#f4ead8;--muted:#d2c5b1;--line:#c99b5666}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0%,#24425b 0%,#071727 38%,#030a13 80%);color:var(--cream);font:16px/1.6 system-ui,Arial,sans-serif}
+a{color:var(--gold)}
+header{padding:20px max(18px,calc((100% - 850px)/2));background:#03101ccc;border-bottom:1px solid var(--line)}
+.brand{display:inline-flex;gap:12px;align-items:center;color:var(--cream);text-decoration:none;font:700 1.15rem Georgia,serif}.brand img{width:46px;height:46px;object-fit:contain}
+main{width:min(760px,calc(100% - 28px));margin:65px auto 80px}
+.eyebrow{letter-spacing:.16em;text-transform:uppercase;font-size:.75rem;color:var(--gold);font-weight:800}
+h1{font:700 clamp(2.5rem,7vw,4.7rem)/1.08 Georgia,serif;color:#f2cb85;margin:12px 0 18px}
+.lead{font-size:1.18rem;max-width:650px}
+.panel{margin-top:32px;padding:clamp(20px,5vw,36px);border:1px solid var(--line);border-radius:18px;background:#0a1a2bdc}
+h2{font:700 1.65rem Georgia,serif;margin:0 0 10px}
+.muted{color:var(--muted)}
+label{display:block;margin:20px 0 8px;font-weight:700}
+select{width:100%;border:1px solid #c8a266;border-radius:9px;background:#061320;color:var(--cream);padding:14px;font:inherit}
+.checkbox{display:flex;align-items:flex-start;gap:12px;margin:18px 0}.checkbox input{width:20px;height:20px;flex:none;margin-top:4px}.checkbox label{margin:0;font-weight:500}
+button,.button{min-height:49px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:10px;background:linear-gradient(#f7d99a,#d4a151);color:#0a1220;font:800 1rem system-ui,sans-serif;padding:12px 20px;cursor:pointer;text-decoration:none}
+button:disabled{opacity:.6}.secondary{background:transparent;color:var(--gold);border:1px solid #c8a266}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.status{min-height:1.6em;color:#f3d99c;line-height:1.6;margin:14px 0 0}
+.small{font-size:.9rem;color:var(--muted)}
+footer{padding:24px;text-align:center;color:#c4b7a1;border-top:1px solid var(--line)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media(max-width:540px){main{margin-top:36px}.actions>*{width:100%}}
+</style>
+<script defer src="/nbl-world-header.js?v=20261107-university-notify"></script>
+<script defer src="/nbl-university-early-interest.js?v=20261107-university-notify"></script>
+</head>
+<body>
+<header><a class="brand" href="/"><img src="/NBL-New-Official-Seal.png" alt="">New Beansland</a></header>
+<main>
+<p class="eyebrow">New Beansland University · Opening soon</p>
+<h1>The school is under construction.</h1>
+<p class="lead">New Beansland University will be opening soon. Classes are not in session, and we are not accepting tuition, paid enrollment, or University payments.</p>
+<section class="panel" id="early-registration" aria-labelledby="register-title">
+<h2 id="register-title">Sign up for free opening updates</h2>
+<p class="muted">Join the notification list. We'll let you know when classes are ready to begin. Signing up does not enroll you in a course, charge your account, unlock lessons, or grant Professor Grey or Virgo access.</p>
+<form data-nbl-university-interest-form>
+<label for="interestKind">What interests you?</label>
+<select id="interestKind" name="interestKind" required>
+<option value="foundation_university">Foundation program</option>
+<option value="beans_university">Learning with Professor Grey and Virgo</option>
+<option value="full_nblu">Full University experience</option>
+</select>
+<div class="checkbox"><input id="emailOptIn" name="emailOptIn" type="checkbox" required checked><label for="emailOptIn">Yes, send me an email when NBL University opens and when classes are announced.</label></div>
+<div class="actions">
+<button data-nbl-university-interest-submit type="submit">Join free notification list</button>
+<button data-nbl-university-interest-withdraw type="button" class="secondary" style="display:none">Withdraw registration</button>
+</div>
+<p class="status" role="status" aria-live="polite" data-nbl-university-interest-status>Free sign-up only. No payment is required or accepted.</p>
+</form>
+<p class="small">Uses your existing NBL account to prevent duplicate registrations. You can update or withdraw your registration. You are not buying a University program.</p>
+</section>
+<div class="actions"><a class="button secondary" href="/">Back to New Beansland</a><a class="button secondary" href="https://nblschool.com/">NBL University website</a></div>
+</main>
+<footer>New Beansland University · Under construction · Opening soon</footer>
+</body>
+</html>
