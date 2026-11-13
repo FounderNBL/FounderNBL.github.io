@@ -96,7 +96,7 @@ export function rankReviewedLessons(incident,base,{read=readFileSync,list=readdi
      lesson.failureCount<=100000?lesson.failureCount:0;
    const score=50*Number(sameSignature)+Math.min(symptomOverlap,3)*12+
      Math.min(fileOverlap,3)*6+
-     20*Number(lesson.sourceRevision===process.env.GITHUB_SHA)+
+     20*Number(typeof lesson.sourceRevision==="string"&&/^[a-f0-9]{40}$/.test(lesson.sourceRevision)&&lesson.sourceRevision===process.env.GITHUB_SHA)+
      Math.round(15*success/(success+failure))-Math.min(failure*4,20);
    choices.push({caseId:lesson.id,procedureId:"website.source-patch-"+lesson.id,
      score,paths:guard.paths,unifiedDiff:lesson.unifiedDiff,
