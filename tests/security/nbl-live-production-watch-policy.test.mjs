@@ -60,3 +60,11 @@ test("NBLU inspection hold excludes campus and University from every public webs
  }
  assert.doesNotMatch(smoke,/for\(const route of \[[^\]]*"university"/);
 });
+
+test("Cloudflare's website Worker retains native Issues and query redaction across deploys",()=>{
+ const config=JSON.parse(readFileSync("wrangler.jsonc","utf8"));
+ assert.equal(config.name,"foundernbl-github-io");
+ assert.equal(config.observability.enabled,true);
+ assert.equal(config.observability.issues.enabled,true);
+ assert.equal(config.observability.redact_query_string,true);
+});

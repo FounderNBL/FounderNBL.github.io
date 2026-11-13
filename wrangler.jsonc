@@ -3,7 +3,11 @@
   "name": "foundernbl-github-io",
   "compatibility_date": "2026-07-27",
   "observability": {
-    "enabled": true
+    "enabled": true,
+    "redact_query_string": true,
+    "issues": {
+      "enabled": true
+    }
   },
   "assets": {
     "directory": "."
