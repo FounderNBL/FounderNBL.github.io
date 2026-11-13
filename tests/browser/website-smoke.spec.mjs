@@ -229,7 +229,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator(".nbl-beans-head .nbl-beans-grey-link")).toHaveCount(0);
     await expect(page.locator(".nbl-beans-head .nbl-beans-people-link")).toHaveCount(0);
     // Desktop Beans shows a standing sidebar; mobile uses its accessible drawer toggle.
-    const mobile=await page.evaluate(()=>matchMedia("(max-width:959px)").matches);
+    const mobile=await page.evaluate(()=>matchMedia("(max-width:1199px)").matches);
     if(mobile)await page.getByRole("button",{name:"Open Beans menu"}).click();
     const drawer=page.locator("[data-nbl-chat-drawer]");
     await expect(drawer).toBeVisible();
