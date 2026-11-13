@@ -19,7 +19,7 @@ function allowedPath(p){
 export function checkContract(c=contract){
  const errors=[];
  if(c.schema!==1||c.repository!=="FounderNBL/FounderNBL.github.io"||c.site!==publicOrigin)errors.push("contract_authority_invalid");
- if(c.schedule?.utcCron!=="17 */6 * * *"||c.schedule?.repair!==false||c.schedule?.deploy!==false)errors.push("unsafe_schedule_or_writes");
+ if(c.schedule?.utcCron!=="47 1,13 * * *"||c.schedule?.repair!==false||c.schedule?.deploy!==false)errors.push("unsafe_schedule_or_writes");
  if(c.production?.onlyReadRequests!==true||c.source?.officialWorldArt?.length!==2)errors.push("contract_scope_invalid");
  const seen=new Set();
  for(const p of c.production?.publicPages||[]){
