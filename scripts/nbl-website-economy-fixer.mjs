@@ -59,40 +59,69 @@ export function recipeEdits(incident,read,base){
  }
  return edits.length?edits:null;
 }
-// Reapply only merged, independently tested code already remembered in the
-// website's versioned main branch. Git verifies the exact patch against source.
+// This is the real website host's execution adapter for the ONE NBL
+// Foundation's verified-memory policy. Only lessons already merged into
+// main are eligible; no second agent/model, self-approval or blind replay.
+// Keep ranking factors aligned with Foundation's verified-repair-memory.
+export function rankReviewedLessons(incident,base,{read=readFileSync,list=readdirSync}={}){
+ if(!incident?.eligible||!incident.incident||!Array.isArray(incident.selected)||
+    incident.targetRepo!==policy.homeRepository)return [];
+ const allowed=new Set(incident.selected.map(x=>checkedPath(x.file)));
+ const symptomSet=new Set(incident.selected.map(x=>x.id));
+ let names=[];
+ try{names=list(join(base,policy.allowedRemembranceDir)).filter(x=>/^website-green-[a-f0-9]{12}\.json$/.test(x)).slice(0,200);}
+ catch{return [];}
+ const choices=[];
+ for(const name of names){
+  try{
+   const lesson=JSON.parse(read(join(base,policy.allowedRemembranceDir,name),"utf8"));
+   if(lesson.id!==name.slice(0,-5)||
+      lesson.status!=="independent_tests_verified_source_repair"||
+      lesson.approval!=="Founder must review draft PR; only merged lessons are available on main"||
+      typeof lesson.unifiedDiff!=="string"||lesson.unifiedDiff.length>policy.maxPatchBytes)continue;
+   const guard=checkPatch(lesson.unifiedDiff);
+   const digest=createHash("sha256").update(lesson.unifiedDiff).digest("hex");
+   if(!guard.ok||lesson.patchSha256!==digest||
+      guard.paths.some(p=>!allowed.has(p)))continue;
+   const issueIds=Array.isArray(lesson.originalIssue)?
+     lesson.originalIssue.map(x=>x?.id).filter(x=>typeof x==="string"):[];
+   const sameSignature=lesson.id===incident.incident;
+   const symptomOverlap=[...new Set(issueIds)].filter(x=>symptomSet.has(x)).length;
+   const fileOverlap=guard.paths.filter(p=>allowed.has(p)).length;
+   // A generic shared file cannot establish a safe reusable correction.
+   if(!sameSignature&&(!symptomOverlap||!fileOverlap))continue;
+   const success=Number.isSafeInteger(lesson.successCount)&&lesson.successCount>0&&
+     lesson.successCount<=100000?lesson.successCount:1;
+   const failure=Number.isSafeInteger(lesson.failureCount)&&lesson.failureCount>=0&&
+     lesson.failureCount<=100000?lesson.failureCount:0;
+   const score=50*Number(sameSignature)+Math.min(symptomOverlap,3)*12+
+     Math.min(fileOverlap,3)*6+
+     20*Number(lesson.sourceRevision===process.env.GITHUB_SHA)+
+     Math.round(15*success/(success+failure))-Math.min(failure*4,20);
+   choices.push({caseId:lesson.id,procedureId:"website.source-patch-"+lesson.id,
+     score,paths:guard.paths,unifiedDiff:lesson.unifiedDiff,
+     successCount:success,failureCount:failure,executionAuthorized:false});
+  }catch{/* corrupt/stale/unreviewed lesson is never promoted */}
+ }
+ return choices.sort((a,b)=>b.score-a.score||a.caseId.localeCompare(b.caseId)).slice(0,10);
+}
+// A ranked list is NOT an execution permission. Git checks the exact patch
+// against the current approved paths and then the existing independent site,
+// browser and Founder PR gates still apply.
 export function replayReviewedLesson(incident,base,{
   read=readFileSync,list=readdirSync,spawn=spawnSync
 }={}){
- if(!incident?.eligible||!incident.incident)return null;
- const memoryDir=join(base,policy.allowedRemembranceDir);
- let names=[];
- try{names=list(memoryDir).filter(s=>/^website-green-[a-f0-9]{12}\.json$/.test(s)).slice(0,12);}
- catch{return null;}
- const allowed=new Set(incident.selected.map(x=>checkedPath(x.file)));
- for(const name of names){
-  try{
-   const lesson=JSON.parse(read(join(memoryDir,name),"utf8"));
-   if(lesson.id!==incident.incident||
-     lesson.status!=="independent_tests_verified_source_repair"||
-     lesson.approval!=="Founder must review draft PR; only merged lessons are available on main"||
-     typeof lesson.unifiedDiff!=="string"||
-     lesson.unifiedDiff.length>policy.maxPatchBytes)continue;
-   const digest=createHash("sha256").update(lesson.unifiedDiff).digest("hex");
-   const guard=checkPatch(lesson.unifiedDiff);
-   if(!guard.ok||lesson.patchSha256!==digest||
-     guard.paths.some(p=>!allowed.has(p)))continue;
-   const args=["-C",base,"apply","--check","-"];
-   const checked=spawn("git",args,{input:lesson.unifiedDiff,encoding:"utf8",timeout:12000});
-   if(checked.status!==0)continue;
-   const patched=spawn("git",["-C",base,"apply","-"],{
-      input:lesson.unifiedDiff,encoding:"utf8",timeout:12000});
-   if(patched.status!==0)throw Error("reviewed_lesson_apply_failed");
-   return {reason:"replayed approved source patch "+lesson.id,files:guard.paths,
-     lessonId:lesson.id};
-  }catch(e){
-   if(e.message==="reviewed_lesson_apply_failed")throw e;
-  }
+ for(const lesson of rankReviewedLessons(incident,base,{read,list})){
+  const checked=spawn("git",["-C",base,"apply","--check","-"],{
+    input:lesson.unifiedDiff,encoding:"utf8",timeout:12000
+  });
+  if(checked.status!==0)continue;
+  const patched=spawn("git",["-C",base,"apply","-"],{
+    input:lesson.unifiedDiff,encoding:"utf8",timeout:12000
+  });
+  if(patched.status!==0)throw Error("reviewed_lesson_apply_failed");
+  return {reason:"replayed ranked, previously reviewed source patch "+lesson.caseId,
+    files:lesson.paths,lessonId:lesson.caseId,rankScore:lesson.score};
  }
  return null;
 }
