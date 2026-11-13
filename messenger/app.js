@@ -55,8 +55,10 @@ async function showIncomingCall(callId,from){
     const access=await videoCallAction("join",callId);
     if(!userId||userId!==state.clerk?.user?.id||generation!==authSyncGeneration||incomingCall)return;
     if(access.callType!=="nbl_private"||access.callId!==callId||access.user?.id!==userId)return;
+    const expiresAt=Date.parse(access.expiresAt)||Date.now()+600000;
+    if(expiresAt<=Date.now())return;
     incomingCallsSeen.add(callId);
-    incomingCall={callId,from,expiresAt:Date.parse(access.expiresAt)||Date.now()+600000};
+    incomingCall={callId,from,expiresAt};
     const panel=$("[data-chat-incoming-call]");
     $("[data-chat-incoming-from]").textContent=from?"Video call from @"+from:"An NBL member is calling";
     $("[data-chat-incoming-answer]").href=incomingCallUrl(callId);
@@ -84,6 +86,9 @@ function checkIncomingMessages(threadId,messages){
   const me=String(state.me?.handle||"").toLowerCase();
   for(const message of [...messages].reverse()){
     if(message?.deleted||!message?.body)continue;
+    // Don't repeatedly attempt to ring for old invitations while refreshing.
+    const sentAt=Date.parse(message.createdAt||"");
+    if(Number.isFinite(sentAt)&&Date.now()-sentAt>600000)continue;
     const matched=VIDEO_INVITE_RE.exec(String(message.body));
     if(!matched||!IS_CALL_ID.test(matched[1]))continue;
     if(String(message.sender?.handle||"").toLowerCase()===me)continue;
@@ -347,7 +352,13 @@ async function loadPhoneSettings(){
   const config=await pushApi({action:"push_config"});
   pushConfig=config;
   const current=await subscription();
-  const enabled=Boolean(current&&window.Notification.permission==="granted");
+  let linkedOwner="";
+  try{linkedOwner=localStorage.getItem(PUSH_OWNER_KEY)||"";}catch{}
+  const enabled=Boolean(current&&window.Notification.permission==="granted"
+    &&linkedOwner===state.clerk?.user?.id);
+  // Repair a missing server-side registration only for a device that has
+  // already opted in for this exact NBL account.
+  if(enabled)await pushApi({action:"push_subscribe",subscription:current.toJSON()});
   updatePhoneButtons(enabled);
   setPushStatus(enabled
    ?"Call and message alerts are enabled on this device. Your phone controls the notification sound."
@@ -365,16 +376,23 @@ async function enablePhonePush(){
   if(permission!=="granted"){setPushStatus("Phone alerts were not enabled. You can allow notifications in your browser settings.");return;}
   const config=pushConfig||await pushApi({action:"push_config"});
   const reg=await messengerWorker();
-  const existing=await reg.pushManager.getSubscription();
-  // The VAPID application-server key is stable. A stale subscription can be
-  // safely replaced and then bound only to this verified Clerk identity.
-  if(existing)await existing.unsubscribe();
-  const sub=await reg.pushManager.subscribe({
-   userVisibleOnly:true,applicationServerKey:base64UrlBytes(config.publicKey)
-  });
+  let sub=await reg.pushManager.getSubscription();
+  const expectedKey=base64UrlBytes(config.publicKey);
+  const existingKey=sub?.options?.applicationServerKey;
+  const currentKey=existingKey?new Uint8Array(existingKey):null;
+  const keyMatches=!currentKey||(currentKey.length===expectedKey.length
+    &&expectedKey.every((byte,i)=>byte===currentKey[i]));
+  // Keep an already-working endpoint. Recreating it on every click can lose
+  // notifications if network registration fails midway.
+  if(sub&&!keyMatches){await sub.unsubscribe();sub=null;}
+  let created=false;
+  if(!sub){
+   sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:expectedKey});
+   created=true;
+  }
   try{
    await pushApi({action:"push_subscribe",subscription:sub.toJSON()});
-  }catch(error){await sub.unsubscribe().catch(()=>{});throw error;}
+  }catch(error){if(created)await sub.unsubscribe().catch(()=>{});throw error;}
   try{localStorage.setItem(PUSH_OWNER_KEY,state.clerk.user.id);}catch{}
   updatePhoneButtons(true);
   setPushStatus("Call and message alerts enabled. Tap Preview to check notifications on this phone.");
@@ -527,6 +545,7 @@ async function loadThreads(){
 }
 function renderMessages(messages){
   const area=$("[data-chat-messages]");
+  const atBottom=area.scrollHeight-area.scrollTop-area.clientHeight<120;
   area.replaceChildren();
   if(!messages.length){area.append(node("p","hint","Nothing here yet. Say hello!"));return;}
   const me=String(state.me?.handle||"").toLowerCase();
@@ -541,10 +560,15 @@ function renderMessages(messages){
     bubble.append(node("p",null,message.body||""));
     const invite=VIDEO_INVITE_RE.exec(String(message.body||""));
     if(invite&&!message.deleted&&IS_CALL_ID.test(invite[1])){
-      const link=node("a","btn small","Join NBL video call");
-      link.href="https://newbeansland.org/messenger/call.html?call="+encodeURIComponent(invite[1]);
-      link.rel="noreferrer";
-      bubble.append(link);
+      const sentAt=Date.parse(message.createdAt||"");
+      if(Number.isFinite(sentAt)&&Date.now()-sentAt>600000){
+        bubble.append(node("small","hint","Video call invitation expired."));
+      }else{
+        const link=node("a","btn small","Join NBL video call");
+        link.href="https://newbeansland.org/messenger/call.html?call="+encodeURIComponent(invite[1]);
+        link.rel="noreferrer";
+        bubble.append(link);
+      }
     }
     if(!mine&&!message.deleted&&message.id){
       const actions=node("div","msg-actions");
@@ -555,7 +579,7 @@ function renderMessages(messages){
     }
     area.append(bubble);
   }
-  area.scrollTop=area.scrollHeight;
+  if(atBottom)area.scrollTop=area.scrollHeight;
 }
 function watchOpenThread(id){
   if(state.realtimeThread===id)return;
