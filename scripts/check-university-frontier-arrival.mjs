@@ -1,32 +1,26 @@
 #!/usr/bin/env node
-// Founder 2026-11-07: University admissions closed; only free opening notices.
+// Founder 2026-11-13: University World Card routes to independent free campus tour; enrollment/payments closed.
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
-const home=read("index.html");
-const page=read("university.html");
-const interest=read("nbl-university-early-interest.js");
-const pricing=read("pricing.html");
-const account=read("account.html");
-const vault=read("vault.html");
-const legacy=read("university-enrollment.html");
-for(const [value,needle] of [
-  [home,'href="university.html"'],
-  [page,"school is under construction"],
-  [page,"opening soon"],
-  [page,"data-nbl-university-interest-form"],
-  [page,"data-nbl-university-interest-submit"],
-  [page,'name="emailOptIn"'],
-  [page,'href="https://nblschool.com/"'],
-  [page,'src="/nbl-university-early-interest.js'],
-  [page,'src="/nbl-world-header.js'],
-  [interest,'action:"join"'],
-  [pricing,"University is under construction"],
-  [account,"Sign up free for the opening notification"],
-  [vault,"No University purchase or subscription can be started"],
-  [legacy,"url=https://newbeansland.org/university.html#early-registration"]
-]) assert.ok(value.includes(needle),"Missing University closure contract: "+needle);
-for(const forbidden of ["nblu-pay","nblu-one-entry","university-storefront.js","billing/checkout","checkout.stripe.com","December 1","December 2026","$34.99"]){
- assert.ok(!page.includes(forbidden),"Unexpected University cashier or stale date: "+forbidden);
+const home=read("index.html"),redirect=read("university.html"),updates=read("university-updates.html");
+const interest=read("nbl-university-early-interest.js"),legacy=read("university-enrollment.html");
+const pricing=read("pricing.html"),account=read("account.html"),vault=read("vault.html");
+assert.match(home,/class="world-card official-art reveal" href="https:\/\/nblschool\.com\/"/);
+assert.ok(home.includes("Free Tours Open · Classes Closed"));
+assert.ok(redirect.includes('url=https://nblschool.com/'));
+assert.ok(redirect.includes('rel="canonical" href="https://nblschool.com/"'));
+assert.ok(updates.includes("data-nbl-university-interest-form"));
+assert.ok(updates.includes("data-nbl-university-interest-submit"));
+assert.ok(updates.includes('name="emailOptIn"'));
+assert.ok(updates.includes('src="/nbl-university-early-interest.js'));
+assert.ok(interest.includes('action:"join"'));
+assert.ok(interest.includes("university-updates.html#early-registration"));
+assert.ok(legacy.includes("university-updates.html#early-registration"));
+assert.ok(pricing.includes("University is under construction"));
+assert.ok(account.includes("Sign up free for the opening notification"));
+assert.ok(vault.includes("No University purchase or subscription can be started"));
+for(const disallowed of ["nblu-pay","nblu-one-entry","university-storefront.js","billing/checkout","checkout.stripe.com","$34.99"]){
+ assert.ok(!updates.includes(disallowed),"Unexpected University cashier in free notification form: "+disallowed);
 }
-console.log("PASS University closed, free-only registration and no tuition cashier");
+console.log("PASS school World Card → official tour; separate free-only updates; paid enrollment held");
