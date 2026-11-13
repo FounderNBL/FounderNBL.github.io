@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {buildFoundationFailure,buildFoundationAttempt,buildFounderApproval,
- renderRecord,upsertGithubIssue,FOUNDATION_FAILURE_PREFIX,FOUNDER_APPROVAL_PREFIX}
+ renderRecord,upsertGithubIssue,readVerifiedRepairOutcomes,FOUNDATION_FAILURE_PREFIX,FOUNDER_APPROVAL_PREFIX}
  from "./nbl-foundation-repair-events.mjs";
 
 const env={GITHUB_SHA:"a".repeat(40),GITHUB_RUN_ID:"45123"};
@@ -104,4 +104,59 @@ test("Reviewed repair returns to its original historical case, not a fake first-
    reviewedCaseId:"website-green-aaaaaaaaaaaa"
  });
  assert.equal(mismatched.procedureOrigin,"first-time-proposal");
+});
+
+test("Only independent GitHub source/browser results affect historical success and failure ranking",async()=>{
+ const caseId="website-green-aaaaaaaaaaaa";
+ const makeIssue=(runId,verdict,login="github-actions[bot]")=>{
+  const link="https://github.com/FounderNBL/FounderNBL.github.io/actions/runs/"+runId;
+  const rec={
+   schema:"nbl.foundation.independent-repair-observation.v1",
+   failureId:incident.incident,caseId,
+   attemptRef:link,procedureOrigin:"reviewed-case",
+   procedureId:"website.source-patch-"+caseId,
+   scopeEvidenceRef:link,independentInspectorRef:link,
+   sourceRevision:env.GITHUB_SHA,
+   approvedExpectationRef:"https://github.com/FounderNBL/FounderNBL.github.io/blob/"+
+     env.GITHUB_SHA+"/config/nbl-website-green-baseline.json",
+   observedAt:new Date().toISOString(),independentlyObserved:true,
+   verdict,autoPromoted:false,approved:false
+  };
+  return {user:{login},title:"[NBL FOUNDATION OUTCOME] "+incident.incident+" "+caseId+" "+runId,
+   state:"closed",body:renderRecord(rec)};
+ };
+ const issues=[makeIssue("45123","SUCCESS"),makeIssue("45124","FAILED"),
+  makeIssue("45125","SUCCESS","untrusted-bot")];
+ const runs=[];
+ const fetcher=async(url,options)=>{
+  assert.equal(options.method,"GET");
+  assert.equal(options.headers.authorization,"Bearer built-in-github-token");
+  const path=new URL(url).pathname;
+  if(path.endsWith("/issues"))return {ok:true,json:async()=>issues};
+  const runId=path.match(/\/actions\/runs\/(45123|45124)/)?.[1];
+  if(!runId)throw Error("Unexpected API endpoint "+url);
+  runs.push(runId);
+  if(path.endsWith("/jobs")){
+   return {ok:true,json:async()=>({jobs:[{
+    name:"Verified .org failure -> NBL local recipe / tiny AI Fixer -> retest",
+    steps:[
+     {name:"INSPECTOR / independently reproduce and select one repairable source defect",conclusion:"success"},
+     {name:"RETEST / original failure and full approved source regression",
+       conclusion:runId==="45123"?"success":"failure"},
+     {name:"RETEST / independent real browser execution desktop + mobile",
+       conclusion:runId==="45123"?"success":"skipped"}
+    ]
+   }]})};
+  }
+  return {ok:true,json:async()=>({
+   name:"NBL Website Health Inspector",head_branch:"main",
+   head_repository:{full_name:"FounderNBL/FounderNBL.github.io"},
+   head_sha:env.GITHUB_SHA,status:"completed",conclusion:"failure",event:"push"
+  })};
+ };
+ const result=await readVerifiedRepairOutcomes({token:"built-in-github-token",fetcher});
+ assert.deepEqual({...result[caseId]},{success:1,failure:1});
+ assert.equal(runs.length,4,"two real runs with independent job proof");
+ const zero=await readVerifiedRepairOutcomes({token:"",fetcher:()=>{throw Error("not called")}});
+ assert.equal(Object.keys(zero).length,0);
 });
