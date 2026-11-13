@@ -214,7 +214,7 @@
     width:clamp(250px,22vw,304px);transform:none!important;
     box-shadow:0 0 18px rgba(0,0,0,.12);transition:none;
   }
-  .nbl-beans-panel .nbl-chat-drawer[hidden]{display:flex!important}
+  /* Desktop menu visibility is synchronized by JS; never show a [hidden] menu. */
   .nbl-beans-panel .nbl-chat-drawer-shade{display:none!important}
   .nbl-beans-panel .nbl-chat-drawer-toggle{display:none}
   .nbl-beans-panel #nbl-chat-panel-beans{
