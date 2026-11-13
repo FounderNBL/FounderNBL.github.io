@@ -56,15 +56,21 @@ async function showIncomingCall(callId,from){
     if(!userId||userId!==state.clerk?.user?.id||generation!==authSyncGeneration||incomingCall)return;
     if(access.callType!=="nbl_private"||access.callId!==callId||access.user?.id!==userId)return;
     incomingCallsSeen.add(callId);
-    incomingCall={callId,from};
+    incomingCall={callId,from,expiresAt:Date.parse(access.expiresAt)||Date.now()+600000};
     const panel=$("[data-chat-incoming-call]");
     $("[data-chat-incoming-from]").textContent=from?"Video call from @"+from:"An NBL member is calling";
     $("[data-chat-incoming-answer]").href=incomingCallUrl(callId);
     $("[data-chat-incoming-status]").textContent="Answer or decline this private NBL video call.";
     panel.hidden=false;
+    $("[data-chat-incoming-answer]").focus();
     // Browser autoplay rules can suppress in-page sounds; phone alerts use device settings.
     window.NBLInfinitySound?.play("people");
     incomingRingTimer=setInterval(()=>{
+      if(incomingCall&&Date.now()>=incomingCall.expiresAt){
+        hideIncomingCall();
+        callFeedback("Missed call. This invitation has expired.");
+        return;
+      }
       if(incomingCall&&document.visibilityState==="visible")
         window.NBLInfinitySound?.play("people");
     },3500);
@@ -344,8 +350,8 @@ async function loadPhoneSettings(){
   const enabled=Boolean(current&&window.Notification.permission==="granted");
   updatePhoneButtons(enabled);
   setPushStatus(enabled
-   ?"Phone alerts enabled on this browser. The phone controls background sound and appearance."
-   :"Phone alerts are off on this browser. Enable them to receive messages when Messenger is closed.");
+   ?"Call and message alerts are enabled on this device. Your phone controls the notification sound."
+    :"Call and message alerts are off on this device. Enable them to know when someone calls or messages you.");
  }catch(error){
   updatePhoneButtons(false);
   setPushStatus(error.message||"Phone notification service unavailable.");
@@ -371,7 +377,7 @@ async function enablePhonePush(){
   }catch(error){await sub.unsubscribe().catch(()=>{});throw error;}
   try{localStorage.setItem(PUSH_OWNER_KEY,state.clerk.user.id);}catch{}
   updatePhoneButtons(true);
-  setPushStatus("Phone alerts enabled. Tap Preview to see a real phone notification.");
+  setPushStatus("Call and message alerts enabled. Tap Preview to check notifications on this phone.");
  }catch(error){setPushStatus(error.message||"Could not enable phone alerts.");}
 }
 async function disablePhonePush(){
@@ -479,8 +485,14 @@ function renderThreads(){
   const area=$("[data-chat-threads]");
   area.replaceChildren();
   renderInviteState();
-  if(!state.threads.length){area.append(node("p","hint","No conversations yet. Invite someone to join you."));return;}
-  for(const row of state.threads){
+  const filter=String($("[data-chat-thread-search]")?.value||"").trim().toLowerCase();
+  const visible=state.threads.filter(row=>!filter||displayThread(row).toLowerCase().includes(filter)
+    ||String(row.peer?.handle||"").toLowerCase().includes(filter));
+  if(!visible.length){
+    area.append(node("p","hint",filter?"No conversations match your search.":"No conversations yet. Invite someone to join you."));
+    return;
+  }
+  for(const row of visible){
     const item=node("button","thread"+(row.id===state.selectedId?" selected":""),displayThread(row));
     item.type="button";
     const photo=safeAvatar(row.peer?.avatarUrl);
@@ -708,7 +720,7 @@ async function startVideoCall(){
   // Reserve the caller's call window directly on the tap. Opening after async
   // network calls is blocked as a popup by many mobile browsers.
   const callWindow=window.open("","_blank");
-  if(callWindow){callWindow.document.title="NBL Pulse · Connecting call";callWindow.document.body.textContent="Connecting your NBL video call…";}
+  if(callWindow){callWindow.document.title="NBL Messenger · Connecting call";callWindow.document.body.textContent="Connecting your NBL video call…";}
   callFeedback("Preparing your private video call…");
   status("Preparing your private video call…");
   try{
@@ -819,6 +831,7 @@ async function syncClerkSession(){
   callFeedback("");
   $("[data-chat-threads]").replaceChildren();
   $("[data-chat-search-results]").replaceChildren();
+  $("[data-chat-thread-search]").value="";
   $("[data-chat-featured-founder]").hidden=true;
   $("[data-chat-thread-title]").textContent="Choose a conversation";
   $("[data-chat-thread-kind]").textContent="Messages";
@@ -893,6 +906,7 @@ async function boot(){
     }finally{button.disabled=false;}
   });
   $("[data-chat-refresh]").addEventListener("click",()=>{void refresh();});
+  $("[data-chat-thread-search]").addEventListener("input",renderThreads);
   $("[data-chat-mute]").addEventListener("click",()=>{void toggleMute();});
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
   $("[data-chat-unblock]").addEventListener("click",()=>{void unblockPeer();});

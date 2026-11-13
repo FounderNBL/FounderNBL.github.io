@@ -55,7 +55,7 @@ assert.match(app, /data-chat-founder-marker hidden/);
 assert.doesNotMatch(app, /Class Chat|Study Hall|Student rooms|University Social Chat|University enrollment|university-campus\.html/);
 assert.match(app, /data-chat-account-toggle/);
 assert.doesNotMatch(app, /pulse-embedded|iframe/);
-assert.match(app,/href="\/messenger\/messenger-skin.css\?v=20261109-standalone"/);
+assert.match(app,/href="\/messenger\/messenger-skin.css\?v=20261113-call-ui"/);
 assert.match(app,/data-chat-app hidden/);
 assert.match(app, /data-chat-profile-form/);
 assert.match(app, /data-chat-open-clerk/);
@@ -64,7 +64,7 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261109-live-ringing'),
+assert.ok(app.includes('/messenger/app.js?v=20261113-call-ui'),
   "Pulse Messenger must load the current account and call handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);

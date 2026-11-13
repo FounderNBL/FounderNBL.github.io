@@ -217,3 +217,37 @@ footer a{color:#eac682}
   .thread,.btn{transition:none!important}
   .thread:hover{transform:none}
 }
+
+/* Call-first Messenger interface: native-feeling video control and visible mobile incoming calls. */
+.conversation-head>.video-call-primary{display:inline-flex;align-items:center;gap:8px;flex:none;margin-left:auto;background:linear-gradient(135deg,#e7bc69,#bf8b39);border:1px solid #ffe2a2;color:#161109;box-shadow:0 2px 14px #0003}
+.conversation-head>.video-call-primary:hover{background:#f5d18c;filter:none}
+.conversation-head>.video-call-primary svg{flex:none}
+.conversation-head>.thread-menu{margin-left:0}
+.sidebar .notification-settings{max-width:none;margin:20px 3px 0;padding:15px;border:1px solid #6e5739;border-radius:15px;background:linear-gradient(148deg,#1e3043,#142236 76%)}
+.sidebar .notification-heading .eyebrow{font-size:.61rem;letter-spacing:.11em}
+.sidebar .notification-settings h2{font:750 1.06rem/1.3 system-ui,sans-serif;margin:5px 0 7px;color:#fff}
+.sidebar .notification-settings p{margin:0;color:#c3c8d1;font-size:.77rem;line-height:1.5}
+.sidebar .notification-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0 9px}
+.sidebar .notification-actions .btn{width:100%;min-height:39px;padding:8px;font-size:.76rem}
+.sidebar [data-chat-notify-enable],.sidebar [data-chat-notify-disable]{grid-column:1 / -1}
+.sidebar [data-chat-notify-status]{padding-top:3px}
+.incoming-video-call{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;margin:0;padding:18px;border:0;border-radius:0;background:rgba(1,6,14,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:none}
+.incoming-video-call .incoming-call-card{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center;width:min(100%,410px);padding:29px 23px 23px;border-radius:25px;border:1px solid #c89d60;background:linear-gradient(150deg,#203a50,#0d1d2e 72%);box-shadow:0 25px 80px #000b,0 1px #ffffff20 inset}
+.incoming-call-card .incoming-call-symbol{grid-column:1/-1;display:grid;place-items:center;justify-self:center;width:76px;height:76px;border:1px solid #dbbd80;border-radius:50%;background:#4b3924;color:#f9d898;font-size:2.5rem;box-shadow:0 0 0 9px #e8b86718}
+.incoming-call-card .incoming-call-details{grid-column:1/-1;text-align:center;margin:15px 0 12px}
+.incoming-call-card .incoming-call-details strong{font-size:1.24rem;line-height:1.3;color:#fff;overflow-wrap:anywhere}
+.incoming-call-card .incoming-call-details p{font-size:.85rem;margin:8px 0 0;color:#cdd5df}
+.incoming-call-card .btn{width:100%;min-height:50px;font-size:.91rem;border-radius:14px}
+.incoming-call-card [data-chat-incoming-answer]{border-color:#7bcfb0;background:#1f875e;color:#fff}
+.incoming-call-card [data-chat-incoming-answer]:hover{background:#2f996e}
+.incoming-call-card [data-chat-incoming-decline]{border-color:#8d6571;background:#3b2736;color:#ffe5e9}
+.incoming-call-card [data-chat-incoming-decline]:hover{background:#523040}
+@media(max-width:790px){.conversation-head>.video-call-primary{margin-left:auto;padding:8px 10px;min-height:40px}.conversation-head>.video-call-primary span{display:none}.conversation-head>.thread-menu{margin-left:0}.sidebar .notification-settings{margin:16px 3px}.incoming-video-call{padding:15px}}
+
+/* Find real conversations quickly, without exposing private messages to external search. */
+.thread-search{position:relative;display:flex;align-items:center;margin:0 3px 15px;color:#c0cad5}
+.thread-search svg{position:absolute;left:13px;z-index:1;pointer-events:none}
+.thread-search input{width:100%;min-height:43px;padding:10px 15px 10px 41px;border:1px solid #3e5063;border-radius:13px;background:#1b2b3d;color:#fff;font-size:.84rem;outline-offset:2px}
+.thread-search input:focus{border-color:#dfb774;box-shadow:0 0 0 2px #c7964e30}
+.thread-search input::placeholder{color:#aebaca}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
