@@ -396,10 +396,17 @@
     manifest.href="/site.webmanifest";
     document.head.appendChild(manifest);
   }
+  if(!document.querySelector('link[rel~="icon"]')){
+    const favicon=document.createElement("link");
+    favicon.rel="icon";
+    favicon.type="image/png";
+    favicon.href="/assets/brand/nbl-official-mark.png?v=9e7ecbb9";
+    document.head.appendChild(favicon);
+  }
   if(!document.querySelector('link[rel="apple-touch-icon"]')){
     const touch=document.createElement("link");
     touch.rel="apple-touch-icon";
-    touch.href="/NBL-New-Official-Seal.png";
+    touch.href="/assets/brand/nbl-official-mark.png?v=9e7ecbb9";
     document.head.appendChild(touch);
   }
   if(!document.getElementById("nbl-world-jsonld")){
@@ -415,7 +422,7 @@
           "name":"New Beansland",
           "alternateName":["NBL","New Beansland™","NBL™"],
           "url":"https://newbeansland.org/",
-          "logo":"https://newbeansland.org/NBL-New-Official-Seal.png",
+          "logo":"https://newbeansland.org/assets/brand/nbl-official-mark.png?v=9e7ecbb9",
           "email":"founder@newbeansland.org",
           "founder":{"@type":"Person","name":"Jamel Hawkins","url":"https://newbeansland.org/jamel-hawkins.html"}
         },
@@ -437,7 +444,7 @@
   header.innerHTML=room.key==="home"?`
     <div class="nbl-world-header-inner nbl-world-header-home">
       <a class="nbl-world-brand" href="/" aria-label="New Beansland home">
-        <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="New Beansland official seal" width="52" height="52">
+        <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland official mark" width="52" height="52">
         <span class="nbl-world-brand-copy">
           <strong>New Beansland™</strong>
           <small>${room.label}</small>
@@ -453,7 +460,7 @@
     </div>`:`
     <div class="nbl-world-header-inner">
       <a class="nbl-world-brand" href="/" aria-label="New Beansland home">
-        <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="New Beansland official seal" width="52" height="52">
+        <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland official mark" width="52" height="52">
         <span class="nbl-world-brand-copy">
           <strong>New Beansland™</strong>
           <small>${room.label}</small>
@@ -507,7 +514,7 @@
     <div class="nbl-beans-card" role="dialog" aria-modal="true" aria-labelledby="nbl-beans-title">
       <div class="nbl-beans-head">
         <button class="nbl-chat-drawer-toggle" type="button" data-nbl-chat-drawer-toggle aria-expanded="false" aria-controls="nbl-chat-drawer" aria-label="Open Beans menu">
-          <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
+          <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" aria-hidden="true">
         </button>
         <div class="nbl-beans-title-wrap">
           <img src="/Beans_Hi_Basic.png" alt="Beans" class="nbl-beans-avatar">
@@ -551,7 +558,7 @@
           </button>
 
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-plans aria-expanded="false">
-            <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
+            <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" aria-hidden="true">
             <span><strong>Beans membership &amp; usage</strong><small>${NBL_PRODUCT_PLANS.beans.price} Beans · Get More · NBL Usage credits</small></span>
           </button>
           <div class="nbl-chat-drawer-plans" data-nbl-drawer-plan-card hidden>
@@ -590,7 +597,7 @@
           </a>
 
           <a class="nbl-chat-drawer-item" href="/">
-            <img src="/NBL-New-Official-Seal.png?v=c52ddcff" alt="" aria-hidden="true">
+            <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" aria-hidden="true">
             <span><strong>New Beansland</strong><small>Return to the public world</small></span>
           </a>
         </div>
