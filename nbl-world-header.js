@@ -1770,7 +1770,37 @@
     }
   };
 
+  // Permanent desktop sidebar: visible and interactive, never a CSS-shown [hidden] node.
+  const desktopBeansMenu=window.matchMedia("(min-width:1200px)");
+  const syncDesktopDrawer=()=>{
+    if(chatDrawerCloseTimer){
+      clearTimeout(chatDrawerCloseTimer);
+      chatDrawerCloseTimer=null;
+    }
+    if(desktopBeansMenu.matches){
+      chatDrawer.hidden=false;
+      chatDrawer.inert=false;
+      chatDrawerShade.hidden=true;
+      chatDrawer.classList.remove("is-open");
+      chatDrawerToggle.setAttribute("aria-expanded","false");
+      if(!beansPanel.hidden){
+        void updateChatDrawerAccountAction();
+        void renderChatDrawerHistory();
+      }
+    }else if(!chatDrawer.classList.contains("is-open")){
+      chatDrawer.hidden=true;
+      chatDrawer.inert=true;
+      chatDrawerShade.hidden=true;
+    }
+  };
+  desktopBeansMenu.addEventListener("change",syncDesktopDrawer);
+  syncDesktopDrawer();
+
   const setChatDrawerOpen=open=>{
+    if(desktopBeansMenu.matches){
+      syncDesktopDrawer();
+      return;
+    }
     if(chatDrawerCloseTimer){
       clearTimeout(chatDrawerCloseTimer);
       chatDrawerCloseTimer=null;
@@ -1801,7 +1831,7 @@
   };
 
   chatDrawer.addEventListener("keydown",event=>{
-    if(event.key!=="Tab") return;
+    if(event.key!=="Tab"||desktopBeansMenu.matches) return;
     const focusable=[...chatDrawer.querySelectorAll('button:not([disabled]),a[href]')].filter(element=>!element.closest("[hidden]"));
     if(!focusable.length){
       event.preventDefault();
@@ -1970,6 +2000,7 @@
     chatHistoryEntry=`nbl-chat-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     window.history.pushState({...window.history.state,nblChatOverlay:chatHistoryEntry},"",location.href);
     beansPanel.hidden=false;
+    syncDesktopDrawer();
     beansAuthNote.hidden=Boolean(currentClerkUserId());
     beansDisclaimer.hidden=false;
     if(beansDisclaimerTimer!==null) window.clearTimeout(beansDisclaimerTimer);
@@ -2498,12 +2529,13 @@
     if(typeof clerk?.addListener!=="function") return;
     beansIdentityUserId=currentClerkUserId();
     beansAuthNote.hidden=Boolean(beansIdentityUserId);
+    void updateChatDrawerAccountAction();
     clerk.addListener(()=>{
       const nextUserId=currentClerkUserId();
       beansAuthNote.hidden=Boolean(nextUserId);
       const accountChanged=nextUserId!==beansIdentityUserId;
       if(!accountChanged){
-        if(!beansPanel.hidden&&chatDrawer.classList.contains("is-open")) void updateChatDrawerAccountAction();
+        if(!beansPanel.hidden) void updateChatDrawerAccountAction();
         return;
       }
       beansIdentityUserId=nextUserId;
@@ -2520,7 +2552,7 @@
       clearBeansTranscript(nextUserId?"Account changed. Saved history is loading…":"You are signed out. Sign in to keep your history.");
       showPlusLocked(nextUserId?"Checking NBL University access…":"Sign in with your NBL account to check NBL University access.",{signedOut:!nextUserId});
       if(beansPanel.hidden) return;
-      if(chatDrawer.classList.contains("is-open")){
+      if(chatDrawer.classList.contains("is-open")||desktopBeansMenu.matches){
         void renderChatDrawerHistory();
         void updateChatDrawerAccountAction();
       }
