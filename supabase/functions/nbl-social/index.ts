@@ -436,16 +436,17 @@ Deno.serve(async(req:Request)=>{
       const profiles=await db.from("nbl_account_profiles").select("clerk_user_id,username")
         .ilike("username","%"+search+"%").limit(20);
       const ids=(profiles.data||[]).map((x:any)=>String(x.clerk_user_id));
-      const [roles,students]=await Promise.all([roleMap(ids),universitySet(ids)]);
-      const requesterUniversity=(await universityAccess(me.userId)).allowed;
-      const users=(profiles.data||[]).filter((x:any)=>requesterUniversity||!students.has(String(x.clerk_user_id))||roles.get(String(x.clerk_user_id))==="founder").map((x:any)=>{
+      // Pulse profiles are public for every NBL member, including members who
+      // also happen to use University. Never reveal enrollment status.
+      const roles=await roleMap(ids);
+      const users=(profiles.data||[]).map((x:any)=>{
         const id=String(x.clerk_user_id),role=roles.get(id)||"ordinary";
-        return {handle:publicHandle(clean(x.username,30)||null,role,students.has(id)),verified:role==="founder",university:students.has(id)};
+        return {handle:publicHandle(clean(x.username,30)||null,role,false),verified:role==="founder"};
       }).filter((x:any)=>x.handle&&x.handle.toLowerCase().includes(q));
       if("nblfounderofficial".includes(q)||"foundernbl".includes(q)||"nblfounder".includes(q)){
         const f=await db.from("nbl_chat_usage_accounts").select("clerk_user_id").eq("role","founder").limit(1).maybeSingle();
         if(f.data?.clerk_user_id&&!users.some((x:any)=>x.handle===FOUNDER_PUBLIC_HANDLE))
-          users.unshift({handle:FOUNDER_PUBLIC_HANDLE,verified:true,university:true});
+          users.unshift({handle:FOUNDER_PUBLIC_HANDLE,verified:true});
       }
       return json(req,{ok:true,users:users.slice(0,20)});
     }
