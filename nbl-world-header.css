@@ -1246,3 +1246,29 @@ body.nbl-world-menu-open{overflow:hidden!important}
 .nbl-still-tools button:disabled{opacity:.55;cursor:not-allowed}
 .nbl-still-designs a{display:inline-block;max-width:100%;overflow-wrap:anywhere}
 .nbl-still-tools :focus-visible{outline:2px solid var(--nbl-world-gold2);outline-offset:2px}
+
+/* Home auth controls use one verified NBL Clerk session, including on phones.
+   Later mobile rules hide the legacy user slot; the home needs a visible Sign out. */
+.nbl-world-header-home .nbl-world-user{display:flex;max-width:none}
+.nbl-world-header-home .nbl-world-user[hidden]{display:none!important}
+@media(max-width:540px){
+  .nbl-world-header-home .nbl-world-home-actions{gap:5px;min-width:0}
+  .nbl-world-header-home .nbl-world-user{display:flex!important;max-width:none}
+  .nbl-world-header-home .nbl-world-user[hidden]{display:none!important}
+  .nbl-world-header-home .nbl-world-account-primary{
+    min-width:0;max-width:92px;min-height:38px;
+    font-size:.55rem;padding:8px 9px;
+  }
+  .nbl-world-header-home .nbl-world-user .nbl-world-account{
+    max-width:84px;min-height:38px;padding:8px 8px;
+    font-size:.53rem;letter-spacing:.02em;
+  }
+  .nbl-world-header-home .nbl-world-chat-launch{padding-right:7px;gap:4px}
+}
+@media(max-width:390px){
+  .nbl-world-header-home .nbl-world-brand-copy strong{font-size:.73rem}
+  .nbl-world-header-home .nbl-world-brand img{width:40px;height:40px}
+  .nbl-world-header-home .nbl-world-chat-launch img{width:29px;height:29px;flex-basis:29px}
+  .nbl-world-header-home .nbl-world-account-primary{font-size:.51rem;padding:8px 6px}
+  .nbl-world-header-home .nbl-world-user .nbl-world-account{font-size:.5rem;padding:8px 6px}
+}
