@@ -9,8 +9,8 @@ assert.ok(home.includes('class="world-card official-art reveal" href="https://nb
 assert.ok(redirect.includes("https://nblschool.com/"));
 assert.ok(!redirect.includes("data-nbl-university-interest-form"));
 assert.ok(!redirect.includes("billing/checkout"));
-assert.ok(!updates.includes("nblu-one-entry"));
-assert.ok(!updates.includes("/billing/checkout"));
+assert.ok(!redirect.includes("nblu-one-entry"));
+assert.ok(!redirect.includes("/billing/checkout"));
 assert.ok(legacy.includes("url=https://nblschool.com/"));
 for(const page of [campus,alias]){
  assert.ok(page.includes("https://nblschool.com/"));
