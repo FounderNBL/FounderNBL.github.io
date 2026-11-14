@@ -306,24 +306,20 @@ test.describe("New Beansland web app browser smoke", () => {
     expect(signUp.pathname).toBe("/sign-up");
   });
 
-  test("University World Card points directly to the independent free campus, not a fake .org campus",async({page})=>{
-    await open("/",page);
-    const card=page.locator('.world-grid .world-card[href="https://nblschool.com/"]');
-    await expect(card).toHaveCount(1);
-    await expect(card).toHaveAttribute("href","https://nblschool.com/");
-    const old=await page.request.get("/university.html");
-    const oldHtml=await old.text();
-    expect(oldHtml).toContain("url=https://nblschool.com/");
-    expect(oldHtml).not.toContain("data-nbl-university-interest-form");
-    await page.goto("/university-updates.html");
-    await expect(page.getByRole("heading",{name:"The school is under construction."})).toBeVisible();
-    await expect(page.getByRole("heading",{name:"Sign up for free opening updates"})).toBeVisible();
-    await expect(page.locator("form[data-nbl-university-interest-form]")).toHaveCount(1);
-    await expect(page.locator("#interestKind option")).toHaveCount(3);
-    await expect(page.getByRole("button",{name:"Join free notification list"})).toBeVisible();
-    await expect(page.getByText("No payment is required or accepted.",{exact:false})).toBeVisible();
-    await expect(page.locator("#nblu-one-entry,#nblu-program,#nblu-offer-price,[data-campus-gate],[data-study-lab],[data-coursework-pdf]")).toHaveCount(0);
-  });
+  test("University World Card opens only the real school domain; .org has no duplicate campus",async({page})=>{
+ await open("/",page);
+ const card=page.locator('.world-grid .world-card[href="https://nblschool.com/"]');
+ await expect(card).toHaveCount(1);
+ await expect(card).toHaveAttribute("href","https://nblschool.com/");
+ for(const oldPath of ["/university.html","/university-enrollment.html"]){
+  const response=await page.request.get(oldPath);
+  const html=await response.text();
+  expect(html).toContain("url=https://nblschool.com/");
+  expect(html).not.toContain("data-nbl-university-interest-form");
+  expect(html).not.toContain("data-coursework-pdf");
+  expect(html).not.toContain("billing/checkout");
+ }
+});
 
   test("old .org campus addresses forward to the independent school, not another classroom",async({page})=>{
     for(const path of ["/campus.html","/university-campus.html"]){
