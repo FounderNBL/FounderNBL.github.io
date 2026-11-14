@@ -155,3 +155,34 @@ assert.match(pulseSkin,/a\.pulse-message-tab/);
 assert.doesNotMatch(pulseSkin,/pulseMessengerFrame|pulse-messenger-panel/);
 assert.doesNotMatch(pulse,/<iframe|pulseMessengerFrame/);
 assert.match(pulse,/href="\/messenger\/"/);
+
+
+// One Clerk account must become a discoverable public NBL member automatically.
+// Member directory omits emails, Clerk IDs, hidden students and blocked accounts.
+const socialApi=read("supabase/functions/nbl-social/index.ts");
+const accountHandles=read("supabase/migrations/20261114_nbl_one_account_auto_public_handles.sql");
+const worldHeader=read("nbl-world-header.js");
+const worldCss=read("nbl-world-header.css");
+assert.match(accountHandles,/alter column username set default/i);
+assert.match(accountHandles,/gen_random_uuid\(\)/);
+assert.match(accountHandles,/where username is null or btrim\(username\)=''/i);
+assert.match(socialApi,/if\(action==="members_recent"\)/);
+assert.match(socialApi,/await actor\(req\)/);
+assert.match(socialApi,/pulse_member_directory_unavailable/);
+assert.match(socialApi,/!students\.has\(id\)/);
+assert.match(socialApi,/blocked\.has\(id\)/);
+assert.match(pulse,/id="pulseMemberItems"/);
+assert.match(pulse,/data-feed="friends">People<\/button>/);
+assert.match(js,/action:"members_recent"/);
+assert.match(js,/await Promise\.all\(\[loadFriends\(\),loadMembers\(\)\]\)/);
+assert.match(js,/await feed\.getOrCreate\(\{watch:false\}\)/,
+  "Brand new members need an initialized user feed before their first post");
+assert.match(js,/Write something or attach a photo/);
+const homeHeader=worldHeader.slice(worldHeader.indexOf('header.innerHTML=room.key==="home"'),worldHeader.indexOf('let searchTrigger=null'));
+assert.match(homeHeader,/nbl-world-account-primary/,"Main homepage needs actual Clerk sign-in control");
+assert.match(homeHeader,/nbl-world-user/,"Main homepage needs actual Clerk sign-out container");
+assert.doesNotMatch(homeHeader,/NBL Shop/);
+assert.doesNotMatch(worldHeader,/\["shop","Shop"/);
+assert.match(worldHeader,/await clerk\.signOut\(\)/);
+assert.match(worldCss,/nbl-world-header-home \.nbl-world-user\{display:flex!important/);
+assert.doesNotMatch(home,/rel="noopener noreferrer">Shop<\/a>/);
