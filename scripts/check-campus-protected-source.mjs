@@ -8,13 +8,13 @@ const chat=read("chat.html"),realtime=read("social-realtime.js");
 // Validate the complete HTTPS redirect target, not a substring an attacker-controlled host could contain.
 const schoolUrl="https://nblschool.com/";
 const assertSchoolRedirect=(page,document)=>{
- const refresh=document.match(/<meta\\s+http-equiv="refresh"\\s+content="0;url=([^"]+)">/i);
+ const refresh=document.match(/<meta\s+http-equiv="refresh"\s+content="0;url=([^"]+)">/i);
  assert.ok(refresh, `${page}: missing school redirect`);
  assert.equal(new URL(refresh[1]).href,schoolUrl,`${page}: redirect must use the official school origin`);
- assert.match(document,/<link rel="canonical" href="https:\\/\\/nblschool\\.com\\/">/);
- assert.match(document,/<a href="https:\\/\\/nblschool\\.com\\/">/);
+ assert.match(document,/<link rel="canonical" href="https:\/\/nblschool\.com\/">/);
+ assert.match(document,/<a href="https:\/\/nblschool\.com\/">/);
 };
-assert.match(home,/class="world-card official-art reveal" href="https:\\/\\/nblschool\\.com\\/"/);
+assert.match(home,/class="world-card official-art reveal" href="https:\/\/nblschool\.com\/"/);
 assertSchoolRedirect("university.html",redirect);
 assert.ok(!redirect.includes("data-nbl-university-interest-form"));
 assert.ok(!redirect.includes("billing/checkout"));
