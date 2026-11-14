@@ -16,7 +16,7 @@ for(const page of [campus,alias]){
  assert.ok(page.includes("https://nblschool.com/"));
  assert.ok(!page.includes("data-coursework-pdf"));
 }
-assert.ok(header.includes('["university","University","https://nblschool.com/",false]'));
+assert.ok(header.includes('["university","University","/university.html",false]'));
 assert.ok(!header.includes('class="nbl-chat-drawer-item nbl-beans-grey-link"'));
 assert.ok(chat.includes("data-chat-guest"));
 assert.ok(chat.includes("data-chat-app hidden"));
