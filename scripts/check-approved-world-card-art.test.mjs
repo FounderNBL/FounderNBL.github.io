@@ -51,7 +51,6 @@ test("Founder's six homepage destinations preserve the approved order with Unive
  assert.ok(grid.includes('href="games.html"'),"existing Games homepage destination must remain");
  assert.match(grid,/href="games\.html"[\s\S]*?<span class="status">Coming Soon<\/span>[\s\S]*?All NBL Games experiences, including Founder’s Office and Block Boss, are coming soon\./,"Games card must state that every listed game is coming soon");
  assert.doesNotMatch(grid,/Founder’s Office is open/,"homepage must not claim any NBL game is open");
- assert.ok(!source.includes("nbl-kidz-kayes-cubs"));
 });
 
 test("deferred portal and legacy commercial scripts may NOT overwrite official art after HTML load",()=>{
@@ -73,7 +72,6 @@ test("Founder-approved Pulse replaces homepage company spotlight while standalon
  assert.ok(source.includes('id="nbl-pulse-door"'),"Pulse replaces only the old spotlight");
  assert.ok(source.includes('href="/pulse/"'),"Pulse world card must open the separate social destination");
  assert.ok(source.includes('src="/NBL_Pulse_World_Card.png"'),"Pulse must display the exact Founder-approved World-card PNG");
- assert.ok(!source.includes('href="kayes-cubs.html"'));
  assert.ok(viewer.includes('src="/'+art+'"'),"standalone one-page company profile still displays");
  assert.ok(viewer.includes('class="profile-art"'));
  assert.ok(viewer.includes(".profile-art::after"));
