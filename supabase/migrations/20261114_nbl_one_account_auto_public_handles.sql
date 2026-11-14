@@ -12,14 +12,14 @@ alter table public.nbl_account_profiles
 create or replace function public.nbl_assign_default_public_handle()
 returns trigger language plpgsql
 set search_path = pg_catalog, public
-as $
+as '
 begin
-  if new.username is null or btrim(new.username) = '' then
-    new.username := 'NBLMember' || left(replace(gen_random_uuid()::text, '-', ''), 16);
+  if new.username is null or btrim(new.username) = '''' then
+    new.username := ''NBLMember'' || left(replace(gen_random_uuid()::text, ''-'', ''''), 16);
   end if;
   return new;
 end;
-$;
+';
 
 drop trigger if exists nbl_account_profile_default_handle on public.nbl_account_profiles;
 create trigger nbl_account_profile_default_handle
