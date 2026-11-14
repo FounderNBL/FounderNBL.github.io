@@ -398,6 +398,55 @@ function friendListItem(item){
   line.append(who,current,controls);
   return line;
 }
+// Public member discovery reuses the single NBL handle. The server excludes
+// blocked members and protects University-only profiles.
+function memberListItem(item){
+  const line=element("div","friend-entry");
+  const picture=element("img","social-avatar");
+  picture.src=trustedMediaLink(item.avatarUrl)||"/messenger/icon.svg";
+  picture.alt="Public profile photo for @"+item.handle;
+  picture.loading="lazy";
+  const who=element("strong",null,"@"+item.handle+(item.verified?" · Verified":""));
+  const controls=element("div","social-actions");
+  const message=element("a","btn small","Message");
+  message.href="/messenger/?dm="+encodeURIComponent(item.handle);
+  const add=element("button","btn small","Add friend");
+  add.type="button";
+  add.addEventListener("click",async()=>{
+    add.disabled=true;
+    try{
+      const result=await secured(SOCIAL_API,{action:"friend_request",handle:item.handle});
+      status(result.state==="friends"?"You're already friends.":result.state==="incoming"?"They already requested you. Accept in Friends.":"Friend request sent.");
+      await loadFriends();
+    }catch(error){
+      status("Friend request failed: "+safeError(error));
+    }finally{add.disabled=false;}
+  });
+  controls.append(message,add);
+  line.append(picture,who,controls);
+  return line;
+}
+async function loadMembers(){
+  const out=$("#pulseMemberItems");
+  out.replaceChildren(element("p","social-meta","Finding NBL members…"));
+  try{
+    const actorId=state.user.id;
+    const result=await secured(SOCIAL_API,{action:"members_recent"});
+    assertCurrentAccount(actorId);
+    const users=Array.isArray(result.users)?result.users:[];
+    out.replaceChildren();
+    if(!users.length){
+      out.append(element("p","social-empty","No other public members to show yet."));
+      return;
+    }
+    for(const member of users){
+      if(typeof member.handle==="string"&&/^[A-Za-z0-9_-]{3,30}$/.test(member.handle))
+        out.append(memberListItem(member));
+    }
+  }catch(error){
+    if(!accountChanged)out.replaceChildren(element("p","social-feedback","Member directory unavailable: "+safeError(error)));
+  }
+}
 async function loadFriends(){
   const out=$("#friendItems");
   out.replaceChildren(element("p","social-meta","Loading your NBL friends…"));
@@ -451,7 +500,7 @@ function renderFeed(rows){
 }
 async function loadFeed(){
   if(!state.client)return;
-  if(state.selected==="friends"){await loadFriends();return;}
+  if(state.selected==="friends"){await Promise.all([loadFriends(),loadMembers()]);return;}
   const selected=state.selected;
   state.unsubscribe?.();state.unsubscribe=null;
   $("#feedTitle").textContent=LABELS[selected];
@@ -508,7 +557,11 @@ async function saveProfileAvatar(){
 }
 async function publishPost(event){
   event.preventDefault();
-  if(state.busy||!state.client)return;
+  if(state.busy)return;
+  if(!state.client||!state.user){
+    status("Your NBL account is still connecting to Pulse. Refresh the page and try again.");
+    return;
+  }
   const text=$("#postText").value.trim();
   const videoLink=$("#videoLink").value.trim();
   const chosenVideo=videoLink?parsePublicVideo(videoLink):null;
@@ -519,11 +572,16 @@ async function publishPost(event){
   const youtubeId=chosenVideo?.provider==="youtube"?chosenVideo.id:null;
   let files;
   try{files=selectedMedia();}catch(error){status(safeError(error));return;}
-  if((!text&&!files.length&&!chosenVideo)||text.length>1500)return;
+  if(!text&&!files.length&&!chosenVideo){status("Write something or attach a photo or video before posting.");return;}
+  if(text.length>1500){status("Your post is too long.");return;}
   state.busy=true;
   const submit=$("#postForm button[type=submit]");submit.disabled=true;
   try{
     const feed=state.client.feed("user",state.user.id);
+    // A brand-new Clerk member may not yet have a Stream user feed.
+    // Initialize it with their existing verified identity before publishing.
+    await feed.getOrCreate({watch:false});
+    assertCurrentAccount(state.user.id);
     const attachments=[];
     let result;
     try{
