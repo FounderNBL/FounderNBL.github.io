@@ -33,7 +33,7 @@ assert.match(css,/social-media/);
 // Facebook uses user-controlled sharing of a public NBL post URL, never Page admin scopes.
 assert.match(ui,/id="sharedPost"[^>]*hidden/);
 assert.match(ui,/og:title/);
-assert.match(ui,/social-v1\.mjs\?v=20261110-facebook-photo/);
+assert.match(ui,/social-v1\.mjs\?v=20261114-public-members-v1/);
 assert.match(js,/const PUBLIC_SOCIAL_URL="https:\/\/newbeansland\.org\/messenger\/social-v1\.html"/);
 assert.match(js,/new URL\(PUBLIC_SOCIAL_URL\)/);
 assert.match(js,/dest\.searchParams\.set\("post",id\)/);
@@ -114,7 +114,7 @@ assert.match(js,/location\.pathname\.startsWith\("\/pulse"\)/);
 assert.match(pulse,/postMedia" type="file" accept="image\/jpeg,image\/png,image\/webp,video\/mp4,video\/webm" multiple/);
 assert.doesNotMatch(pulse,/postMedia" type="file" disabled/);
 assert.match(pulse,/postMedia"[^>]*video\/mp4/);
-assert.match(pulse,/social-v1\.mjs\?v=20261110-facebook-photo/);
+assert.match(pulse,/social-v1\.mjs\?v=20261114-public-members-v1/);
 assert.match(js,/VIDEO_TYPES\.has\(f\.type\)/);
 assert.doesNotMatch(js,/Video uploads are not enabled yet/);
 assert.match(js,/image_url:trusted/);
@@ -146,7 +146,7 @@ assert.match(js,/authorProfile\(userId\)/);
 
 // New member-first NBL Pulse skin is presentation-only: Messenger remains a link, not an iframe.
 const pulseSkin=read("pulse/pulse-skin.css");
-assert.match(pulse,/\/pulse\/pulse-skin\.css\?v=20261109-member-first-standalone/);
+assert.match(pulse,/\/pulse\/pulse-skin\.css\?v=20261114-public-members-v1/);
 assert.match(pulseSkin,/#socialApp \.pulse-grid/);
 assert.match(pulseSkin,/#feedItems/);
 assert.match(pulseSkin,/@media\(max-width:760px\)/);
@@ -194,3 +194,6 @@ assert.doesNotMatch(worldHeader,/\["shop","Shop"/);
 assert.match(worldHeader,/await clerk\.signOut\(\)/);
 assert.match(worldCss,/nbl-world-header-home \.nbl-world-user\{display:flex!important/);
 assert.doesNotMatch(home,/rel="noopener noreferrer">Shop<\/a>/);
+
+assert.match(home,/nbl-world-header\.js\?v=20261114-public-members-v1/);
+assert.match(home,/nbl-world-header\.css\?v=20261114-public-members-v1/);
