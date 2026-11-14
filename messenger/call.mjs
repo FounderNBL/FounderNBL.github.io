@@ -61,18 +61,32 @@ function renderParticipants(participants){
   const wrapper=document.createElement("section");
   wrapper.className="person";
   const video=document.createElement("video");
-  video.autoplay=true;video.playsInline=true;video.muted=Boolean(p.isLocalParticipant);
+  // Video has its own element; remote sound plays in a separate audio element.
+  // Muting every VIDEO element allows reliable autoplay on mobile browsers.
+  video.autoplay=true;video.playsInline=true;video.muted=true;
+  video.setAttribute("playsinline","");
+  const hint=document.createElement("small");
+  hint.className="video-hint";
+  hint.textContent=p.isLocalParticipant?"Waiting for your camera…":"Waiting for the other camera…";
+  video.addEventListener("playing",()=>{hint.hidden=true;});
+  video.addEventListener("emptied",()=>{hint.hidden=false;});
   const label=document.createElement("p");
   label.textContent=(p.name||"NBL participant")+(p.isLocalParticipant?" · You":"");
-  wrapper.append(video,label);
-  const cleanup=[call.bindVideoElement(video,p.sessionId,"videoTrack")];
+  wrapper.append(video,hint,label);
+  let audio=null;
   if(!p.isLocalParticipant){
-   const audio=document.createElement("audio");audio.autoplay=true;
+   audio=document.createElement("audio");audio.autoplay=true;
    wrapper.append(audio);
-   cleanup.push(call.bindAudioElement(audio,p.sessionId,"audioTrack"));
   }
-  tracks.set(p.sessionId,{wrapper,cleanup});
+  // Stream requires binding video AFTER its element is attached to the DOM.
+  // Visibility tracking also ensures remote video is subscribed when in view.
   area.append(wrapper);
+  const cleanup=[];
+  if(typeof call.trackElementVisibility==="function")
+   cleanup.push(call.trackElementVisibility(video,p.sessionId,"videoTrack"));
+  cleanup.push(call.bindVideoElement(video,p.sessionId,"videoTrack"));
+  if(audio)cleanup.push(call.bindAudioElement(audio,p.sessionId,"audioTrack"));
+  tracks.set(p.sessionId,{wrapper,cleanup:cleanup.filter(fn=>typeof fn==="function")});
  }
  status((participants.length<2?"Connected. Waiting for the other person to join.":"You are connected.")
   +(mediaWarning?" "+mediaWarning:""));

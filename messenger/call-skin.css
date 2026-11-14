@@ -31,6 +31,8 @@ main{flex:1;width:min(100%,1240px);max-width:none;margin:0 auto;padding:24px 18p
 .person{border-color:#564b3c;border-radius:16px;background:#03090f;overflow:hidden}
 .person video{object-fit:contain;max-height:64dvh;min-height:250px;border-radius:15px}
 .person p{font-weight:750;color:#fff}
+.person .video-hint{display:block;padding:7px 12px;color:#e8d3a0;font-size:.8rem}
+.person .video-hint[hidden]{display:none}
 .actions{justify-content:center;gap:10px;margin-top:auto;padding:20px 0 4px}
 .actions button,.actions .signin{
   min-height:48px;padding:12px 21px;border-radius:14px;
