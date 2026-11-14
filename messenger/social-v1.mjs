@@ -408,45 +408,65 @@ function memberListItem(item){
   picture.loading="lazy";
   const who=element("strong",null,"@"+item.handle+(item.verified?" · Verified":""));
   const controls=element("div","social-actions");
-  const message=element("a","btn small","Message");
-  message.href="/messenger/?dm="+encodeURIComponent(item.handle);
-  const add=element("button","btn small","Add friend");
-  add.type="button";
-  add.addEventListener("click",async()=>{
-    add.disabled=true;
-    try{
-      const result=await secured(SOCIAL_API,{action:"friend_request",handle:item.handle});
-      status(result.state==="friends"?"You're already friends.":result.state==="incoming"?"They already requested you. Accept in Friends.":"Friend request sent.");
-      await loadFriends();
-    }catch(error){
-      status("Friend request failed: "+safeError(error));
-    }finally{add.disabled=false;}
-  });
-  controls.append(message,add);
+  if(item.self===true){
+    controls.append(element("span","social-meta","You"));
+    const account=element("a","btn small","My account");
+    account.href="/account.html";
+    controls.append(account);
+  }else{
+    const message=element("a","btn small","Message");
+    message.href="/messenger/?dm="+encodeURIComponent(item.handle);
+    const add=element("button","btn small","Add friend");
+    add.type="button";
+    add.addEventListener("click",async()=>{
+      add.disabled=true;
+      try{
+        const result=await secured(SOCIAL_API,{action:"friend_request",handle:item.handle});
+        status(result.state==="friends"?"You're already friends.":result.state==="incoming"?"They already requested you. Accept in Friends.":"Friend request sent.");
+        await loadFriends();
+      }catch(error){
+        status("Friend request failed: "+safeError(error));
+      }finally{add.disabled=false;}
+    });
+    controls.append(message,add);
+  }
   line.append(picture,who,controls);
   return line;
 }
-async function loadMembers(){
+async function loadMembers(offset=0){
   const out=$("#pulseMemberItems");
-  out.replaceChildren(element("p","social-meta","Finding NBL members…"));
+  if(offset===0)out.replaceChildren(element("p","social-meta","Finding NBL members…"));
   try{
     const actorId=state.user.id;
-    const result=await secured(SOCIAL_API,{action:"members_recent"});
+    const result=await secured(SOCIAL_API,{action:"members_recent",offset});
     assertCurrentAccount(actorId);
     const users=Array.isArray(result.users)?result.users:[];
-    out.replaceChildren();
-    if(!users.length){
-      out.append(element("p","social-empty","No other public members to show yet."));
+    if(offset===0)out.replaceChildren();
+    if(!users.length&&offset===0&&result.nextOffset===null){
+      out.append(element("p","social-empty","No public NBL members to show yet."));
       return;
     }
     for(const member of users){
       if(typeof member.handle==="string"&&/^[A-Za-z0-9_-]{3,30}$/.test(member.handle))
         out.append(memberListItem(member));
     }
+    if(Number.isSafeInteger(result.nextOffset)&&result.nextOffset>offset){
+      const more=element("button","btn small","Load more NBL members");
+      more.type="button";
+      more.addEventListener("click",async()=>{
+        more.disabled=true;
+        more.textContent="Loading more members…";
+        await loadMembers(result.nextOffset);
+        more.remove();
+      });
+      out.append(more);
+    }
   }catch(error){
-    if(!accountChanged)out.replaceChildren(element("p","social-feedback","Member directory unavailable: "+safeError(error)));
+    if(!accountChanged)
+      out.append(element("p","social-feedback","Member directory unavailable: "+safeError(error)));
   }
 }
+
 async function loadFriends(){
   const out=$("#friendItems");
   out.replaceChildren(element("p","social-meta","Loading your NBL friends…"));

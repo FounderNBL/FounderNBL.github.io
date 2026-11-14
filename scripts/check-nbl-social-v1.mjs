@@ -158,7 +158,7 @@ assert.match(pulse,/href="\/messenger\/"/);
 
 
 // One Clerk account must become a discoverable public NBL member automatically.
-// Member directory omits emails, Clerk IDs, hidden students and blocked accounts.
+// Member directory returns public handles for everyone, without emails, IDs, enrollment or private messages.
 const socialApi=read("supabase/functions/nbl-social/index.ts");
 const accountHandles=read("supabase/migrations/20261114_nbl_one_account_auto_public_handles.sql");
 const worldHeader=read("nbl-world-header.js");
@@ -169,8 +169,16 @@ assert.match(accountHandles,/where username is null or btrim\(username\)=''/i);
 assert.match(socialApi,/if\(action==="members_recent"\)/);
 assert.match(socialApi,/await actor\(req\)/);
 assert.match(socialApi,/pulse_member_directory_unavailable/);
-assert.match(socialApi,/!students\.has\(id\)/);
-assert.match(socialApi,/blocked\.has\(id\)/);
+const publicDirectory=socialApi.slice(socialApi.indexOf('if(action==="members_recent")'),socialApi.indexOf('if(action==="direct")'));
+const publicSearch=socialApi.slice(socialApi.indexOf('if(action==="find_users")'),socialApi.indexOf('if(action==="members_recent")'));
+assert.doesNotMatch(publicDirectory,/students\.has\(|viewerAccess\.allowed/,"No private member visibility");
+assert.doesNotMatch(publicSearch,/universitySet\(ids\)|requesterUniversity/,"Search cannot hide members by enrollment");
+assert.match(publicDirectory,/!blocked\.has\(String\(p\.clerk_user_id\)\)/,"Blocking remains respected");
+assert.match(publicDirectory,/nextOffset:/,"People directory needs pages for every member");
+assert.match(publicDirectory,/self:id===me\.userId/,"Member can see own profile in directory");
+assert.doesNotMatch(publicDirectory,/email|primaryEmailAddress|displayName:/,"Public directory must not leak PII");
+assert.match(js,/await loadMembers\(result\.nextOffset\)/,"All pages can be reached");
+assert.match(pulse,/All NBL members/);
 assert.match(pulse,/id="pulseMemberItems"/);
 assert.match(pulse,/data-feed="friends">People<\/button>/);
 assert.match(js,/action:"members_recent"/);

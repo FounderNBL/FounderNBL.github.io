@@ -436,32 +436,40 @@ Deno.serve(async(req:Request)=>{
       const profiles=await db.from("nbl_account_profiles").select("clerk_user_id,username")
         .ilike("username","%"+search+"%").limit(20);
       const ids=(profiles.data||[]).map((x:any)=>String(x.clerk_user_id));
-      const [roles,students]=await Promise.all([roleMap(ids),universitySet(ids)]);
-      const requesterUniversity=(await universityAccess(me.userId)).allowed;
-      const users=(profiles.data||[]).filter((x:any)=>requesterUniversity||!students.has(String(x.clerk_user_id))||roles.get(String(x.clerk_user_id))==="founder").map((x:any)=>{
+      // Pulse profiles are public for every NBL member, including members who
+      // also happen to use University. Never reveal enrollment status.
+      const roles=await roleMap(ids);
+      const users=(profiles.data||[]).map((x:any)=>{
         const id=String(x.clerk_user_id),role=roles.get(id)||"ordinary";
-        return {handle:publicHandle(clean(x.username,30)||null,role,students.has(id)),verified:role==="founder",university:students.has(id)};
+        return {handle:publicHandle(clean(x.username,30)||null,role,false),verified:role==="founder"};
       }).filter((x:any)=>x.handle&&x.handle.toLowerCase().includes(q));
       if("nblfounderofficial".includes(q)||"foundernbl".includes(q)||"nblfounder".includes(q)){
         const f=await db.from("nbl_chat_usage_accounts").select("clerk_user_id").eq("role","founder").limit(1).maybeSingle();
         if(f.data?.clerk_user_id&&!users.some((x:any)=>x.handle===FOUNDER_PUBLIC_HANDLE))
-          users.unshift({handle:FOUNDER_PUBLIC_HANDLE,verified:true,university:true});
+          users.unshift({handle:FOUNDER_PUBLIC_HANDLE,verified:true});
       }
       return json(req,{ok:true,users:users.slice(0,20)});
     }
 
     // The NBL account is shared across the website. New members are
     // discoverable by their single public handle, never by email or Clerk ID.
+    // Every registered NBL profile is public in Pulse right now.
+    // A public handle/photo does NOT expose email, Clerk IDs, DMs or enrollment.
+    // Preserve personal blocks; blocking is a safety control, not a private profile.
     if(action==="members_recent"){
+      const offset=Number.isSafeInteger(body?.offset)&&body.offset>=0&&body.offset<=100000
+        ?body.offset:0;
+      const size=50;
       const recent=await db.from("nbl_account_profiles")
         .select("clerk_user_id,username,avatar_url,created_at")
-        .not("username","is",null).order("created_at",{ascending:false}).limit(50);
+        .not("username","is",null).order("created_at",{ascending:false})
+        .range(offset,offset+size-1);
       if(recent.error)throw new Error("pulse_member_directory_unavailable");
       const profiles=(recent.data||[]).filter((p:any)=>clean(p.username,30).length>0);
       const ids=profiles.map((p:any)=>String(p.clerk_user_id));
-      if(!ids.length)return json(req,{ok:true,users:[]});
-      const [roles,students,viewerAccess,outgoing,incoming]=await Promise.all([
-        roleMap(ids),universitySet(ids),universityAccess(me.userId),
+      if(!ids.length)return json(req,{ok:true,users:[],nextOffset:null});
+      const [roles,outgoing,incoming]=await Promise.all([
+        roleMap(ids),
         db.from("nbl_social_blocks").select("blocked_user_id")
           .eq("blocker_user_id",me.userId).in("blocked_user_id",ids),
         db.from("nbl_social_blocks").select("blocker_user_id")
@@ -472,16 +480,14 @@ Deno.serve(async(req:Request)=>{
         ...(outgoing.data||[]).map((x:any)=>String(x.blocked_user_id)),
         ...(incoming.data||[]).map((x:any)=>String(x.blocker_user_id))
       ]);
-      const users=profiles.filter((p:any)=>{
-        const id=String(p.clerk_user_id);
-        return id!==me.userId&&!blocked.has(id)
-          &&(viewerAccess.allowed||!students.has(id)||roles.get(id)==="founder");
-      }).map((p:any)=>{
+      const users=profiles.filter((p:any)=>!blocked.has(String(p.clerk_user_id))).map((p:any)=>{
         const id=String(p.clerk_user_id),role=roles.get(id)||"ordinary";
-        return {handle:publicHandle(clean(p.username,30)||null,role,students.has(id)),
-          avatarUrl:publicAvatar(p.avatar_url),verified:role==="founder"};
-      }).filter((p:any)=>p.handle).slice(0,20);
-      return json(req,{ok:true,users});
+        return {handle:publicHandle(clean(p.username,30)||null,role,false),
+          avatarUrl:publicAvatar(p.avatar_url),verified:role==="founder",
+          self:id===me.userId};
+      }).filter((p:any)=>p.handle);
+      return json(req,{ok:true,users,
+        nextOffset:(recent.data||[]).length===size?offset+size:null});
     }
 
     if(action==="direct"){
