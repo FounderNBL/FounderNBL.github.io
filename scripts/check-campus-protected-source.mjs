@@ -2,16 +2,16 @@
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
-const home=read("index.html"),redirect=read("university.html"),updates=read("university-updates.html");
+const home=read("index.html"),redirect=read("university.html");
 const legacy=read("university-enrollment.html"),campus=read("campus.html"),alias=read("university-campus.html"),header=read("nbl-world-header.js");
 const chat=read("chat.html"),realtime=read("social-realtime.js");
 assert.ok(home.includes('class="world-card official-art reveal" href="https://nblschool.com/"'));
 assert.ok(redirect.includes("https://nblschool.com/"));
 assert.ok(!redirect.includes("data-nbl-university-interest-form"));
-assert.ok(updates.includes("data-nbl-university-interest-form"));
+assert.ok(!redirect.includes("billing/checkout"));
 assert.ok(!updates.includes("nblu-one-entry"));
 assert.ok(!updates.includes("/billing/checkout"));
-assert.ok(legacy.includes("university-updates.html#early-registration"));
+assert.ok(legacy.includes("url=https://nblschool.com/"));
 for(const page of [campus,alias]){
  assert.ok(page.includes("https://nblschool.com/"));
  assert.ok(!page.includes("data-coursework-pdf"));
