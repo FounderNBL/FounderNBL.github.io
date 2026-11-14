@@ -105,8 +105,8 @@ test("Public pricing keeps three categories, account keeps Beans and closed Univ
  const styles=readFileSync(new URL("../nbl-world-header.css",import.meta.url),"utf8");
  assert.equal((pricing.match(/<details class="nbl-category" data-nbl-category/g)||[]).length,3);
  assert.equal((account.match(/<details class="account-category">/g)||[]).length,2);
- assert.match(arrival,/data-nbl-university-interest-form/);
- assert.match(legacy,/university.html#early-registration/);
+ assert.doesNotMatch(arrival,/data-nbl-university-interest-form/);
+ assert.match(legacy,/url=https:\/\/nblschool\.com\//);
  assert.ok((header.match(/<details class="nbl-drawer-category">/g)||[]).length>=1,"NBL drawer category absent");
  assert.match(styles,/nbl-drawer-category/);
  for(const name of ["beans","topup_500"])assert.ok(account.includes('data-account-billing-plan="'+name+'"'));
@@ -114,6 +114,6 @@ test("Public pricing keeps three categories, account keeps Beans and closed Univ
  assert.match(html,/addEventListener\("hashchange",revealVaultCategory\)/);
  assert.match(html,/id="pricing"/);
  assert.match(html,/id="university-prices"/);
- assert.match(arrival,/school is under construction/);
+ assert.match(arrival,/Classes, tuition and enrollment remain closed\./);
  assert.doesNotMatch(arrival,/nblu-pay|billing\/checkout/);
 });
