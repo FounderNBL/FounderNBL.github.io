@@ -42,17 +42,12 @@ test("Active services retain approved prices; closed University rates stay out o
  }
  assert.match(pricing,/University is under construction/);
 });
-test("University .org entrance redirects to real campus; separate free updates have no checkout",()=>{
+test("University is a separate public tour domain; no .org campus cashier",()=>{
  const arrival=read("university.html");
- const updates=read("university-updates.html");
- const script=read("nbl-university-early-interest.js");
  const legacy=read("university-enrollment.html");
- assert.match(legacy,/university-updates.html#early-registration/);
- assert.match(arrival,/url=https:\/\/nblschool.com\//);
- assert.match(updates,/school is under construction/);
- assert.match(updates,/data-nbl-university-interest-form/);
- assert.match(script,/action:"join"/);
- assert.doesNotMatch(arrival+updates,/nblu-pay|Sign up &amp; continue to payment|checkout.stripe.com|December 1/);
+ assert.match(arrival,/url=https:\/\/nblschool\.com\//);
+ assert.match(legacy,/url=https:\/\/nblschool\.com\//);
+ assert.doesNotMatch(arrival+legacy,/data-nbl-university-interest-form|billing\/checkout|nblu-pay|Sign up &amp; continue to payment|checkout.stripe.com/);
 });
 test("new priced tiers render safely when returning visitors have an older cached catalog",()=>{
  assert.match(header,/NBL_PRODUCT_PLANS\.nblPlus\.name/);
