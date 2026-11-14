@@ -102,7 +102,7 @@ requireText(plans,'beans:Object.freeze({name:"Beans Starter"',"Beans seven-day S
 requireText(plans,'price:"$4.99 / 7 days"',"Canonical Beans plan price is missing.");
 requireText(plans,'price:"$29.99 one-time"',"Correct one-time Foundation Materials price is missing.");
 requireText(plans,'beansUniversity:Object.freeze',"Combined Beans + University plan is missing.");
-requireText(account,'Sign up free for the opening notification',"School account link must point to free opening notification.");
+requireText(account,'href="https://nblschool.com/">Take the free campus tour',"School account link must point to independent free campus tour.");
 for(const blocked of ["beans_university","foundation","full_foundation","full_nblu","nblu_continuation","foundation_student_continuation"]) {
   forbidText(account,'data-account-billing-plan="'+blocked+'"',"School must not expose its old paid checkout option: "+blocked);
 }
