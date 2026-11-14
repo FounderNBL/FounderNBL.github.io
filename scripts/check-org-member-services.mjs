@@ -10,7 +10,7 @@ const failures=[];
 const need=(key,needle,why)=>{if(!files[key].includes(needle))failures.push(why);};
 const forbid=(key,needle,why)=>{if(files[key].includes(needle))failures.push(why);};
 
-// One Clerk production origin. Account and payment screens must stay on .org.
+// One Clerk production origin. No duplicate .org University page; paid academic identity remains protected.
 need("account",'accounts.newbeansland.org',"Verified .org account portal missing.");
 need("chat",'href="https://newbeansland.org/messenger/"',"Person-to-person messaging must canonically identify NBL Messenger on .org.");
 need("campus",'url=https://nblschool.com/',"Old .org campus must redirect to the school website.");
@@ -18,11 +18,11 @@ need("campus",'url=https://nblschool.com/',"Old .org campus must redirect to the
 forbid("header",'class="nbl-chat-drawer-item nbl-beans-people-link"',"Person messaging must not be a Beans menu item.");
 forbid("header",'class="nbl-chat-drawer-item nbl-beans-grey-link"',"Professor Grey must not be a Beans menu item.");
 need("header",'data-nbl-beans-regular',"Beans' own assistant chat panel must remain available.");
-need("landing",'url=https://newbeansland.org/university.html#early-registration',"Legacy enrollment must redirect to the single cashier page.");
+need("landing",'url=https://nblschool.com/',"Legacy University enrollment must direct visitors to the free campus tour.");
 const currentAdmissions=read("university.html");
 const currentBilling=read("nbl-university-early-interest.js");
-if(!currentAdmissions.includes('data-nbl-university-interest-form'))failures.push("Free notification signup is missing.");
-if(!currentBilling.includes('action:"join"'))failures.push("University signup must use the free interest ledger.");
+if(!currentAdmissions.includes('url=https://nblschool.com/'))failures.push("Official school tour redirect is missing.");
+if(!currentBilling.includes('action:"join"'))failures.push("Preserved dormant University interest client has changed.");
 if(currentAdmissions.includes('billing/checkout')||currentAdmissions.includes('nblu-pay'))failures.push("University payment page must be closed.");
 
 // Human Chat is only for signed-in people; messaging is bound to Core/Supabase.
@@ -70,5 +70,5 @@ if(failures.length){
   failures.forEach(x=>console.error("[org-member-services] FAIL:",x));
   process.exitCode=1;
 }else{
-  console.log("[org-member-services] PASS: single .org admissions cashier, independent school.com campus and old-route forwarding, shared Clerk identity, existing member messaging and billing guardrails.");
+  console.log("[org-member-services] PASS: independent free public school tour, optional .org notice, protected member services and University billing hold.");
 }

@@ -14,13 +14,13 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page).toHaveTitle(/New Beansland/i);
     await expect(page.locator('.world-card[href="books.html"]')).toBeVisible();
     await expect(page.locator('.world-card[href="stories.html"]')).toHaveCount(0);
-    await expect(page.locator('.world-card[href="university.html"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="https://nblschool.com/"]')).toBeVisible();
     await expect(page.locator('.world-card[href="studio/"]')).toBeVisible();
     await expect(page.locator('.world-card[href="studios.html"]')).toBeVisible();
     await expect(page.locator('.world-card[href="games.html"]')).toBeVisible();
     await expect(page.locator('.world-card[href="clothing.html"]')).toBeVisible();
     await expect(page.locator('.world-grid .world-card')).toHaveCount(6);
-    await expect(page.locator('.world-grid .world-card').last()).toHaveAttribute('href','university.html');
+    await expect(page.locator('.world-grid .world-card').last()).toHaveAttribute('href','https://nblschool.com/');
   });
 
 
@@ -32,7 +32,7 @@ test.describe("New Beansland web app browser smoke", () => {
       ["games.html","NBL_Games.png"],
       ["studio/","NBL_Music_Productions%20(1).png"],
       ["studios.html","NBL_Studios.png"],
-      ["university.html","NBL_University.png"]
+      ["https://nblschool.com/","NBL_University.png"]
     ];
     await expect(page.locator(".world-card.official-art")).toHaveCount(6);
     for(const [href,name] of cards) {
@@ -306,21 +306,20 @@ test.describe("New Beansland web app browser smoke", () => {
     expect(signUp.pathname).toBe("/sign-up");
   });
 
-  test("University World Card opens a free-notifications page, not tuition checkout",async({page})=>{
-    await open("/",page);
-    const card=page.locator('.world-grid .world-card[href="university.html"]');
-    await expect(card).toHaveCount(1);
-    await card.click();
-    await expect(page).toHaveURL(/\/university\.html$/);
-    await expect(page.getByRole("heading",{name:"The school is under construction."})).toBeVisible();
-    await expect(page.getByRole("heading",{name:"Sign up for free opening updates"})).toBeVisible();
-    await expect(page.locator("form[data-nbl-university-interest-form]")).toHaveCount(1);
-    await expect(page.locator("#interestKind option")).toHaveCount(3);
-    await expect(page.getByRole("button",{name:"Join free notification list"})).toBeVisible();
-    await expect(page.getByText("No payment is required or accepted.",{exact:false})).toBeVisible();
-    await expect(page.locator('a[href="https://nblschool.com/"]')).toHaveCount(1);
-    await expect(page.locator("#nblu-one-entry,#nblu-program,#nblu-offer-price,[data-campus-gate],[data-study-lab],[data-coursework-pdf]")).toHaveCount(0);
-  });
+  test("University World Card opens only the real school domain; .org has no duplicate campus",async({page})=>{
+ await open("/",page);
+ const card=page.locator('.world-grid .world-card[href="https://nblschool.com/"]');
+ await expect(card).toHaveCount(1);
+ await expect(card).toHaveAttribute("href","https://nblschool.com/");
+ for(const oldPath of ["/university.html","/university-enrollment.html"]){
+  const response=await page.request.get(oldPath);
+  const html=await response.text();
+  expect(html).toContain("url=https://nblschool.com/");
+  expect(html).not.toContain("data-nbl-university-interest-form");
+  expect(html).not.toContain("data-coursework-pdf");
+  expect(html).not.toContain("billing/checkout");
+ }
+});
 
   test("old .org campus addresses forward to the independent school, not another classroom",async({page})=>{
     for(const path of ["/campus.html","/university-campus.html"]){

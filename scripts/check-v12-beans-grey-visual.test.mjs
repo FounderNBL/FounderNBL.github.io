@@ -56,7 +56,7 @@ test("website Beans retires the old Grey/Messenger chooser while retaining PDF a
  for(const page of ["books.html","clothing.html","nbl-kids.html","stories.html","studios.html"]){
    assert.match(read(page),/nbl-world-header\.js\?v=20261024-v12-final-parity/);
  }
- assert.match(read("university.html"),/src="\/nbl-university-early-interest\.js/);
+ assert.match(read("university.html"),/url=https:\/\/nblschool\.com\//);
  const appParity=read("nbl-world-header.js");
  assert.doesNotMatch(appParity,/lockeOverride|bypassLocker|universityUnlocked=true/);
 });
