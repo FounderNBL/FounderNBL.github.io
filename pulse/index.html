@@ -53,7 +53,7 @@
     <a href="/chat.html">Beans</a><a href="/pulse/" class="pulse-site-current" aria-current="page"><svg class="pulse-mark" viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h13l7-13 10 28 9-31 9 27 7-11h19"/></svg> Pulse</a>
     <a href="/studios.html">Studios</a><a href="/studio/">Music</a><a href="/books.html">Books</a>
   </nav>
-  <details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user">My Posts</button><button type="button" data-feed="friends">Friends</button><a href="/account.html">My account</a><a href="/messenger/">NBL Messenger</a></div></details>
+  <details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user">My Posts</button><button type="button" data-feed="friends">People</button><a href="/account.html">My account</a><a href="/messenger/">NBL Messenger</a></div></details>
   <nav class="pulse-account-nav" aria-label="Your NBL account"><a class="pulse-message-top" href="/messenger/" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="34" height="34" alt=""></a><a class="pulse-account-link" href="/account.html">My Account</a></nav>
 </header>
 <main class="social-shell pulse-shell">
@@ -107,7 +107,7 @@
     <button data-feed="foryou" type="button" aria-pressed="true"><span class="pulse-nav-glyph" aria-hidden="true">⌂</span><span>Home <small>(For You)</small></span></button>
     <button data-feed="timeline" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">◎</span><span>Following</span></button>
     <button data-feed="user" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">▤</span><span>My Posts</span></button>
-    <button data-feed="friends" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♧</span><span>Friends</span></button>
+    <button data-feed="friends" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♧</span><span>People</span></button>
     <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
     <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="30" height="30" alt=""><span>Messenger</span></a>
     <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Pulse post"><span aria-hidden="true">＋</span><span>Create</span></a>
@@ -162,7 +162,7 @@
       <a href="#composeTitle" class="pulse-welcome-cta">Create your first post <span aria-hidden="true">＋</span></a>
     </article>
     <section class="social-list" id="friendsPanel" aria-labelledby="friendsTitle" hidden>
-      <h2 id="friendsTitle">Friends in New Beansland</h2>
+      <h2 id="friendsTitle">People &amp; Friends in New Beansland</h2>
       <p class="hint">Send a request by NBL username. Only people who accept become friends. No Facebook contacts are imported.</p>
       <form id="friendForm">
         <label for="friendHandle">NBL username</label>
@@ -171,7 +171,12 @@
           <button class="btn primary" type="submit">Send request</button>
         </div>
       </form>
-      <div id="friendItems" aria-live="polite"></div>
+      <section aria-labelledby="pulseMembersTitle" class="pulse-members-discovery">
+          <h3 id="pulseMembersTitle">Newest NBL members</h3>
+          <p class="hint">Everyone uses one NBL account. Discover their public usernames, message them, or send a friend request.</p>
+          <div id="pulseMemberItems" aria-live="polite"><p class="social-meta">Finding people…</p></div>
+        </section>
+        <div id="friendItems" aria-live="polite"></div>
     </section>
     <section class="social-list" id="feedPanel" aria-labelledby="feedTitle">
       <div class="social-list-head"><h2 id="feedTitle">For You</h2><button id="refreshFeed" class="btn small" type="button">Refresh</button></div>
