@@ -6,7 +6,7 @@ const read=p=>fs.readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const pricing=read("pricing.html");
 const campus=read("campus.html");
 const campusAlias=read("university-campus.html");
-const university=read("university-updates.html");
+const university=read("university.html");
 const cashier=read("university-storefront.js");
 const header=read("nbl-world-header.js");
 const terms=read("terms.html");
@@ -24,18 +24,18 @@ test("$29.99 Foundation Materials contains only 2 physical books and first month
  assert.doesNotMatch(header,/Two books, course materials and one month of Beans/);
 });
 
-test("University ebooks remain separate and .org offers free notifications only",()=>{
+test("University ebooks stay protected and .org only forwards to the free school tour",()=>{
  for(const content of [campus,campusAlias]){
    assert.match(content,/url=https:\/\/nblschool\.com\//);
    assert.doesNotMatch(content,/data-coursework-pdf|data-grey-log|data-study-lab/);
  }
- assert.match(university,/data-nbl-university-interest-form/);
- assert.match(university,/value="foundation_university"/);
+ assert.match(university,/url=https:\/\/nblschool\.com\//);
+ assert.doesNotMatch(university,/data-nbl-university-interest-form|value="foundation_university"/);
  assert.doesNotMatch(university,/nblu-pay|billing\/checkout|\$449\.99/);
  assert.match(university,/href="https:\/\/nblschool\.com\//);
  assert.match(cashier,/if\(!item\.plan\)/);
  assert.match(cashier,/No ebooks, digital course materials, coursework, or University enrollment are included/);
- assert.match(university,/school is under construction/);
+ assert.match(university,/Classes, tuition and enrollment remain closed\./);
 });
 test("already-built NBL Music catalog and NBL Books digital Payhip/Reader remain independent",()=>{
  assert.match(musicPage,/<h1>NBL Music Productions<\/h1>/);
