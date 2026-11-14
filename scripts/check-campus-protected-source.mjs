@@ -5,15 +5,24 @@ const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const home=read("index.html"),redirect=read("university.html");
 const legacy=read("university-enrollment.html"),campus=read("campus.html"),alias=read("university-campus.html"),header=read("nbl-world-header.js");
 const chat=read("chat.html"),realtime=read("social-realtime.js");
-assert.ok(home.includes('class="world-card official-art reveal" href="https://nblschool.com/"'));
-assert.ok(redirect.includes("https://nblschool.com/"));
+// Validate the complete HTTPS redirect target, not a substring an attacker-controlled host could contain.
+const schoolUrl="https://nblschool.com/";
+const assertSchoolRedirect=(page,document)=>{
+ const refresh=document.match(/<meta\\s+http-equiv="refresh"\\s+content="0;url=([^"]+)">/i);
+ assert.ok(refresh, `${page}: missing school redirect`);
+ assert.equal(new URL(refresh[1]).href,schoolUrl,`${page}: redirect must use the official school origin`);
+ assert.match(document,/<link rel="canonical" href="https:\\/\\/nblschool\\.com\\/">/);
+ assert.match(document,/<a href="https:\\/\\/nblschool\\.com\\/">/);
+};
+assert.match(home,/class="world-card official-art reveal" href="https:\\/\\/nblschool\\.com\\/"/);
+assertSchoolRedirect("university.html",redirect);
 assert.ok(!redirect.includes("data-nbl-university-interest-form"));
 assert.ok(!redirect.includes("billing/checkout"));
 assert.ok(!redirect.includes("nblu-one-entry"));
 assert.ok(!redirect.includes("/billing/checkout"));
-assert.ok(legacy.includes("url=https://nblschool.com/"));
+assertSchoolRedirect("university-enrollment.html",legacy);
 for(const page of [campus,alias]){
- assert.ok(page.includes("https://nblschool.com/"));
+ assertSchoolRedirect("campus alias",page);
  assert.ok(!page.includes("data-coursework-pdf"));
 }
 assert.ok(header.includes('["university","University","/university.html",false]'));
