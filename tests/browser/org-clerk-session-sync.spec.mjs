@@ -6,7 +6,7 @@ test("University is closed, free notification signup only, no checkout",async({p
    checkoutCalls++;
    return route.abort();
  });
- await page.goto("/university.html");
+ await page.goto("/university-updates.html");
  await expect(page.getByText("The school is under construction.")).toBeVisible();
  await expect(page.locator("[data-nbl-university-interest-form]")).toBeVisible();
  await expect(page.locator("[data-nbl-university-interest-submit]")).toHaveText("Join free notification list");
