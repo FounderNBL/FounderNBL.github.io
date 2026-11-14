@@ -29,7 +29,7 @@
 
   const nav=[
     ["home","Home","/",false],
-    ["university","University","https://nblschool.com/",false],
+    ["university","University","/university.html",false],
     ["books","Books","/books.html",false],
     ["clothing","Clothing","https://new-beansland.myshopify.com",true],
     ["shop","Shop","https://new-beansland.myshopify.com",true],
@@ -609,7 +609,7 @@
       <div class="nbl-quick-selector" id="nbl-quick-selector" data-nbl-quick-selector role="group" aria-label="Retired conversation switcher" hidden inert style="display:none!important">
         <button type="button" data-nbl-quick="beans" aria-label="Chat with Beans"><img src="/Beans_Hi_Basic.png" alt="" aria-hidden="true"><strong>Beans</strong><small>AI assistant</small></button>
         <button type="button" data-nbl-quick="grey" aria-label="Talk to Professor Grey, LOCKE authorization required"><img src="/Professor_Grey.png" alt="" aria-hidden="true"><strong>Grey</strong><small>Teaching · LOCKE</small></button>
-        <a href="https://nblschool.com/" data-nbl-quick="university" aria-label="NBL University entrance, enrollment and LOCKE approval required"><img src="/NBL_University.png" alt="" aria-hidden="true"><strong>University</strong><small>Locked · enrollment</small></a>
+        <a href="/university.html" data-nbl-quick="university" aria-label="NBL University entrance, enrollment and LOCKE approval required"><img src="/NBL_University.png" alt="" aria-hidden="true"><strong>University</strong><small>Locked · enrollment</small></a>
       </div>
       <div class="nbl-chat-modes" role="tablist" aria-label="Beans mode" hidden style="display:none!important">
         <button id="nbl-chat-tab-beans" type="button" class="is-active" data-nbl-chat-mode="beans" role="tab" aria-controls="nbl-chat-panel-beans" aria-selected="true" tabindex="0">Beans</button>
@@ -2472,7 +2472,7 @@
   });
   chatDrawerGrey?.addEventListener("click",()=>{
     setChatDrawerOpen(false);
-    location.href="https://nblschool.com/";
+    location.href="/university.html";
   });
   chatDrawerPlans.addEventListener("click",()=>{
     chatDrawerPlanCard.hidden=!chatDrawerPlanCard.hidden;
