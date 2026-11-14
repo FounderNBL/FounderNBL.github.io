@@ -32,7 +32,6 @@
     ["university","University","/university.html",false],
     ["books","Books","/books.html",false],
     ["clothing","Clothing","https://new-beansland.myshopify.com",true],
-    ["shop","Shop","https://new-beansland.myshopify.com",true],
     ["kids","NBL Kids","/nbl-kids.html",false],
     ["stories","TV & Film","/stories.html",false],
     ["studio","NBL Music Productions","/studio/",false],
@@ -257,7 +256,7 @@
         <h2 id="nbl-connected-account-title">Use the same NBL account for enrollment and the campus.</h2>
         <p>You can browse the University without signing in. Enrollment checkout requires your NBL account so LOCKE can attach the verified Stripe purchase to the correct student record.</p>
         <div class="nbl-connected-account-actions">
-          <button type="button" data-nbl-panel-signin>Sign in / Create account</button>
+          <button type="button" data-nbl-panel-signin>Sign in</button>
         </div>
         <p class="nbl-connected-account-status" data-nbl-panel-status>Sign in before enrollment checkout.</p>
         <small>LOCKE checks University access server-side. Stripe handles payment; University doors open only after the verified purchase is attached to this NBL identity.</small>
@@ -330,8 +329,8 @@
       if(clerk.isSignedIn){
         const user=clerk.user;
         const displayName=(user?.unsafeMetadata?.displayName||user?.publicMetadata?.displayName||user?.username||user?.fullName||user?.firstName||user?.primaryEmailAddress?.emailAddress||"Account").trim();
-        accountButton.textContent=displayName;
-        accountButton.title="Manage your NBL account";
+        accountButton.textContent=room.key==="home"?"My account":displayName;
+        accountButton.title="Open your existing NBL account";
         void (async()=>{
           try{
             const token=await getNblBeansAuthToken();
@@ -342,9 +341,24 @@
             });
             const payload=await response.json().catch(()=>({}));
             const username=String(payload?.profile?.username||"").trim();
-            if(response.ok&&username) accountButton.textContent=username;
+            if(response.ok&&username&&room.key!=="home"&&clerk?.isSignedIn) accountButton.textContent=username;
           }catch{}
         })();
+        // One Clerk session across NBL. Sign out here, without deleting a profile.
+        const signOutButton=addAuxButton("Sign out",async()=>{
+          if(!clerk?.isSignedIn)return;
+          signOutButton.disabled=true;
+          signOutButton.textContent="Signing out…";
+          try{
+            await clerk.signOut();
+            render();
+            if(room.key!=="home")location.assign("/");
+          }catch{
+            signOutButton.disabled=false;
+            signOutButton.textContent="Retry sign out";
+          }
+        });
+        signOutButton.setAttribute("aria-label","Sign out of New Beansland");
         if(panelSignIn) panelSignIn.hidden=true;
         void readUniversityAccess(clerk);
       }else{
@@ -455,7 +469,8 @@
           <img src="/Beans_Hi_Basic.png" alt="" aria-hidden="true">
           <span>Beans</span>
         </button>
-        <a class="nbl-world-nblworld-link" href="https://nblworld.com/" aria-label="Shop NBL World">NBL Shop</a>
+        <button class="nbl-world-account nbl-world-account-primary" type="button">Sign in</button>
+        <div class="nbl-world-user" hidden aria-label="NBL account"></div>
       </div>
     </div>`:`
     <div class="nbl-world-header-inner">
