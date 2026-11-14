@@ -16,6 +16,11 @@ const assertSchoolRedirect=(page,document)=>{
 };
 assert.match(home,/class="world-card official-art reveal" href="https:\/\/nblschool\.com\/"/);
 assertSchoolRedirect("university.html",redirect);
+// The old substring test would accept an attacker URL with the school URL inside its query string.
+assert.throws(
+ ()=>assertSchoolRedirect("unsafe alternate host",'<meta http-equiv="refresh" content="0;url=https://attacker.invalid/?next=https://nblschool.com/">'),
+ /official school origin/
+);
 assert.ok(!redirect.includes("data-nbl-university-interest-form"));
 assert.ok(!redirect.includes("billing/checkout"));
 assert.ok(!redirect.includes("nblu-one-entry"));
