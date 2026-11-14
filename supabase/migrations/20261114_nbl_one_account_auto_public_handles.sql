@@ -6,6 +6,26 @@ alter table public.nbl_account_profiles
   alter column username set default
     ('NBLMember' || left(replace(gen_random_uuid()::text, '-', ''), 16));
 
+-- Supabase PostgREST upserts can explicitly submit NULL for omitted columns.
+-- Protect every legitimate NBL sign-in path, even when it bypasses SQL DEFAULT.
+-- The trigger never renames a member who already chose a username.
+create or replace function public.nbl_assign_default_public_handle()
+returns trigger language plpgsql
+set search_path = pg_catalog, public
+as $
+begin
+  if new.username is null or btrim(new.username) = '' then
+    new.username := 'NBLMember' || left(replace(gen_random_uuid()::text, '-', ''), 16);
+  end if;
+  return new;
+end;
+$;
+
+drop trigger if exists nbl_account_profile_default_handle on public.nbl_account_profiles;
+create trigger nbl_account_profile_default_handle
+before insert or update of username on public.nbl_account_profiles
+for each row execute function public.nbl_assign_default_public_handle();
+
 -- Heal profiles already created by the single-account sign-in before this fix.
 -- One random handle is written once per existing account; the unique index on
 -- lower(username) continues enforcing identity uniqueness.
