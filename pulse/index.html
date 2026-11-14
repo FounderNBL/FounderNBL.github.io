@@ -13,8 +13,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261108-provider-video">
-<link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261109-member-first-standalone">
-<script type="module" src="/messenger/social-v1.mjs?v=20261110-facebook-photo"></script>
+<link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261114-public-members-v1">
+<script type="module" src="/messenger/social-v1.mjs?v=20261114-public-members-v1"></script>
 <style>
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
 .pulse-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(16px,calc((100vw - 1400px)/2));background:#0d0919;border-bottom:1px solid #51326d;position:sticky;top:0;z-index:20}.pulse-topbar>a{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.4rem;color:#fff;text-decoration:none}.pulse-topbar strong{color:#e6b5ff}.pulse-topbar nav{display:flex;gap:15px;flex-wrap:wrap}.pulse-topbar nav a{color:#e4d5f3;text-decoration:none;font-size:.82rem;font-weight:700}
@@ -53,7 +53,7 @@
     <a href="/chat.html">Beans</a><a href="/pulse/" class="pulse-site-current" aria-current="page"><svg class="pulse-mark" viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h13l7-13 10 28 9-31 9 27 7-11h19"/></svg> Pulse</a>
     <a href="/studios.html">Studios</a><a href="/studio/">Music</a><a href="/books.html">Books</a>
   </nav>
-  <details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user">My Posts</button><button type="button" data-feed="friends">Friends</button><a href="/account.html">My account</a><a href="/messenger/">NBL Messenger</a></div></details>
+  <details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user">My Posts</button><button type="button" data-feed="friends">People</button><a href="/account.html">My account</a><a href="/messenger/">NBL Messenger</a></div></details>
   <nav class="pulse-account-nav" aria-label="Your NBL account"><a class="pulse-message-top" href="/messenger/" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="34" height="34" alt=""></a><a class="pulse-account-link" href="/account.html">My Account</a></nav>
 </header>
 <main class="social-shell pulse-shell">
@@ -107,7 +107,7 @@
     <button data-feed="foryou" type="button" aria-pressed="true"><span class="pulse-nav-glyph" aria-hidden="true">⌂</span><span>Home <small>(For You)</small></span></button>
     <button data-feed="timeline" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">◎</span><span>Following</span></button>
     <button data-feed="user" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">▤</span><span>My Posts</span></button>
-    <button data-feed="friends" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♧</span><span>Friends</span></button>
+    <button data-feed="friends" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♧</span><span>People</span></button>
     <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
     <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="30" height="30" alt=""><span>Messenger</span></a>
     <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Pulse post"><span aria-hidden="true">＋</span><span>Create</span></a>
@@ -162,7 +162,7 @@
       <a href="#composeTitle" class="pulse-welcome-cta">Create your first post <span aria-hidden="true">＋</span></a>
     </article>
     <section class="social-list" id="friendsPanel" aria-labelledby="friendsTitle" hidden>
-      <h2 id="friendsTitle">Friends in New Beansland</h2>
+      <h2 id="friendsTitle">People &amp; Friends in New Beansland</h2>
       <p class="hint">Send a request by NBL username. Only people who accept become friends. No Facebook contacts are imported.</p>
       <form id="friendForm">
         <label for="friendHandle">NBL username</label>
@@ -171,7 +171,12 @@
           <button class="btn primary" type="submit">Send request</button>
         </div>
       </form>
-      <div id="friendItems" aria-live="polite"></div>
+      <section aria-labelledby="pulseMembersTitle" class="pulse-members-discovery">
+          <h3 id="pulseMembersTitle">All NBL members</h3>
+          <p class="hint">Every NBL member has a public Pulse profile. Find people by their NBL handle, message them, or send a friend request.</p>
+          <div id="pulseMemberItems" aria-live="polite"><p class="social-meta">Finding people…</p></div>
+        </section>
+        <div id="friendItems" aria-live="polite"></div>
     </section>
     <section class="social-list" id="feedPanel" aria-labelledby="feedTitle">
       <div class="social-list-head"><h2 id="feedTitle">For You</h2><button id="refreshFeed" class="btn small" type="button">Refresh</button></div>

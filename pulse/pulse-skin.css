@@ -379,3 +379,15 @@
 @media(prefers-reduced-motion:reduce){
   .pulse-body .pulse-sidebar .social-tabs button{transition:none}
 }
+
+/* One-account member discovery lives beside existing Pulse friendships. */
+.pulse-body .pulse-members-discovery{
+  margin:16px 0 24px;padding:16px;border:1px solid var(--pulse-border);
+  border-radius:14px;background:rgba(13,20,38,.66);
+}
+.pulse-body .pulse-members-discovery h3{margin:0 0 4px;color:#f4d7fa}
+.pulse-body #pulseMemberItems{max-height:460px;overflow-y:auto}
+.pulse-body #pulseMemberItems .friend-entry .social-avatar{
+  width:42px;height:42px;border-radius:50%;object-fit:cover;flex:0 0 auto
+}
+.pulse-body #pulseMemberItems .friend-entry strong{flex:1 1 130px;min-width:0;overflow-wrap:anywhere}

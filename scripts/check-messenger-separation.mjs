@@ -150,12 +150,24 @@ for(const [source,fragment,message] of [
   [callJs,'try{await call.camera.enable();}catch{cameraReady=false;}',"Camera permissions cannot prevent joining"],
   [callJs,'try{await call.microphone.enable();}catch{microphoneReady=false;}',"Mic permissions cannot prevent joining"]
 ])assert.ok(source.includes(fragment),message);
+// Video and audio can connect separately; both participants must get a DOM-mounted tile.
+assert.match(callJs,/video\.muted=true/,"Both remote and local video elements must allow mobile autoplay");
+assert.match(callJs,/call\.trackElementVisibility\(video,p\.sessionId,"videoTrack"\)/,"Visible participants need remote-video subscriptions");
+assert.match(callJs,/call\.bindVideoElement\(video,p\.sessionId,"videoTrack"\)/,"Video element needs Stream media binding");
+assert.match(callJs,/call\.bindAudioElement\(audio,p\.sessionId,"audioTrack"\)/,"Keep remote sound on a separate audio element");
+assert.match(callJs,/video\.addEventListener\("playing"/,"Camera loading hint should clear when picture plays");
+const renderBody=callJs.slice(callJs.indexOf("function renderParticipants("),callJs.indexOf("\nasync function leave()"));
+assert.ok(renderBody.indexOf("area.append(wrapper);")>=0
+  &&renderBody.indexOf("area.append(wrapper);")<renderBody.indexOf('call.bindVideoElement(video,p.sessionId,"videoTrack")'),
+ "Stream video must be mounted on the page BEFORE it is bound");
+assert.match(callPage,/call\.mjs\?v=20261113-video-render/,"Call must load the fixed JS asset");
+assert.match(callPage,/call-skin\.css\?v=20261113-video-render/,"Call must load the loading-state CSS");
 assert.match(callJs,/videoRequest\("join"\)/);
 assert.match(callJs,/const PRIVATE_CALL_TYPE="nbl_private"/);
 assert.match(callJs,/access\.callType!==PRIVATE_CALL_TYPE/);
 assert.match(callJs,/client\.call\(PRIVATE_CALL_TYPE,callId\)/);
 assert.doesNotMatch(callJs,/client\.call\(access\.callType,callId\)|client\.call\("default"/);
 assert.match(callPage,/NBL Private · Member-only video/);
-assert.match(callPage,/call\.mjs\?v=20261113-reliability/);
+assert.match(callPage,/call\.mjs\?v=20261113-video-render/);
 assert.doesNotMatch(js,/STREAM_API_SECRET|VIDEO_SECRET/);
 console.log("PASS: NBL Messenger draft video invitation uses direct chats and secured call service.");

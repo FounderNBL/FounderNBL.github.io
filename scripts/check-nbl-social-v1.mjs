@@ -33,7 +33,7 @@ assert.match(css,/social-media/);
 // Facebook uses user-controlled sharing of a public NBL post URL, never Page admin scopes.
 assert.match(ui,/id="sharedPost"[^>]*hidden/);
 assert.match(ui,/og:title/);
-assert.match(ui,/social-v1\.mjs\?v=20261110-facebook-photo/);
+assert.match(ui,/social-v1\.mjs\?v=20261114-public-members-v1/);
 assert.match(js,/const PUBLIC_SOCIAL_URL="https:\/\/newbeansland\.org\/messenger\/social-v1\.html"/);
 assert.match(js,/new URL\(PUBLIC_SOCIAL_URL\)/);
 assert.match(js,/dest\.searchParams\.set\("post",id\)/);
@@ -114,7 +114,7 @@ assert.match(js,/location\.pathname\.startsWith\("\/pulse"\)/);
 assert.match(pulse,/postMedia" type="file" accept="image\/jpeg,image\/png,image\/webp,video\/mp4,video\/webm" multiple/);
 assert.doesNotMatch(pulse,/postMedia" type="file" disabled/);
 assert.match(pulse,/postMedia"[^>]*video\/mp4/);
-assert.match(pulse,/social-v1\.mjs\?v=20261110-facebook-photo/);
+assert.match(pulse,/social-v1\.mjs\?v=20261114-public-members-v1/);
 assert.match(js,/VIDEO_TYPES\.has\(f\.type\)/);
 assert.doesNotMatch(js,/Video uploads are not enabled yet/);
 assert.match(js,/image_url:trusted/);
@@ -146,7 +146,7 @@ assert.match(js,/authorProfile\(userId\)/);
 
 // New member-first NBL Pulse skin is presentation-only: Messenger remains a link, not an iframe.
 const pulseSkin=read("pulse/pulse-skin.css");
-assert.match(pulse,/\/pulse\/pulse-skin\.css\?v=20261109-member-first-standalone/);
+assert.match(pulse,/\/pulse\/pulse-skin\.css\?v=20261114-public-members-v1/);
 assert.match(pulseSkin,/#socialApp \.pulse-grid/);
 assert.match(pulseSkin,/#feedItems/);
 assert.match(pulseSkin,/@media\(max-width:760px\)/);
@@ -155,3 +155,45 @@ assert.match(pulseSkin,/a\.pulse-message-tab/);
 assert.doesNotMatch(pulseSkin,/pulseMessengerFrame|pulse-messenger-panel/);
 assert.doesNotMatch(pulse,/<iframe|pulseMessengerFrame/);
 assert.match(pulse,/href="\/messenger\/"/);
+
+
+// One Clerk account must become a discoverable public NBL member automatically.
+// Member directory returns public handles for everyone, without emails, IDs, enrollment or private messages.
+const socialApi=read("supabase/functions/nbl-social/index.ts");
+const accountHandles=read("supabase/migrations/20261114_nbl_one_account_auto_public_handles.sql");
+const worldHeader=read("nbl-world-header.js");
+const worldCss=read("nbl-world-header.css");
+assert.match(accountHandles,/alter column username set default/i);
+assert.match(accountHandles,/gen_random_uuid\(\)/);
+assert.match(accountHandles,/where username is null or btrim\(username\)=''/i);
+assert.match(socialApi,/if\(action==="members_recent"\)/);
+assert.match(socialApi,/await actor\(req\)/);
+assert.match(socialApi,/pulse_member_directory_unavailable/);
+const publicDirectory=socialApi.slice(socialApi.indexOf('if(action==="members_recent")'),socialApi.indexOf('if(action==="direct")'));
+const publicSearch=socialApi.slice(socialApi.indexOf('if(action==="find_users")'),socialApi.indexOf('if(action==="members_recent")'));
+assert.doesNotMatch(publicDirectory,/students\.has\(|viewerAccess\.allowed/,"No private member visibility");
+assert.doesNotMatch(publicSearch,/universitySet\(ids\)|requesterUniversity/,"Search cannot hide members by enrollment");
+assert.match(publicDirectory,/!blocked\.has\(String\(p\.clerk_user_id\)\)/,"Blocking remains respected");
+assert.match(publicDirectory,/nextOffset:/,"People directory needs pages for every member");
+assert.match(publicDirectory,/self:id===me\.userId/,"Member can see own profile in directory");
+assert.doesNotMatch(publicDirectory,/email|primaryEmailAddress|displayName:/,"Public directory must not leak PII");
+assert.match(js,/await loadMembers\(result\.nextOffset\)/,"All pages can be reached");
+assert.match(pulse,/All NBL members/);
+assert.match(pulse,/id="pulseMemberItems"/);
+assert.match(pulse,/data-feed="friends">People<\/button>/);
+assert.match(js,/action:"members_recent"/);
+assert.match(js,/await Promise\.all\(\[loadFriends\(\),loadMembers\(\)\]\)/);
+assert.match(js,/await feed\.getOrCreate\(\{watch:false\}\)/,
+  "Brand new members need an initialized user feed before their first post");
+assert.match(js,/Write something or attach a photo/);
+const homeHeader=worldHeader.slice(worldHeader.indexOf('header.innerHTML=room.key==="home"'),worldHeader.indexOf('let searchTrigger=null'));
+assert.match(homeHeader,/nbl-world-account-primary/,"Main homepage needs actual Clerk sign-in control");
+assert.match(homeHeader,/nbl-world-user/,"Main homepage needs actual Clerk sign-out container");
+assert.doesNotMatch(homeHeader,/NBL Shop/);
+assert.doesNotMatch(worldHeader,/\["shop","Shop"/);
+assert.match(worldHeader,/await clerk\.signOut\(\)/);
+assert.match(worldCss,/nbl-world-header-home \.nbl-world-user\{display:flex!important/);
+assert.doesNotMatch(home,/rel="noopener noreferrer">Shop<\/a>/);
+
+assert.match(home,/nbl-world-header\.js\?v=20261114-public-members-v1/);
+assert.match(home,/nbl-world-header\.css\?v=20261114-public-members-v1/);
