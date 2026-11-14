@@ -60,4 +60,4 @@ if(!errors.length){
   }
 }
 if(errors.length){console.error("[org-member-surfaces] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
-console.log("[org-member-surfaces] PASS: .org hosts member messages and free University opening notifications; school classes and tuition closed.");
+console.log("[org-member-surfaces] PASS: .org keeps member messages and student protection; independent school offers public tours without tuition.");
