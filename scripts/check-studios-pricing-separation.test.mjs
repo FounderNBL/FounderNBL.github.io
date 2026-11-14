@@ -47,7 +47,7 @@ test("University is a separate public tour domain; no .org campus cashier",()=>{
  const legacy=read("university-enrollment.html");
  assert.match(arrival,/url=https:\/\/nblschool\.com\//);
  assert.match(legacy,/url=https:\/\/nblschool\.com\//);
- assert.doesNotMatch(arrival+legacy,/data-nbl-university-interest-form|billing\/checkout|nblu-pay|Sign up &amp; continue to payment|checkout.stripe.com/);
+ assert.doesNotMatch(arrival+legacy,/data-nbl-university-interest-form|billing\/checkout|nblu-pay|Sign up &amp; continue to payment|checkout\\.stripe\\.com/);
 });
 test("new priced tiers render safely when returning visitors have an older cached catalog",()=>{
  assert.match(header,/NBL_PRODUCT_PLANS\.nblPlus\.name/);
