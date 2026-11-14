@@ -160,8 +160,8 @@ const renderBody=callJs.slice(callJs.indexOf("function renderParticipants("),cal
 assert.ok(renderBody.indexOf("area.append(wrapper);")>=0
   &&renderBody.indexOf("area.append(wrapper);")<renderBody.indexOf('call.bindVideoElement(video,p.sessionId,"videoTrack")'),
  "Stream video must be mounted on the page BEFORE it is bound");
-assert.match(callHtml,/call\.mjs\?v=20261113-video-render/,"Call must load the fixed JS asset");
-assert.match(callHtml,/call-skin\.css\?v=20261113-video-render/,"Call must load the loading-state CSS");
+assert.match(callPage,/call\.mjs\?v=20261113-video-render/,"Call must load the fixed JS asset");
+assert.match(callPage,/call-skin\.css\?v=20261113-video-render/,"Call must load the loading-state CSS");
 assert.match(callJs,/videoRequest\("join"\)/);
 assert.match(callJs,/const PRIVATE_CALL_TYPE="nbl_private"/);
 assert.match(callJs,/access\.callType!==PRIVATE_CALL_TYPE/);
