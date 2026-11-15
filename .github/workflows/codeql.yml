@@ -47,7 +47,7 @@ jobs:
             for(const run of data.runs||[]){
               const rules=new Map((run.tool?.driver?.rules||[]).map(x=>[x.id,x]));
               const results=(run.results||[]).filter(x=>
-                (x.locations||[]).some(y=>/scripts\\/nbl-(?:repair|website-repair|website-economy|foundation-repair)/.test(y.physicalLocation?.artifactLocation?.uri||"")));
+                (x.locations||[]).some(y=>/scripts\/nbl-(?:repair|website-repair|website-economy|foundation-repair)/.test(y.physicalLocation?.artifactLocation?.uri||"")));
               for(const item of results.slice(0,35)){
                 const loc=item.locations?.[0]?.physicalLocation;
                 const rule=rules.get(item.ruleId);
