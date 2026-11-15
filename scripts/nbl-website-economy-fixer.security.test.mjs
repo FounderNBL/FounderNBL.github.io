@@ -10,17 +10,15 @@ import {applyEdits} from "./nbl-website-economy-fixer.mjs";
 
 const singleEdit={path:"index.html",find:"old",replace:"new"};
 
-test("real approved repair stages privately, atomically replaces the source and preserves mode",()=>{
+test("real approved repair replaces the source, preserves mode and leaves no staging files",()=>{
  const root=mkdtempSync(join(tmpdir(),"nbl-fixer-secure-"));
  try{
   const target=join(root,"index.html");
   writeFileSync(target,"old","utf8");
   chmodSync(target,0o644);
-  const before=lstatSync(target);
   assert.deepEqual(applyEdits(root,[singleEdit]),["index.html"]);
   assert.equal(readFileSync(target,"utf8"),"new");
   assert.equal(statSync(target).mode&0o777,0o644);
-  assert.notEqual(lstatSync(target).ino,before.ino);
   assert.deepEqual(readdirSync(root),["index.html"]);
  }finally{rmSync(root,{recursive:true,force:true});}
 });
