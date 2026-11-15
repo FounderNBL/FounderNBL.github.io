@@ -578,10 +578,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           NBL_WEBSITE_FIXER_OPENAI_KEY: ${{ secrets.NBL_WEBSITE_FIXER_OPENAI_KEY }}
-          # Founder can opt into at most three basic Tavily queries per real
-          # source defect. No research or new provider spend on healthy runs.
-          NBL_REPAIR_RESEARCH_ENABLED: ${{ vars.NBL_REPAIR_RESEARCH_ENABLED || 'false' }}
-          NBL_TAVILY_REPAIR_KEY: ${{ secrets.NBL_TAVILY_REPAIR_KEY }}
+          # Reuse Founder's existing Inspector Tavily credential; never create
+          # a second account or paste a key into source. Up to three basic
+          # research queries only after an independently reproduced source defect.
+          # The website repo must be allowed to read the existing secret.
+          NBL_REPAIR_RESEARCH_ENABLED: ${{ vars.NBL_REPAIR_RESEARCH_ENABLED || 'true' }}
+          NBL_TAVILY_REPAIR_KEY: ${{ secrets.TAVILY_INSPECTOR_TOKEN }}
         run: |
           set -euo pipefail
           node scripts/nbl-website-economy-fixer.mjs
