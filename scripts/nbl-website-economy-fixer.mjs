@@ -248,12 +248,12 @@ export async function askLuna(incident,base,{request=fetch,read=readFileSync,
 // Keep the original replayReviewedLesson available for portable old callers.
 // The live Fixer now compares existing eligible procedures before applying ONE.
 export async function run({base=join(root,"repair-target"),read=readFileSync,write=writeFileSync,
- ask=askLuna,research=researchRepairAnalogies}={}){
+ ask=askLuna,research=researchRepairAnalogies,historyReader=readVerifiedRepairOutcomes}={}){
  policyCheck();
  const incident=JSON.parse(read(join(root,".inspector/website-fixer-incident.json"),"utf8"));
  if(!incident.eligible||incident.targetRepo!==policy.homeRepository)
   throw Error("no_verified_site_incident");
- const historyCounts=await readVerifiedRepairOutcomes().catch(()=>Object.create(null));
+ const historyCounts=await historyReader().catch(()=>Object.create(null));
  const approved=rankReviewedLessons(incident,base,{read,historyCounts});
  const local=recipeEdits(incident,read,base);
  const comparison=compareRepairCandidates(incident,base,{reviewed:approved,localEdits:local,read});
