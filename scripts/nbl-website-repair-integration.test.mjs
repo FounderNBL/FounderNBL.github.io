@@ -41,7 +41,7 @@ test("Only when local patches fail does NBL consult external research, still wit
      {lens:"transfer",title:"Other discipline",url:"https://docs.github.com/en/actions",
       excerpt:"Test before change"}
    ]};},
-  ask:async(i,b,options)=>{modelCount++;assert.equal(i,incident);
+  ask:async(i,b,options)=>{modelCount++;assert.deepEqual(i,incident);
    assert.equal(options.research.sources[0].lens,"transfer");
    return {proposal:{status:"edit",edits:[{path:"nbl-world-header.js",
     find:"oldmarker",replace:"newmarker"}],reason:"independent local candidate"},
