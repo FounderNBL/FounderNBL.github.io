@@ -42,7 +42,7 @@ test("Only when local patches fail does NBL consult external research, still wit
       excerpt:"Test before change"}
    ]};},
   ask:async(i,b,options)=>{modelCount++;assert.deepEqual(i,incident);
-   assert.equal(options.research.sources[0].lens,"transfer");
+   assert.equal(options.research,undefined,"untrusted web text never reaches model input");
    return {proposal:{status:"edit",edits:[{path:"nbl-world-header.js",
     find:"oldmarker",replace:"newmarker"}],reason:"independent local candidate"},
     model:"mock_existing_provider",tokens:{input:0,output:0},estimatedUSD:0};}
