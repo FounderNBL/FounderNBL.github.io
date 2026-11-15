@@ -1,10 +1,10 @@
 // NBL Economy Fixer: real source edits, first by verified local recipe,
 // otherwise ONE small GPT-6 Luna Responses API request. Never a dummy agent.
 // Does not commit, push, deploy, broaden scope or use private customer data.
-import {readFileSync,writeFileSync,mkdirSync,readdirSync} from "node:fs";
+import {readFileSync,writeFileSync,mkdirSync,readdirSync,mkdtempSync,lstatSync,realpathSync,openSync,closeSync,fchmodSync,renameSync,rmSync,constants} from "node:fs";
 import {spawnSync} from "node:child_process";
 import {createHash} from "node:crypto";
-import {join,resolve,dirname} from "node:path";
+import {join,resolve,dirname,sep} from "node:path";
 import {fileURLToPath} from "node:url";
 import {policy,policyCheck,checkPatch} from "./nbl-website-fixer.mjs";
 import {contract} from "./nbl-website-green.mjs";
@@ -24,7 +24,35 @@ function checkedPath(p){
  return p;
 }
 function same(hay,needle){return needle&&hay.indexOf(needle)===hay.lastIndexOf(needle)&&hay.includes(needle);}
-export function applyEdits(base,edits,{write=writeFileSync,read=readFileSync}={}){
+// Source repairs must never follow a swapped symlink or write to a predictable
+// temporary filename. Stage privately beside the original and rename atomically.
+// Injected writers remain available only for isolated unit tests.
+function secureReplaceSource(base,relative,contents){
+ const rootDir=realpathSync(base),target=resolve(rootDir,relative);
+ if(!target.startsWith(rootDir+sep))throw Error("repair_path_escaped_checkout");
+ const parent=dirname(target);
+ if(realpathSync(parent)!==parent)throw Error("repair_parent_symlink");
+ const original=lstatSync(target);
+ if(!original.isFile()||original.isSymbolicLink())
+  throw Error("repair_target_not_regular_file");
+ const stagedDir=mkdtempSync(join(parent,".nbl-secure-repair-"));
+ try{
+  const stagedFile=join(stagedDir,"replacement");
+  const fd=openSync(stagedFile,
+   constants.O_WRONLY|constants.O_CREAT|constants.O_EXCL|constants.O_NOFOLLOW,0o600);
+  try{
+   writeFileSync(fd,contents,"utf8");
+   fchmodSync(fd,original.mode&0o777);
+  }finally{closeSync(fd);}
+  // Fail closed when the target changed during preparation.
+  const current=lstatSync(target);
+  if(!current.isFile()||current.isSymbolicLink()||
+    current.dev!==original.dev||current.ino!==original.ino)
+   throw Error("repair_target_changed_during_write");
+  renameSync(stagedFile,target);
+ }finally{rmSync(stagedDir,{recursive:true,force:true});}
+}
+export function applyEdits(base,edits,{write=null,read=readFileSync}={}){
  policyCheck();
  if(!Array.isArray(edits)||edits.length<1||edits.length>3)throw Error("edit_count_exceeded");
  const staged=new Map();
@@ -43,7 +71,10 @@ export function applyEdits(base,edits,{write=writeFileSync,read=readFileSync}={}
  }
  if(staged.size>policy.maxFiles)throw Error("file_limit");
  // All edits must be validated before the first write.
- for(const [p,next] of staged)write(join(base,p),next,"utf8");
+ for(const [p,next] of staged){
+  if(write)write(join(base,p),next,"utf8");
+  else secureReplaceSource(base,p,next);
+ }
  return [...staged.keys()];
 }
 export function recipeEdits(incident,read,base){
@@ -256,7 +287,7 @@ export async function run({base=join(root,"repair-target"),read=readFileSync,wri
   JSON.stringify(comparison,null,2)+"\n");
  let files,how,usage=null,reason="",reviewedCaseId=null,study=null;
  if(comparison.selectedCaseId==="nbl-local-recipe"){
-  files=applyEdits(base,local,{read,write});
+  files=applyEdits(base,local,{read,write:write===writeFileSync?null:write});
   how="verified_local_recipe";reason="approved source contract recipe; preflight checked";
  }else if(comparison.selectedCaseId){
   const choice=approved.find(x=>x.caseId===comparison.selectedCaseId);
@@ -288,7 +319,7 @@ export async function run({base=join(root,"repair-target"),read=readFileSync,wri
   const incidentPaths=new Set(incident.selected.map(x=>checkedPath(x.file)));
   if(result.edits.some(e=>!incidentPaths.has(e.path)))
    throw Error("proposed_edit_outside_current_incident");
-  files=applyEdits(base,result.edits,{read,write});
+  files=applyEdits(base,result.edits,{read,write:write===writeFileSync?null:write});
   reason=result.reason;
  }
  const receipt={schema:1,incident:incident.incident,engine:how,modelCalls:usage?1:0,
