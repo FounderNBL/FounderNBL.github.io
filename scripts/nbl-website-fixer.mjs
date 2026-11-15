@@ -107,6 +107,8 @@ export function verifiedLesson(incident,verdict,verification,patchText){
   testedBy:"NBL website source suite plus independent same-run browser validation",
   sourceReceipt:verification.sourceReceipt||null,
   githubRun:process.env.GITHUB_RUN_ID||null,
+  sourceRevision:process.env.GITHUB_SHA||null,
+  approvedExpectationRef:process.env.GITHUB_SHA?"https://github.com/FounderNBL/FounderNBL.github.io/blob/"+process.env.GITHUB_SHA+"/config/nbl-website-green-baseline.json":null,
   approval:"Founder must review draft PR; only merged lessons are available on main",
   verifiedAt:new Date().toISOString()
  };
