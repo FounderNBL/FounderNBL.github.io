@@ -90,7 +90,7 @@ jobs:
       - name: Check GREEN contract, official art and bot-challenge policies
         run: |
           node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-green-history.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
-            scripts/check-official-social-world-cards.test.mjs
+            scripts/check-official-social-world-cards.test.mjs scripts/nbl-foundation-repair-events.test.mjs
           node scripts/nbl-website-green.mjs source
 
       - name: Ask Cloudflare for live zone status before website tests
@@ -421,7 +421,7 @@ jobs:
       - name: Verify saved GREEN contract, approved artwork and challenge handling
         run: |
           node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-green-history.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
-            scripts/check-official-social-world-cards.test.mjs
+            scripts/check-official-social-world-cards.test.mjs scripts/nbl-foundation-repair-events.test.mjs
           node scripts/nbl-website-green.mjs source
       - name: Source-only approved browser regression, excluding NBLU and games
         run: npx playwright test tests/browser/nbl-green-visual.spec.mjs tests/browser/beans-presence.spec.mjs tests/browser/messenger-clerk-isolation.spec.mjs --project=chromium --project=mobile-chromium
@@ -500,6 +500,7 @@ jobs:
     timeout-minutes: 27
     permissions:
       contents: read
+      issues: write
     outputs:
       verified: ${{ steps.retest.outputs.verified }}
       incident: ${{ steps.plan.outputs.incident }}
@@ -524,6 +525,13 @@ jobs:
             echo "::notice::The failing inspection is not a confirmed allowed source defect. No coding model call; HOLD for independent evidence."
           fi
 
+      - name: Send independently reproduced source failure to ONE NBL Foundation record
+        if: ${{ steps.plan.outputs.eligible == 'true' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/nbl-foundation-repair-events.mjs incident
+
       - name: Verify real NBL site API connection (Founder authorized active use)
         id: controls
         env:
@@ -537,7 +545,7 @@ jobs:
           fi
 
       - name: Get only approved website source for NBL's own tiny-model repair engine
-        if: ${{ steps.plan.outputs.eligible == 'true' && steps.controls.outputs.enabled == 'true' }}
+        if: ${{ steps.plan.outputs.eligible == 'true' }}
         uses: actions/checkout@v7
         with:
           ref: main
@@ -565,9 +573,10 @@ jobs:
 
       - name: FIXER / run NBL's actual code writer, local lessons before small AI
         id: writer
-        if: ${{ steps.plan.outputs.eligible == 'true' && steps.controls.outputs.enabled == 'true' }}
+        if: ${{ steps.plan.outputs.eligible == 'true' }}
         continue-on-error: true
         env:
+          GH_TOKEN: ${{ github.token }}
           NBL_WEBSITE_FIXER_OPENAI_KEY: ${{ secrets.NBL_WEBSITE_FIXER_OPENAI_KEY }}
         run: |
           set -euo pipefail
@@ -641,6 +650,17 @@ jobs:
         if: ${{ steps.retest.outputs.verified == 'true' }}
         run: node scripts/nbl-website-fixer.mjs lesson .inspector/website-fixer.patch
 
+      - name: Report independently observed repair attempt to Foundation memory
+        if: ${{ always() && steps.plan.outputs.eligible == 'true' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NBL_WRITER_OUTCOME: ${{ steps.writer.outcome }}
+          NBL_SOURCE_RETEST_OUTCOME: ${{ steps.source_retest.outcome }}
+          NBL_RETEST_OUTCOME: ${{ steps.retest.outcome }}
+          NBL_RETEST_VERIFIED: ${{ steps.retest.outputs.verified }}
+        run: node scripts/nbl-foundation-repair-events.mjs attempt
+
       - name: Preserve repair attempt and evidence in same inspection run
         if: always()
         uses: actions/upload-artifact@v7
@@ -682,6 +702,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
     steps:
       - name: Checkout current website main with PR-only write identity
         uses: actions/checkout@v7
@@ -727,7 +748,8 @@ jobs:
           git diff --cached --quiet && { echo "::error::Verified patch has no change."; exit 1; }
           git commit -m "fix(web): independently tested NBL coding Fixer repair"
           git push origin "$BRANCH"
-          printf 'Real automated Inspector -> Codex Fixer -> independent source/browser retest in ONE run.\n\nIncident: %s\n\nOnly approved .org code changed. Verified lesson is versioned with the patch. No merge, deploy, billing, University, Desk or Playground actions.\n\nFounder review required.\n' "$INCIDENT" > "$RUNNER_TEMP/nbl-fixer-pr.md"
-          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" --draft \
+          printf 'NBL Inspector -> NBL-owned Fixer (verified procedure or bounded OpenAI if needed) -> independent source/browser retest in ONE run.\n\nIncident: %s\n\nOnly approved .org code changed. Verified lesson is versioned with the patch. No merge, deploy, billing, University, Desk or Playground actions.\n\nFounder review required.\n' "$INCIDENT" > "$RUNNER_TEMP/nbl-fixer-pr.md"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$BRANCH" --draft \
             --title "[NBL coding Fixer] Verified website repair" \
-            --body-file "$RUNNER_TEMP/nbl-fixer-pr.md"
+            --body-file "$RUNNER_TEMP/nbl-fixer-pr.md")"
+          NBL_VERIFIED_REPAIR_PR_URL="$pr_url" NBL_INCIDENT="$INCIDENT" node scripts/nbl-foundation-repair-events.mjs approval
