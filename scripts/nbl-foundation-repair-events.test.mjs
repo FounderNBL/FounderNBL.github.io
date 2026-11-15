@@ -160,3 +160,28 @@ test("Only independent GitHub source/browser results affect historical success a
  const zero=await readVerifiedRepairOutcomes({token:"",fetcher:()=>{throw Error("not called")}});
  assert.equal(Object.keys(zero).length,0);
 });
+
+test("Three preflight options persist as non-authoritative evidence beside independently verified outcomes",()=>{
+ const environment={...env,NBL_WRITER_OUTCOME:"success",NBL_SOURCE_RETEST_OUTCOME:"success",
+  NBL_RETEST_OUTCOME:"success",NBL_RETEST_VERIFIED:"true"};
+ const coding={comparison:{selectedCaseId:"nbl-local-recipe"}};
+ const experiment={schema:"nbl.verified-repair-experiment.v1",
+  selectedCaseId:"nbl-local-recipe",choices:[
+   {id:"website-green-aaaaaaaaaaaa",kind:"founder_reviewed_patch",
+    applicable:false,wallMs:1.24,cpuMicros:33,executionAuthorized:false,independentRetestPassed:false},
+   {id:"website-green-bbbbbbbbbbbb",kind:"founder_reviewed_patch",
+    applicable:false,wallMs:0.8,cpuMicros:17,executionAuthorized:false,independentRetestPassed:false},
+   {id:"nbl-local-recipe",kind:"nbl_deterministic_recipe",
+    applicable:true,wallMs:0.5,cpuMicros:10,executionAuthorized:false,independentRetestPassed:false}
+  ]};
+ const record=buildFoundationAttempt(incident,environment,coding,experiment);
+ assert.equal(record.verdict,"SUCCESS");
+ assert.equal(record.preflightComparisons.length,3);
+ assert.ok(record.preflightComparisons.every(x=>x.simulationOnly===true));
+ assert.ok(record.preflightComparisons.every(x=>x.independentlyVerifiedRepair===false));
+ assert.equal(record.approved,false);assert.equal(record.autoPromoted,false);
+ const poisoned={...experiment,choices:[{...experiment.choices[0],executionAuthorized:true}]};
+ assert.deepEqual(buildFoundationAttempt(incident,environment,coding,poisoned).preflightComparisons,[]);
+ assert.deepEqual(buildFoundationAttempt(incident,environment,coding,
+  {...experiment,selectedCaseId:"wrong"}).preflightComparisons,[]);
+});

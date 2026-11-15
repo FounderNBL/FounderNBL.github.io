@@ -90,7 +90,7 @@ jobs:
       - name: Check GREEN contract, official art and bot-challenge policies
         run: |
           node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-green-history.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
-            scripts/check-official-social-world-cards.test.mjs scripts/nbl-foundation-repair-events.test.mjs
+            scripts/check-official-social-world-cards.test.mjs scripts/nbl-foundation-repair-events.test.mjs scripts/nbl-repair-cross-domain.test.mjs scripts/nbl-website-repair-experiment.test.mjs scripts/nbl-website-repair-integration.test.mjs
           node scripts/nbl-website-green.mjs source
 
       - name: Ask Cloudflare for live zone status before website tests
@@ -421,7 +421,7 @@ jobs:
       - name: Verify saved GREEN contract, approved artwork and challenge handling
         run: |
           node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-green-history.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
-            scripts/check-official-social-world-cards.test.mjs scripts/nbl-foundation-repair-events.test.mjs
+            scripts/check-official-social-world-cards.test.mjs scripts/nbl-foundation-repair-events.test.mjs scripts/nbl-repair-cross-domain.test.mjs scripts/nbl-website-repair-experiment.test.mjs scripts/nbl-website-repair-integration.test.mjs
           node scripts/nbl-website-green.mjs source
       - name: Source-only approved browser regression, excluding NBLU and games
         run: npx playwright test tests/browser/nbl-green-visual.spec.mjs tests/browser/beans-presence.spec.mjs tests/browser/messenger-clerk-isolation.spec.mjs --project=chromium --project=mobile-chromium
@@ -578,6 +578,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           NBL_WEBSITE_FIXER_OPENAI_KEY: ${{ secrets.NBL_WEBSITE_FIXER_OPENAI_KEY }}
+          # Reuse Founder's existing Inspector Tavily credential; never create
+          # a second account or paste a key into source. Up to three basic
+          # research queries only after an independently reproduced source defect.
+          # The website repo must be allowed to read the existing secret.
+          NBL_REPAIR_RESEARCH_ENABLED: ${{ vars.NBL_REPAIR_RESEARCH_ENABLED || 'true' }}
+          NBL_TAVILY_REPAIR_KEY: ${{ secrets.TAVILY_INSPECTOR_TOKEN }}
         run: |
           set -euo pipefail
           node scripts/nbl-website-economy-fixer.mjs
@@ -669,6 +675,8 @@ jobs:
           path: |
             .inspector/website-fixer-incident.json
             .inspector/website-fixer-coding.json
+            .inspector/website-fixer-experiment.json
+            .inspector/website-fixer-research.json
             .inspector/website-fixer-policy.json
             .inspector/website-fixer.patch
             .inspector/website-fixer-retest.json

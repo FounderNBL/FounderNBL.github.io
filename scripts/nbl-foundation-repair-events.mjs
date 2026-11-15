@@ -49,7 +49,26 @@ export function buildFoundationFailure(incident,env){
   inspector:"NBL Website Health Inspector",
   originalFailureReproduced:true,actionPermission:false};
 }
-export function buildFoundationAttempt(incident,env,coding=null){
+// Durable GitHub issues may retain bounded *preflight* observations. These
+// are not independent repair results, approved code, or a training-data grant.
+export function safeRepairPreflights(experiment,coding){
+ if(experiment?.schema!=="nbl.verified-repair-experiment.v1"||
+    !Array.isArray(experiment.choices)||experiment.choices.length>3||
+    experiment.selectedCaseId!==coding?.comparison?.selectedCaseId)return [];
+ return experiment.choices.flatMap(c=>{
+  if(typeof c.id!=="string"||!/^[a-z0-9_.:-]{3,160}$/i.test(c.id)||
+    !["founder_reviewed_patch","nbl_deterministic_recipe"].includes(c.kind)||
+    typeof c.applicable!=="boolean"||c.executionAuthorized!==false||
+    c.independentRetestPassed!==false)return [];
+  const limit=n=>typeof n==="number"&&Number.isFinite(n)&&n>=0&&n<=120000?
+    Math.round(n*1000)/1000:null;
+  return [{id:c.id,kind:c.kind,applicable:c.applicable,
+    wallMs:limit(c.wallMs),cpuMicros:limit(c.cpuMicros),
+    externalProviderCostUSD:0,simulationOnly:true,
+    independentlyVerifiedRepair:false}];
+ });
+}
+export function buildFoundationAttempt(incident,env,coding=null,experiment=null){
  const core=identifiers(incident,env);
  if(env.NBL_WRITER_OUTCOME!=="success")return null;
  const success=env.NBL_RETEST_VERIFIED==="true"&&env.NBL_RETEST_OUTCOME==="success";
@@ -67,6 +86,9 @@ export function buildFoundationAttempt(incident,env,coding=null){
   verdict:success?"SUCCESS":"FAILED",
   verdictMeaning:success?"passed_source_and_browser_retest":
     "independent_retest_failed_not_proven_fixed",
+  // Not a verdict: keep all applicability checks separate from independent
+  // source/browser outcome, and do not let them affect success counts.
+  preflightComparisons:safeRepairPreflights(experiment,coding),
   autoPromoted:false,approved:false,executionAuthorized:false};
 }
 export function buildFounderApproval(env){
@@ -183,7 +205,9 @@ async function main(){
  }else{
   let coding=null;
   try{coding=JSON.parse(readFileSync(".inspector/website-fixer-coding.json","utf8"));}catch{}
-  const rec=buildFoundationAttempt(i,env,coding);
+  let experiment=null;
+  try{experiment=JSON.parse(readFileSync(".inspector/website-fixer-experiment.json","utf8"));}catch{}
+  const rec=buildFoundationAttempt(i,env,coding,experiment);
   if(!rec){console.log("NBL_FOUNDATION_REPAIR_ATTEMPT_UNVERIFIED");return;}
   // Include immutable run ID: repeated repairs must never overwrite prior outcomes.
   const out=await upsertGithubIssue(FOUNDATION_OUTCOME_PREFIX+rec.failureId+" "+rec.caseId+" "+env.GITHUB_RUN_ID,renderRecord(rec));
