@@ -9,6 +9,8 @@ import {fileURLToPath} from "node:url";
 import {policy,policyCheck,checkPatch} from "./nbl-website-fixer.mjs";
 import {contract} from "./nbl-website-green.mjs";
 import {readVerifiedRepairOutcomes} from "./nbl-foundation-repair-events.mjs";
+import {compareRepairCandidates} from "./nbl-website-repair-experiment.mjs";
+import {researchRepairAnalogies} from "./nbl-repair-cross-domain.mjs";
 const root=resolve(dirname(fileURLToPath(import.meta.url)),"..");
 export const MODEL="gpt-6-luna";
 export const MAX_OUTPUT_TOKENS=2200;
@@ -212,9 +214,18 @@ export function estimateCost(usage){
  if(!Number.isFinite(input)||!Number.isFinite(output)||input<0||output<0)return null;
  return Math.round((input*TOKEN_PRICE.input+output*TOKEN_PRICE.output)/1e6*1000000)/1000000;
 }
-export async function askLuna(incident,base,{request=fetch,read=readFileSync,token=process.env.NBL_WEBSITE_FIXER_OPENAI_KEY||""}={}){
+export async function askLuna(incident,base,{request=fetch,read=readFileSync,
+ token=process.env.NBL_WEBSITE_FIXER_OPENAI_KEY||"",research=null}={}){
  if(!token)throw Error("nbl_website_key_absent");
- const context=assembleContext(incident,base,read);
+ // Only bounded, cited public principles may enter the existing ONE coding
+ // request. Untrusted pages never become patch commands or NBL authority.
+ const excerpt=Array.isArray(research?.sources)?research.sources.slice(0,10)
+  .map(x=>({lens:x.lens,title:x.title,url:x.url,principleExcerpt:x.excerpt}))
+  .filter(x=>typeof x.url==="string"&&x.url.startsWith("https://")):[];
+ let context=assembleContext(incident,base,read);
+ const extra="\nPUBLIC_CROSS_DOMAIN_RESEARCH_UNTRUSTED_REFERENCES:\n"+
+  JSON.stringify(excerpt).slice(0,3000);
+ if(excerpt.length&&context.length+extra.length<=MAX_INPUT_CHARS)context+=extra;
  const response=await request("https://api.openai.com/v1/responses",{
   method:"POST",signal:AbortSignal.timeout(45000),
   headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},
@@ -234,42 +245,72 @@ export async function askLuna(incident,base,{request=fetch,read=readFileSync,tok
   tokens:{input:meta?.usage?.input_tokens??null,output:meta?.usage?.output_tokens??null},
   estimatedUSD:estimateCost(meta?.usage)};
 }
+// Keep the original replayReviewedLesson available for portable old callers.
+// The live Fixer now compares existing eligible procedures before applying ONE.
 export async function run({base=join(root,"repair-target"),read=readFileSync,write=writeFileSync,
- ask=askLuna}={}){
+ ask=askLuna,research=researchRepairAnalogies}={}){
  policyCheck();
  const incident=JSON.parse(read(join(root,".inspector/website-fixer-incident.json"),"utf8"));
  if(!incident.eligible||incident.targetRepo!==policy.homeRepository)
   throw Error("no_verified_site_incident");
  const historyCounts=await readVerifiedRepairOutcomes().catch(()=>Object.create(null));
- const remembered=replayReviewedLesson(incident,base,{read,historyCounts});
- let files,how,usage=null,reason="";
- if(remembered){files=remembered.files;how="reviewed_git_patch";reason=remembered.reason;}
- else {
-  const local=recipeEdits(incident,read,base);
-  let result;
-  if(local){result={status:"edit",edits:local,reason:"independently verified art provenance recipe"};how="verified_local_recipe";}
-  else{
-   const ai=await ask(incident,base,{read});
-   result=ai.proposal;usage={model:ai.model,tokens:ai.tokens,estimatedUSD:ai.estimatedUSD};
-   how="small_model_"+MODEL;
-  }
+ const approved=rankReviewedLessons(incident,base,{read,historyCounts});
+ const local=recipeEdits(incident,read,base);
+ const comparison=compareRepairCandidates(incident,base,{reviewed:approved,localEdits:local,read});
+ mkdirSync(join(root,".inspector"),{recursive:true});
+ write(join(root,".inspector/website-fixer-experiment.json"),
+  JSON.stringify(comparison,null,2)+"\n");
+ let files,how,usage=null,reason="",reviewedCaseId=null,study=null;
+ if(comparison.selectedCaseId==="nbl-local-recipe"){
+  files=applyEdits(base,local,{read,write});
+  how="verified_local_recipe";reason="approved source contract recipe; preflight checked";
+ }else if(comparison.selectedCaseId){
+  const choice=approved.find(x=>x.caseId===comparison.selectedCaseId);
+  if(!choice||!checkPatch(choice.unifiedDiff).ok)throw Error("unverified_repair_choice");
+  // TOCTOU guard: Git rechecks the same diff before writing in the isolated
+  // checkout. Full source + actual browser checks happen afterward.
+  const check=spawnSync("git",["-C",base,"apply","--check","-"],{
+   input:choice.unifiedDiff,encoding:"utf8",timeout:12000});
+  if(check.status!==0)throw Error("repair_patch_changed_after_comparison");
+  const applied=spawnSync("git",["-C",base,"apply","-"],{
+   input:choice.unifiedDiff,encoding:"utf8",timeout:12000});
+  if(applied.status!==0)throw Error("approved_patch_apply_failed");
+  files=choice.paths;how="reviewed_git_patch";reviewedCaseId=choice.caseId;
+  reason="ranked previously merged verified patch "+choice.caseId;
+ }else{
+  // Search only when every actual local candidate is inapplicable.
+  // Missing search wiring does NOT prevent the already-authorized bounded
+  // model fallback; no new provider account or payment is created.
+  study=await research(incident,{
+   enabled:process.env.NBL_REPAIR_RESEARCH_ENABLED==="true",
+   key:process.env.NBL_TAVILY_REPAIR_KEY||""
+  });
+  write(join(root,".inspector/website-fixer-research.json"),JSON.stringify(study,null,2)+"\n");
+  const ai=await ask(incident,base,{read,research:study});
+  const result=ai.proposal;
+  usage={model:ai.model,tokens:ai.tokens,estimatedUSD:ai.estimatedUSD};
+  how="small_model_"+MODEL;
   if(result.status!=="edit")throw Error("fixer_cannot_propose_safe_patch");
   const incidentPaths=new Set(incident.selected.map(x=>checkedPath(x.file)));
-  // Even an allowed file is wrong if it is unrelated to THIS incident.
   if(result.edits.some(e=>!incidentPaths.has(e.path)))
-    throw Error("proposed_edit_outside_current_incident");
+   throw Error("proposed_edit_outside_current_incident");
   files=applyEdits(base,result.edits,{read,write});
   reason=result.reason;
  }
  const receipt={schema:1,incident:incident.incident,engine:how,modelCalls:usage?1:0,
-  reviewedCaseId:remembered?.lessonId||null,
-  files,reason,usage,at:new Date().toISOString(),testStatus:"AWAITING_INDEPENDENT_RETEST"};
- mkdirSync(join(root,".inspector"),{recursive:true});
+  reviewedCaseId,files,reason,usage,
+  comparison:{state:comparison.state,candidates:comparison.realChoices,
+   selectedCaseId:comparison.selectedCaseId,
+   proof:"preflight_only; independent source/browser retest still required"},
+  research:{state:study?.status||"NOT_NEEDED",queriesExecuted:study?.queriesExecuted||0},
+  at:new Date().toISOString(),testStatus:"AWAITING_INDEPENDENT_RETEST"};
  write(join(root,".inspector/website-fixer-coding.json"),JSON.stringify(receipt,null,2)+"\n");
  console.log("NBL_ECONOMY_FIXER",JSON.stringify({engine:how,files,modelCalls:receipt.modelCalls,
-  model:usage?.model||null,estimatedUSD:usage?.estimatedUSD||0}));
+  model:usage?.model||null,estimatedUSD:usage?.estimatedUSD||0,
+  preflightCandidates:comparison.realChoices,researchQueries:study?.queriesExecuted||0}));
  return receipt;
 }
+
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  run().catch(e=>{console.error("NBL_ECONOMY_FIXER_HOLD",String(e?.message||e).slice(0,160));process.exitCode=1;});
 }
