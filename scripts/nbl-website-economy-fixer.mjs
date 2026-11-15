@@ -215,17 +215,11 @@ export function estimateCost(usage){
  return Math.round((input*TOKEN_PRICE.input+output*TOKEN_PRICE.output)/1e6*1000000)/1000000;
 }
 export async function askLuna(incident,base,{request=fetch,read=readFileSync,
- token=process.env.NBL_WEBSITE_FIXER_OPENAI_KEY||"",research=null}={}){
+ token=process.env.NBL_WEBSITE_FIXER_OPENAI_KEY||""}={}){
  if(!token)throw Error("nbl_website_key_absent");
- // Only bounded, cited public principles may enter the existing ONE coding
- // request. Untrusted pages never become patch commands or NBL authority.
- const excerpt=Array.isArray(research?.sources)?research.sources.slice(0,10)
-  .map(x=>({lens:x.lens,title:x.title,url:x.url,principleExcerpt:x.excerpt}))
-  .filter(x=>typeof x.url==="string"&&x.url.startsWith("https://")):[];
- let context=assembleContext(incident,base,read);
- const extra="\nPUBLIC_CROSS_DOMAIN_RESEARCH_UNTRUSTED_REFERENCES:\n"+
-  JSON.stringify(excerpt).slice(0,3000);
- if(excerpt.length&&context.length+extra.length<=MAX_INPUT_CHARS)context+=extra;
+ // Cross-domain web data stays in the separately audited evidence receipt.
+ // Never launder a retrieved page's untrusted instructions into an AI prompt.
+ const context=assembleContext(incident,base,read);
  const response=await request("https://api.openai.com/v1/responses",{
   method:"POST",signal:AbortSignal.timeout(45000),
   headers:{Authorization:"Bearer "+token,"Content-Type":"application/json"},
@@ -286,7 +280,7 @@ export async function run({base=join(root,"repair-target"),read=readFileSync,wri
    key:process.env.NBL_TAVILY_REPAIR_KEY||""
   });
   write(join(root,".inspector/website-fixer-research.json"),JSON.stringify(study,null,2)+"\n");
-  const ai=await ask(incident,base,{read,research:study});
+  const ai=await ask(incident,base,{read});
   const result=ai.proposal;
   usage={model:ai.model,tokens:ai.tokens,estimatedUSD:ai.estimatedUSD};
   how="small_model_"+MODEL;
