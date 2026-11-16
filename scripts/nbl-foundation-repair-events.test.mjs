@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {buildFoundationFailure,buildFoundationAttempt,buildFounderApproval,
+import {buildFoundationFailure,buildFoundationAttempt,buildFoundationChronicle,buildFounderApproval,
  renderRecord,upsertGithubIssue,readVerifiedRepairOutcomes,FOUNDATION_FAILURE_PREFIX,FOUNDER_APPROVAL_PREFIX}
  from "./nbl-foundation-repair-events.mjs";
 
@@ -184,4 +184,22 @@ test("Three preflight options persist as non-authoritative evidence beside indep
  assert.deepEqual(buildFoundationAttempt(incident,environment,coding,poisoned).preflightComparisons,[]);
  assert.deepEqual(buildFoundationAttempt(incident,environment,coding,
   {...experiment,selectedCaseId:"wrong"}).preflightComparisons,[]);
+});
+
+test("Failed or skipped repair stays findable without becoming reusable success memory",()=>{
+ const gate={schema:"nbl.founders-code.repair-rail.v1",status:"READ_ONLY_CHECK_PASSED",
+  incident:incident.incident,sourceRevision:env.GITHUB_SHA,githubRunId:env.GITHUB_RUN_ID,
+  destination:"draft_pr_only",actionPermission:false,lockePermissionGranted:false,mayMerge:false,mayDeploy:false};
+ const events={...env,NBL_WRITER_OUTCOME:"success",NBL_PATCH_OUTCOME:"success",
+  NBL_SOURCE_RETEST_OUTCOME:"failure",NBL_RETEST_OUTCOME:"skipped",
+  NBL_RETEST_VERIFIED:"false",NBL_LESSON_OUTCOME:"skipped"};
+ const record=buildFoundationChronicle(incident,events,{engine:"verified_local_recipe",files:["index.html"]},
+  gate,{sha256:"f".repeat(64),paths:["index.html"]});
+ assert.equal(record.verdict,"HOLD_OR_FAILED");
+ assert.ok(record.missingOrFailedStages.includes("sourceRetest:failure"));
+ assert.ok(record.missingOrFailedStages.includes("browserRetest:skipped"));
+ assert.equal(record.doesNotTeachSuccess,true);assert.equal(record.approved,false);
+ const untrusted=buildFoundationChronicle(incident,{...env,NBL_WRITER_OUTCOME:"failure"});
+ assert.ok(untrusted.missingOrFailedStages.includes("founderCodeReview:unverified"));
+ assert.equal(untrusted.verdict,"HOLD_OR_FAILED");
 });

@@ -22,6 +22,48 @@ const baselineUrl=sha=>ROOT+"/blob/"+sha+"/config/nbl-website-green-baseline.jso
 export const FOUNDATION_FAILURE_PREFIX="[NBL FOUNDATION FAILURE] ";
 export const FOUNDATION_OUTCOME_PREFIX="[NBL FOUNDATION OUTCOME] ";
 export const FOUNDER_APPROVAL_PREFIX="[NBL FOUNDER APPROVAL REQUIRED] ";
+export const FOUNDATION_TRACE_PREFIX="[NBL FOUNDATION TRACE] ";
+// One permanent incident/run locator for EVERY attempted repair, including
+// failed writes and skipped verification; no secrets, raw source or auto-learning.
+export function buildFoundationChronicle(incident,env,coding=null,gate=null,patch=null){
+ const core=identifiers(incident,env);
+ const outcome=x=>["success","failure","skipped","cancelled"].includes(x)?x:"unverified";
+ const stages={
+  writer:outcome(env.NBL_WRITER_OUTCOME),patchPolicy:outcome(env.NBL_PATCH_OUTCOME),
+  sourceRetest:outcome(env.NBL_SOURCE_RETEST_OUTCOME),
+  browserRetest:outcome(env.NBL_RETEST_OUTCOME),
+  verifiedLesson:outcome(env.NBL_LESSON_OUTCOME)
+ };
+ const trustedGate=gate?.schema==="nbl.founders-code.repair-rail.v1"&&
+  gate.status==="READ_ONLY_CHECK_PASSED"&&gate.incident===incident.incident&&
+  gate.sourceRevision===env.GITHUB_SHA&&gate.githubRunId===env.GITHUB_RUN_ID&&
+  gate.destination==="draft_pr_only"&&gate.actionPermission===false&&
+  gate.lockePermissionGranted===false&&gate.mayMerge===false&&gate.mayDeploy===false;
+ stages.founderCodeReview=trustedGate?"success":"unverified";
+ const safePaths=x=>Array.isArray(x)?x.filter(p=>VALID_FILE.has(p)).slice(0,4):[];
+ const hash=/^[a-f0-9]{64}$/.test(patch?.sha256||"")?patch.sha256:null;
+ const verified=trustedGate&&Object.values(stages).every(x=>x==="success")&&
+  env.NBL_RETEST_VERIFIED==="true"&&hash!==null;
+ const gaps=Object.entries(stages).filter(([,s])=>s!=="success").map(([k,s])=>k+":"+s);
+ const hint=!trustedGate?"Reproduce the defect and verify Founder's Code host policy before any write":
+  stages.writer!=="success"?"Investigate failed writer; no successful lesson can be reused":
+  !verified?"Recheck missing/failed source or browser steps before any new repair":
+  "Founder must review draft PR; no automatic merge or deployment";
+ return {...core,schema:"nbl.foundation.repair-chronicle.v1",
+  chronologyKey:incident.incident+":"+env.GITHUB_RUN_ID,
+  originalSourceRevision:env.GITHUB_SHA,
+  selectedProcedure:["verified_local_recipe","reviewed_git_patch","small_model_gpt-6-luna"].includes(coding?.engine)?coding.engine:null,
+  priorReviewedCase:INC_ID.test(coding?.reviewedCaseId||"")?coding.reviewedCaseId:null,
+  modifiedPaths:safePaths(coding?.files),patchPaths:safePaths(patch?.paths),
+  patchSha256:hash,stages,missingOrFailedStages:gaps,
+  verdict:verified?"VERIFIED_CANDIDATE_AWAITING_FOUNDER":"HOLD_OR_FAILED",
+  nextInvestigation:hint,
+  recovery:"Review the original source revision, exact patch artifact and independent run before a separately approved and retested revert or replacement.",
+  originalRun:runUrl(env.GITHUB_RUN_ID),
+  independentlyVerifiedRepair:verified,autoPromoted:false,approved:false,
+  executionAuthorized:false,doesNotTeachSuccess:true};
+}
+
 
 function identifiers(incident,env){
  if(!incident||incident.eligible!==true||incident.targetRepo!==REPO||
@@ -190,7 +232,7 @@ export async function upsertGithubIssue(title,body,options={}){
 }
 async function main(){
  const command=process.argv[2];
- if(!["incident","attempt","approval"].includes(command))fail("unknown_command");
+ if(!["incident","attempt","approval","chronicle"].includes(command))fail("unknown_command");
  const env=process.env;
  const i=command==="approval"?null:
   JSON.parse(readFileSync(".inspector/website-fixer-incident.json","utf8"));
@@ -202,6 +244,14 @@ async function main(){
   const rec=buildFoundationFailure(i,env);
   const out=await upsertGithubIssue(FOUNDATION_FAILURE_PREFIX+rec.failureId,renderRecord(rec));
   console.log("NBL_FOUNDATION_INSPECTOR_RECEIPT",out.html_url);
+ }else if(command==="chronicle"){
+  let coding=null,gate=null,patch=null;
+  try{coding=JSON.parse(readFileSync(".inspector/website-fixer-coding.json","utf8"));}catch{}
+  try{gate=JSON.parse(readFileSync(".inspector/website-fixer-founder-gate.json","utf8"));}catch{}
+  try{patch=JSON.parse(readFileSync(".inspector/website-fixer-policy.json","utf8"));}catch{}
+  const trace=buildFoundationChronicle(i,env,coding,gate,patch);
+  const out=await upsertGithubIssue(FOUNDATION_TRACE_PREFIX+trace.chronologyKey,renderRecord(trace));
+  console.log("NBL_FOUNDATION_REPAIR_CHRONICLE",out.html_url);
  }else{
   let coding=null;
   try{coding=JSON.parse(readFileSync(".inspector/website-fixer-coding.json","utf8"));}catch{}

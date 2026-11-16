@@ -43,3 +43,16 @@ test("Only independently verified source and browser retests become reusable les
  assert.throws(()=>verifiedLesson(incident,verdict,{sourceTests:"PASS",originalFailureReproduced:true,independentRetest:"PASS"},patch("account.html")),
    /memory_patch_not_the_independently_approved_source_change/);
 });
+
+import {reviewFounderRepairRail} from "./nbl-founder-repair-rail.mjs";
+test("Founder rail independently checks actual source plan and host identity",()=>{
+ const findings=[{id:"source:beans-identity",status:"FAIL",reason:"source mismatch"}];
+ const incident=chooseRepairIncident(findings);
+ const args={findings,sourceSha:"a".repeat(40),runId:"45123",repository:policy.homeRepository};
+ const gate=reviewFounderRepairRail(incident,args);
+ assert.equal(gate.status,"READ_ONLY_CHECK_PASSED");
+ assert.equal(gate.actionPermission,false);assert.equal(gate.mayMerge,false);
+ assert.throws(()=>reviewFounderRepairRail(incident,{...args,findings:[]}),/source_not_reproduced/);
+ assert.throws(()=>reviewFounderRepairRail({...incident,review:"auto_merge"},args),/founder_repair_rail_scope/);
+ assert.throws(()=>reviewFounderRepairRail(incident,{...args,sourceSha:"main"}),/unverified_host/);
+});

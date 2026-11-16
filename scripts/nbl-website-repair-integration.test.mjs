@@ -19,6 +19,9 @@ test("Actual NBL Fixer uses applicable local recipe, experiments without interne
  const h=harness(incident,'<img src="/pulse/pulse-world.svg">',"index.html");
  const r=await run({base:sandbox,read:h.read,write:h.write,
   historyReader:async()=>({}),
+  founderReview:x=>({schema:"nbl.founders-code.repair-rail.v1",
+    status:"READ_ONLY_CHECK_PASSED",incident:x.incident,destination:"draft_pr_only",
+    actionPermission:false,mayMerge:false,mayDeploy:false}),
   ask:async()=>{throw Error("No model allowed on matching local repair");},
   research:async()=>{throw Error("No search needed when local fix exists");}
  });
@@ -36,6 +39,9 @@ test("Only when local patches fail does NBL consult external research, still wit
  let researchCount=0,modelCount=0;
  const r=await run({base:sandbox,read:h.read,write:h.write,
   historyReader:async()=>({}),
+  founderReview:x=>({schema:"nbl.founders-code.repair-rail.v1",
+    status:"READ_ONLY_CHECK_PASSED",incident:x.incident,destination:"draft_pr_only",
+    actionPermission:false,mayMerge:false,mayDeploy:false}),
   research:async()=>{researchCount++;return {
    status:"RESEARCH_ONLY",queriesExecuted:3,sources:[
      {lens:"transfer",title:"Other discipline",url:"https://docs.github.com/en/actions",
@@ -53,4 +59,15 @@ test("Only when local patches fail does NBL consult external research, still wit
  assert.equal(r.modelCalls,1);
  assert.equal(h.files.get(sandbox+"/nbl-world-header.js"),"newmarker");
  assert.equal(r.testStatus,"AWAITING_INDEPENDENT_RETEST");
+});
+
+test("Founder's Code rail fails closed before history, search, model or source write",async()=>{
+ const incident={eligible:true,incident:"website-green-cccccccccccc",targetRepo:site,selected:[{id:"art:pulse",file:"index.html"}]};
+ const h=harness(incident,'<img src="/pulse/pulse-world.svg">',"index.html");
+ let calls=0;
+ await assert.rejects(run({base:sandbox,read:h.read,write:h.write,
+  founderReview:()=>{throw Error("founder_repair_rail_source_not_reproduced");},
+  ask:async()=>{calls++},research:async()=>{calls++},
+  historyReader:async()=>{calls++}}),/source_not_reproduced/);
+ assert.equal(calls,0);assert.equal(h.writes.length,0);
 });

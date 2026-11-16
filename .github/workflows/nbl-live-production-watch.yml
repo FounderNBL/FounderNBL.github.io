@@ -653,8 +653,22 @@ jobs:
           echo "verified=true" >> "$GITHUB_OUTPUT"
 
       - name: Store only independently verified repair lesson for later Founder review
+        id: lesson
         if: ${{ steps.retest.outputs.verified == 'true' }}
         run: node scripts/nbl-website-fixer.mjs lesson .inspector/website-fixer.patch
+
+      - name: Record complete success failure and skipped-step repair history
+        if: ${{ always() && steps.plan.outputs.eligible == 'true' }}
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NBL_WRITER_OUTCOME: ${{ steps.writer.outcome }}
+          NBL_PATCH_OUTCOME: ${{ steps.patch.outcome }}
+          NBL_SOURCE_RETEST_OUTCOME: ${{ steps.source_retest.outcome }}
+          NBL_RETEST_OUTCOME: ${{ steps.retest.outcome }}
+          NBL_RETEST_VERIFIED: ${{ steps.retest.outputs.verified }}
+          NBL_LESSON_OUTCOME: ${{ steps.lesson.outcome }}
+        run: node scripts/nbl-foundation-repair-events.mjs chronicle
 
       - name: Report independently observed repair attempt to Foundation memory
         if: ${{ always() && steps.plan.outputs.eligible == 'true' }}
@@ -675,6 +689,7 @@ jobs:
           path: |
             .inspector/website-fixer-incident.json
             .inspector/website-fixer-coding.json
+            .inspector/website-fixer-founder-gate.json
             .inspector/website-fixer-experiment.json
             .inspector/website-fixer-research.json
             .inspector/website-fixer-policy.json
