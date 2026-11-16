@@ -7,6 +7,7 @@ import {createHash} from "node:crypto";
 import {join,resolve,dirname,sep} from "node:path";
 import {fileURLToPath} from "node:url";
 import {policy,policyCheck,checkPatch} from "./nbl-website-fixer.mjs";
+import {reviewFounderRepairRail} from "./nbl-founder-repair-rail.mjs";
 import {contract} from "./nbl-website-green.mjs";
 import {readVerifiedRepairOutcomes} from "./nbl-foundation-repair-events.mjs";
 import {compareRepairCandidates} from "./nbl-website-repair-experiment.mjs";
@@ -273,11 +274,21 @@ export async function askLuna(incident,base,{request=fetch,read=readFileSync,
 // Keep the original replayReviewedLesson available for portable old callers.
 // The live Fixer now compares existing eligible procedures before applying ONE.
 export async function run({base=join(root,"repair-target"),read=readFileSync,write=writeFileSync,
- ask=askLuna,research=researchRepairAnalogies,historyReader=readVerifiedRepairOutcomes}={}){
+ ask=askLuna,research=researchRepairAnalogies,historyReader=readVerifiedRepairOutcomes,
+ founderReview=reviewFounderRepairRail}={}){
  policyCheck();
  const incident=JSON.parse(read(join(root,".inspector/website-fixer-incident.json"),"utf8"));
  if(!incident.eligible||incident.targetRepo!==policy.homeRepository)
   throw Error("no_verified_site_incident");
+ // Recheck current source and Founder's Code host scope before ANY candidate edit.
+ const gate=founderReview(incident);
+ if(gate?.schema!=="nbl.founders-code.repair-rail.v1"||
+    gate.status!=="READ_ONLY_CHECK_PASSED"||gate.incident!==incident.incident||
+    gate.destination!=="draft_pr_only"||gate.actionPermission!==false||
+    gate.mayMerge!==false||gate.mayDeploy!==false)
+   throw Error("founders_code_repair_review_required");
+ mkdirSync(join(root,".inspector"),{recursive:true});
+ write(join(root,".inspector/website-fixer-founder-gate.json"),JSON.stringify(gate,null,2)+"\n");
  const historyCounts=await historyReader().catch(()=>Object.create(null));
  const approved=rankReviewedLessons(incident,base,{read,historyCounts});
  const local=recipeEdits(incident,read,base);
