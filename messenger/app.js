@@ -9,6 +9,54 @@ const VIDEO_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-video
 const VIDEO_INVITE_RE=/^NBL video call invitation: https:\/\/newbeansland\.org\/messenger\/call\.html\?call=([0-9a-f-]{36})$/i;
 const IS_CALL_ID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const PUSH_OWNER_KEY="nbl-messenger-push-clerk-user-v1";
+const PULSE_LINK_KEY="nbl-pulse-android-link-pending-v1";
+const PULSE_LINK_OWNER_KEY="nbl-pulse-android-web-link-v1";
+// Native Pulse passes ONLY its non-secret device hash and FCM token through a
+// URL fragment. Fragments are never sent to the server as URL requests.
+// Drop the fragment before Clerk/analytics scripts can navigate with it.
+function capturePulseAndroidLink(){
+ const fragment=window.location.hash||"";
+ if(!fragment.startsWith("#pulse_token="))return;
+ window.history.replaceState(null,"",window.location.pathname+window.location.search);
+ const values=new URLSearchParams(fragment.slice(1));
+ const token=values.get("pulse_token")||"",deviceHash=values.get("pulse_device")||"";
+ if(!/^[A-Za-z0-9_.:\-]{40,4096}$/.test(token)||!/^[0-9a-f]{64}$/.test(deviceHash))return;
+ try{sessionStorage.setItem(PULSE_LINK_KEY,JSON.stringify({token,deviceHash,expires:Date.now()+600000}));}catch{}
+}
+capturePulseAndroidLink();
+async function completePulseAndroidLink(){
+ let data=null;
+ try{data=JSON.parse(sessionStorage.getItem(PULSE_LINK_KEY)||"null");}catch{}
+ if(!data)return;
+ if(data.expires<Date.now()){sessionStorage.removeItem(PULSE_LINK_KEY);return;}
+ if(!state.clerk?.user?.id||!state.clerk?.isSignedIn)return;
+ const userId=state.clerk.user.id;
+ try{
+  const result=await pushApi({action:"android_subscribe",fcmToken:data.token,deviceHash:data.deviceHash});
+  if(state.clerk?.user?.id!==userId)return;
+  localStorage.setItem(PULSE_LINK_OWNER_KEY,JSON.stringify({userId,deviceHash:data.deviceHash}));
+  sessionStorage.removeItem(PULSE_LINK_KEY);
+  setPushStatus("Pulse Android linked to this NBL account. Calls can alert this phone once the FCM sender is configured.");
+  status("Pulse Android phone linked to @"+(state.me?.handle||"your account")+".");
+ }catch(error){
+  setPushStatus(error.message||"Could not link this Android phone.");
+  status("Pulse Android linking failed: "+(error.message||"Try again."));
+ }
+}
+async function revokeBrowserLinkedPulse(){
+ let record=null;
+ try{record=JSON.parse(localStorage.getItem(PULSE_LINK_OWNER_KEY)||"null");}catch{}
+ if(!record||record.userId!==state.clerk?.user?.id)return true;
+ try{
+  await pushApi({action:"android_revoke",deviceHash:record.deviceHash});
+  localStorage.removeItem(PULSE_LINK_OWNER_KEY);
+  return true;
+ }catch{
+  setPushStatus("Could not disconnect Android push. Use Disconnect in Pulse Android before signing out.");
+  return false;
+ }
+}
+
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const INVITE_URL="https://newbeansland.org/messenger/index.html";
@@ -877,6 +925,8 @@ async function syncClerkSession(){
   watchInbox();
   await refresh();
   if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
+  await completePulseAndroidLink();
+  if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
   const notificationCall=new URL(location.href).searchParams.get("call")||"";
   if(IS_CALL_ID.test(notificationCall))void showIncomingCall(notificationCall,"");
 
@@ -935,7 +985,10 @@ async function boot(){
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
   $("[data-chat-unblock]").addEventListener("click",()=>{void unblockPeer();});
   $("[data-chat-signout]").addEventListener("click",async()=>{
-    try{state.realtimeStop?.();state.inboxStop?.();await disablePhonePush();await(await clerk()).signOut();window.location.reload();}
+    try{
+      if(!(await revokeBrowserLinkedPulse()))return;
+      state.realtimeStop?.();state.inboxStop?.();await disablePhonePush();await(await clerk()).signOut();window.location.reload();
+    }
     catch{window.location.href=ACCOUNT_PORTAL;}
   });
   try{
