@@ -5,7 +5,7 @@ const read=p=>fs.readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const css=read("nbl-world-header.css");
 const experienceCss=read("nbl-beans-experience.css");
 const js=read("nbl-world-header.js");
-test("Beans keeps approved character artwork in its working conversation hero",()=>{
+test("Beans keeps the NBL infinity mark in its working conversation hero",()=>{
  assert.match(js,/class="nbl-beans-presence"/);
  assert.match(js,/class="nbl-beans-log"/);
  assert.match(experienceCss,/\.nbl-beans-presence\{[^}]*position:relative!important/s);
@@ -39,7 +39,8 @@ test("website Beans retires the old Grey/Messenger chooser while retaining PDF a
  assert.match(js,/data-nbl-quick="beans"/);
  assert.match(js,/data-nbl-quick="grey"/);
  assert.match(js,/href="\/university\.html" data-nbl-quick="university"/);
- assert.match(js,/src="\/Beans_Hi_Basic\.png"/);
+ assert.match(js,/src="\/assets\/brand\/nbl-official-mark\.png/);
+ assert.doesNotMatch(js,/src="\/Beans_Hi_Basic\.png"/);
  assert.match(js,/src="\/Professor_Grey\.png"/);
  assert.match(js,/setChatMode\("plus"\); \/\/ Existing Grey authentication \+ LOCKE/);
  assert.match(js,/nblQuickToggle\.addEventListener\("click"/);
