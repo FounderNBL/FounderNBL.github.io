@@ -1,0 +1,18 @@
+/* NBL internal live stage: no public launch or external destinations. */
+.pulse-live{border-top:1px solid #503267;margin-top:16px;padding-top:16px}.pulse-live strong{color:#ff617c}.pulse-live p{font-size:.85rem;color:#bdafd2;line-height:1.5}.pulse-live button{border:1px solid #53436c;background:#20172f;color:#bda9c9;padding:11px;border-radius:9px;cursor:pointer;font-weight:800}.pulse-live button:disabled{cursor:not-allowed;opacity:.55}.pulse-live button.pulse-live-primary{background:linear-gradient(105deg,#982fe7,#5a0bb0);border-color:#982fe7;color:#fff}.pulse-live button.pulse-live-danger{background:#3d0f1e;border-color:#ff617c;color:#ffb3c0}
+.pulse-live-status{font-size:.85rem;color:#e7c9ff;line-height:1.5;margin:8px 0}
+.pulse-live-title{font-weight:800;color:#f0d5ff;margin:8px 0}
+.pulse-live-video{width:100%;aspect-ratio:16/9;border-radius:12px;background:#030207;display:block;margin-top:10px}
+.pulse-live-badge{display:inline-block;padding:3px 9px;border-radius:999px;background:#e5484d;color:#fff;font-size:.72rem;font-weight:900;letter-spacing:.08em}
+.pulse-live-badge.pulse-live-badge-off{background:#3a2b52;color:#cbb8e0}
+.pulse-live-meta{font-size:.8rem;color:#b7a7c9}
+.pulse-live-error{font-size:.85rem;color:#ffb3c0;line-height:1.5}
+.pulse-live label{display:block;font-size:.8rem;font-weight:800;color:#e4d5f3;margin:10px 0 4px}
+.pulse-live input[type=text]{width:100%;background:#20142f;color:#fff;border:1px solid #68457e;border-radius:9px;padding:11px}
+.pulse-live input[type=checkbox]{accent-color:#a746fa}
+.pulse-live .pulse-live-check{display:flex;gap:8px;align-items:center;font-weight:500}
+.pulse-live #pulseLiveSetup button,.pulse-live #pulseLiveHost button{width:100%;margin-top:8px}
+.pulse-live-remote{margin-top:10px}
+.pulse-live button:not(:disabled){cursor:pointer}
+.pulse-live button:focus-visible{outline:3px solid #deb4ff;outline-offset:2px}
+@media(max-width:680px){.pulse-live{margin:8px 2px 0;padding:8px 0}}
