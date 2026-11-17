@@ -11,3 +11,12 @@
 .track-details dt{font-size:.8rem;color:var(--soft)}
 .track-details dd{margin:0;font-size:.88rem;color:var(--cream);font-weight:700;overflow-wrap:anywhere}
 @media(max-width:540px){.track-details dl{grid-template-columns:1fr;gap:4px}.track-details dd{padding:0 0 9px;border-bottom:1px solid rgba(214,161,75,.14)}}
+
+/* Exclusive music is hidden until the protected server publishes an approved
+   rights-verified PREVIEW, never a sale master or a public MP3 link. */
+.exclusive-catalog[hidden]{display:none!important}
+.exclusive-copy{max-width:760px;line-height:1.6;color:var(--soft)}
+.exclusive-now{color:var(--gold2);font-size:.9rem;margin:22px 0 8px;font-weight:700}
+.exclusive-catalog audio{width:100%;max-width:760px;accent-color:var(--gold2)}
+.exclusive-status{color:var(--soft);font-size:.84rem;min-height:1.3em}
+.exclusive-catalog .track-row{color:var(--cream);width:100%;text-align:left}
