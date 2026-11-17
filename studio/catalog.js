@@ -1,4 +1,6 @@
-// NBL Music Productions catalog.
+// NBL Music Productions PUBLIC FREE-GIVEAWAY catalog ONLY.
+// NEVER add exclusive JMELO/Shia, paying-artist masters, private Supabase object paths
+// or purchased-download entitlements here; public Git history and assets are copyable.
 // Add a future song by uploading its MP3 + cover, then copying one complete
 // release object into this array. The existing player automatically adds it to
 // the catalog, details, previous/next controls and same-site download handling.
