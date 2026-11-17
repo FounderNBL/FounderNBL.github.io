@@ -5,6 +5,7 @@ on:
       - pulse/index.html
       - pulse/pulse-reference-ui.css
       - pulse/pulse-live-design.css
+      - pulse/pulse-founder-ui.css
       - pulse/pulse-live-design.mjs
       - scripts/check-pulse-reference-layout.mjs
       - .github/workflows/pulse-reference-layout.yml
