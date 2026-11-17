@@ -99,7 +99,7 @@ function renderParticipants(participants){
   // at a time; audio could otherwise work while the other camera stays black.
   cleanup.push(call.bindVideoElement(video,p.sessionId,"videoTrack"));
   if(audio)cleanup.push(call.bindAudioElement(audio,p.sessionId,"audioTrack"));
-  tracks.set(p.sessionId,{wrapper,video,hint,cleanup:cleanup.filter(fn=>typeof fn==="function")});
+  tracks.set(p.sessionId,{wrapper,video,audio,hint,cleanup:cleanup.filter(fn=>typeof fn==="function")});
   updateCameraHint(tracks.get(p.sessionId),p);
   video.addEventListener("loadeddata",()=>{if(video.videoWidth>0)hint.hidden=true;});
   video.addEventListener("error",()=>{hint.hidden=false;hint.textContent="Camera picture failed to play. Leave and rejoin to retry.";});
@@ -107,13 +107,26 @@ function renderParticipants(participants){
  status((participants.length<2?"Connected. Waiting for the other person to join.":"You are connected.")
   +(mediaWarning?" "+mediaWarning:""));
 }
+// Safari and some Android browsers can block unmuted autoplay after a remote
+// track arrives. The user can resume only their own call audio on a tap.
+async function enableRemoteSound(){
+ if(!joined){status("Join the private call before enabling sound.");return;}
+ const remote=[...tracks.values()].map(tile=>tile.audio).filter(Boolean);
+ if(!remote.length){status("Waiting for the other participant to join.");return;}
+ let playing=0;
+ for(const audio of remote){
+  try{await audio.play();playing++;}catch{}
+ }
+ status(playing===remote.length?"Call sound enabled."
+  :"Sound was blocked by this device. Check volume and permissions, then tap Enable call sound again.");
+}
 async function leave(){
  sub?.unsubscribe();sub=null;clearTracks();
  try{await call?.leave();}catch{}
  try{await client?.disconnectUser();}catch{}
  call=null;client=null;joined=false;mediaWarning="";
  $("#participants").hidden=true;
- $("#join").hidden=false;$("#leave").hidden=true;$("#camera").hidden=true;$("#microphone").hidden=true;
+ $("#join").hidden=false;$("#leave").hidden=true;$("#camera").hidden=true;$("#microphone").hidden=true;$("#callSound").hidden=true;
  status("Call left. Return to Messenger or rejoin while the invite is active.");
 }
 async function join(){
@@ -136,7 +149,7 @@ async function join(){
   await call.join({create:false});
   if(clerk.user?.id!==owner||!clerk.isSignedIn)throw Error("Your NBL account changed.");
   joined=true;
-  $("#join").hidden=true;$("#leave").hidden=false;$("#camera").hidden=false;$("#microphone").hidden=false;
+  $("#join").hidden=true;$("#leave").hidden=false;$("#camera").hidden=false;$("#microphone").hidden=false;$("#callSound").hidden=false;
   $("#participants").hidden=false;
   $("#camera").textContent=cameraReady?"Turn camera off":"Turn camera on";
   $("#microphone").textContent=microphoneReady?"Mute microphone":"Unmute microphone";
@@ -185,6 +198,7 @@ $("#microphone").addEventListener("click",async()=>{
  try{await call.microphone.toggle();$("#microphone").textContent=call.microphone.state.status==="enabled"?"Mute microphone":"Unmute microphone";}
  catch{status("Could not change microphone.");}
 });
+$("#callSound").addEventListener("click",()=>{void enableRemoteSound();});
 $("#leave").addEventListener("click",async()=>{
  try{await videoRequest("finish");}catch{}
  await leave();

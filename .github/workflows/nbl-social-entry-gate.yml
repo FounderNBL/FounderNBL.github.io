@@ -52,6 +52,7 @@ jobs:
           node --check messenger/app.js
           node --check messenger/sw.js
           node scripts/check-messenger-separation.mjs
+          node --test scripts/check-messenger-1055.test.mjs
           node --check social-realtime.js
           node scripts/check-org-member-services.mjs
       - name: Publish scope boundary

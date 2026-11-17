@@ -340,6 +340,17 @@ async function downloadRecentMessages(){
   finally{button.disabled=false;}
 }
 
+// iOS/iPadOS browser tabs cannot subscribe to iPhone Home Screen web push.
+function needsIphoneHomeScreen(){
+ const ua=String(navigator.userAgent||"");
+ const ios=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+ const installed=window.matchMedia?.("(display-mode: standalone)")?.matches===true
+   ||navigator.standalone===true;
+ return ios&&!installed;
+}
+function iphoneHomeScreenHelp(){
+ return "iPhone: open Messenger in Safari, tap Share → Add to Home Screen, then open the NBL Messenger icon, sign in, and tap Enable phone alerts.";
+}
 function supportsPhonePush(){
  return Boolean(window.isSecureContext!==false
    &&typeof window.Notification!=="undefined"
@@ -389,6 +400,12 @@ async function subscription(){
 async function loadPhoneSettings(){
  const card=$("[data-chat-notification-settings]");
  card.hidden=false;
+ if(needsIphoneHomeScreen()){
+  updatePhoneButtons(false);
+  $("[data-chat-notify-enable]").disabled=true;
+  setPushStatus(iphoneHomeScreenHelp());
+  return;
+ }
  if(!supportsPhonePush()){
   updatePhoneButtons(false);
   $("[data-chat-notify-enable]").disabled=true;
@@ -417,6 +434,7 @@ async function loadPhoneSettings(){
  }
 }
 async function enablePhonePush(){
+ if(needsIphoneHomeScreen()){setPushStatus(iphoneHomeScreenHelp());return;}
  if(!supportsPhonePush()){setPushStatus("Background web push is unavailable in this browser.");return;}
  try{
   // Ask on the click itself, not on boot. Browser notification consent is optional.
@@ -475,6 +493,7 @@ async function forgetPushForDifferentAccount(newId){
  try{localStorage.removeItem(PUSH_OWNER_KEY);}catch{}
 }
 async function previewPhoneNotification(){
+ if(needsIphoneHomeScreen()){setPushStatus(iphoneHomeScreenHelp());return;}
  if(typeof window.Notification==="undefined"||!("serviceWorker" in navigator)){
   setPushStatus("Your browser does not support phone notification previews.");return;
  }
