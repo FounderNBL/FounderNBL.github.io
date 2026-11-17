@@ -44,6 +44,7 @@
       currentSession="";playedSeconds=0;lastTick=0;recorded=false;attempted=false;
       notice("Preparing your private listening preview…");
       try{
+        document.getElementById("audio")?.pause();
         const result=await request("listen_start",{trackId:track.id});
         if(!result.ok||!result.previewOnly||!result.sessionId||!result.streamUrl)
           throw new Error("preview_not_ready");
