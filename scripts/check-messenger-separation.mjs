@@ -171,6 +171,6 @@ assert.match(callJs,/access\.callType!==PRIVATE_CALL_TYPE/);
 assert.match(callJs,/client\.call\(PRIVATE_CALL_TYPE,callId\)/);
 assert.doesNotMatch(callJs,/client\.call\(access\.callType,callId\)|client\.call\("default"/);
 assert.match(callPage,/NBL Private · Member-only video/);
-assert.match(callPage,/call\.mjs\?v=20261113-video-render/);
+assert.match(callPage,/call\.mjs\?v=20261116-two-way-video/);
 assert.doesNotMatch(js,/STREAM_API_SECRET|VIDEO_SECRET/);
 console.log("PASS: NBL Messenger draft video invitation uses direct chats and secured call service.");
