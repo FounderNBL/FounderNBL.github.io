@@ -222,6 +222,8 @@
     ensureAudioGraph();
     if (audioContext?.state === "suspended") await audioContext.resume();
     try {
+      // Keep the public giveaway player and exclusive preview from talking over each other.
+      document.getElementById("exclusiveAudio")?.pause();
       await audio.play();
       if (!video.hidden) {
         video.currentTime = audio.currentTime;
