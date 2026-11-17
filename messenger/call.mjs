@@ -49,6 +49,19 @@ function clearTracks(){
  for(const parts of tracks.values())for(const unbind of parts.cleanup)try{unbind();}catch{}
  tracks.clear();$("#participants").replaceChildren();
 }
+// Two-person private calls always subscribe to both video tiles. In a small
+// mobile viewport, visibility tracking can mark the second tile offscreen and
+// deliberately unsubscribe its video even while remote audio keeps playing.
+function updateCameraHint(parts,participant){
+ const track=participant.videoStream?.getVideoTracks?.().find(t=>t.readyState==="live"&&t.enabled);
+ if(parts.video.readyState>=2&&parts.video.videoWidth>0){parts.hint.hidden=true;return;}
+ parts.hint.hidden=false;
+ parts.hint.textContent=track
+  ?"Connecting the other camera picture…"
+  :participant.isLocalParticipant
+   ?"Your camera is off. Check permission or tap Turn camera on."
+   :"The other person's camera is off or not sending video. Ask them to turn it on.";
+}
 function renderParticipants(participants){
  const area=$("#participants");
  const current=new Set(participants.map(p=>p.sessionId));
@@ -57,7 +70,7 @@ function renderParticipants(participants){
    parts.wrapper.remove();tracks.delete(id);
  }
  for(const p of participants){
-  if(tracks.has(p.sessionId))continue;
+  if(tracks.has(p.sessionId)){updateCameraHint(tracks.get(p.sessionId),p);continue;}
   const wrapper=document.createElement("section");
   wrapper.className="person";
   const video=document.createElement("video");
@@ -79,14 +92,17 @@ function renderParticipants(participants){
    wrapper.append(audio);
   }
   // Stream requires binding video AFTER its element is attached to the DOM.
-  // Visibility tracking also ensures remote video is subscribed when in view.
+  // Both videos must stay subscribed for two-person calls, even offscreen.
   area.append(wrapper);
   const cleanup=[];
-  if(typeof call.trackElementVisibility==="function")
-   cleanup.push(call.trackElementVisibility(video,p.sessionId,"videoTrack"));
+  // No viewport/visibility culling: a phone often displays only one tile
+  // at a time; audio could otherwise work while the other camera stays black.
   cleanup.push(call.bindVideoElement(video,p.sessionId,"videoTrack"));
   if(audio)cleanup.push(call.bindAudioElement(audio,p.sessionId,"audioTrack"));
-  tracks.set(p.sessionId,{wrapper,cleanup:cleanup.filter(fn=>typeof fn==="function")});
+  tracks.set(p.sessionId,{wrapper,video,hint,cleanup:cleanup.filter(fn=>typeof fn==="function")});
+  updateCameraHint(tracks.get(p.sessionId),p);
+  video.addEventListener("loadeddata",()=>{if(video.videoWidth>0)hint.hidden=true;});
+  video.addEventListener("error",()=>{hint.hidden=false;hint.textContent="Camera picture failed to play. Leave and rejoin to retry.";});
  }
  status((participants.length<2?"Connected. Waiting for the other person to join.":"You are connected.")
   +(mediaWarning?" "+mediaWarning:""));
@@ -124,7 +140,7 @@ async function join(){
   $("#participants").hidden=false;
   $("#camera").textContent=cameraReady?"Turn camera off":"Turn camera on";
   $("#microphone").textContent=microphoneReady?"Mute microphone":"Unmute microphone";
-  call.setViewport($("#participants"));
+  // Two-person calls subscribe to BOTH videos regardless of mobile viewport.
   sub=call.state.participants$.subscribe(renderParticipants);
  }catch(error){
   status(error?.message||"This call is unavailable.");
