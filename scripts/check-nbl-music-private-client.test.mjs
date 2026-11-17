@@ -63,7 +63,7 @@ test("listening records dashboard is Founder-only at the API, not raw public dat
   assert.match(founderPage,/noindex,nofollow/);
   assert.match(founderDashboard,/NBLAccountBridge/);
   assert.match(founderDashboard,/founder_stats/);
-  assert.match(founderDashboard,/authorization:"Bearer "/);
+  assert.ok(founderDashboard.includes('"authorization":"Bearer "+token'));
   assert.doesNotMatch(founderDashboard,/visitor_hash|master_object_key|storage\/v1\/object/);
 });
 
