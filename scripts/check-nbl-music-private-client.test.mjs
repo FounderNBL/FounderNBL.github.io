@@ -9,6 +9,10 @@ const publicPlayer=read("studio/player.js");
 const privatePlayer=read("studio/private-releases.js");
 const publicCounter=read("studio/listen-count.js");
 const runbook=read("studio/ADDING_SONGS.md");
+const artistPage=read("studio/artist-upload.html");
+const artistUpload=read("studio/artist-upload.js");
+const founderPage=read("studio/music-admin.html");
+const founderDashboard=read("studio/music-admin.js");
 
 test("two approved public soundtrack tracks remain unchanged and free",()=>{
   for(const title of ["You Hear It Too","Still Walking"])assert.ok(publicCatalog.includes('title: "'+title+'"'));
@@ -42,4 +46,22 @@ test("public catalog never exposes private master storage",()=>{
   assert.doesNotMatch(publicCatalog,/nbl-music-masters|storage\/v1\/object/);
   assert.doesNotMatch(privatePlayer,/nbl-music-masters|storage\/v1\/object|nbl_masters/);
   assert.match(privatePlayer,/Exclusive downloads are not available for purchase yet/);
+});
+
+test("artist uploads are private, account-verified, review-only and Stripe-free",()=>{
+  assert.match(artistPage,/id="artistUploadForm" hidden/);
+  assert.match(artistPage,/rightsConfirmed/);
+  assert.match(artistUpload,/NBLAccountBridge/);
+  assert.match(artistUpload,/artistUploadsOpen/);
+  assert.match(artistUpload,/uploadToSignedUrl/);
+  assert.match(artistUpload,/rightsConfirmed:true/);
+  assert.match(artistUpload,/pending_review/);
+  assert.doesNotMatch(artistUpload,/nbl-music-masters|checkout\.stripe\.com|STRIPE_SECRET_KEY|getPublicUrl/);
+});
+test("listening records dashboard is Founder-only at the API, not raw public data",()=>{
+  assert.match(founderPage,/noindex,nofollow/);
+  assert.match(founderDashboard,/NBLAccountBridge/);
+  assert.match(founderDashboard,/founder_stats/);
+  assert.match(founderDashboard,/authorization:"Bearer "/);
+  assert.doesNotMatch(founderDashboard,/visitor_hash|master_object_key|storage\/v1\/object/);
 });
