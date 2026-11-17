@@ -152,7 +152,10 @@ for(const [source,fragment,message] of [
 ])assert.ok(source.includes(fragment),message);
 // Video and audio can connect separately; both participants must get a DOM-mounted tile.
 assert.match(callJs,/video\.muted=true/,"Both remote and local video elements must allow mobile autoplay");
-assert.match(callJs,/call\.trackElementVisibility\(video,p\.sessionId,"videoTrack"\)/,"Visible participants need remote-video subscriptions");
+assert.doesNotMatch(callJs,/call\.trackElementVisibility\(/,"Private calls must not cull offscreen remote video");
+assert.doesNotMatch(callJs,/call\.setViewport\(/,"No viewport culling of a private call on mobile");
+assert.match(callJs,/function updateCameraHint\(/,"Show if the other camera is actually publishing");
+assert.match(callJs,/participant\.videoStream\?\.getVideoTracks/,"Track-state awareness for remote camera");
 assert.match(callJs,/call\.bindVideoElement\(video,p\.sessionId,"videoTrack"\)/,"Video element needs Stream media binding");
 assert.match(callJs,/call\.bindAudioElement\(audio,p\.sessionId,"audioTrack"\)/,"Keep remote sound on a separate audio element");
 assert.match(callJs,/video\.addEventListener\("playing"/,"Camera loading hint should clear when picture plays");
@@ -160,7 +163,7 @@ const renderBody=callJs.slice(callJs.indexOf("function renderParticipants("),cal
 assert.ok(renderBody.indexOf("area.append(wrapper);")>=0
   &&renderBody.indexOf("area.append(wrapper);")<renderBody.indexOf('call.bindVideoElement(video,p.sessionId,"videoTrack")'),
  "Stream video must be mounted on the page BEFORE it is bound");
-assert.match(callPage,/call\.mjs\?v=20261113-video-render/,"Call must load the fixed JS asset");
+assert.match(callPage,/call\.mjs\?v=20261116-two-way-video/,"Call must load the fixed JS asset");
 assert.match(callPage,/call-skin\.css\?v=20261113-video-render/,"Call must load the loading-state CSS");
 assert.match(callJs,/videoRequest\("join"\)/);
 assert.match(callJs,/const PRIVATE_CALL_TYPE="nbl_private"/);
