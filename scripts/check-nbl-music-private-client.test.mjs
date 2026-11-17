@@ -7,6 +7,7 @@ const music=read("studio/index.html");
 const publicCatalog=read("studio/catalog.js");
 const publicPlayer=read("studio/player.js");
 const privatePlayer=read("studio/private-releases.js");
+const publicCounter=read("studio/listen-count.js");
 const runbook=read("studio/ADDING_SONGS.md");
 
 test("two approved public soundtrack tracks remain unchanged and free",()=>{
@@ -15,6 +16,14 @@ test("two approved public soundtrack tracks remain unchanged and free",()=>{
   assert.match(publicPlayer,/src\.origin===location\.origin/);
   assert.match(publicPlayer,/download\.download=/);
   assert.match(music,/Download free MP3/);
+});
+test("existing free music records first-party listens without breaking playback",()=>{
+  assert.match(music,/listen-count\\.js/);
+  assert.match(publicCounter,/public_listen_start/);
+  assert.match(publicCounter,/listen_count/);
+  assert.match(publicCounter,/listened<30/);
+  assert.match(publicCounter,/Silent analytics failure/);
+  assert.doesNotMatch(publicCounter,/checkout|download\\s*=|stripe|master_object_key/i);
 });
 test("exclusive catalog loads only from guarded private release API",()=>{
   assert.match(music,/id="exclusiveCatalog"[^>]*hidden/);
