@@ -18,6 +18,18 @@ stylesheet.rel="stylesheet";
 stylesheet.href="/nbl-beans-experience.css?v=20261117-beans-logo";
 stylesheet.dataset.nblBeansExperience="true";
 document.head.appendChild(stylesheet);
+// This is the approved Beans-specific infinity+wordmark asset slot.
+// Until the Founder uploads it, the site keeps its existing NBL infinity mark.
+// The historical cartoon is never used in active Beans UI.
+const officialBeansIcon="/assets/brand/beans-infinity.png";
+const previewIcon=new Image();
+previewIcon.onload=()=>{
+  for(const img of document.querySelectorAll(
+   ".nbl-world-beans-toggle img,.nbl-beans-avatar,.nbl-chat-drawer-logo,.nbl-beans-presence-art,.nbl-chat-drawer-item[data-nbl-drawer-new] img"
+  ))img.src=officialBeansIcon;
+};
+previewIcon.src=officialBeansIcon;
+
 
 const title=document.createElement("div");
 title.className="nbl-beans-hero-copy";
