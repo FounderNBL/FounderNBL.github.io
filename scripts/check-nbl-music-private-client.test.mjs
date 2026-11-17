@@ -32,5 +32,5 @@ test("public catalog never exposes private master storage",()=>{
   assert.match(runbook,/nbl-music-masters/);
   assert.doesNotMatch(publicCatalog,/nbl-music-masters|storage\/v1\/object/);
   assert.doesNotMatch(privatePlayer,/nbl-music-masters|storage\/v1\/object|nbl_masters/);
-  assert.match(privatePlayer,/paidDownloadAvailable/);
+  assert.match(privatePlayer,/Exclusive downloads are not available for purchase yet/);
 });
