@@ -46,6 +46,8 @@
 <script type="module" src="/pulse/pulse-live-design.mjs?v=20261110-visual-release"></script>
 <link rel="stylesheet" href="/pulse/pulse-invites.css?v=20261110-cross-app">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
+<link rel="stylesheet" href="/pulse/live-nbl-only.css?v=20261116-stage">
+<script type="module" src="/pulse/live.mjs?v=20261116-stage"></script>
 </head><body class="pulse-body">
 <header class="pulse-topbar" aria-label="NBL Pulse site navigation">
   <a class="pulse-company-logo" href="/" aria-label="New Beansland home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" width="40" height="40"><span>NBL</span></a>
@@ -112,7 +114,30 @@
     <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="30" height="30" alt=""><span>Messenger</span></a>
     <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Pulse post"><span aria-hidden="true">＋</span><span>Create</span></a>
   </nav>
-  <div class="pulse-live" hidden aria-hidden="true"><strong>● Go Live</strong><p>Live is not available until server-side safety and spending limits are approved.</p><button type="button" disabled>Go Live · setup pending</button></div>
+  <div class="pulse-live" id="pulseLive"><strong>● NBL Live (internal)</strong><p>For signed-in Pulse members. Facebook and recording are on hold.</p>
+  <p class="pulse-live-status" id="pulseLiveStatus" role="status" aria-live="polite">Checking Pulse Live…</p>
+  <p><span class="pulse-live-badge pulse-live-badge-off" id="pulseLiveBadge" hidden>LIVE</span> <span class="pulse-live-meta" id="pulseLiveViewers" hidden></span> <span class="pulse-live-meta" id="pulseLiveElapsed" hidden></span></p>
+  <p class="pulse-live-title" id="pulseLiveTitle" hidden></p>
+  <div id="pulseLiveSetup" hidden>
+    <label for="pulseLiveTitleInput">Broadcast title</label>
+    <input id="pulseLiveTitleInput" type="text" maxlength="140" value="NBL Pulse Live" autocomplete="off">
+    <input id="pulseLiveFacebook" type="checkbox" hidden disabled>
+     <input id="pulseLiveRecord" type="checkbox" hidden disabled>
+    <p class="pulse-live-meta" id="pulseLiveFacebookNote" hidden>Facebook not configured</p>
+    <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
+     <button id="pulseLiveFindRecording" type="button" hidden disabled>Find latest saved livestream</button>
+     <p class="pulse-live-meta" id="pulseLiveSavedResult" aria-live="polite"></p>
+  </div>
+  <div id="pulseLiveHost" hidden>
+    <button id="pulseLiveGoLive" type="button" class="pulse-live-primary">Go Live</button>
+    <button id="pulseLiveEnd" type="button" class="pulse-live-danger">End Live</button>
+  </div>
+  <video id="pulseLivePreview" class="pulse-live-video" autoplay muted playsinline hidden></video>
+  <div id="pulseLiveViewer" hidden>
+    <video id="pulseLiveVideo" class="pulse-live-video" controls autoplay muted playsinline></video>
+  </div>
+  <p class="pulse-live-error" id="pulseLiveError" role="alert" hidden></p>
+</div>
   <a class="pulse-create-shortcut" href="#composeTitle" aria-label="Jump to create a Pulse post"><span aria-hidden="true">＋</span> Create Post</a>
 </aside><div class="pulse-main"><section class="pulse-stories" aria-label="Stories coming soon">
       <div class="pulse-highlights" aria-label="NBL destinations and upcoming stories">
