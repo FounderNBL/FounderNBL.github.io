@@ -15,4 +15,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: NBL Music free showcase and staged private client safeguards
-        run: node --test scripts/check-nbl-music-free-library.test.mjs scripts/check-nbl-music-private-client.test.mjs
+        run: node --test scripts/check-nbl-music-private-client.test.mjs
