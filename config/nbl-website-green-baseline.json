@@ -75,7 +75,7 @@
         "id": "beans-identity",
         "file": "nbl-world-header.js",
         "all": [
-          "Beans_Hi_Basic.png",
+          "nbl-official-mark.png",
           "nbl-beans-panel",
           "data-nbl-beans-presence"
         ]
