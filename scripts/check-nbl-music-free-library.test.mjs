@@ -76,3 +76,18 @@ test("track credits expose real creator, artist, NBL label, ownership and not in
   assert.match(player,/trackFacts\.append\(dt,dd\)/);
   assert.doesNotMatch(music,/upload-to-supabase|create-music-with-Mureka/);
 });
+
+test("public NBL song runbook forbids accidentally leaking exclusive masters",()=>{
+  const instructions=read("studio/ADDING_SONGS.md");
+  assert.match(instructions,/Never add an exclusive JMELO, Shia, client/i);
+  assert.match(instructions,/nbl-music-masters/);
+  assert.match(instructions,/purchase receipt/i);
+  assert.match(instructions,/Do not put storage paths, master URLs/i);
+  assert.match(catalog,/PUBLIC FREE-GIVEAWAY catalog ONLY/);
+  assert.doesNotMatch(catalog,/nbl-music-masters|storage\/v1\/object|signedUrl|checkout\.stripe\.com/i);
+  for(const track of tracks){
+    assert.equal(track.purchaseUrl, "", "public giveaway catalog must never silently enable checkout");
+    assert.equal(track.previewSeconds, 0, "existing giveaway stream remains uncut");
+    assert.match(track.audio,/^\.\.\//,"free audio stays in approved same-origin static release path");
+  }
+});
