@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#02060b">
+<title>NBL Music — Founder Listening Records</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="stylesheet" href="./studio.css">
+<link rel="stylesheet" href="/nbl-world-header.css">
+<script defer src="/nbl-world-header.js"></script>
+<script defer src="./music-admin.js"></script>
+</head>
+<body>
+<main class="studio-shell" style="max-width:930px">
+  <header class="catalog-section">
+    <p class="eyebrow">NBL MUSIC PRODUCTIONS · FOUNDER DESK</p>
+    <h1>Music listening records</h1>
+    <p class="exclusive-copy">Internal counts from NBL's music player. No Stripe,
+      purchases or artist payouts are connected here.</p>
+    <p><a class="back" href="/studio/">← Music Productions</a></p>
+  </header>
+  <section class="player-card" style="padding:24px" aria-labelledby="recordsTitle">
+    <h2 id="recordsTitle">First-party listening report</h2>
+    <p id="musicAdminStatus" role="status" aria-live="polite">Checking Founder account…</p>
+    <div id="musicAdminData" hidden>
+      <p><strong>Qualified listens: <span id="musicAdminTotal">—</span></strong></p>
+      <div id="musicAdminTracks" class="track-list"></div>
+      <p class="exclusive-copy">These are approximate, deduplicated listening
+        records—not proven unique people, paid streams, or royalties.</p>
+    </div>
+    <button id="musicAdminRefresh" class="details-toggle" type="button">Refresh counts</button>
+  </section>
+</main>
+</body>
+</html>
