@@ -208,11 +208,9 @@ test.describe("New Beansland web app browser smoke", () => {
     });
     expect(form.height).toBeGreaterThan(30);
     expect(form.bottom).toBeLessThanOrEqual(681);
-    await page.locator("[data-nbl-customize-open]").click();
-    await page.locator('[data-nbl-look="crossed"]').click();
-    await expect(page.locator("[data-nbl-beans-presence] img.nbl-beans-presence-art")).toHaveAttribute("src","/Beans_Crossarmed.png");
-    await page.locator('[data-nbl-look="jersey"]').click();
-    await expect(page.locator("[data-nbl-beans-presence] img.nbl-beans-presence-art")).toHaveAttribute("src","/Beans_Hi_Soccer.png");
+    await expect(page.locator("[data-nbl-customize-open]")).toHaveCount(0);
+    await expect(page.locator(".nbl-beans-presence-art")).toHaveAttribute("src","/assets/brand/nbl-official-mark.png?v=9e7ecbb9");
+    await expect(page.locator("[data-nbl-beans-form]")).toBeVisible();
   });
 
   test("Beans AI opens in a real browser", async ({ page }) => {
@@ -221,7 +219,7 @@ test.describe("New Beansland web app browser smoke", () => {
     const launcher = page.getByRole("button", { name: "Open Beans" });
     await expect(launcher).toBeVisible();
     const launcherImage = launcher.locator("img");
-    await expect(launcherImage).toHaveAttribute("src", "/Beans_Hi_Basic.png");
+    await expect(launcherImage).toHaveAttribute("src", "/assets/brand/nbl-official-mark.png?v=9e7ecbb9");
     await expect.poll(async () => launcherImage.evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
     await launcher.click();
 
@@ -237,30 +235,23 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(drawer.locator(".nbl-beans-library-link")).toBeVisible();
     await expect(drawer.locator(".nbl-beans-explore-worlds")).toBeVisible();
     await drawer.locator(".nbl-beans-explore-worlds summary").click();
-    await expect(drawer.getByRole("link",{name:"The City · preview"})).toHaveAttribute("href","/stories.html");
+    await expect(drawer.getByRole("link",{name:"NBL Pulse"})).toHaveAttribute("href","/pulse/");
+    await expect(drawer.getByRole("link",{name:"NBL Music Productions · Official Player"})).toHaveAttribute("href","/studio/");
     await expect(drawer.getByRole("link",{name:/Talk to Grey/})).toHaveCount(0);
     await expect(drawer.getByRole("link",{name:/Talk to People/})).toHaveCount(0);
     await expect(drawer.getByRole("link",{name:/Privacy & AI notice/})).toHaveAttribute("href","/privacy.html");
     if(mobile)await page.getByRole("button",{name:"Close Beans menu"}).click();
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
-    await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src","/Beans_Hi_Basic.png");
+    await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src","/assets/brand/nbl-official-mark.png?v=9e7ecbb9");
     await expect(page.getByRole("tab",{name:"Beans"})).toBeHidden();
     await expect(page.locator("[data-nbl-quick-toggle]")).toBeHidden();
     await expect(page.locator("[data-nbl-quick-selector]")).toBeHidden();
     await expect(page.locator("[data-nbl-beans-regular]")).toBeVisible();
     await expect(page.getByRole("tab",{name:/NBL University Professor Grey™/i})).toBeHidden();
     await expect(page.locator(".nbl-beans-hero-copy")).toBeVisible();
-    await page.locator("[data-nbl-customize-open]").click();
-    await expect(page.locator("[data-nbl-customize-section='wardrobe']")).toBeVisible();
-    for(const name of ["standard","crossed","jersey","cargoWave","cargoPoint"]){
-      await expect(page.locator(`[data-nbl-look='${name}']`)).toBeEnabled();
-    }
-    await expect(page.locator("[data-nbl-premium-outfits]")).toBeDisabled();
-    await page.locator("[data-nbl-customize-tab='appearance']").click();
-    await expect(page.locator("[data-nbl-customize-photo='chat']")).toHaveAttribute("accept","image/png,image/jpeg,image/webp,image/gif");
-    await page.locator("[data-nbl-customize-color]").fill("#e6cda5");
-    await expect(page.locator(".nbl-beans-card")).toHaveCSS("--nbl-beans-chat-color","#e6cda5");
-    await page.locator("[data-nbl-customize-close]").click();
+    await expect(page.locator("[data-nbl-customize-open]")).toHaveCount(0);
+    await expect(page.locator("[data-nbl-customize-photo]")).toHaveCount(0);
+    await expect(page.locator(".nbl-beans-presence-art")).toHaveAttribute("src","/assets/brand/nbl-official-mark.png?v=9e7ecbb9");
     await expect(page.getByRole("button",{name:"Open Beans tools"})).toBeVisible();
     await page.getByRole("button",{name:"Open Beans tools"}).click();
     await expect(page.getByRole("button",{name:/Photo \/ file/i})).toBeVisible();
