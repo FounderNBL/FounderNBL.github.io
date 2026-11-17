@@ -33,8 +33,10 @@ test("Wide desktop drawer is truly open, while 960–1199px laptops use the usab
 });
 
 test("Fix does not create public Founder wardrobe, unlock Grey or change verified offers",()=>{
- for(const look of ["standard","crossed","jersey","cargoWave","cargoPoint"])assert.ok(presentation.includes('data-nbl-look="'+look+'"'));
- assert.match(presentation,/data-nbl-premium-outfits disabled/);
+ assert.doesNotMatch(presentation,/data-nbl-look|data-nbl-premium-outfits|data-nbl-customize-photo/);
+ assert.match(presentation,/officialBeansIcon="\/assets\/brand\/beans-infinity\.png"/);
+ assert.match(header,/nbl-official-mark\.png/);
+ assert.match(presentation,/nbl-beans-intro-collapsed/);
  assert.doesNotMatch(presentation,/Founders_Only|Beans_Founders_Only/);
  assert.match(header,/data-nbl-drawer-grey hidden/);
  assert.match(header,/NBL_BEANS_WEB_API=\`\$\{NBL_CORE_API\}\/chat\`/);
