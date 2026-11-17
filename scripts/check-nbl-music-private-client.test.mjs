@@ -13,6 +13,7 @@ const artistPage=read("studio/artist-upload.html");
 const artistUpload=read("studio/artist-upload.js");
 const founderPage=read("studio/music-admin.html");
 const founderDashboard=read("studio/music-admin.js");
+const founderManager=read("studio/music-manager.js");
 
 test("two approved public soundtrack tracks remain unchanged and free",()=>{
   for(const title of ["You Hear It Too","Still Walking"])assert.ok(publicCatalog.includes('title: "'+title+'"'));
@@ -64,4 +65,17 @@ test("listening records dashboard is Founder-only at the API, not raw public dat
   assert.match(founderDashboard,/founder_stats/);
   assert.match(founderDashboard,/authorization:"Bearer "/);
   assert.doesNotMatch(founderDashboard,/visitor_hash|master_object_key|storage\/v1\/object/);
+});
+
+test("Founder can stage releases privately and must explicitly publish listening",()=>{
+  assert.match(founderPage,/id="musicReleaseEditor" hidden/);
+  assert.match(founderPage,/rightsConfirmed/);
+  assert.match(founderManager,/NBLAccountBridge/);
+  assert.match(founderManager,/founder_stats/);
+  assert.match(founderManager,/founder_upload_prepare/);
+  assert.match(founderManager,/uploadToSignedUrl/);
+  assert.match(founderManager,/founder_release_draft/);
+  assert.match(founderManager,/founder_release_publish/);
+  assert.match(founderManager,/window\.confirm/);
+  assert.doesNotMatch(founderManager,/checkout\.stripe\.com|STRIPE_SECRET_KEY|getPublicUrl/);
 });
