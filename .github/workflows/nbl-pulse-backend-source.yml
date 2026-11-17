@@ -92,6 +92,17 @@ jobs:
           console.log('Stream health:',h.status,health.code,health.connected);
           assert.equal(h.status,200,'Stream bridge must have valid provider connection');
           assert.equal(health.connected,true);
+          // Internal-only Pulse Live health does NOT start a call or use Facebook.
+          const l=await fetch(base+'nbl-live?action=health',{signal:AbortSignal.timeout(12000)});
+          const live=await l.json();
+          console.log('Pulse Live health:',l.status,live.code,live.connected);
+          assert.equal(l.status,200,'Existing Stream secrets must serve the staged Live bridge');
+          assert.equal(live.connected,true);
+          const signedOut=await fetch(base+'nbl-live',{method:'POST',
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify({action:'status'}),signal:AbortSignal.timeout(12000)});
+          console.log('Pulse Live signed-out status:',signedOut.status);
+          assert.equal(signedOut.status,401,'NBL-only Live must deny signed-out members');
           for(const action of ['nbl-stream','nbl-social']){
             const r=await fetch(base+action,{method:'POST',headers:{'content-type':'application/json'},
               body:JSON.stringify({action:'session'}),signal:AbortSignal.timeout(12000)});
