@@ -4,6 +4,7 @@ const read = p => readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const html=read("pulse/index.html"),css=read("pulse/pulse-reference-ui.css");
 const engine=read("messenger/social-v1.mjs");
 const liveCss=read("pulse/pulse-live-design.css"),liveUi=read("pulse/pulse-live-design.mjs");
+const founderCss=read("pulse/pulse-founder-ui.css");
 assert.doesNotMatch(html+css, /the[\s-]*city|thecity|cityworld|phone.mockup/i, "Pulse must not include forbidden promotional content");
 assert.match(html,/href="\/pulse\/" class="pulse-site-current" aria-current="page"/);
 assert.match(html,/href="\/messenger\/" class="pulse-message-tab"/);
@@ -39,4 +40,22 @@ assert.match(liveCss,/\.pulse-body:has\(#feedItems \.social-card\) \.pulse-welco
 assert.match(liveUi,/upload\.click\(\)/);
 assert.match(liveUi,/input\.focus\(\{preventScroll:true\}\)/);
 assert.doesNotMatch(html+liveCss,/\b(?:followers|watching|12\.4K|24\.7K)\b/i,"No invented popularity metrics");
+// Founder-supplied reference: full desktop Pulse product, not a fake image/post.
+assert.match(html,/pulse\/pulse-founder-ui\.css\?v=20261117-founder-reference/);
+assert.ok(html.indexOf("/pulse/pulse-founder-ui.css")>html.indexOf("/pulse/pulse-live-design.css"),"Founder stylesheet must load last");
+assert.match(html,/class="pulse-company-wordmark"/,"NBL identity is in the global header");
+assert.match(html,/href="\/games\.html" title="NBL Games — coming soon"/,"Games is a truthful coming-soon destination");
+assert.doesNotMatch(html+founderCss,/href="[^"]*(?:the-city|thecity)|>The City</i,"Do not promote a Studios preview as a Pulse top-level destination");
+assert.match(html,/data-feed="friends" aria-label="Explore NBL members"/,"Real member discovery in header");
+assert.match(html,/data-feed="notification" aria-label="View Pulse notifications"/,"Real notifications in header");
+assert.match(html,/class="pulse-nav-future"/,"Unreleased features must be visibly noninteractive");
+assert.match(html,/Stories <small>Coming soon/);
+assert.match(html,/Live <small>Coming soon/);
+assert.match(html,/src="\/NBL_Studios\.png"/,"Real NBL Studios artwork in featured panel");
+assert.match(html,/class="pulse-feature-brand"/);
+assert.match(founderCss,/#socialApp \.pulse-grid/);
+assert.match(founderCss,/grid-template-columns:minmax\(219px,255px\) minmax\(0,1fr\) minmax\(235px,294px\)/);
+assert.match(founderCss,/@media\(max-width:760px\)/);
+assert.doesNotMatch(html+founderCss,/Shia|Montana|24\.7K|12\.4K|1\.2K\s*likes|\bwatching\b/i,
+ "No invented members, engagement counts, or fake livestreams");
 console.log("PASS NBL Pulse: real website layout, live feed hooks, independent Messenger, mobile navigation; no fabricated or excluded content.");
