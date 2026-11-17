@@ -466,7 +466,7 @@
       </a>
       <div class="nbl-world-home-actions">
         <button class="nbl-world-beans-toggle nbl-world-chat-launch" type="button" aria-expanded="false" aria-controls="nbl-beans-panel" aria-label="Open Beans">
-          <img src="/Beans_Hi_Basic.png" alt="" aria-hidden="true">
+          <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" aria-hidden="true">
           <span>Beans</span>
         </button>
         <button class="nbl-world-account nbl-world-account-primary" type="button">Sign in</button>
@@ -532,7 +532,7 @@
           <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" aria-hidden="true">
         </button>
         <div class="nbl-beans-title-wrap">
-          <img src="/Beans_Hi_Basic.png" alt="Beans" class="nbl-beans-avatar">
+          <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="Beans" class="nbl-beans-avatar">
           <div>
             <p class="nbl-beans-kicker">New Beansland</p>
             <h2 id="nbl-beans-title">Beans</h2>
@@ -544,7 +544,7 @@
       <div class="nbl-chat-drawer-shade" data-nbl-chat-drawer-shade hidden></div>
       <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="Beans menu" tabindex="-1" hidden>
         <div class="nbl-chat-drawer-head">
-          <img src="/Beans_Hi_Basic.png" alt="Beans" class="nbl-chat-drawer-logo">
+          <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="Beans" class="nbl-chat-drawer-logo">
           <div>
             <p>New Beansland™</p>
             <strong>Beans</strong>
@@ -554,7 +554,7 @@
         </div>
         <div class="nbl-chat-drawer-scroll">
           <button class="nbl-chat-drawer-item" type="button" data-nbl-drawer-new>
-            <img src="/Beans_Hi_Basic.png" alt="" aria-hidden="true">
+            <img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" aria-hidden="true">
             <span><strong>New chat</strong><small>Start fresh with Beans</small></span>
           </button>
 
@@ -622,7 +622,7 @@
       </aside>
 
       <div class="nbl-quick-selector" id="nbl-quick-selector" data-nbl-quick-selector role="group" aria-label="Retired conversation switcher" hidden inert style="display:none!important">
-        <button type="button" data-nbl-quick="beans" aria-label="Chat with Beans"><img src="/Beans_Hi_Basic.png" alt="" aria-hidden="true"><strong>Beans</strong><small>AI assistant</small></button>
+        <button type="button" data-nbl-quick="beans" aria-label="Chat with Beans"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" aria-hidden="true"><strong>Beans</strong><small>AI assistant</small></button>
         <button type="button" data-nbl-quick="grey" aria-label="Talk to Professor Grey, LOCKE authorization required"><img src="/Professor_Grey.png" alt="" aria-hidden="true"><strong>Grey</strong><small>Teaching · LOCKE</small></button>
         <a href="/university.html" data-nbl-quick="university" aria-label="NBL University entrance, enrollment and LOCKE approval required"><img src="/NBL_University.png" alt="" aria-hidden="true"><strong>University</strong><small>Locked · enrollment</small></a>
       </div>
@@ -632,9 +632,9 @@
       </div>
 
       <section id="nbl-chat-panel-beans" role="tabpanel" aria-labelledby="nbl-chat-tab-beans" tabindex="0" data-nbl-beans-regular>
-        <!-- Beans is an independent, persistent character display. Swap the image for seasonal merch without changing chat or message history. -->
+        <!-- Beans keeps his existing voice and intelligence; the infinity mark is his public app identity. -->
         <div class="nbl-beans-presence" data-nbl-beans-presence>
-          <img class="nbl-beans-presence-art" src="/Beans_Hi_Basic.png" alt="Beans wearing his current New Beansland outfit" loading="eager" decoding="async">
+          <img class="nbl-beans-presence-art" src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland infinity mark for Beans" loading="eager" decoding="async">
         </div>
         <div class="nbl-beans-log" data-nbl-beans-log aria-live="polite">
           <div class="nbl-beans-message is-beans"><strong>Beans</strong><p>I'm Beans. What's up?</p></div>
@@ -2841,7 +2841,7 @@
   // Independent presentation layer around the existing real Beans chat.
   // No screenshot-as-a-background, no generated wardrobe, no change to the AI runtime.
   const beansExperienceScript=document.createElement("script");
-  beansExperienceScript.src="/nbl-beans-experience.js?v=20261113-beans-current-main";
+  beansExperienceScript.src="/nbl-beans-experience.js?v=20261117-beans-logo";
   beansExperienceScript.async=true;
   document.body.appendChild(beansExperienceScript);
   document.body.classList.add("nbl-world-ready");
@@ -2853,7 +2853,7 @@
     beta.setAttribute("aria-labelledby","nbl-beta-title");
     beta.innerHTML=`
       <div class="nbl-beta-inner">
-        <img class="nbl-beta-beans" src="/Beans_Hi_Basic.png" alt="Beans AI assistant">
+        <img class="nbl-beta-beans" src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="Beans AI assistant">
         <p class="nbl-beta-kicker">Beans · What’s next</p>
         <h2 id="nbl-beta-title">Get updates on what Beans is building next.</h2>
         <p>Join the NBL email list for updates about future Beans features and upcoming testing opportunities.</p>
