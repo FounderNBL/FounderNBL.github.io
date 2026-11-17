@@ -163,7 +163,7 @@ const renderBody=callJs.slice(callJs.indexOf("function renderParticipants("),cal
 assert.ok(renderBody.indexOf("area.append(wrapper);")>=0
   &&renderBody.indexOf("area.append(wrapper);")<renderBody.indexOf('call.bindVideoElement(video,p.sessionId,"videoTrack")'),
  "Stream video must be mounted on the page BEFORE it is bound");
-assert.match(callPage,/call\.mjs\?v=20261116-two-way-video/,"Call must load the fixed JS asset");
+assert.match(callPage,/call\.mjs\?v=20261117-call-sound/,"Call must load the fixed JS asset");
 assert.match(callPage,/call-skin\.css\?v=20261113-video-render/,"Call must load the loading-state CSS");
 assert.match(callJs,/videoRequest\("join"\)/);
 assert.match(callJs,/const PRIVATE_CALL_TYPE="nbl_private"/);
@@ -171,6 +171,17 @@ assert.match(callJs,/access\.callType!==PRIVATE_CALL_TYPE/);
 assert.match(callJs,/client\.call\(PRIVATE_CALL_TYPE,callId\)/);
 assert.doesNotMatch(callJs,/client\.call\(access\.callType,callId\)|client\.call\("default"/);
 assert.match(callPage,/NBL Private · Member-only video/);
-assert.match(callPage,/call\.mjs\?v=20261116-two-way-video/);
+assert.match(callPage,/call\.mjs\?v=20261117-call-sound/);
 assert.doesNotMatch(js,/STREAM_API_SECRET|VIDEO_SECRET/);
 console.log("PASS: NBL Messenger draft video invitation uses direct chats and secured call service.");
+
+// 10-5-5 Messenger safety extensions: iPhone install instructions and user-gesture sound recovery.
+assert.match(js,/function needsIphoneHomeScreen\(\)/);
+assert.match(js,/navigator\.standalone===true/);
+assert.match(js,/Add to Home Screen/);
+assert.match(app,/apple-touch-icon/);
+assert.match(app,/app\.js\?v=20261117-ios-notify/);
+assert.match(callPage,/id="callSound"/);
+assert.match(callJs,/async function enableRemoteSound\(\)/);
+assert.match(callJs,/await audio\.play\(\)/);
+assert.match(callJs,/callSound"\)\.addEventListener/);
