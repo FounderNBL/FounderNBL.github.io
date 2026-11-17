@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#02060b">
+<meta name="robots" content="noindex,nofollow">
+<title>Artist Submissions | NBL Music Productions</title>
+<link rel="stylesheet" href="./studio.css">
+<link rel="stylesheet" href="/nbl-world-header.css">
+<script defer src="/nbl-world-header.js"></script>
+<script defer src="./artist-upload.js"></script>
+</head>
+<body>
+<main class="studio-shell" style="max-width:850px">
+  <header class="catalog-section">
+    <p class="eyebrow">NBL MUSIC PRODUCTIONS · INDEPENDENT ARTISTS</p>
+    <h1>Submit your music</h1>
+    <p class="exclusive-copy">A signed-in NBL account can submit an original recording
+      for private review when artist intake opens. Submitting doesn't publish
+      your song, transfer ownership, guarantee placement, or start sales.</p>
+    <p><a href="/studio/" class="back">← NBL Music Productions</a></p>
+  </header>
+  <section class="player-card" style="padding:24px" aria-label="Artist submission">
+    <p id="artistUploadStatus" role="status" aria-live="polite">Checking artist intake…</p>
+    <form id="artistUploadForm" hidden>
+      <p><label>Song title
+        <input required name="songTitle" maxlength="160" autocomplete="off"></label></p>
+      <p><label>Artist name
+        <input required name="artistName" maxlength="140" autocomplete="off"></label></p>
+      <p><label>Recording (MP3, M4A, WAV or MP4; up to 50 MB)
+        <input required name="audioFile" type="file" accept=".mp3,.m4a,.wav,.mp4,audio/*,video/mp4"></label></p>
+      <p><label><input required type="checkbox" name="rightsConfirmed">
+        I own or have permission to submit this recording and all included
+        performances, beats, samples and artwork for NBL's private review.
+        I understand an individual agreement is needed before distribution or sale.</label></p>
+      <p><button class="details-toggle" type="submit" id="artistUploadSubmit">Send for private review</button></p>
+    </form>
+    <section aria-labelledby="artistSubmissionListTitle">
+      <h2 id="artistSubmissionListTitle">Your submissions</h2>
+      <div class="track-list" id="artistSubmissionList"></div>
+      <p class="exclusive-copy">Only you and authorized NBL staff may review your
+        submission status. No submitted music becomes publicly playable automatically.</p>
+    </section>
+  </section>
+</main>
+</body></html>
