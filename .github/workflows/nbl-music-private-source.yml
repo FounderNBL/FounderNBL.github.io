@@ -1,0 +1,18 @@
+name: NBL Music catalog and private-client source checks (no deployment)
+on:
+  pull_request:
+    paths:
+      - "studio/**"
+      - "scripts/check-nbl-music-free-library.test.mjs"
+      - "scripts/check-nbl-music-private-client.test.mjs"
+      - ".github/workflows/nbl-music-private-source.yml"
+permissions:
+  contents: read
+jobs:
+  music-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: NBL Music free showcase and staged private client safeguards
+        run: node --test scripts/check-nbl-music-free-library.test.mjs scripts/check-nbl-music-private-client.test.mjs
