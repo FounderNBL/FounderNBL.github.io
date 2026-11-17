@@ -101,7 +101,7 @@ assert.match(pulse,/id="socialApp" hidden/);
 assert.match(pulse,/data-feed="foryou"/);
 assert.match(pulse,/data-feed="notification"/);
 assert.match(pulse,/id="postForm"/);
-assert.match(pulse,/Go Live · setup pending/);
+assert.match(pulse,/id="pulseLive"/);
 assert.match(pulse,/<meta name="robots" content="index,follow">/);
 assert.match(pulse,/rel="canonical" href="https:\/\/newbeansland\.org\/pulse\/"/);
 assert.doesNotMatch(pulse,/Founder-only live preview|Public publishing and Go Live are not enabled/);
@@ -120,7 +120,7 @@ assert.doesNotMatch(js,/Video uploads are not enabled yet/);
 assert.match(js,/image_url:trusted/);
 assert.match(js,/await state\.client\.uploadImage\(\{file\}\)/);
 assert.match(js,/if\(asset\.type==="image"\)await state\.client\.deleteImage/);
-assert.match(pulse,/Go Live · setup pending/);
+assert.match(pulse,/id="pulseLive"/);
 
 // Pulse public avatars, member media and safe provider video embeds.
 assert.match(pulse,/id="profileAvatarFile"/);
@@ -197,3 +197,15 @@ assert.doesNotMatch(home,/rel="noopener noreferrer">Shop<\/a>/);
 
 assert.match(home,/nbl-world-header\.js\?v=20261114-public-members-v1/);
 assert.match(home,/nbl-world-header\.css\?v=20261114-public-members-v1/);
+
+const pulseLiveJs=read("pulse/live.mjs"),pulseLiveCss=read("pulse/live-nbl-only.css");
+assert.ok(pulse.includes('/pulse/live.mjs?v=20261116-stage'));
+assert.ok(pulse.includes('/pulse/live-nbl-only.css?v=20261116-stage'));
+for(const id of ["pulseLive","pulseLiveSetup","pulseLiveStart","pulseLiveGoLive","pulseLiveEnd","pulseLivePreview","pulseLiveViewer","pulseLiveVideo","pulseLiveError"]){assert.ok(pulse.includes('id="'+id+'"'),id+" missing");}
+assert.ok(pulseLiveJs.includes("const facebookEnabled = false"));
+assert.ok(pulseLiveJs.includes("const recordRequested = false"));
+assert.ok(pulseLiveJs.includes("initAfterNblSignIn"));
+assert.ok(pulseLiveJs.includes("functions/v1/nbl-live"));
+assert.doesNotMatch(pulseLiveJs,/SERVICE_ROLE_KEY|FB_PAGE_ACCESS_TOKEN|NBL_FCM_SERVICE_ACCOUNT_JSON/);
+assert.match(pulseLiveCss,/pulse-live-video/);
+console.log("PASS: NBL-only Pulse Live staged; existing Pulse/Messenger contracts preserved.");
