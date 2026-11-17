@@ -48,7 +48,7 @@
     if(!(file instanceof File)||file.size<1||file.size>52428800)
       throw Error("Choose a file under 50 MB.");
     if(!/^(audio\/mpeg|audio\/mp4|audio\/x-m4a|audio\/wav|audio\/x-wav|video\/mp4)$/.test(file.type))
-      throw Error("Only MP3, M4A, WAV or MP4 files are supported.");
+      throw Error("Only MP3, M4A or MP4 files are supported.");
     const ticket=await call("founder_upload_prepare",{kind,mime:file.type,size:file.size});
     const storage=await client();
     const r=await storage.storage.from(ticket.bucket).uploadToSignedUrl(
