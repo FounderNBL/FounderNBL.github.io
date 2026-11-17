@@ -46,8 +46,19 @@ jobs:
           assert.match(api,/friend_request_daily_limit/);
           assert.match(ddl,/enable row level security/);
           assert.match(ddl,/revoke all.*anon,authenticated/i);
-          assert.match(front,/Go Live · setup pending/);
-          assert.match(front,/disabled>Go Live/);
+          // Main still has a disabled placeholder. The NBL-only stage has
+          // authenticated controls but must hard-disable Meta and recording.
+          if (front.includes('id="pulseLive"')) {
+            const live=readFileSync('pulse/live.mjs','utf8');
+            assert.match(front,/id="socialApp" hidden/);
+            assert.match(live,/const facebookEnabled = false/);
+            assert.match(live,/const recordRequested = false/);
+            assert.match(live,/initAfterNblSignIn/);
+            assert.doesNotMatch(live,/SERVICE_ROLE_KEY|FB_PAGE_ACCESS_TOKEN|NBL_FCM_SERVICE_ACCOUNT_JSON/);
+          } else {
+            assert.match(front,/Go Live · setup pending/);
+            assert.match(front,/disabled>Go Live/);
+          }
           const bridge=readFileSync('supabase/functions/nbl-stream/index.ts','utf8');
           assert.match(bridge,/pulseModerationHealth/);
           assert.ok(bridge.includes('moderation/config/feeds%3Auser'));
