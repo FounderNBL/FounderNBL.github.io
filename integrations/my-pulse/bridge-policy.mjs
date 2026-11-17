@@ -1,4 +1,4 @@
-// MY PULSE bridge input policy. Pure helpers; no network, auth or publishing.
+// MY PULSE bridge input policy. Pure helpers: no network, auth, or publishing.
 export const CHANNELS = Object.freeze(["pulse","facebook_page","instagram"]);
 export function validateDraft(input) {
   if (!input || typeof input !== "object" || Array.isArray(input)) throw Error("invalid_request");
@@ -15,15 +15,20 @@ export function validateDraft(input) {
   const images = media.map(url => {
     if (typeof url !== "string" || url.length > 2048) throw Error("invalid_media_url");
     let u; try { u = new URL(url); } catch { throw Error("invalid_media_url"); }
-    // The same trusted Stream-hosted image domain currently accepted by Pulse.
     if (u.protocol !== "https:" || !u.hostname.endsWith(".stream-io-cdn.com") ||
-        u.username || u.password) throw Error("untrusted_media_url");
+        u.username || u.password || u.port) throw Error("untrusted_media_url");
     return u.href;
   });
-  // Account IDs are explicit. No fallback between personal, company or artist.
-  const account = input.account;
-  if (typeof account !== "string" || !/^[a-zA-Z0-9:_-]{3,100}$/.test(account)) throw Error("invalid_account");
-  return {identity,channels,account,caption,media:images};
+  // Every destination maps to its OWN verified account; no shared fallback.
+  const accounts = input.accounts;
+  if (!accounts || typeof accounts !== "object" || Array.isArray(accounts) ||
+      Object.keys(accounts).length !== channels.length) throw Error("invalid_accounts");
+  for (const channel of channels) {
+    const id = accounts[channel];
+    if (typeof id !== "string" || !/^[a-zA-Z0-9:_-]{3,100}$/.test(id))
+      throw Error("invalid_account_"+channel);
+  }
+  return {identity,channels,accounts:Object.fromEntries(channels.map(c=>[c,accounts[c]])),caption,media:images};
 }
 export async function fingerprint(draft) {
   const bytes = new TextEncoder().encode(JSON.stringify(draft));
