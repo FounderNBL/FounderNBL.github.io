@@ -76,6 +76,20 @@
       <div id="trackList" class="track-list"></div>
     </section>
 
+    <!-- Exclusive music is server-listed only: no private master is embedded in HTML. -->
+    <section class="catalog-section exclusive-catalog" id="exclusiveCatalog" aria-labelledby="exclusiveTitle" hidden>
+      <div class="section-heading">
+        <p class="eyebrow">NBL MUSIC PRODUCTIONS · PRIVATE RELEASES</p>
+        <h2 id="exclusiveTitle">Exclusive listening</h2>
+      </div>
+      <p class="exclusive-copy">Listen to approved JMELO, Shia and future NBL Music Productions releases.
+        Streaming is free. Private downloads require a verified purchase when checkout opens.</p>
+      <div id="exclusiveTrackList" class="track-list"></div>
+      <p id="exclusiveNow" class="exclusive-now">Choose a record.</p>
+      <audio id="exclusiveAudio" controls preload="none" aria-label="Exclusive music player"></audio>
+      <p id="exclusiveStatus" class="exclusive-status" role="status" aria-live="polite"></p>
+    </section>
+
     <footer>
       <p>© 2026 New Beansland™. Artist and writing credits remain attached to each release.</p>
       <p><a href="https://www.youtube.com/@JMeloNBLRecords" target="_blank" rel="noopener noreferrer">New Beansland music on YouTube</a></p>
@@ -85,5 +99,6 @@
   <script>if(location.hash==="#movie-studio") location.replace("/studios.html");</script>
   <script src="./catalog.js"></script>
   <script src="./player.js"></script>
+  <script src="./private-releases.js"></script>
 </body>
 </html>
