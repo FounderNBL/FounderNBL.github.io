@@ -11,6 +11,7 @@
 <script defer src="/nbl-product-plans.js?v=20260929"></script>
 <script defer src="/nbl-world-header.js"></script>
 <script defer src="./music-admin.js"></script>
+<script defer src="./music-manager.js"></script>
 </head>
 <body>
 <main class="studio-shell" style="max-width:930px">
@@ -31,6 +32,40 @@
         records—not proven unique people, paid streams, or royalties.</p>
     </div>
     <button id="musicAdminRefresh" class="details-toggle" type="button">Refresh counts</button>
+  </section>
+  <section class="catalog-section" id="musicReleaseEditor" hidden>
+    <div class="section-heading"><p class="eyebrow">FOUNDER ONLY</p>
+      <h2>Add exclusive music</h2></div>
+    <p class="exclusive-copy">Upload a private full-length listening copy and
+      a separate download master. Save as a draft; publishing the listening
+      copy is a separate deliberate action. Checkout remains OFF.</p>
+    <form id="musicReleaseForm" class="player-card" style="padding:24px">
+      <p><label>Unique release ID (lowercase letters, numbers, hyphens)
+        <input name="releaseId" required minlength="3" maxlength="72" pattern="[a-z0-9][a-z0-9-]{1,69}[a-z0-9]"></label></p>
+      <p><label>Song title <input name="title" required maxlength="160"></label></p>
+      <p><label>Lead artist <input name="artist" required maxlength="140"></label></p>
+      <p><label>Featured artist (optional) <input name="featured" maxlength="140"></label></p>
+      <p><label>Approved cover URL on newbeansland.org (optional)
+        <input name="coverUrl" type="url" placeholder="https://newbeansland.org/..."></label></p>
+      <p><label>Length in seconds
+        <input name="durationSeconds" type="number" required min="1" max="3600"></label></p>
+      <p><label>Full-song listening file — MP3/M4A/MP4, up to 50 MB
+        <input name="previewFile" type="file" required accept=".mp3,.m4a,.mp4,.wav,audio/*,video/mp4"></label></p>
+      <p><label>Separate download master — MP3/M4A/MP4, up to 50 MB
+        <input name="masterFile" type="file" required accept=".mp3,.m4a,.mp4,.wav,audio/*,video/mp4"></label></p>
+      <p><label><input name="rightsConfirmed" required type="checkbox">
+        I have verified that NBL may stream and commercially distribute
+        this exact recording, including beats, samples, vocals and artwork.</label></p>
+      <button class="details-toggle" type="submit" id="musicReleaseSave">Save private draft</button>
+      <p id="musicReleaseMessage" role="status" aria-live="polite"></p>
+      <div id="musicReleasePublish" hidden>
+        <p class="exclusive-copy">Draft saved. Only publish once you've checked the
+          artist credits, final listening file and rights.</p>
+        <button class="details-toggle" type="button" id="musicPublishButton">
+          Publish this song for free streaming
+        </button>
+      </div>
+    </form>
   </section>
 </main>
 </body>
