@@ -29,8 +29,8 @@ test("Grey stays locked while official artwork is displayed only behind protecte
 test("fresh cache keys load new styles and scripts on real entry pages",()=>{
  assert.match(read("account.html"),/nbl-world-header\.js\?v=20261113-beans-current-main/);
  assert.match(read("account.html"),/nbl-world-header\.css\?v=20261113-beans-current-main/);
- assert.match(read("index.html"),/nbl-world-header\.css\?v=20261114-public-members-v1/);
- assert.match(read("index.html"),/nbl-world-header\.js\?v=20261114-public-members-v1/);
+ assert.match(read("index.html"),/nbl-world-header\.css\?v=20261118-beans-services/);
+ assert.match(read("index.html"),/nbl-world-header\.js\?v=20261118-beans-services/);
  assert.match(read("university-campus.html"),/url=https:\/\/nblschool\.com\//);
 });
 
@@ -60,3 +60,4 @@ test("website Beans retires the old Grey/Messenger chooser while retaining PDF a
  const appParity=read("nbl-world-header.js");
  assert.doesNotMatch(appParity,/lockeOverride|bypassLocker|universityUnlocked=true/);
 });
+
