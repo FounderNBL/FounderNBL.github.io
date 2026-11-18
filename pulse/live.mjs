@@ -6,7 +6,22 @@
 // StreamVideoClient version matches call.mjs (1.27.0, the version proven in
 // this repo). A newer client (1.67.1 at check time, 2026-11-16) exists; do
 // not upgrade it in this change — verify it separately first.
-import { StreamVideoClient } from "https://esm.sh/@stream-io/video-client@1.27.0?bundle";
+// Only load the video SDK when a member actually starts or watches a stream.
+// A blocked video CDN must never disable Founder status/OFF controls.
+const STREAM_VIDEO_SDK = "https://esm.sh/@stream-io/video-client@1.27.0?bundle";
+let streamVideoClientPromise;
+async function videoClientConstructor() {
+  if (!streamVideoClientPromise) {
+    streamVideoClientPromise = import(STREAM_VIDEO_SDK).then((module) => {
+      if (typeof module.StreamVideoClient !== "function") throw Error("Pulse video client unavailable.");
+      return module.StreamVideoClient;
+    }).catch((error) => {
+      streamVideoClientPromise = null; // allow a later attempt if the network recovers
+      throw error;
+    });
+  }
+  return streamVideoClientPromise;
+}
 
 const ENDPOINT = "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-live";
 const CALL_TYPE = "livestream";
@@ -46,6 +61,10 @@ const REASON_TEXT = {
   facebook_auth_required: "Facebook Live needs a fresh sign-in. Your Pulse broadcast is still in backstage.",
   live_already_active: "A Pulse Live broadcast is already running.",
   live_disabled: "Pulse Live is OFF until the NBL launch switch is approved.",
+  admin_only: "The NBL Founder account is required to operate this switch.",
+  live_control_unavailable: "Pulse Live could not read its protected ON/OFF control. Broadcasting remains OFF.",
+  stream_call_type_unsafe: "Stream safety permissions are not verified. Pulse Live remains OFF.",
+  stream_call_type_unavailable: "The Stream live service is not ready. Pulse Live remains OFF.",
   live_not_found: "That broadcast could not be found.",
   live_not_backstage: "This broadcast is no longer backstage.",
   live_expired: "This broadcast ended automatically after the time limit.",
@@ -256,7 +275,8 @@ async function joinAsWebRtcViewer(callId) {
   const data = await liveApi("join-viewer", { callId }, "required");
   if (!data.key || !data.token || data.callId !== callId || data.callType !== CALL_TYPE)
     throw Error("Viewer session identity verification failed.");
-  state.client = new StreamVideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
+  const VideoClient = await videoClientConstructor();
+  state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
   state.call = state.client.call(CALL_TYPE, callId);
   await state.call.join({ create: false }); // no camera/mic for viewers
   state.mode = "viewing";
@@ -268,7 +288,7 @@ async function joinAsWebRtcViewer(callId) {
 async function refreshStatus(silent = false) {
   let data;
   try {
-    data = await liveApi("status", state.callId ? { callId: state.callId } : {}, "optional");
+    data = await liveApi("status", state.callId ? { callId: state.callId } : {}, "required");
   } catch (e) {
     if (e.reason === "sign_in_required" && !silent) {
       setStatus("Sign in to watch Pulse Live.");
@@ -276,7 +296,7 @@ async function refreshStatus(silent = false) {
       show("#pulseLiveSetup", false); show("#pulseLiveHost", false);
       return;
     }
-    if (!silent) showError(plainError(e));
+    if (!silent) { setStatus("Could not verify Pulse Live status."); showError(plainError(e)); }
     return;
   }
   if (!data || typeof data !== "object") return;
@@ -358,7 +378,7 @@ async function onToggleLive() {
   if (state.busy) return;
   const enabled = !state.liveEnabled;
   if (!enabled && !confirm("Turn Pulse Live OFF and stop the active broadcast for everyone?")) return;
-  setBusy(true); showError("");
+  setBusy(true); showError(""); setStatus("Verifying Founder Live switch…");
   try {
     const data = await liveApi("admin-switch", { enabled }, "required");
     state.liveEnabled = data.enabled === true;
@@ -385,7 +405,8 @@ async function onStart() {
     state.callId = data.callId;
     state.recordingRequested = recordRequested;
     if (data.facebook?.enabled === false && facebookEnabled) showError(REASON_TEXT.facebook_not_configured);
-    state.client = new StreamVideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
+    const VideoClient = await videoClientConstructor();
+  state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
     state.call = state.client.call(CALL_TYPE, data.callId);
     await state.call.join({ create: false });
     await state.call.camera.enable();
@@ -480,9 +501,26 @@ async function onFindRecording() {
   } finally { button.disabled = false; }
 }
 
+// On phones the sidebar is a fixed five-button navigation bar. Move this
+// exact control (never clone it) into the scrollable Pulse feed so all buttons
+// remain tappable, while restoring its original desktop sidebar placement.
+function placeLivePanel() {
+  const root = $("#pulseLive");
+  const sidebar = document.querySelector("#socialApp .pulse-sidebar");
+  const main = document.querySelector("#socialApp .pulse-main");
+  if (!root || !sidebar || !main) return;
+  if (window.matchMedia("(max-width: 760px)").matches) {
+    if (root.parentElement !== main) main.insertBefore(root, main.querySelector("#feedPanel"));
+  } else if (root.parentElement !== sidebar) {
+    sidebar.insertBefore(root, sidebar.querySelector(".pulse-create-shortcut"));
+  }
+}
+
 export function initPulseLive() {
   const root = $("#pulseLive");
   if (!root) return;
+  placeLivePanel();
+  window.matchMedia("(max-width: 760px)").addEventListener("change", placeLivePanel);
   $("#pulseLiveStart")?.addEventListener("click", () => { void onStart(); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
