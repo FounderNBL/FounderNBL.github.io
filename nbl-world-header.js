@@ -1119,6 +1119,47 @@
     beansLog.scrollTop=beansLog.scrollHeight;
   };
 
+  // First-party NBL service receipts. Only render safe navigation to NBL's
+  // exact HTTPS host; the chat reply may never supply external actions.
+  const appendBeansNblServiceActions=actions=>{
+    const list=Array.isArray(actions)?actions.filter(item=>{
+      if(!item||typeof item.label!=="string"||item.label.length>90||typeof item.url!=="string") return false;
+      try{
+        const url=new URL(item.url);
+        return url.protocol==="https:"&&url.hostname==="newbeansland.org"&&
+          !url.username&&!url.password&&!url.port;
+      }catch{return false;}
+    }).slice(0,4):[];
+    if(!list.length)return;
+    const box=document.createElement("div");
+    box.setAttribute("aria-label","Open NBL services");
+    box.style.margin="8px 0 14px";
+    box.style.padding="10px 12px";
+    box.style.border="1px solid rgba(255,255,255,.12)";
+    box.style.borderRadius="12px";
+    box.style.background="rgba(255,255,255,.035)";
+    const title=document.createElement("strong");
+    title.textContent="Open in New Beansland";
+    title.style.display="block";
+    title.style.marginBottom="6px";
+    box.appendChild(title);
+    for(const item of list){
+      const link=document.createElement("a");
+      link.href=item.url;
+      link.target="_blank";
+      link.rel="noopener noreferrer";
+      link.textContent=item.label;
+      link.setAttribute("aria-label",item.label);
+      link.style.display="block";
+      link.style.margin="6px 0";
+      link.style.color="inherit";
+      link.style.textDecoration="underline";
+      box.appendChild(link);
+    }
+    beansLog.appendChild(box);
+    beansLog.scrollTop=beansLog.scrollHeight;
+  };
+
   const appendBeansFileSources=sources=>{
     const list=Array.isArray(sources)?sources.filter(item=>item&&typeof item.filename==="string").slice(0,8):[];
     if(!list.length) return;
@@ -2171,6 +2212,7 @@
       appendBeansMessage("assistant",reply,String(payload?.speaker||"Beans"));
       window.NBLInfinitySound?.play("beans");
       appendBeansSources(payload?.sources);
+      appendBeansNblServiceActions(payload?.actions);
       appendBeansFileSources(payload?.fileSources);
       appendBeansImages(payload?.generatedImages);
       appendBeansArtifacts(payload?.artifacts);
