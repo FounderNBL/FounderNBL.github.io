@@ -281,5 +281,11 @@
   renderList();
   resizeCanvas();
   drawMotion();
-  if (tracks.length) load(0, false);
+  // Beans can deep-link to an already published NBL song. Do not auto-play:
+  // the visitor must deliberately press Play to start audio.
+  let requestedTrack = "";
+  try { requestedTrack = new URLSearchParams(window.location.search).get("track") || ""; } catch {}
+  const initialIndex = tracks.findIndex(track =>
+    typeof track?.id === "string" && track.id === requestedTrack);
+  if (tracks.length) load(initialIndex >= 0 ? initialIndex : 0, false);
 })();
