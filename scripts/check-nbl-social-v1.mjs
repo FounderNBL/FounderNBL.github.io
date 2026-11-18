@@ -101,7 +101,15 @@ assert.match(pulse,/id="socialApp" hidden/);
 assert.match(pulse,/data-feed="foryou"/);
 assert.match(pulse,/data-feed="notification"/);
 assert.match(pulse,/id="postForm"/);
-assert.match(pulse,/Go Live · setup pending/);
+assert.match(pulse,/id="pulseLiveAdmin" hidden/,"Founder switch must default hidden");
+assert.match(pulse,/id="pulseLiveToggle"/,"Real Founder ON/OFF control required");
+assert.match(pulse,/src="\/pulse\/live\.mjs/,"Pulse Live must be wired to real client");
+assert.doesNotMatch(pulse,/Go Live · setup pending/,"Old non-functional placeholder must be removed");
+const liveClient=read("pulse/live.mjs");
+assert.match(liveClient,/liveApi\("admin-switch"/,"Founder switch must call secured backend");
+assert.match(liveClient,/data\.enabled === true/,"Pulse UI must honor backend OFF state");
+assert.match(liveClient,/show\("#pulseLiveAdmin", data\.isAdmin === true\)/,"Only server-approved Founder sees control");
+assert.doesNotMatch(liveClient,/FB_PAGE_ACCESS_TOKEN|STREAM_API_SECRET/,"Provider secrets must not ship to browser");
 assert.match(pulse,/<meta name="robots" content="index,follow">/);
 assert.match(pulse,/rel="canonical" href="https:\/\/newbeansland\.org\/pulse\/"/);
 assert.doesNotMatch(pulse,/Founder-only live preview|Public publishing and Go Live are not enabled/);
@@ -134,7 +142,7 @@ assert.doesNotMatch(js,/Video uploads are not enabled yet/);
 assert.match(js,/image_url:trusted/);
 assert.match(js,/await state\.client\.uploadImage\(\{file\}\)/);
 assert.match(js,/if\(asset\.type==="image"\)await state\.client\.deleteImage/);
-assert.match(pulse,/Go Live · setup pending/);
+assert.match(pulse,/id="pulseLiveStart"/);
 
 // Pulse public avatars, member media and safe provider video embeds.
 assert.match(pulse,/id="profileAvatarFile"/);
