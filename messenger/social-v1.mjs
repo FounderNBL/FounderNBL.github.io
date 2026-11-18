@@ -20,6 +20,12 @@ const IMAGE_TYPES=new Set(["image/jpeg","image/png","image/webp"]);
 const VIDEO_TYPES=new Set(["video/mp4","video/webm"]);
 const avatarCache=new Map();
 const newBeatTracker=createNewBeatTracker();
+// Optional Pulse-only statistics event. Google reporting is a separate,
+// consent-first module; no personally identifying payloads cross this boundary.
+function announcePulseMetric(name){
+  if(location.pathname==="/pulse/"||location.pathname==="/pulse")
+    document.dispatchEvent(new CustomEvent("nbl:pulse:interaction",{detail:{name}}));
+}
 function youtubeVideoId(raw){
   if(!raw||typeof raw!=="string")return null;
   try{
@@ -219,6 +225,7 @@ function commentForm(activity,feedback){
     state.busy=true;submit.disabled=true;
     try{
       await state.client.addComment({object_type:"activity",object_id:activity.id,comment:input.value.trim()});
+      announcePulseMetric("pulse_comment_published");
       input.value="";feedback.textContent="Comment published.";
       await loadComments(activity,form.parentElement.querySelector(".social-comments"));
     }catch(error){feedback.textContent=safeError(error);}
@@ -279,6 +286,7 @@ function renderActivity(activity){
       if(liked)await state.client.deleteActivityReaction({activity_id:activity.id,type:"like"});
       else await state.client.addActivityReaction({activity_id:activity.id,type:"like",enforce_unique:true});
       liked=!liked;likeCount+=liked?1:-1;paintLike();
+      announcePulseMetric(liked?"pulse_like_added":"pulse_like_removed");
       feedback.textContent=liked?"You liked this post.":"Like removed.";
     }catch(e){feedback.textContent=safeError(e);}
     finally{like.disabled=false;}
@@ -312,6 +320,8 @@ function renderActivity(activity){
     share.target="_blank";
     share.rel="noopener noreferrer";
     share.setAttribute("aria-label","Share this public NBL post to your Facebook account");
+    // A click is NOT proof the external share completed.
+    share.addEventListener("click",()=>announcePulseMetric("pulse_share_link_opened"));
     actions.append(share);
   }
   if(signedActor&&authorId!==state.user.id){
@@ -389,6 +399,7 @@ async function loadLinkedPost(){
     if(!isShareablePost(activity)||activity.id!==linkedPostId)
       throw new Error("This post is not publicly shareable.");
     content.replaceChildren(renderActivity(activity));
+    announcePulseMetric("pulse_linked_post_opened");
   }catch{
     if(accountChanged)return;
     content.replaceChildren(element("p","social-feedback","This public NBL post is unavailable or you do not have access to it."));
@@ -601,6 +612,7 @@ async function loadFeed(){
     }
     state.unsubscribe=unsubs.length?()=>{for(const stop of unsubs)stop?.();}:null;
     status(LABELS[selected]+" ready.");
+    announcePulseMetric("pulse_feed_loaded");
   }catch(error){
     if(accountChanged)return;
     $("#feedItems").replaceChildren(element("p","social-feedback",safeError(error)));
@@ -689,6 +701,7 @@ async function publishPost(event){
     const modAction=String(result?.activity?.moderation?.action||result?.moderation?.action||"").toLowerCase();
     status(["remove","shadow","shadow_block","bounce"].includes(modAction)
       ?"Your post was submitted to moderation and may not be visible to others.":"Your NBL post was published.");
+    announcePulseMetric("pulse_post_submitted");
     state.selected="user";selectTab();await loadFeed();
   }catch(error){status("Post not published: "+safeError(error));}
   finally{state.busy=false;submit.disabled=false;}
