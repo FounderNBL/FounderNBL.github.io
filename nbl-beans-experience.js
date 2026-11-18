@@ -149,8 +149,12 @@ bagDetails.innerHTML=[
 ].join("");
 drawerScroll.insertBefore(bagDetails,history);
 bagDetails.addEventListener("toggle",async()=>{
-  if(!bagDetails.open)return;
+  if(!bagDetails.open){
+    bagDetails.querySelector("[data-nbl-beans-bag-status]").textContent="Open to check your Bag and Beans subscription safely.";
+    return;
+  }
   const status=bagDetails.querySelector("[data-nbl-beans-bag-status]");
+  const originalUser=String(window.Clerk?.user?.id||"");
   status.textContent="Checking your NBL account…";
   try{
     const t=await window.NBLAccountBridge?.getToken?.();
@@ -161,6 +165,12 @@ bagDetails.addEventListener("toggle",async()=>{
     });
     const data=await response.json().catch(()=>({}));
     if(!response.ok||data.ok!==true)throw Error("Bag status cannot be verified.");
+    // A different login on a shared device must never see the prior user's Bag.
+    const currentUser=String(window.Clerk?.user?.id||"");
+    if(!bagDetails.open||!originalUser||currentUser!==originalUser){
+      status.textContent="Your account changed. Open this section again to check your Bag.";
+      return;
+    }
     const bag=data.bag||{};
     const beans=data.beans||{};
     const member=String(beans.membershipStatus||"none").replaceAll("_"," ");
