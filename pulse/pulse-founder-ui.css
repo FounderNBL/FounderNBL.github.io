@@ -222,3 +222,38 @@
 @media(prefers-reduced-motion:reduce){
  .pulse-body .pulse-site-nav a{transition:none}
 }
+
+
+/* Pulse Live mobile control repair: the old reference stylesheet hides
+   .pulse-live even after the real v6 integration shipped. Override it last. */
+.pulse-body .pulse-live{
+ display:block;min-width:0;max-width:100%;
+ overflow-wrap:anywhere;
+}
+.pulse-body .pulse-live :is(button,input,video){max-width:100%}
+@media(max-width:760px){
+ /* The bottom navigation has five destinations, not a sixth Live tab.
+    The Live card is moved into .pulse-main by pulse/live.mjs. */
+ .pulse-body .pulse-sidebar .social-tabs .pulse-nav-live{display:none!important}
+ .pulse-body #socialApp .pulse-main > #pulseLive{
+  display:block;margin:12px 10px 15px;padding:15px;
+  border:1px solid #68417f;border-radius:16px;
+  background:linear-gradient(145deg,#211329,#140e20);
+  box-shadow:0 9px 25px #0005;
+  scroll-margin-top:76px;
+ }
+ .pulse-body #socialApp .pulse-main > #pulseLive > strong{
+  display:block;margin-bottom:7px;font-size:1rem;
+ }
+ .pulse-body #socialApp .pulse-main > #pulseLive button{
+  min-height:44px;white-space:normal;text-align:center;
+ }
+ .pulse-body #socialApp .pulse-main > #pulseLive input[type=text]{
+  min-height:44px;min-width:0;
+ }
+ .pulse-body .pulse-sidebar{max-height:calc(80px + env(safe-area-inset-bottom,0px))}
+ .pulse-body #socialApp .pulse-main,
+ .pulse-body #socialApp .pulse-main > *{min-width:0}
+ .pulse-body .pulse-topbar{max-width:100vw}
+ .pulse-body .pulse-topbar :is(.pulse-company-logo,.pulse-site-nav,.pulse-account-nav){min-width:0}
+}
