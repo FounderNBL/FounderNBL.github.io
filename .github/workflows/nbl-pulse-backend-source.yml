@@ -46,8 +46,14 @@ jobs:
           assert.match(api,/friend_request_daily_limit/);
           assert.match(ddl,/enable row level security/);
           assert.match(ddl,/revoke all.*anon,authenticated/i);
-          assert.match(front,/Go Live · setup pending/);
-          assert.match(front,/disabled>Go Live/);
+          assert.doesNotMatch(front,/Go Live · setup pending/,'Old placeholder must be removed');
+          assert.match(front,/id="pulseLiveAdmin" hidden/,'Founder switch stays hidden until backend authorizes it');
+          assert.match(front,/id="pulseLiveToggle"/,'Real ON/OFF control must exist');
+          assert.match(front,/src="\/pulse\/live\.mjs/,'Livestream must use the dedicated backend client');
+          const liveClient=readFileSync('pulse/live.mjs','utf8');
+          assert.match(liveClient,/liveApi\("admin-switch"/,'Founder switch calls server');
+          assert.match(liveClient,/data\.enabled === true/,'Go Live must respect the server OFF gate');
+          assert.doesNotMatch(liveClient,/STREAM_API_SECRET|FB_PAGE_ACCESS_TOKEN/,'No provider secrets in website');
           const bridge=readFileSync('supabase/functions/nbl-stream/index.ts','utf8');
           assert.match(bridge,/pulseModerationHealth/);
           assert.ok(bridge.includes('moderation/config/feeds%3Auser'));
