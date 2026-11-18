@@ -52,7 +52,9 @@ suggestions.innerHTML=[
 '<button type="button" data-nbl-beans-explore>◈ <span>Show me NBL worlds</span></button>',
 '<button type="button" data-nbl-beans-prompt="Help me write a song">♫ <span>Help me write a song</span></button>',
 '<button type="button" data-nbl-beans-prompt="How do I start Foundation?">✦ <span>How do I start Foundation?</span></button>',
-'<a href="/books.html">▣ <span>Take me to Books</span></a>'
+'<a href="/books.html">▣ <span>Take me to Books</span></a>',
+'<a href="/account.html#nblBagCard">▤ <span>My Bag</span></a>',
+'<button type="button" data-nbl-beans-prompt="Help me explore New Beansland and compare current published prices. Show me where to find products. Do not place any orders for me.">◇ <span>Help me shop</span></button>'
 ].join("");
 presence.insertAdjacentElement("afterend",suggestions);
 
@@ -97,6 +99,19 @@ suggestions.addEventListener("click",event=>{
  input.focus();
 });
 
+// The Bag deep link starts a REAL Beans conversation draft; it never buys,
+ // moves credits, or assumes a customer has an active wallet.
+const requestedGuide=new URLSearchParams(location.search).get("beans_guide");
+if(requestedGuide==="bag"){
+  input.value="Help me navigate New Beansland, find the current prices and my Bag at /account.html#nblBagCard, and explain what I can afford. I must confirm any purchase myself. Do not claim that the Bag can spend money until it is enabled.";
+  input.dispatchEvent(new Event("input",{bubbles:true}));
+  window.setTimeout(()=>{
+    const toggle=document.querySelector(".nbl-world-beans-toggle");
+    if(panel.hidden&&toggle)toggle.click();
+    input.focus();
+  },0);
+}
+
 const explore=document.createElement("details");
 explore.className="nbl-beans-explore-worlds";
 explore.innerHTML=[
@@ -109,9 +124,14 @@ explore.innerHTML=[
 '<a href="/studios.html">NBL Studios</a>',
 '<a href="/founder-office.html">Founder’s Office</a>',
 '<a href="https://nblworld.com/">NBL World · shop</a>',
+'<a href="/pricing.html">NBL services · current prices</a>',
+'<a href="/account.html#membershipCard">Beans subscription & billing</a>',
+'<a href="/account.html#nblBagCard">The Bag · Beanies & Racks</a>',
+'<a href="/pulse/">Pulse</a>',
 '</nav>'
 ].join("");
 drawerScroll.insertBefore(explore,history);
+
 const library=document.createElement("a");
 library.href="/account.html";
 library.className="nbl-beans-library-link";

@@ -113,6 +113,24 @@
         <details class="account-fine-print"><summary>Plan terms and school closure</summary><p class="status">Beans Starter is $4.99 for seven days, then $20/month for NBL Basic if not cancelled or upgraded during the first six days. Basic is $20/month, Plus $40/month, and Founder’s Deluxe $100/month. Monthly memberships renew until cancelled. The University is under construction and will be opening soon. No University or Foundation program checkout, pre-enrollment payment or tuition is being accepted. Free public school tours do not grant coursework, Grey/Virgo access, or any paid entitlement. University prices will be announced when approved.</p></details>
       </section>
 
+      <section class="card" id="nblBagCard" aria-labelledby="nblBagTitle">
+        <h2 id="nblBagTitle">Your Bag · Beanies &amp; Racks</h2>
+        <p class="status">One NBL Bag for eligible purchases across New Beansland. Your existing Beans membership and Studios Credits remain separate until a verified conversion is approved.</p>
+        <div class="grid" aria-label="Your Bag">
+          <div class="card metric"><strong id="nblBagBalance">Not active</strong><span>Beanies available</span></div>
+          <div class="card metric"><strong id="nblBagPaid">—</strong><span>Purchased Beanies</span></div>
+          <div class="card metric"><strong id="nblBagPromo">—</strong><span>Reward Beanies</span></div>
+        </div>
+        <p id="nblBagStatus" class="status" role="status" aria-live="polite">Checking your Bag…</p>
+        <p class="status">The Bag uses one NBL credit system: $1 paid issues 300 Beanies, worth $0.75 in NBL service credit. One Rack = 100 Beanies = $0.25 credit value. The planned $5 minimum pack would provide 1,500 Beanies (15 Racks, $3.75 credit value). Paid Bag top-ups and spending are not available yet; Beans membership checkout above remains separate.</p>
+        <div class="row">
+          <a class="button" href="/?beans_guide=bag">Ask Beans to help me shop</a>
+          <a class="button" href="/pricing.html">See current NBL prices</a>
+          <a class="button" href="/pulse/">Visit Pulse</a>
+        </div>
+        <p class="status">Want to subscribe to Beans? Use Membership &amp; billing above. Beans can explain options, but never pays or confirms checkout without you.</p>
+      </section>
+
       <section class="card" id="nblConnectCard">
         <h2>Beans · Connected apps</h2>
         <p class="status">Connect only accounts you choose.</p><details class="account-fine-print"><summary>How connected accounts and permissions work</summary><p class="status">Connect accounts you own. Google sign-in and optional Gmail inbox access are two different permissions. Gmail reading requires your separate consent, and Beans will never send or delete your mail from this read-only connection. GitHub supports repository inspection. Canva linking and design creation are temporarily paused.</p></details>
@@ -519,6 +537,34 @@
       }catch(error){nblConnectStatus.textContent=error.message||"NBL Connect is not ready yet."}
     };
 
+    const renderBag=async()=>{
+      const status=document.getElementById("nblBagStatus");
+      const balance=document.getElementById("nblBagBalance");
+      const paid=document.getElementById("nblBagPaid");
+      const rewards=document.getElementById("nblBagPromo");
+      balance.textContent="Not active";paid.textContent="—";rewards.textContent="—";
+      try{
+        const t=await token();
+        if(!t)throw new Error("Sign in to view your Bag.");
+        const response=await fetch("https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-bag?view=mine",{
+          method:"GET",cache:"no-store",headers:{Accept:"application/json",Authorization:"Bearer "+t}
+        });
+        const data=await response.json().catch(()=>({}));
+        if(!response.ok||data.ok!==true)throw new Error("Bag information is temporarily unavailable.");
+        const bag=data.bag||{};
+        if(bag.enabled&&Number.isSafeInteger(bag.totalUnits)){
+          balance.textContent=String(bag.totalUnits);
+          paid.textContent=String(bag.purchasedUnits??0);
+          rewards.textContent=String(bag.promotionalUnits??0);
+          status.textContent=bag.spendingEnabled
+            ?"Your Bag is available. Every product sets its own price; Beans subscriptions are managed separately."
+            :"Your Bag is visible, but Bag checkout is not accepting purchases yet.";
+        }else{
+          status.textContent="The universal Bag is securely connected to your NBL account but is not accepting payments or issuing Beanies. Existing Beans subscriptions still work through Membership & billing.";
+        }
+      }catch(e){status.textContent=e?.message||"Could not check your Bag."; }
+    };
+
     const renderSummary=async()=>{
       const payload=await accountFetch("?action=summary");
       usernameInput.value=payload?.profile?.username||"";
@@ -794,7 +840,7 @@
     };
 
     try{
-      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderConnect(),renderStarterAuto()]);
+      await Promise.all([renderSummary(),renderHistory(),renderMembership(),renderDeliveries(),renderConnect(),renderStarterAuto(),renderBag()]);
       if(checkoutParams.get("checkout")==="success"){
         for(let attempt=0;attempt<3;attempt++){
           await new Promise(resolve=>setTimeout(resolve,1500));
