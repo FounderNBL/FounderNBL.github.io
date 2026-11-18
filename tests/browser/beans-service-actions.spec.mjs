@@ -22,12 +22,12 @@ async function prepare(page,{signedIn=true,reply={},chatHandler=null}={}){
     calls.push({path:url.pathname,method:request.method(),authorization:request.headers().authorization,body:request.postDataJSON()});
     if(url.pathname.endsWith("/nbl-core/chat")){
       if(chatHandler) return chatHandler(route);
-      return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+      return route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":"*"},body:JSON.stringify({
         message:"Here is the NBL service you asked for.",authenticated:true,
         toolsUsed:["nbl_services"],readOnly:true,serviceVerified:true,...reply
       })});
     }
-    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({messages:[],conversations:[],meter:{},providers:[],knowledge:{}})});
+    return route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":"*"},body:JSON.stringify({messages:[],conversations:[],meter:{},providers:[],knowledge:{}})});
   });
   await page.goto("/",{waitUntil:"domcontentloaded"});
   await page.getByRole("button",{name:"Open Beans",exact:true}).click();
@@ -144,7 +144,7 @@ test("a late service response cannot appear after the NBL account changes",async
   const completed=new Promise(resolve=>{finish=resolve;});
   const calls=await prepare(page,{chatHandler:async route=>{
     await pending;
-    await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({
+    await route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":"*"},body:JSON.stringify({
       message:"Private fixture balance: 731 credits",toolsUsed:["nbl_services"],serviceVerified:true,
       actions:[{label:"Open video creator",url:destinations[4][2]}]
     })}).catch(()=>{});
