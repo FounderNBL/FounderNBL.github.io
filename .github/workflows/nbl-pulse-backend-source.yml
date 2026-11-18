@@ -87,6 +87,18 @@ jobs:
           console.log('Stream health:',h.status,health.code,health.connected);
           assert.equal(h.status,200,'Stream bridge must have valid provider connection');
           assert.equal(health.connected,true);
+          const liveResp=await fetch(base+'nbl-live?action=health',{signal:AbortSignal.timeout(12000)});
+          const live=await liveResp.json();
+          console.log('Pulse Live health:',liveResp.status,live.code,'type present',live.callTypePresent,'safe',live.callTypeReady,'switch ON',live.livestreamEnabled);
+          assert.equal(liveResp.status,200,'Live Edge Function must run and reach Stream');
+          assert.equal(live.connected,true,'Livestream must connect to the existing Video API');
+          assert.equal(live.livestreamEnabled,false,'Production master switch must remain OFF until explicitly enabled by Founder');
+          assert.equal(live.callTypePresent,true,'Expected existing livestream call type');
+          assert.equal(live.callTypeReady,true,'Stream call type permissions/auto-on must be safe before public launch');
+          const anonymousLive=await fetch(base+'nbl-live',{method:'POST',headers:{'content-type':'application/json'},
+            body:JSON.stringify({action:'status'}),signal:AbortSignal.timeout(12000)});
+          console.log('Pulse Live anonymous status',anonymousLive.status);
+          assert.equal(anonymousLive.status,401,'Signed-out visitors cannot access the Pulse Live API');
           for(const action of ['nbl-stream','nbl-social']){
             const r=await fetch(base+action,{method:'POST',headers:{'content-type':'application/json'},
               body:JSON.stringify({action:'session'}),signal:AbortSignal.timeout(12000)});
