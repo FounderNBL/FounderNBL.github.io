@@ -70,7 +70,7 @@ const REASON_TEXT = {
   live_expired: "This broadcast ended automatically after the time limit.",
   session_expired: "This broadcast ended automatically after the time limit.",
   live_rate_limited: "Daily start limit reached. Try again tomorrow.",
-  live_monthly_allowance_used: "Your free Pulse Live for this month has been used. Try next month.",
+  live_monthly_allowance_used: "Your 20 free Pulse Live minutes have been used for this UTC month. They reset next month.",
   live_budget_reached: "NBL Pulse Live has reached its monthly pilot limit. New broadcasts are paused to protect costs.",
   live_unavailable: "Pulse Live is unavailable right now. Try again in a moment.",
   live_stop_unconfirmed: "Broadcast shutdown was not confirmed. Press End Live again.",
@@ -330,7 +330,10 @@ async function refreshStatus(silent = false) {
   if (status !== "live" && status !== "backstage") {
     if (state.mode === "viewing") await teardownStream();
     if (status === "idle") {
-      setStatus(data.enabled !== true ? "Pulse Live is OFF until the NBL launch is approved." : (data.isHost ? "Ready to start your Pulse Live broadcast." : "No live broadcast right now."));
+      const remaining = data.isAdmin ? null : data.allowance?.remainingSeconds;
+      const extra = typeof remaining === "number" && Number.isFinite(remaining)
+        ? " " + Math.ceil(remaining / 60) + " free Live minutes left this month (no rollover)." : "";
+      setStatus(data.enabled !== true ? "Pulse Live is OFF until the NBL launch is approved." : (data.isHost ? "Ready to start your Pulse Live broadcast." + extra : "No live broadcast right now."));
       show("#pulseLiveBadge", false);
       show("#pulseLiveSetup", data.enabled === true && data.isHost === true);
       show("#pulseLiveHost", false);
