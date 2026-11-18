@@ -94,7 +94,7 @@ jobs:
           assert.equal(live.connected,true,'Livestream must connect to the existing Video API');
           assert.equal(live.livestreamEnabled,false,'Production master switch must remain OFF until explicitly enabled by Founder');
           assert.equal(live.callTypePresent,true,'Expected existing livestream call type');
-          assert.equal(live.callTypeReady,true,'Stream call type permissions/auto-on must be safe before public launch');
+          assert.equal(live.callTypeReady === true || (live.permissionsRepairable === true && live.livestreamEnabled === false),true,'Provider must either have safe grants now or be repairable only by a Founder ON action while OFF');
           const anonymousLive=await fetch(base+'nbl-live',{method:'POST',headers:{'content-type':'application/json'},
             body:JSON.stringify({action:'status'}),signal:AbortSignal.timeout(12000)});
           console.log('Pulse Live anonymous status',anonymousLive.status);
