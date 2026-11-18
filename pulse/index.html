@@ -46,6 +46,20 @@
 @media(max-width:1050px){.pulse-grid{grid-template-columns:190px minmax(0,1fr)}.pulse-rail{grid-column:2;grid-template-columns:repeat(2,1fr)}}
 @media(max-width:680px){.pulse-topbar{padding:10px}.pulse-topbar nav{gap:8px}.pulse-topbar nav a{font-size:.7rem}.pulse-topbar nav a:nth-child(3){display:none}.pulse-topbar strong{font-size:.82rem}.pulse-grid{display:block}.pulse-sidebar{position:static;padding:10px}.pulse-sidebar h2{display:none}.pulse-sidebar .social-tabs{flex-direction:row;overflow-x:auto}.pulse-sidebar .social-tabs button,.pulse-sidebar .social-tabs a{width:auto;flex:none;font-size:.8rem;white-space:nowrap;padding:10px}.pulse-live{margin:8px 2px 0;padding:8px 0}.pulse-rail{display:none}.pulse-main .social-compose,.pulse-main .social-list{padding:13px}}
 .pulse-connect{position:relative;z-index:19;align-self:center}.pulse-connect>summary{display:inline-flex;align-items:center;gap:8px;cursor:pointer;list-style:none;padding:12px 18px;font-weight:800}.pulse-connect>summary::-webkit-details-marker{display:none}.pulse-connect-menu{position:absolute;right:0;top:calc(100% + 9px);z-index:21;width:min(350px,calc(100vw - 32px));padding:14px;border:1px solid #945ac4;border-radius:16px;background:#190e2a;box-shadow:0 12px 44px #000a;display:grid;gap:5px}.pulse-connect-menu>strong{color:#f3ddff;margin-bottom:7px}.pulse-connect-menu>a,.pulse-connect-menu>button{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:10px;border:0;border-radius:10px;background:#261638;color:#fff;text-decoration:none;font:inherit;cursor:pointer}.pulse-connect-menu :is(a,button):hover{background:#492366}.pulse-connect-menu b{font-size:1.1rem;display:grid;place-items:center;flex:none;border-radius:50%;width:34px;height:34px;background:#60328d}.pulse-connect-menu small{display:block;font-size:.72rem;color:#ddc7ec;margin-top:3px}.pulse-connect-menu p{font-size:.75rem;color:#c4b0d8;margin:8px 2px 0}.pulse-composer-who{display:flex;align-items:center;gap:10px;margin-bottom:12px;color:#dfb7ff;font-weight:800}#videoLinkArea{margin-top:14px}#videoLink{display:block;width:100%;background:#20142f;color:#fff;border:1px solid #68457e;border-radius:9px;padding:12px}.pulse-video-rights{font-size:.83rem;display:flex!important;gap:8px;align-items:center;font-weight:500!important}.pulse-video-rights input{accent-color:#a746fa}.pulse-body .social-card{padding:18px}.pulse-body .social-author-row{padding-bottom:8px}.pulse-body .social-actions button{border-radius:999px}@media(max-width:680px){.pulse-connect{width:100%}.pulse-connect>summary{width:100%;justify-content:center}.pulse-connect-menu{left:0;right:auto}}
+.pulse-live button:not(:disabled){cursor:pointer;color:#f4eaff}.pulse-live button:disabled{opacity:.55;cursor:not-allowed}
+.pulse-live-status{font-size:.85rem;color:#e7c9ff;line-height:1.5;margin:8px 0}
+.pulse-live-title{font-weight:800;color:#f0d5ff;margin:8px 0}
+.pulse-live-video{width:100%;aspect-ratio:16/9;border-radius:12px;background:#030207;display:block;margin-top:10px}
+.pulse-live-badge{display:inline-block;padding:3px 9px;border-radius:999px;background:#e5484d;color:#fff;font-size:.72rem;font-weight:900;letter-spacing:.08em}
+.pulse-live-badge.pulse-live-badge-off{background:#3a2b52;color:#cbb8e0}
+.pulse-live-meta{font-size:.8rem;color:#b7a7c9}
+.pulse-live-error{font-size:.85rem;color:#ffb3c0;line-height:1.5}
+.pulse-live label{display:block;font-size:.8rem;font-weight:800;color:#e4d5f3;margin:10px 0 4px}
+.pulse-live input[type=text]{width:100%;background:#20142f;color:#fff;border:1px solid #68457e;border-radius:9px;padding:11px}
+.pulse-live input[type=checkbox]{accent-color:#a746fa}
+.pulse-live .pulse-live-check{display:flex;gap:8px;align-items:center;font-weight:500}
+.pulse-live #pulseLiveSetup button,.pulse-live #pulseLiveHost button{width:100%;margin-top:8px}
+.pulse-live-remote{margin-top:10px}
 </style>
 <link rel="stylesheet" href="/pulse/pulse-reference-ui.css?v=20261109-no-city">
 <link rel="stylesheet" href="/pulse/pulse-live-design.css?v=20261110-visual-release">
@@ -53,7 +67,7 @@
 <link rel="stylesheet" href="/pulse/pulse-invites.css?v=20261110-cross-app">
 <link rel="stylesheet" href="/pulse/pulse-founder-ui.css?v=20261117-founder-reference">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
-</head><body class="pulse-body">
+<script type="module" src="/pulse/live.mjs?v=20261118-member-live-switch"></script></head><body class="pulse-body">
 <header class="pulse-topbar" aria-label="NBL Pulse site navigation">
   <a class="pulse-company-logo" href="/" aria-label="New Beansland home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" width="40" height="40"><span class="pulse-company-wordmark">NBL<small>New Beansland™</small></span></a>
   <nav class="pulse-site-nav" aria-label="NBL destinations">
@@ -121,12 +135,39 @@
     <button data-feed="user" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">▤</span><span>My Posts</span></button>
     <button data-feed="friends" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">⌕</span><span>Explore <small>(People)</small></span></button>
     <span class="pulse-nav-future"><span class="pulse-nav-glyph" aria-hidden="true">◯</span><span>Stories <small>Coming soon</small></span></span>
-    <span class="pulse-nav-future"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live <small>Coming soon</small></span></span>
+    <a class="pulse-nav-live" href="#pulseLive"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live <small>OFF until enabled</small></span></a>
     <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
     <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="30" height="30" alt=""><span>Messenger</span></a>
     <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Pulse post"><span aria-hidden="true">＋</span><span>Create</span></a>
   </nav>
-  <div class="pulse-live" hidden aria-hidden="true"><strong>● Go Live</strong><p>Live is not available until server-side safety and spending limits are approved.</p><button type="button" disabled>Go Live · setup pending</button></div>
+  <div class="pulse-live" id="pulseLive"><strong>● Go Live</strong>
+  <p class="pulse-live-status" id="pulseLiveStatus" role="status" aria-live="polite">Checking Pulse Live…</p>
+  <div id="pulseLiveAdmin" hidden aria-label="Founder livestream controls">
+    <button id="pulseLiveToggle" type="button" class="pulse-live-danger" aria-describedby="pulseLiveStatus">Turn Pulse Live ON</button>
+  </div>
+  <p><span class="pulse-live-badge pulse-live-badge-off" id="pulseLiveBadge" hidden>LIVE</span> <span class="pulse-live-meta" id="pulseLiveViewers" hidden></span> <span class="pulse-live-meta" id="pulseLiveElapsed" hidden></span></p>
+  <p class="pulse-live-title" id="pulseLiveTitle" hidden></p>
+  <div id="pulseLiveSetup" hidden>
+    <p class="pulse-live-meta">NBL members · maximum 5 minutes · up to 100 viewers. Facebook and recording are on hold.</p>
+    <label for="pulseLiveTitleInput">Broadcast title</label>
+    <input id="pulseLiveTitleInput" type="text" maxlength="140" value="NBL Pulse Live" autocomplete="off">
+    <label class="pulse-live-check" hidden><input id="pulseLiveFacebook" type="checkbox" disabled> Facebook Live (later)</label>
+     <label class="pulse-live-check" hidden><input id="pulseLiveRecord" type="checkbox" disabled> Save recording (later)</label>
+    <p class="pulse-live-meta" id="pulseLiveFacebookNote" hidden>Facebook integration comes after Pulse is verified</p>
+    <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
+     <button id="pulseLiveFindRecording" type="button">Find latest saved livestream</button>
+     <p class="pulse-live-meta" id="pulseLiveSavedResult" aria-live="polite"></p>
+  </div>
+  <div id="pulseLiveHost" hidden>
+    <button id="pulseLiveGoLive" type="button" class="pulse-live-primary">Go Live</button>
+    <button id="pulseLiveEnd" type="button" class="pulse-live-danger">End Live</button>
+  </div>
+  <video id="pulseLivePreview" class="pulse-live-video" autoplay muted playsinline hidden></video>
+  <div id="pulseLiveViewer" hidden>
+    <video id="pulseLiveVideo" class="pulse-live-video" controls autoplay muted playsinline></video>
+  </div>
+  <p class="pulse-live-error" id="pulseLiveError" role="alert" hidden></p>
+</div>
   <a class="pulse-create-shortcut" href="#composeTitle" aria-label="Jump to create a Pulse post"><span aria-hidden="true">＋</span> Create Post</a>
 </aside><div class="pulse-main"><section class="pulse-stories" aria-label="Stories coming soon">
       <div class="pulse-highlights" aria-label="NBL destinations and upcoming stories">
