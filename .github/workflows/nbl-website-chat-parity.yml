@@ -37,6 +37,8 @@ on:
       - "studio/creator.css"
       - "tests/security/studios-creator.test.mjs"
       - ".github/workflows/nbl-website-chat-parity.yml"
+      # Pulse-only updates use their dedicated checks, not the full site browser suite.
+      - "!pulse/**"
   pull_request:
     paths:
       - "nbl-world-header.js"
@@ -72,6 +74,13 @@ on:
       - "studio/creator.css"
       - "tests/security/studios-creator.test.mjs"
       - ".github/workflows/nbl-website-chat-parity.yml"
+      # Pulse-only updates use their dedicated checks, not the full site browser suite.
+      - "!pulse/**"
+
+# PR edits supersede older PR revisions, not main/release work.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   check:
