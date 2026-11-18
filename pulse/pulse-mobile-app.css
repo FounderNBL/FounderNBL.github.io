@@ -1,0 +1,236 @@
+/* NBL Pulse: phone-first social app surface.
+   Deliberately distinct from the desktop dashboard. Desktop is unchanged.
+   Visual changes only; Clerk, Stream Feeds, Messenger, moderation and Live
+   authorization stay in their existing source. */
+@media (max-width:760px) {
+  .pulse-body {
+    background:#090711;
+    color:#f6f0fb;
+    font-size:15px;
+    padding-bottom:calc(92px + env(safe-area-inset-bottom, 0px));
+    overflow-x:clip;
+  }
+  .pulse-body .pulse-topbar {
+    position:sticky;top:0;z-index:90;
+    display:flex;align-items:center;flex-wrap:nowrap;
+    width:100%;min-height:58px;
+    padding:7px 12px;
+    gap:7px;background:#150e21f7;
+    border-bottom:1px solid #4b315b;
+  }
+  .pulse-body .pulse-topbar .pulse-site-nav {display:none!important}
+  .pulse-body .pulse-topbar > a.pulse-company-logo {
+    flex:1 1 auto;min-width:0;max-width:none;gap:8px;
+    text-decoration:none;
+  }
+  .pulse-body .pulse-company-logo img {width:34px;height:34px;flex:none}
+  .pulse-body .pulse-company-logo .pulse-company-wordmark {
+    display:inline-flex;flex-direction:column;min-width:0;
+    font-size:1.15rem;line-height:1.05;letter-spacing:.01em;
+  }
+  .pulse-body .pulse-company-logo .pulse-company-wordmark small {
+    display:block;font-size:.58rem;letter-spacing:.02em;
+    margin-top:3px;white-space:nowrap;
+  }
+  .pulse-body .pulse-account-nav {display:flex;gap:3px;flex:0 0 auto;order:1}
+  .pulse-body .pulse-account-nav .pulse-header-action,
+  .pulse-body .pulse-account-nav .pulse-account-link {display:none!important}
+  .pulse-body .pulse-account-nav .pulse-message-top {
+    display:grid;place-items:center;width:42px;height:42px;padding:6px;
+    border:0;background:transparent;
+  }
+  .pulse-body .pulse-account-nav .pulse-message-top img {width:30px;height:30px}
+  .pulse-body .pulse-mobile-more {
+    order:2;display:block!important;position:relative;flex:0 0 auto;
+  }
+  .pulse-body .pulse-mobile-more > summary {
+    display:grid;place-items:center;width:44px;height:44px;
+    font-size:1.4rem;border-radius:12px;cursor:pointer;
+  }
+  .pulse-body .pulse-mobile-more-options {
+    right:0;left:auto;top:46px;z-index:110;
+    min-width:min(225px, calc(100vw - 24px));
+    padding:10px;gap:6px;
+    background:#24162f;border:1px solid #8551a0;
+    border-radius:14px;box-shadow:0 16px 40px #000a;
+  }
+  .pulse-body .pulse-mobile-more-options :is(a,button) {
+    min-height:44px;display:flex;align-items:center;
+    padding:10px 12px;border-radius:10px;
+    background:#382345;color:#f7edff;font-size:.91rem;
+  }
+  .pulse-body .pulse-shell {
+    display:block;width:100%;max-width:700px;margin:0 auto;
+    padding:0 0 16px;
+  }
+  .pulse-body .pulse-shell .preview-bar,
+  .pulse-body .pulse-shell .pulse-intro-title,
+  .pulse-body .pulse-features,
+  .pulse-body .pulse-stories,
+  .pulse-body .pulse-rail {display:none!important}
+  .pulse-body .pulse-shell .social-intro {
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:9px;
+    margin:0;padding:11px 13px 9px;min-height:0;
+  }
+  .pulse-body .social-intro #identity {
+    flex:1 1 168px;min-width:0;max-width:100%;
+    border-radius:13px;min-height:42px;
+    padding:5px 7px;
+  }
+  .pulse-body #identityHandle {min-width:0;max-width:120px}
+  .pulse-body .pulse-connect {flex:0 1 auto;min-width:0;width:auto}
+  .pulse-body .pulse-connect > summary {
+    width:auto;min-height:42px;padding:9px 12px;
+    white-space:normal;font-size:.8rem;
+  }
+  .pulse-body #socialStatus {
+    margin:0;padding:0 14px 9px;min-height:0;font-size:.79rem;
+  }
+  .pulse-body #socialApp .pulse-grid {
+    display:block!important;width:100%;min-width:0;
+  }
+  .pulse-body .pulse-main {display:block;min-width:0;width:100%}
+  .pulse-body .pulse-main > * {min-width:0;max-width:100%}
+  .pulse-body .pulse-main .social-compose {
+    margin:2px 10px 12px!important;padding:14px!important;
+    border-radius:17px!important;
+    border:1px solid #554060!important;
+    box-shadow:none!important;background:#191222!important;
+  }
+  .pulse-body .pulse-main .social-compose h2 {font-size:1.02rem}
+  .pulse-body .pulse-composer-who {gap:8px;min-width:0}
+  .pulse-body #postText {
+    display:block;width:100%;min-width:0;
+    font-size:16px;line-height:1.45;
+    min-height:72px;padding:12px;border-radius:13px;
+  }
+  .pulse-body .pulse-compose-actions {
+    display:flex;flex-wrap:wrap;gap:6px;
+    align-items:center;min-width:0;
+  }
+  .pulse-body .pulse-compose-tool {
+    min-height:44px;min-width:44px;flex:1 1 auto;
+    padding:8px 7px;font-size:.83rem;
+    white-space:normal;overflow-wrap:anywhere;
+  }
+  .pulse-body .pulse-compose-actions .pulse-submit {
+    min-height:44px;min-width:74px;padding:9px 12px;
+  }
+  .pulse-body #feedPanel {
+    margin:0!important;padding:0!important;
+    width:100%;border:0!important;background:transparent!important;
+  }
+  .pulse-body #feedPanel .social-list-head {
+    margin:0 10px 10px!important;padding:12px 14px!important;
+    background:#1b1426;border:1px solid #493550;
+    border-radius:14px;gap:8px;flex-wrap:wrap;
+  }
+  .pulse-body #feedItems {
+    display:grid;gap:11px;width:100%;
+  }
+  .pulse-body #feedItems .social-card {
+    margin:0 10px!important;padding:14px!important;
+    width:auto;max-width:calc(100% - 20px);min-width:0;
+    border-radius:16px!important;background:#17121f;
+    box-shadow:none;
+  }
+  .pulse-body .social-author-row {min-width:0;gap:9px}
+  .pulse-body .social-author-row .social-author {
+    min-width:0;overflow-wrap:anywhere;
+  }
+  .pulse-body .social-body {
+    font-size:.98rem;line-height:1.5;overflow-wrap:anywhere;
+  }
+  .pulse-body .social-media {max-width:100%;margin:11px 0}
+  .pulse-body .social-media img,
+  .pulse-body .social-media video {
+    display:block;width:100%;max-width:100%;
+    max-height:75svh;object-fit:contain;
+  }
+  .pulse-body .social-actions {
+    display:flex;flex-wrap:wrap;gap:6px;min-width:0;
+  }
+  .pulse-body .social-actions :is(button,a) {
+    min-height:44px;flex:1 1 auto;
+    padding:9px 8px;font-size:.82rem;
+    white-space:normal;overflow-wrap:anywhere;
+  }
+  /* A fixed FIVE-destination phone tab bar, never a desktop sidebar. */
+  .pulse-body #socialApp .pulse-sidebar {
+    position:fixed!important;inset:auto 0 0;
+    z-index:80;min-height:0;max-height:none;
+    width:100%;padding:5px 5px calc(5px + env(safe-area-inset-bottom,0px));
+    margin:0;border:0;border-top:1px solid #5b3e70;
+    border-radius:0;background:#160e22f7;
+    box-shadow:0 -7px 25px #0009;
+  }
+  .pulse-body .pulse-sidebar h2,
+  .pulse-body .pulse-sidebar .pulse-nav-future,
+  .pulse-body .pulse-sidebar .pulse-nav-live,
+  .pulse-body .pulse-sidebar .pulse-create-shortcut,
+  .pulse-body .pulse-sidebar .social-tabs [data-feed="user"],
+  .pulse-body .pulse-sidebar .social-tabs [data-feed="friends"] {
+    display:none!important;
+  }
+  .pulse-body .pulse-sidebar .social-tabs {
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    width:100%;gap:2px;margin:0;border:0;overflow:visible;
+  }
+  .pulse-body .pulse-sidebar .social-tabs :is(
+    button[data-feed="foryou"],button[data-feed="timeline"],
+    a.pulse-mobile-create,button[data-feed="notification"],a.pulse-message-tab
+  ) {
+    display:flex!important;flex-direction:column;
+    justify-content:center!important;align-items:center;
+    width:100%;min-width:0;min-height:61px;
+    padding:5px 2px 4px;gap:3px;
+    font-size:.69rem;line-height:1.12;
+    white-space:normal;text-align:center;border:0;
+  }
+  .pulse-body .pulse-sidebar .social-tabs [data-feed="foryou"] {order:1}
+  .pulse-body .pulse-sidebar .social-tabs [data-feed="timeline"] {order:2}
+  .pulse-body .pulse-sidebar .social-tabs a.pulse-mobile-create {order:3}
+  .pulse-body .pulse-sidebar .social-tabs [data-feed="notification"] {order:4}
+  .pulse-body .pulse-sidebar .social-tabs a.pulse-message-tab {order:5}
+  .pulse-body .pulse-sidebar .social-tabs .pulse-nav-glyph {
+    font-size:1.3rem;line-height:1;height:22px;
+  }
+  .pulse-body .pulse-sidebar .social-tabs button::before {display:none!important}
+  .pulse-body .pulse-sidebar .social-tabs button small {display:none}
+  /* The same real Live panel is moved to the feed via pulse/live.mjs.
+     If scripts fail it must NOT overflow the bottom navigation. */
+  .pulse-body .pulse-sidebar > #pulseLive {display:none!important}
+  .pulse-body #socialApp .pulse-main > #pulseLive {
+    display:block!important;margin:12px 10px 14px;
+    padding:15px;border:1px solid #764d90;
+    background:linear-gradient(150deg,#281631,#171122);
+    border-radius:17px;box-shadow:none;
+    scroll-margin-top:75px;
+    overflow-wrap:anywhere;
+  }
+  .pulse-body #socialApp .pulse-main > #pulseLive > strong {
+    display:block;margin-bottom:8px;font-size:1.07rem;
+  }
+  .pulse-body #socialApp .pulse-main > #pulseLive :is(button,input,video) {
+    max-width:100%;min-width:0;
+  }
+  .pulse-body #socialApp .pulse-main > #pulseLive button {
+    min-height:44px;white-space:normal;
+  }
+  .pulse-body #socialApp .pulse-main > #pulseLive input[type=text] {
+    font-size:16px;min-height:44px;
+  }
+}
+@media (max-width:359px) {
+  .pulse-body .pulse-topbar {padding:6px 8px}
+  .pulse-body .pulse-company-logo .pulse-company-wordmark {font-size:1rem}
+  .pulse-body .pulse-company-logo .pulse-company-wordmark small {font-size:.5rem}
+  .pulse-body .social-intro #identity {flex-basis:100%}
+  .pulse-body .pulse-connect {width:100%}
+  .pulse-body .pulse-connect > summary {justify-content:center;width:100%}
+  .pulse-body .pulse-sidebar .social-tabs :is(button,a.pulse-mobile-create,a.pulse-message-tab) {
+    font-size:.6rem;
+  }
+}
