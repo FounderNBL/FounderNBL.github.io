@@ -1,0 +1,38 @@
+name: Pulse Google Insights — consent and real engagement checks
+
+on:
+  pull_request:
+    paths:
+      - 'pulse/pulse-google-insights.mjs'
+      - 'pulse/index.html'
+      - 'messenger/social-v1.mjs'
+      - 'scripts/check-pulse-google-insights.mjs'
+      - '.github/workflows/pulse-google-insights.yml'
+  push:
+    branches:
+      - founder/pulse-google-insights-consent-20261118
+    paths:
+      - 'pulse/pulse-google-insights.mjs'
+      - 'pulse/index.html'
+      - 'messenger/social-v1.mjs'
+      - 'scripts/check-pulse-google-insights.mjs'
+      - '.github/workflows/pulse-google-insights.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test-pulse-insights:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check browser module syntax
+        run: |
+          node --check pulse/pulse-google-insights.mjs
+          node --check messenger/social-v1.mjs
+      - name: Verify consent, privacy, and accurate event reporting
+        run: node scripts/check-pulse-google-insights.mjs
