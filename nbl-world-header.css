@@ -649,6 +649,10 @@ body.nbl-beans-open{overflow:hidden!important}
 .nbl-beans-message-body ul,.nbl-beans-message-body ol{margin:7px 0 10px;padding-left:1.35rem;line-height:1.55}
 .nbl-beans-message-body li+li{margin-top:4px}
 .nbl-beans-message-body a{color:#f0c56f;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.nbl-beans-service-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.nbl-beans-message-body .nbl-beans-service-actions a{display:inline-flex;align-items:center;min-height:44px;max-width:100%;box-sizing:border-box;padding:9px 12px;border:1px solid #a77b32;border-radius:10px;background:#071421!important;color:#fbe4ba!important;font:700 .82rem/1.4 Arial,Helvetica,sans-serif;text-decoration:none;overflow-wrap:anywhere}
+.nbl-beans-message-body .nbl-beans-service-actions a:hover{background:#163047!important}
+.nbl-beans-message-body .nbl-beans-service-actions a:focus-visible{outline:3px solid #d6a14b;outline-offset:3px}
 .nbl-beans-message-body code{padding:.08em .32em;border-radius:5px;background:rgba(255,255,255,.08);font:500 .92em/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .nbl-beans-code{margin:10px 0;border:1px solid rgba(240,197,111,.20);border-radius:11px;overflow:hidden;background:#01070c}
 .nbl-beans-code-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 9px;border-bottom:1px solid rgba(240,197,111,.14);color:#a99d8a;font-size:.66rem;text-transform:uppercase;letter-spacing:.08em}
@@ -1272,3 +1276,4 @@ body.nbl-world-menu-open{overflow:hidden!important}
   .nbl-world-header-home .nbl-world-account-primary{font-size:.51rem;padding:8px 6px}
   .nbl-world-header-home .nbl-world-user .nbl-world-account{font-size:.5rem;padding:8px 6px}
 }
+
