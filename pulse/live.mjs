@@ -70,6 +70,8 @@ const REASON_TEXT = {
   live_expired: "This broadcast ended automatically after the time limit.",
   session_expired: "This broadcast ended automatically after the time limit.",
   live_rate_limited: "Daily start limit reached. Try again tomorrow.",
+  live_monthly_allowance_used: "Your free Pulse Live for this month has been used. Try next month.",
+  live_budget_reached: "NBL Pulse Live has reached its monthly pilot limit. New broadcasts are paused to protect costs.",
   live_unavailable: "Pulse Live is unavailable right now. Try again in a moment.",
   live_stop_unconfirmed: "Broadcast shutdown was not confirmed. Press End Live again.",
   stream_cleanup_pending: "A previous broadcast still needs cleanup. Do not start another one.",
