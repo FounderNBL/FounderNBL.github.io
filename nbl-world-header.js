@@ -2845,6 +2845,12 @@
   beansExperienceScript.src += "&bag=20261118";
   beansExperienceScript.async=true;
   document.body.appendChild(beansExperienceScript);
+  // Account-bound Bag assistance is separate from the privacy-preserving
+  // Beans appearance module. Never add network fetching to that module.
+  const beansShoppingScript=document.createElement("script");
+  beansShoppingScript.src="/nbl-beans-shopping.js?v=20261118-live-bag-guide";
+  beansShoppingScript.async=true;
+  document.body.appendChild(beansShoppingScript);
   document.body.classList.add("nbl-world-ready");
   setupNblAccountUi(header);
 
