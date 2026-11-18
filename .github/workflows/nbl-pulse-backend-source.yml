@@ -37,6 +37,8 @@ jobs:
         run: |
           node --check messenger/social-v1.mjs
           node scripts/check-nbl-social-v1.mjs
+      - name: Verify public Pulse guide, pricing, legal links and Meta status
+        run: node --test scripts/check-pulse-guide.test.mjs
       - name: Verify private friend migration and Clerk backend actions
         run: |
           node --input-type=module <<'JS'
