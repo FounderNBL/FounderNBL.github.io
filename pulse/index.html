@@ -21,6 +21,7 @@
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261117-new-beat-v1">
 <link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261114-public-members-v1">
 <script type="module" src="/messenger/social-v1.mjs?v=20261117-home-eight-v1"></script>
+<script type="module" src="/pulse/pulse-google-insights.mjs?v=20261118-consent-v1"></script>
 <style>
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
 .pulse-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(16px,calc((100vw - 1400px)/2));background:#0d0919;border-bottom:1px solid #51326d;position:sticky;top:0;z-index:20}.pulse-topbar>a{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.4rem;color:#fff;text-decoration:none}.pulse-topbar strong{color:#e6b5ff}.pulse-topbar nav{display:flex;gap:15px;flex-wrap:wrap}.pulse-topbar nav a{color:#e4d5f3;text-decoration:none;font-size:.82rem;font-weight:700}
@@ -205,6 +206,14 @@
     <p>See posts from real members and keep up with your NBL community.</p>
     <button type="button" data-feed="notification" class="pulse-rail-action">Your notifications <span aria-hidden="true">›</span></button>
     <button type="button" data-feed="foryou" class="pulse-rail-action">Explore the feed <span aria-hidden="true">›</span></button>
+  </section>
+  <section class="pulse-rail-card pulse-rail-insights" aria-labelledby="pulseInsightsHeading">
+    <h2 id="pulseInsightsHeading">Pulse Insights</h2>
+    <p>Post likes and comments come from Stream. Optional Google statistics help NBL understand engagement trends; they never change your counts.</p>
+    <button type="button" id="pulseInsightsEnable" class="pulse-rail-action">Enable optional statistics</button>
+    <button type="button" id="pulseInsightsDisable" class="pulse-rail-action" hidden>Turn off statistics</button>
+    <p id="pulseInsightsStatus" class="social-meta" role="status" aria-live="polite">Google statistics OFF. Your likes still count.</p>
+    <small>No posts, usernames, account IDs, messages or post IDs are sent by NBL. You can turn this off anytime.</small>
   </section>
   <section class="pulse-rail-card pulse-rail-discover"><h2>Discover on NBL</h2>
     <p>Music, creative projects, and conversations from across New Beansland.</p>
