@@ -83,6 +83,38 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  beans-services:
+    name: Website Beans service actions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Check Beans website source
+        run: |
+          node --check nbl-world-header.js
+          node --check tests/browser/beans-service-actions.spec.mjs
+          node scripts/check-website-chat-plus.mjs
+          node --test scripts/check-beans-web-login-layout.test.mjs
+      - name: Install existing website browser tooling
+        run: npm install --no-save @playwright/test@latest
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify website service actions on desktop and phone browsers
+        run: npx playwright test tests/browser/beans-service-actions.spec.mjs --project=chromium --project=mobile-chromium
+      - name: Upload browser failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: beans-services-browser-report
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
   check:
     runs-on: ubuntu-latest
     steps:
@@ -132,3 +164,4 @@ jobs:
             playwright-report/
             test-results/
           if-no-files-found: ignore
+

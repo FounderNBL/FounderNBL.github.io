@@ -1049,14 +1049,48 @@
     }
   };
 
-  const appendBeansMessage=(role,content,speaker="Beans")=>{
+  const appendBeansServiceActions=(host,items)=>{
+    if(!Array.isArray(items)) return;
+    const destinations=new Set(["/studio/","/books.html","/reader.html","/book-creator.html","/studio/creator.html","/pulse/","/messenger/","/account.html","/clothing.html"]);
+    const seen=new Set();
+    const group=document.createElement("div");
+    group.className="nbl-beans-service-actions";
+    group.setAttribute("role","group");
+    group.setAttribute("aria-label","NBL services");
+    for(const item of items.slice(0,20)){
+      if(typeof item?.label!=="string"||typeof item?.url!=="string"||item.url.length>600) continue;
+      const label=item.label.trim();
+      if(!label||label.length>90) continue;
+      let url;
+      try{url=new URL(item.url);}catch{continue;}
+      if(url.origin!=="https://newbeansland.org"||url.username||url.password||url.hash||!destinations.has(url.pathname)) continue;
+      // The music player accepts only its published-track selector. Other
+      // department doors cannot carry checkout, auth or command parameters.
+      if(url.search&&(url.pathname!=="/studio/"||url.searchParams.size!==1||!/^[a-z0-9-]{1,64}$/.test(url.searchParams.get("track")||""))) continue;
+      if(seen.has(url.href)) continue;
+      seen.add(url.href);
+      const link=document.createElement("a");
+      link.href=url.href;
+      link.target="_blank";
+      link.rel="noopener noreferrer";
+      link.textContent=label;
+      group.append(link);
+      if(seen.size===4) break;
+    }
+    if(group.childElementCount) host.append(group);
+  };
+
+  const appendBeansMessage=(role,content,speaker="Beans",serviceActions=[])=>{
     const wrap=document.createElement("div");
     wrap.className=`nbl-beans-message ${role==="assistant"?"is-beans":"is-user"}`;
     const who=document.createElement("strong");
     who.textContent=role==="assistant"?(speaker||"Beans"):"You";
     const body=document.createElement("div");
     body.className="nbl-beans-message-body";
-    if(role==="assistant") renderBeansContent(body,content);
+    if(role==="assistant"){
+      renderBeansContent(body,content);
+      appendBeansServiceActions(body,serviceActions);
+    }
     else{
       const p=document.createElement("p");
       p.textContent=content;
@@ -2168,7 +2202,7 @@
       if(!reply) throw new Error("Beans returned no text.");
       if(payload?.conversationId) beansConversationId=String(payload.conversationId);
       beansHistory.push({role:"assistant",content:reply});
-      appendBeansMessage("assistant",reply,String(payload?.speaker||"Beans"));
+      appendBeansMessage("assistant",reply,String(payload?.speaker||"Beans"),payload?.actions);
       window.NBLInfinitySound?.play("beans");
       appendBeansSources(payload?.sources);
       appendBeansFileSources(payload?.fileSources);
@@ -2177,6 +2211,8 @@
       const used=Array.isArray(payload?.toolsUsed)?payload.toolsUsed:[];
       beansStatus.textContent=payload?.speaker==="Professor Grey™"
         ?"Professor Grey™ answered through the Virgo System™."
+        :used.includes("nbl_services")
+          ?(payload?.serviceVerified===true?"Beans checked the NBL service.":"Open the NBL service from Beans' reply.")
         :payload?.webSearchUsed
           ?"Beans checked the live web."
           :used.includes("artifact")
