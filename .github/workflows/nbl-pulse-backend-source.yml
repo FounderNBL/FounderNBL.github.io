@@ -97,7 +97,8 @@ jobs:
           console.log('Pulse Live health:',liveResp.status,live.code,'type present',live.callTypePresent,'safe',live.callTypeReady,'switch ON',live.livestreamEnabled,'checks',JSON.stringify(live.safety||{}));
           assert.equal(liveResp.status,200,'Live Edge Function must run and reach Stream');
           assert.equal(live.connected,true,'Livestream must connect to the existing Video API');
-          assert.equal(live.livestreamEnabled,false,'Production master switch must remain OFF until explicitly enabled by Founder');
+          assert.equal(live.callTypeReady===true||live.livestreamEnabled===false,true,'An enabled livestream must have verified safe grants');
+          if(live.livestreamEnabled===true) assert.equal(live.callTypeReady,true,'Founder-approved live switch requires safe provider permissions');
           assert.equal(live.callTypePresent,true,'Expected existing livestream call type');
           assert.equal(live.callTypeReady === true || (live.permissionsRepairable === true && live.livestreamEnabled === false),true,'Provider must either have safe grants now or be repairable only by a Founder ON action while OFF');
           const anonymousLive=await fetch(base+'nbl-live',{method:'POST',headers:{'content-type':'application/json'},
