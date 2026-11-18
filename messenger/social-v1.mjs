@@ -3,6 +3,7 @@
 // Existing Supabase human DMs remain unchanged; Beans AI and V12 are out of scope.
 import { FeedsClient } from "https://esm.sh/@stream-io/feeds-client@2.9.0?bundle";
 import {parsePublicVideo,mountPublicVideo} from "./social-video-connect.mjs";
+import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -17,6 +18,7 @@ const MAX_PHOTO_BYTES=8*1024*1024,MAX_VIDEO_BYTES=40*1024*1024,MAX_PHOTOS=4;
 const IMAGE_TYPES=new Set(["image/jpeg","image/png","image/webp"]);
 const VIDEO_TYPES=new Set(["video/mp4","video/webm"]);
 const avatarCache=new Map();
+const newBeatTracker=createNewBeatTracker();
 function youtubeVideoId(raw){
   if(!raw||typeof raw!=="string")return null;
   try{
@@ -110,6 +112,24 @@ function nblPostLink(id){
 // per-post Open Graph image rather than the static /pulse/ landing-page metadata.
 // The public Supabase preview checks the real Stream activity and only exposes
 // photos/captions belonging to explicitly public, non-moderated posts.
+async function announceNewBeat(activity,viewerId){
+  const notice=$("#pulseNewBeatNotice");
+  if(!notice||!activity?.id||!state.client)return;
+  const authorId=String(activity.user?.id||activity.user_id||"");
+  if(!/^user_[A-Za-z0-9_-]+$/.test(authorId)||authorId===viewerId)return;
+  // Only the protected NBL profile provides the actual Pulse handle.
+  let profile;
+  try{profile=await authorProfile(authorId);}catch{return;}
+  if(accountChanged||state.user?.id!==viewerId||state.clerk?.user?.id!==viewerId)return;
+  const handle=pulseHandle(profile);
+  if(!handle)return;
+  const text=notice.querySelector("#pulseNewBeatText");
+  const link=notice.querySelector("#pulseNewBeatView");
+  if(!text||!link)return;
+  text.textContent=handle+" just posted to Pulse.";
+  link.href=nblPostLink(activity.id);
+  notice.hidden=false;
+}
 function facebookShareLink(id){
   const shareURL="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-pulse-share?post="+encodeURIComponent(id);
   return "https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(shareURL);
@@ -536,11 +556,16 @@ async function loadFeed(){
     state.feed=feed;
     const first=feed.state?.getLatestValue()?.activities||response.activities||[];
     renderFeed(first);
+    newBeatTracker.prime(first);
     if(feed.state?.subscribeWithSelector){
       state.unsubscribe=feed.state.subscribeWithSelector(
         s=>({activities:s.activities}), current=>{
-          if(!accountChanged&&state.selected===selected&&state.clerk?.user?.id===actorId)
-            renderFeed(current.activities||[]);
+          if(!accountChanged&&state.selected===selected&&state.clerk?.user?.id===actorId){
+            const rows=current.activities||[];
+            renderFeed(rows);
+            const fresh=newBeatTracker.collect(rows,actorId);
+            if(fresh.length)void announceNewBeat(fresh[0],actorId);
+          }
         });
     }
     status(LABELS[selected]+" ready.");
@@ -646,6 +671,9 @@ function selectTab(){
 async function boot(){
   $("#signIn").href=signInURL();
   $("#postForm").addEventListener("submit",publishPost);
+  document.querySelector("#pulseNewBeatDismiss")?.addEventListener("click",()=>{
+    const notice=$("#pulseNewBeatNotice");if(notice)notice.hidden=true;
+  });
   // Cross-app invites are handled by Pulse-only /pulse/pulse-invites.mjs.
   $("#saveProfileAvatar").addEventListener("click",()=>{void saveProfileAvatar();});
   $("#friendForm").addEventListener("submit",requestFriend);
