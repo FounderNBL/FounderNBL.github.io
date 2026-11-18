@@ -5,16 +5,22 @@
 <title>NBL Pulse™ | New Beansland</title>
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://newbeansland.org/pulse/">
+<meta name="description" content="NBL Pulse is the social heartbeat of New Beansland. Share Beats, photos, and updates with the NBL community.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="New Beansland">
-<meta property="og:title" content="A post from New Beansland Social">
-<meta property="og:description" content="Discover a post shared by a New Beansland member. Visit NBL Social to see the original post.">
+<meta property="og:url" content="https://newbeansland.org/pulse/">
+<meta property="og:title" content="NBL Pulse | New Beansland">
+<meta property="og:description" content="The social heartbeat of New Beansland. Share Beats, photos, and updates with the NBL community.">
 <meta property="og:image" content="https://newbeansland.org/assets/brand/nbl-official-mark.png?v=9e7ecbb9">
+<meta property="og:image:alt" content="Official New Beansland NBL infinity monogram">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="NBL Pulse | New Beansland">
+<meta name="twitter:description" content="The social heartbeat of New Beansland. Share Beats, photos, and updates.">
+<meta name="twitter:image" content="https://newbeansland.org/assets/brand/nbl-official-mark.png?v=9e7ecbb9">
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
-<link rel="stylesheet" href="/messenger/social-v1.css?v=20261108-provider-video">
+<link rel="stylesheet" href="/messenger/social-v1.css?v=20261117-new-beat-v1">
 <link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261114-public-members-v1">
-<script type="module" src="/messenger/social-v1.mjs?v=20261114-public-members-v1"></script>
+<script type="module" src="/messenger/social-v1.mjs?v=20261117-new-beat-v1"></script>
 <style>
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
 .pulse-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(16px,calc((100vw - 1400px)/2));background:#0d0919;border-bottom:1px solid #51326d;position:sticky;top:0;z-index:20}.pulse-topbar>a{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.4rem;color:#fff;text-decoration:none}.pulse-topbar strong{color:#e6b5ff}.pulse-topbar nav{display:flex;gap:15px;flex-wrap:wrap}.pulse-topbar nav a{color:#e4d5f3;text-decoration:none;font-size:.82rem;font-weight:700}
@@ -101,6 +107,11 @@
     </details>
   </div>
   <p class="status" id="socialStatus" role="status" aria-live="polite">Checking your NBL account…</p>
+  <aside id="pulseNewBeatNotice" class="pulse-new-beat-notice" role="status" aria-live="polite" aria-atomic="true" hidden>
+    <span id="pulseNewBeatText"></span>
+    <a id="pulseNewBeatView" href="/pulse/">View Beat</a>
+    <button id="pulseNewBeatDismiss" type="button" aria-label="Dismiss new Beat notification">Dismiss</button>
+  </aside>
   <div class="signin-panel" id="guest"><p>Join NBL Pulse to post, connect and follow friends.</p><a class="btn primary" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in to NBL</a> <a class="btn small" id="pulseSignUp" href="https://accounts.newbeansland.org/sign-up?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F">Create free NBL account</a></div>
   <section id="socialApp" hidden aria-label="NBL Pulse activity feeds"><div class="pulse-grid"><aside class="pulse-sidebar">
   <h2><svg class="pulse-mark" viewBox="0 0 80 40" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h13l7-13 10 28 9-31 9 27 7-11h19"/></svg> NBL Pulse<span aria-hidden="true">™</span></h2>
