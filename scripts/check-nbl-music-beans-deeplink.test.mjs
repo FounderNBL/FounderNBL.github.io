@@ -1,0 +1,20 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {readFileSync} from "node:fs";
+import vm from "node:vm";
+const read=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
+test("Beans song links resolve to actual published catalog ids and don't autoplay",()=>{
+ const catalog=read("studio/catalog.js");
+ const player=read("studio/player.js");
+ const sandbox={window:{}};
+ vm.runInNewContext(catalog,sandbox,{timeout:1000});
+ const songs=sandbox.window.NBL_TRACKS;
+ assert.ok(Array.isArray(songs)&&songs.length>0);
+ assert.ok(songs.every(x=>/^[a-z0-9-]+$/.test(x.id)));
+ assert.match(player,/new URLSearchParams\(window\.location\.search\)\.get\("track"\)/);
+ assert.match(player,/tracks\.findIndex\(track/);
+ assert.match(player,/load\(initialIndex >= 0 \? initialIndex : 0, false\)/);
+ assert.ok(songs.some(x=>x.id==="still-walking"));
+ assert.ok(songs.some(x=>x.id==="you-hear-it-too"));
+ assert.doesNotMatch(player,/window\.location\.search.*audio\.play\(/);
+});
