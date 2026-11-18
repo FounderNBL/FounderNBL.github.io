@@ -50,7 +50,11 @@ assert.match(html,/data-feed="friends" aria-label="Explore NBL members"/,"Real m
 assert.match(html,/data-feed="notification" aria-label="View Pulse notifications"/,"Real notifications in header");
 assert.match(html,/class="pulse-nav-future"/,"Unreleased features must be visibly noninteractive");
 assert.match(html,/Stories <small>Coming soon/);
-assert.match(html,/Live <small>Coming soon/);
+assert.match(html,/class="pulse-nav-live" href="#pulseLive"/,"Real Live nav points to actual Pulse controls");
+assert.match(html,/Live <small>OFF until enabled/,"Do not imply a public broadcast is already active");
+assert.match(html,/id="pulseLiveAdmin" hidden/,"Founder-only switch is hidden until server authorization");
+assert.match(html,/id="pulseLiveToggle"/,"Founder ON/OFF button is wired");
+assert.doesNotMatch(html,/Go Live · setup pending/,"Do not retain the fake setup placeholder");
 assert.match(html,/src="\/NBL_Studios\.png"/,"Real NBL Studios artwork in featured panel");
 assert.match(html,/class="pulse-feature-brand"/);
 assert.match(founderCss,/#socialApp \.pulse-grid/);
