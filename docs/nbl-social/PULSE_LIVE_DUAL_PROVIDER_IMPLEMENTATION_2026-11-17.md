@@ -1,3 +1,5 @@
+> **FOUNDER SCOPE CHANGE — 2026-11-17:** Ship **Google Cloud only** for the verified Founder account/email, on Pulse website only. No Stream Video broadcasting or public Creator plans in this release. No additional Founder dashboard/manual steps: if credentials, browser-to-ingest bridge, budget enforcement, or verified Founder identity are unavailable, keep Google broadcasting OFF. Do not merge/deploy a nonfunctional Go Live button. This overrides the broader dual-provider proposal below until separately approved.
+
 # Pulse Live — Stream + Google integration contract (DRAFT / NOT LIVE)
 
 **Founder authorization:** Prepare the Pulse Live dual-provider connection. This document is a scoped implementation contract, **not** evidence of working broadcasting. No provider streams, charges, releases, or production configuration are activated by this branch.
