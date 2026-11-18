@@ -4,6 +4,8 @@ import {readFileSync} from "node:fs";
 const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const account=read("account.html");
 const beans=read("nbl-beans-experience.js");
+const shopping=read("nbl-beans-shopping.js");
+const header=read("nbl-world-header.js");
 test("Bag lives beside Beans billing, not instead of it",()=>{
   assert.ok(account.includes('id="membershipCard"'));
   assert.ok(account.includes('id="nblBagCard"'));
@@ -29,4 +31,13 @@ test("Beans has real site destinations to help customers shop",()=>{
     assert.ok(beans.includes(page),"missing "+page);
   }
   assert.ok(beans.includes('data-nbl-beans-prompt="Help me explore New Beansland'));
+});
+
+test("network-bound Bag panel is separate from Beans offline personalization",()=>{
+  assert.ok(!beans.includes("fetch("));
+  assert.ok(shopping.includes("nbl-bag?view=mine"));
+  assert.ok(shopping.includes('getToken'));
+  assert.ok(shopping.includes("currentUser!==originalUser"));
+  assert.ok(shopping.includes('if(!bagDetails.open)'));
+  assert.ok(header.includes('nbl-beans-shopping.js?v=20261118-live-bag-guide'));
 });
