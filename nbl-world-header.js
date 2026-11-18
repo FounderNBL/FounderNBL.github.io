@@ -2190,6 +2190,10 @@
               :payload?.authenticated
                 ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
                 :"Beans replied.";
+      // NBL/LOCKE is authoritative. A requested level never grants paid access.
+      if(typeof payload?.intelligencePreference?.notice==="string" && payload.intelligencePreference.notice){
+        beansStatus.textContent=payload.intelligencePreference.notice;
+      }
       if(beansVoiceMode) void speakBeansReply(reply,{forceOpenAi:true});
       clearBeansTools();
     }catch(error){
