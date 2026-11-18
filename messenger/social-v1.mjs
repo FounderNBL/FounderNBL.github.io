@@ -4,6 +4,7 @@
 import { FeedsClient } from "https://esm.sh/@stream-io/feeds-client@2.9.0?bundle";
 import {parsePublicVideo,mountPublicVideo} from "./social-video-connect.mjs";
 import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
+import {recentHomeBeats} from "./pulse-home-recent.mjs";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -550,24 +551,55 @@ async function loadFeed(){
     const actorId=state.user.id;
     assertCurrentAccount(actorId);
     const feed=state.client.feed(selected,actorId);
-    const response=await feed.getOrCreate({watch:true,limit:20});
+    // Home shows the most recent eight public Beats we can actually access,
+    // including the member's own new posts. No copying or reposting an activity.
+    // My Posts remains the member's separate history view.
+    const ownFeed=selected==="foryou"?state.client.feed("user",actorId):null;
+    let response,ownResponse,primaryReady=true,ownReady=false;
+    if(ownFeed){
+      const results=await Promise.allSettled([
+        feed.getOrCreate({watch:true,limit:20}),
+        ownFeed.getOrCreate({watch:true,limit:20})
+      ]);
+      if(results[0].status==="rejected"&&results[1].status==="rejected")throw results[0].reason;
+      primaryReady=results[0].status==="fulfilled";
+      ownReady=results[1].status==="fulfilled";
+      response=primaryReady?results[0].value:null;
+      ownResponse=ownReady?results[1].value:null;
+    }else response=await feed.getOrCreate({watch:true,limit:20});
     assertCurrentAccount(actorId);
     if(selected!==state.selected)return;
     state.feed=feed;
-    const first=feed.state?.getLatestValue()?.activities||response.activities||[];
-    renderFeed(first);
-    newBeatTracker.prime(first);
-    if(feed.state?.subscribeWithSelector){
-      state.unsubscribe=feed.state.subscribeWithSelector(
-        s=>({activities:s.activities}), current=>{
-          if(!accountChanged&&state.selected===selected&&state.clerk?.user?.id===actorId){
-            const rows=current.activities||[];
-            renderFeed(rows);
-            const fresh=newBeatTracker.collect(rows,actorId);
-            if(fresh.length)void announceNewBeat(fresh[0],actorId);
-          }
-        });
+    let primaryRows=primaryReady?(feed.state?.getLatestValue()?.activities||response?.activities||[]):[];
+    let ownRows=ownReady?(ownFeed.state?.getLatestValue()?.activities||ownResponse?.activities||[]):[];
+    const stillViewing=()=>!accountChanged&&state.selected===selected&&state.clerk?.user?.id===actorId;
+    const show=()=>{
+      if(!stillViewing())return;
+      renderFeed(ownFeed?recentHomeBeats([primaryRows,ownRows],{limit:8}):primaryRows);
+    };
+    show();
+    newBeatTracker.prime(primaryRows);
+    if(ownFeed)newBeatTracker.prime(ownRows);
+    const unsubs=[];
+    if(primaryReady&&feed.state?.subscribeWithSelector){
+      unsubs.push(feed.state.subscribeWithSelector(
+        s=>({activities:s.activities}),current=>{
+          if(!stillViewing())return;
+          primaryRows=current.activities||[];
+          show();
+          const fresh=newBeatTracker.collect(primaryRows,actorId);
+          if(fresh.length)void announceNewBeat(fresh[0],actorId);
+        }));
     }
+    if(ownReady&&ownFeed?.state?.subscribeWithSelector){
+      unsubs.push(ownFeed.state.subscribeWithSelector(
+        s=>({activities:s.activities}),current=>{
+          if(!stillViewing())return;
+          ownRows=current.activities||[];
+          show();
+        }));
+    }
+    state.unsubscribe=unsubs.length?()=>{for(const stop of unsubs)stop?.();}:null;
     status(LABELS[selected]+" ready.");
   }catch(error){
     if(accountChanged)return;
