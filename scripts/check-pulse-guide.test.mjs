@@ -15,8 +15,8 @@ test("Pulse information and legal guide is public and discoverable",()=>{
 });
 test("Pulse guide is accurate about the release boundary and real pricing",()=>{
  for(const phrase of [
- "One free broadcast per resident per calendar month",
- "up to 5 minutes","up to 100 viewers","30 starts per month",
+ "20 minutes of Pulse Live per UTC calendar month",
+ "5 minutes","25 viewers","120 starts per month",
  "Prepaid Beanies/Racks purchases and spending are",
  "not active",
  "Planned integration, not yet an active Beans tool.",
