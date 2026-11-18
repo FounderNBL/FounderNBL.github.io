@@ -43,3 +43,10 @@
 .social-embed-play:hover,.social-embed-play:focus-visible{border-color:#d49aff;background:#362055}
 .social-media .instagram-media{grid-column:1/-1;min-width:0!important;max-width:100%!important;width:100%;margin:0!important;border-radius:14px!important;background:#fff!important}
 .social-video-embed{grid-column:1/-1;width:100%;aspect-ratio:16/9;min-height:220px;border:0;border-radius:12px;background:#030207}
+
+/* An in-app Beat announcement, not OS push or a private-message notification. */
+.pulse-new-beat-notice{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 15px;margin:12px 0;border:1px solid var(--gold,#a569e0);border-radius:12px;background:#211532;color:#f7eaff;font-size:.95rem}
+.pulse-new-beat-notice[hidden]{display:none!important}
+.pulse-new-beat-notice span{flex:1 1 200px;font-weight:750}
+.pulse-new-beat-notice a,.pulse-new-beat-notice button{color:#fff;border:1px solid #8052b0;background:#382054;border-radius:8px;padding:8px 11px;text-decoration:none;font:inherit;cursor:pointer}
+.pulse-new-beat-notice :is(a,button):focus-visible{outline:3px solid #deb4ff;outline-offset:2px}
