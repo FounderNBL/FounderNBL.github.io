@@ -7,7 +7,10 @@ const drawerScroll=panel.querySelector(".nbl-chat-drawer-scroll");
 const history=panel.querySelector(".nbl-chat-drawer-history");
 if(!drawerScroll||!history)return;
 const bagDetails=document.createElement("details");
-bagDetails.className="nbl-beans-explore-worlds";
+bagDetails.className="nbl-beans-bag-explore";
+// Keep existing Explore NBL Worlds unique for browser automation/accessibility.
+bagDetails.style.cssText="border:1px solid rgba(239,198,111,.3);border-radius:12px;margin:12px 0;padding:10px;color:inherit;";
+
 bagDetails.dataset.nblBeansBag="true";
 bagDetails.innerHTML=[
   '<summary>▤ My Bag &amp; spending <span aria-hidden="true">⌄</span></summary>',
