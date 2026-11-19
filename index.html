@@ -83,6 +83,10 @@
       object-fit:contain;object-position:center;background:transparent;
       filter:drop-shadow(0 4px 12px rgba(0,0,0,.42))
     }
+    /* Books artwork is portrait; fill its landscape World-card frame without changing the source image. */
+    .world-grid .world-card.official-art[href="books.html"] .media img{
+      object-fit:cover;object-position:center center
+    }
     .world-card.official-art::after{display:none}
     .world-card.official-art .card-body{
       position:absolute;clip:rect(0 0 0 0);clip-path:inset(50%);
