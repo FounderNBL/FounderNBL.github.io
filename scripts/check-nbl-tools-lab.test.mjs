@@ -27,7 +27,7 @@ test('NBL artwork importer stays same-origin and user-initiated',()=>{
  assert.match(script,/url\.origin!==location\.origin/);
  assert.match(script,/credentials:'same-origin'/);
  for(const file of ['NBL_Studios.png','NBL_University.png','NBL_Books.png','NBL_Games.png',
-  'NBL_Pulse_World_Card.png','NBL_Messenger_Beans_Worldcard.png'])
+  'NBL_Pulse_Worldcard.png','NBL_Messenger_Beans_Worldcard.png'])
   assert.ok(script.includes('/'+file),'missing official artwork '+file);
 });
 
