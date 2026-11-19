@@ -5,10 +5,12 @@ import { FeedsClient } from "https://esm.sh/@stream-io/feeds-client@2.9.0?bundle
 import {parsePublicVideo,mountPublicVideo} from "./social-video-connect.mjs";
 import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
+import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
 const INSTAGRAM_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-instagram-connect";
+const META_COMMUNITY_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-meta-community";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 // Public deep links contain only a provider activity ID, never message bodies or account credentials.
@@ -324,6 +326,11 @@ function renderActivity(activity){
     // A click is NOT proof the external share completed.
     share.addEventListener("click",()=>announcePulseMetric("pulse_share_link_opened"));
     actions.append(share);
+  }
+  if(isShareablePost(activity)&&authorId===state.user?.id&&state.me?.role==="founder"){
+    actions.append(founderFacebookShareButton({
+      activity,invoke:(path,payload)=>secured(META_COMMUNITY_API+path,payload),feedback
+    }));
   }
   // Only the Founder can send an already-published original Pulse photo to
   // the official @nbl_world Instagram asset. This never auto-shares member posts.
@@ -811,6 +818,8 @@ async function boot(){
     assertCurrentAccount(initialNBLUserId);
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
     selectTab();
+    if(state.me?.role==="founder"&&location.pathname.startsWith("/pulse"))
+      initMetaCommunity((path,payload)=>secured(META_COMMUNITY_API+path,payload));
     await loadFeed();
     await loadLinkedPost();
   }catch(error){
