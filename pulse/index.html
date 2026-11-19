@@ -19,9 +19,9 @@
 <meta name="twitter:description" content="The social heartbeat of New Beansland. Share Beats, photos, and updates.">
 <meta name="twitter:image" content="https://newbeansland.org/NBL_Pulse_Worldcard.png">
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
-<link rel="stylesheet" href="/messenger/social-v1.css?v=20261117-new-beat-v1">
+<link rel="stylesheet" href="/messenger/social-v1.css?v=20261119-public-meta-embeds">
 <link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261114-public-members-v1">
-<script type="module" src="/messenger/social-v1.mjs?v=20261119-instagram-founder-crosspost"></script>
+<script type="module" src="/messenger/social-v1.mjs?v=20261119-instagram-founder-crosspost-meta-embeds"></script>
 <script type="module" src="/pulse/pulse-google-insights.mjs?v=20261118-consent-v1"></script>
 <style>
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
@@ -204,10 +204,10 @@
           <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" multiple>
           <p class="social-feedback" id="mediaSelection" role="status">Up to 4 photos (8 MB each) or 1 MP4/WebM video (40 MB).</p>
           <div id="videoLinkArea">
-            <label for="videoLink">Or share a YouTube, Facebook or Instagram video</label>
-            <input id="videoLink" type="url" inputmode="url" placeholder="Paste your public video link" autocomplete="off">
-            <label class="pulse-video-rights"><input id="videoShareRights" type="checkbox"> I own or have permission to share this video</label>
-            <p class="social-feedback">Public videos play in Pulse when their provider allows embedding.</p>
+            <label for="videoLink">Or embed a public Facebook, Instagram, Threads post or YouTube video</label>
+            <input id="videoLink" type="url" inputmode="url" placeholder="Paste a public post or video link" autocomplete="off">
+            <label class="pulse-video-rights"><input id="videoShareRights" type="checkbox"> I confirm this is a public post or video</label>
+            <p class="social-feedback">Public posts open as embeds only when a viewer chooses to load them. Some original posts may not allow embedding.</p>
           </div>
         </div>
         <div class="compose-bottom"><small id="postCount">0 / 1500</small></div>
