@@ -59,7 +59,11 @@ const REASON_TEXT = {
   facebook_failed: "Facebook Live could not be started. Your Pulse broadcast is still in backstage — try again or go live on Pulse only.",
   facebook_requires_admin: "Only the Founder account can broadcast to the New Beansland Facebook Page.",
   facebook_not_configured: "Facebook Live is not configured for Pulse yet. You can still go live on Pulse only.",
-  facebook_auth_required: "Facebook Live needs a fresh sign-in. Your Pulse broadcast is still in backstage.",
+  facebook_auth_required: "Supabase needs a valid Page access token for the New Beansland Facebook Page.",
+  facebook_unavailable: "Pulse could not verify the New Beansland Page with Facebook. Try Start Live again.",
+  facebook_ingest_unavailable: "Facebook did not return a usable secure streaming destination. The session ended. Start a new session to retry.",
+  facebook_rtmp_failed: "Stream could not send video to Facebook. The session ended. Start a new session to retry.",
+  facebook_cleanup_pending: "Pulse could not confirm that Facebook stopped. Press End Live to retry shutdown.",
   live_already_active: "A Pulse Live broadcast is already running.",
   live_disabled: "Pulse Live is OFF until the NBL launch switch is approved.",
   admin_only: "The NBL Founder account is required to operate this switch.",
@@ -320,7 +324,11 @@ async function refreshStatus(silent = false) {
     if (!state.facebookConfigured) facebookCheckbox.checked = false;
   }
   show("#pulseLiveFacebookOption", state.facebookConfigured);
-  show("#pulseLiveFacebookNote", state.facebookConfigured);
+  const facebookNote = $("#pulseLiveFacebookNote");
+  if (facebookNote) facebookNote.textContent = state.facebookConfigured
+    ? "Go Live will also start a public broadcast on Facebook."
+    : "Facebook Live is unavailable. Check the Facebook switch and Page secrets in Supabase.";
+  show("#pulseLiveFacebookNote", data.isAdmin === true && data.status === "idle");
   const status = data.status;
   if (status === "ended" || status === "failed") {
     if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
@@ -354,10 +362,12 @@ async function refreshStatus(silent = false) {
     return;
   }
   if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
-    // Host status polling can confirm Facebook only in the future Meta phase.
     if (data.facebook?.status === "live") {
       const badge = $("#pulseLiveBadge"); if (badge) badge.textContent = "LIVE · Facebook";
       if (state.mode === "live") setStatus("You are LIVE on Pulse and Facebook");
+    } else if (state.mode === "live" && data.facebook?.status === "connecting" &&
+      Date.now() - Date.parse(data.startedAt) >= 60_000) {
+      setStatus("Live on Pulse. Facebook video is still unconfirmed. Check the New Beansland Page.");
     }
     return;
   } // already watching/hosting
@@ -456,8 +466,19 @@ async function onGoLive() {
     setStatus("You are LIVE on Pulse" + (data.facebook?.status === "live" ? " and Facebook" : (data.facebook?.status === "connecting" ? " · connecting to Facebook…" : "")));
     startTimer();
   } catch (e) {
+    if (["facebook_ingest_unavailable", "facebook_rtmp_failed"].includes(e.reason)) {
+      await teardownStream();
+      state.callId = null;
+      show("#pulseLiveHost", false);
+      await refreshStatus(true);
+      setStatus("Facebook broadcast could not start.");
+    } else if (e.reason === "facebook_cleanup_pending") {
+      show("#pulseLiveGoLive", false);
+      setStatus("Facebook shutdown is unconfirmed.");
+    } else {
+      setStatus("Backstage — only you can see this");
+    }
     showError(plainError(e));
-    setStatus("Backstage — only you can see this");
   } finally { setBusy(false); }
 }
 async function onEnd() {
