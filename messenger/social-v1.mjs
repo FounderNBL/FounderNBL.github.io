@@ -349,7 +349,7 @@ function renderActivity(activity){
           const result=await secured(INSTAGRAM_API+"/publish/prepare",{
             confirm:"prepare",image_url:photo.image_url,caption:String(activity.text||"").slice(0,1500)
           });
-          if(!/^\\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram preparation did not return a media container.");
+          if(!/^\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram preparation did not return a media container.");
           containerId=result.container_id;
           instagram.textContent="Publish to @nbl_world";
           instagram.setAttribute("aria-label","Publish the prepared Pulse photo to the official NBL Instagram account");
