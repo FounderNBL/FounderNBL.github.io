@@ -13,7 +13,7 @@ test("New Founder Meta UI module is valid JS and stays out of member feeds",()=>
  assert.match(pulse,/state\.me\?\.role==="founder"/);
  assert.match(pulse,/founderFacebookShareButton/);
  assert.match(pulse,/initMetaCommunity\(/);
- assert.match(page,/20261119-instagram-founder-crosspost-meta-community/);
+ assert.match(page,/20261119-meta-review-api/);
  assert.doesNotMatch(view,/localStorage|sessionStorage|innerHTML|META_APP_SECRET|PAGE_ACCESS_TOKEN/);
 });
 test("No unauthorized Meta posting or comment replies",()=>{
