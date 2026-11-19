@@ -387,6 +387,60 @@ function renderActivity(activity){
     });
     actions.append(instagram);
   }
+  // Founder-only Instagram Reels publishing, using the existing verified media upload.
+  // Publishing requires a second explicit confirmation after Meta prepares the video.
+  const ownPublicVideo=activity.visibility==="public"&&activity.type==="post"&&
+    authorId===state.user?.id&&state.me?.role==="founder"&&
+    !["remove","shadow","shadow_block","bounce"].includes(String(activity.moderation?.action||"").toLowerCase())&&
+    Array.isArray(activity.attachments)&&activity.attachments.length===1&&
+    activity.attachments[0]?.type==="video"&&
+    Boolean(trustedMediaLink(activity.attachments[0]?.asset_url));
+  if(ownPublicVideo){
+    const video=activity.attachments[0];
+    const reel=element("button",null,"Prepare Instagram Reel");reel.type="button";
+    let containerId=null,done=false;
+    reel.addEventListener("click",async()=>{
+      if(done||reel.disabled)return;
+      reel.disabled=true;
+      try{
+        assertCurrentAccount(authorId);
+        if(!containerId){
+          feedback.textContent="Preparing your video as an Instagram Reel…";
+          const result=await secured(INSTAGRAM_API+"/publish/prepare",{
+            confirm:"prepare",media_type:"REELS",video_url:video.asset_url,
+            caption:String(activity.text||"").slice(0,1500)
+          });
+          if(!/^\\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram did not return a Reel container.");
+          containerId=result.container_id;
+          reel.textContent="Publish Reel to @nbl_world";
+          feedback.textContent="Reel prepared. Instagram may still be processing the video. Tap Publish when ready.";
+        }else{
+          if(!window.confirm("Publish this video publicly as an Instagram Reel on @nbl_world?"))return;
+          feedback.textContent="Checking Instagram Reel processing and publishing…";
+          const result=await secured(INSTAGRAM_API+"/publish/confirm",{
+            confirm:"confirm",creation_id:containerId,media_type:"REELS"
+          });
+          if(result.published!==true)throw new Error("Instagram did not confirm publishing.");
+          done=true;
+          reel.textContent="Reel published on Instagram";
+          feedback.textContent="Instagram Reel published on @nbl_world.";
+          if(typeof result.permalink==="string"&&/^https:\/\/(?:www\\.)?instagram\\.com\//.test(result.permalink)){
+            const view=element("a","btn small","View Instagram Reel");
+            view.href=result.permalink;view.target="_blank";view.rel="noopener noreferrer";
+            feedback.append(" ",view);
+          }
+        }
+      }catch(error){
+        const why=String(error?.message||"");
+        feedback.textContent=why==="media_container_not_ready"
+          ?"Instagram is still processing your Reel. Tap Publish Reel again after it finishes."
+          :why==="meta_media_prepare_rejected"
+          ?"Instagram could not prepare this video. Use a supported MP4 video and try again."
+          :"Instagram Reel: "+safeError(error);
+      }finally{reel.disabled=done;}
+    });
+    actions.append(reel);
+  }
   if(signedActor&&authorId!==state.user.id){
     const follow=element("button",null,"Follow");follow.type="button";
     let following=false;
