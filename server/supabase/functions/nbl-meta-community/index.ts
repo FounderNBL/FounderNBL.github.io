@@ -193,10 +193,12 @@ async function actions(req,user,route){
      target.searchParams.size!==1||target.hash)throw Error();
   }catch{return json(req,{ok:false,reason:"invalid_pulse_link"},400);}
   const r=await graph("POST",page.id+"/feed",page.token,{message:message.trim(),link:target.href});
-  return r.ok&&typeof r.body?.id==="string"
-   ?json(req,{ok:true,published:true,post_id:r.body.id,post_url:
-     "https://www.facebook.com/"+encodeURIComponent(r.body.id)})
-   :json(req,{ok:false,reason:"facebook_publish_rejected"},502);
+  if(!r.ok||typeof r.body?.id!=="string")return json(req,{ok:false,reason:"facebook_publish_rejected"},502);
+  const posted=await graph("GET",String(r.body.id),page.token,{fields:"permalink_url"});
+  const url=typeof posted.body?.permalink_url==="string"&&
+   /^https:\/\/(?:www\.)?facebook\.com\//.test(posted.body.permalink_url)
+    ?posted.body.permalink_url:null;
+  return json(req,{ok:true,published:true,post_id:r.body.id,post_url:url});
  }
  if(route==="/instagram/media"||route==="/instagram/comments"||route==="/instagram/reply"){
   const ig=await instagramId();
