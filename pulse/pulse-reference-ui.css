@@ -383,6 +383,7 @@
    Existing feeds, identity, posting and messaging routing remain authoritative. */
 .pulse-body{--pulse-bg:#080710;--pulse-surface:#15121f;--pulse-border:#443253;--pulse-muted:#c1b3ce;--pulse-warm:#d8a8ff;background:radial-gradient(ellipse 900px 400px at 50% -200px,#311443,transparent 75%),#080710;color:#faf5ff}
 .pulse-body .pulse-mark{width:37px;height:26px;display:inline-block;vertical-align:middle;flex:none;color:#d958ff;filter:drop-shadow(0 0 6px #b016e999)}
+.pulse-body img.pulse-mark{object-fit:contain}
 .pulse-body .pulse-topbar{width:100%;max-width:none;min-height:69px;display:flex;justify-content:space-between;gap:18px;padding:9px clamp(12px,2.4vw,36px);background:#0a0911f8;border-bottom:1px solid #3e3053;box-shadow:0 8px 30px #0009;z-index:55}
 .pulse-body .pulse-topbar>a.pulse-company-logo{font-weight:950;font-style:italic;letter-spacing:-.05em;font-size:1.5rem;display:flex;align-items:center;min-width:138px;color:white;text-decoration:none}
 .pulse-body .pulse-company-logo img{width:39px;height:39px;object-fit:contain;border:none;background:transparent}
