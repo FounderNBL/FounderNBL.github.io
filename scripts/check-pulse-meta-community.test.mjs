@@ -41,3 +41,16 @@ test("Existing Instagram photo publish and Messenger remain unmodified",()=>{
  assert.match(pulse,/location.assign\("\/messenger\/"/);
  assert.doesNotMatch(backend,/nbl-live|nbl-messenger-push/);
 });
+
+test("Meta review API diagnostic is Founder-only and never exposes credentials",()=>{
+ assert.match(backend,/const PULSE_APP_ID="1167499339147411"/);
+ assert.match(backend,/if\(route==="\/review\/diagnostics"\)/);
+ assert.match(backend,/debug_token/);
+ assert.match(backend,/matches_pulse_app/);
+ assert.match(backend,/APP_ID===PULSE_APP_ID/);
+ assert.match(backend,/HKDF/);
+ assert.match(backend,/AES-GCM/);
+ assert.match(view,/Check Meta API permissions/);
+ assert.match(view,/review\/diagnostics/);
+ assert.doesNotMatch(view,/IG_TOKEN|APP_SECRET|access_token|token_ciphertext/);
+});
