@@ -29,7 +29,8 @@ test("all six World Cards have equal 4:3 frames and uncropped artwork",()=>{
  assert.match(source,/grid-auto-rows:1fr;align-items:stretch/,"Grid must keep equal row heights");
  assert.match(source,/\.world-card\.official-art \.media::before\{/,"Letterbox fill must use a background layer");
  assert.match(source,/background-image:var\(--nbl-world-card-art\)/,"Letterbox fill must reuse original art, never a replacement image");
- assert.match(source,/object-fit:contain;object-position:center;background:transparent/,"The visible card artwork must never be cropped");
+ assert.match(source,/object-fit:contain;object-position:center;background:transparent/,"Other World cards must preserve uncropped artwork");
+ assert.match(source,/\.world-grid \.world-card\.official-art\[href="books\.html"\] \.media img\{\s*object-fit:cover;object-position:center center\s*\}/,"Books alone must fill and center its 4:3 World-card frame");
  assert.match(source,/\.world-card\.official-art \.card-body\{/,"Original approved art includes its titles; duplicate overlays stay hidden");
  assert.match(source,/\.world-card\.official-art::after\{display:none\}/);
  assert.match(source,/\.world-card\.official-art:focus-visible\{/);
