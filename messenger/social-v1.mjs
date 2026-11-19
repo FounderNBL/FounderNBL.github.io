@@ -420,7 +420,11 @@ function renderActivity(activity){
           reel.textContent="Publish Reel to @nbl_world";
           feedback.textContent="Reel prepared. Instagram may still be processing the video. Tap Publish when ready.";
         }else{
-          if(!window.confirm("Publish this video publicly as an Instagram Reel on @nbl_world?"))return;
+          if(!window.confirm("Publish this video publicly as an Instagram Reel on @nbl_world?")){
+            reel.textContent="Publish Reel to @nbl_world";
+            feedback.textContent="Reel is prepared. Publishing canceled; nothing was posted to Instagram.";
+            return;
+          }
           feedback.textContent="Checking Instagram Reel processing and publishing…";
           const result=await secured(INSTAGRAM_API+"/publish/confirm",{
             confirm:"confirm",creation_id:containerId,media_type:"REELS"
