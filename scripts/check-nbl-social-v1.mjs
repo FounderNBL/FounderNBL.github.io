@@ -178,8 +178,12 @@ assert.match(js,/authorProfile\(userId\)/);
 
 // New member-first NBL Pulse skin is presentation-only: Messenger remains a link, not an iframe.
 const pulseSkin=read("pulse/pulse-skin.css");
-assert.match(pulse,/\/pulse\/pulse-skin\.css\?v=20261114-public-members-v1/);
+assert.match(pulse,/\/pulse\/pulse-skin\.css\?v=20261119-independent-columns-v1/);
 assert.match(pulseSkin,/#socialApp \.pulse-grid/);
+assert.match(pulseSkin,/overflow-y:auto/);
+assert.match(pulseSkin,/overscroll-behavior-y:contain/);
+assert.match(pulse,/class="pulse-main" tabindex="0"/);
+assert.match(pulse,/class="pulse-rail" tabindex="0"/);
 assert.match(pulseSkin,/#feedItems/);
 assert.match(pulseSkin,/@media\(max-width:760px\)/);
 assert.match(pulseSkin,/grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/);
