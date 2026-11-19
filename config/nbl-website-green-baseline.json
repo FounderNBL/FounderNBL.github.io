@@ -116,10 +116,9 @@
       {
         "id": "pulse",
         "route": "/pulse/",
-        "sourceImage": "NBL_Pulse_World_Card.png",
-        "sha256": "7f0833f25852a2839cdbbdbdfeb3a26481acb3c674e9cb32d62079bb8af7b6e1",
-        "width": 1672,
-        "height": 941
+        "sourceImage": "NBL_Pulse_Worldcard.png",
+        "gitBlobSha1": "31803af57c53a84bdbdf60d3494e16bb4bb0ffbb",
+        "sizeBytes": 2143645
       },
       {
         "id": "messenger",
