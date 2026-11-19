@@ -54,9 +54,11 @@ export function initMetaCommunity(invoke){
  const pageConnect=el("button","btn small","Connect NBL Facebook Page");
  const pagePosts=el("button","btn small","View Facebook Page posts");
  const igMedia=el("button","btn small","Manage Instagram comments");
- reload.type=pageConnect.type=pagePosts.type=igMedia.type="button";
- controls.append(reload,pageConnect,pagePosts,igMedia);
- panel.append(title,info,status,controls,content);
+ const review=el("button","btn small","Check Meta API permissions");
+ const apiReport=el("p","social-feedback");apiReport.setAttribute("role","status");
+ reload.type=pageConnect.type=pagePosts.type=igMedia.type=review.type="button";
+ controls.append(reload,pageConnect,pagePosts,igMedia,review);
+ panel.append(title,info,status,controls,apiReport,content);
  root.insertBefore(panel,document.querySelector("#feedPanel"));
  const notice=new URL(location.href).searchParams.get("facebook_connect");
  if(notice){
@@ -87,9 +89,30 @@ export function initMetaCommunity(invoke){
   pagePosts.hidden=!r.facebook_connected;
   igMedia.hidden=!r.instagram_connected;
   if(!r.facebook_connected&&!r.facebook_login_ready)
-   status.textContent+=" Facebook OAuth must be configured in the Meta app.";
+   status.textContent+=" Facebook authorization is not ready; check Meta app settings.";
  };
  reload.addEventListener("click",busy(reload,loadStatus));
+ review.addEventListener("click",busy(review,async()=>{
+  apiReport.textContent="Checking which Meta app owns the existing Instagram token…";
+  const r=await invoke("/review/diagnostics",{});
+  const ig=r.instagram||{};
+  if(ig.status==="verified"){
+   const match=ig.matches_pulse_app===true?"Instagram token belongs to NBL Pulse Live.":
+     "Instagram token is not associated with NBL Pulse Live.";
+   const missing=Array.isArray(ig.missing_scopes)?ig.missing_scopes:[];
+   apiReport.textContent=match+(missing.length?
+     " Permissions missing from this token: "+missing.join(", ")+".":" Required Instagram scopes are present.");
+  }else if(ig.status==="token_invalid"){
+   apiReport.textContent="Instagram token is invalid. Reauthorization is required before new API tests.";
+  }else if(ig.status==="instagram_token_missing"){
+   apiReport.textContent="Instagram API token is missing from Pulse's backend.";
+  }else{
+   apiReport.textContent="Meta could not verify which app issued the Instagram token ("+String(ig.status||"unavailable")+").";
+  }
+  if(r.facebook_oauth_ready===true)
+   apiReport.textContent+=" Facebook Page connection is ready to begin; Meta's callback URL must be allowed.";
+  else apiReport.textContent+=" Facebook Page authorization still needs Meta app configuration.";
+ }));
  pageConnect.addEventListener("click",busy(pageConnect,async()=>{
   status.textContent="Opening Meta's Facebook Page authorization…";
   const r=await invoke("/facebook/begin",{});
