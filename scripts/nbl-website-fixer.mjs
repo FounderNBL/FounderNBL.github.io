@@ -40,7 +40,11 @@ export function chooseRepairIncident(findings,read=(p)=>readFileSync(join(root,p
    // No attempt to hallucinate missing approved art. Only text reference drift.
    const art=contract.source.officialWorldArt.find(x=>x.id===f.id.slice(4));
    try{
-    if(sha(read(art.sourceImage))!==art.sha256)continue;
+    const b=read(art.sourceImage);
+     const valid=art.gitBlobSha1
+      ?Number.isInteger(art.sizeBytes)&&b.length===art.sizeBytes&&createHash("sha1").update("blob "+b.length+"\0").update(b).digest("hex")===art.gitBlobSha1
+      :sha(b)===art.sha256;
+     if(!valid)continue;
     const html=read("index.html").toString();
     const card=html.split('<section class="pulse-world-door"')[1]?.split("</section>")[0]||"";
     if(card.includes('src="/'+art.sourceImage+'"'))continue; // not a reference drift
