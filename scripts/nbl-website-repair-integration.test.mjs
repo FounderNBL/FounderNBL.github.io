@@ -29,7 +29,7 @@ test("Actual NBL Fixer uses applicable local recipe, experiments without interne
  assert.equal(r.modelCalls,0);assert.equal(r.research.queriesExecuted,0);
  assert.equal(r.comparison.selectedCaseId,"nbl-local-recipe");
  assert.equal(r.testStatus,"AWAITING_INDEPENDENT_RETEST");
- assert.match(h.files.get(sandbox+"/index.html"),/NBL_Pulse_World_Card.png/);
+ assert.match(h.files.get(sandbox+"/index.html"),/NBL_Pulse_Worldcard.png/);
  assert.ok(h.writes.some(p=>p.endsWith("website-fixer-experiment.json")));
 });
 test("Only when local patches fail does NBL consult external research, still within existing provider gate",async()=>{
