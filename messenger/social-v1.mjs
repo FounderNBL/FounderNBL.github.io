@@ -710,9 +710,9 @@ async function publishPost(event){
   const text=$("#postText").value.trim();
   const videoLink=$("#videoLink").value.trim();
   const chosenVideo=videoLink?parsePublicVideo(videoLink):null;
-  if(videoLink&&!chosenVideo){status("Use a public YouTube, Facebook video/Reel, or Instagram post/Reel link.");return;}
+  if(videoLink&&!chosenVideo){status("Use a public YouTube video or a Facebook, Instagram, or Threads post/video link.");return;}
   if(videoLink&&!$("#videoShareRights").checked){
-    status("Please confirm you own or have permission to share this video.");return;
+    status("Please confirm the linked post or video is public.");return;
   }
   const youtubeId=chosenVideo?.provider==="youtube"?chosenVideo.id:null;
   let files;
@@ -738,7 +738,7 @@ async function publishPost(event){
         if(!trusted)throw new Error("Upload did not return a trusted Stream media link.");
         attachments.push(image?{type:"image",image_url:trusted,custom:{nbl_media_mime:file.type}}:{type:"video",asset_url:trusted,custom:{}});
       }
-      result=await feed.addActivity({type:"post",text:text||"Shared a video",attachments,visibility:"public",
+      result=await feed.addActivity({type:"post",text:text||"Shared a public post",attachments,visibility:"public",
         ...(chosenVideo?{custom:youtubeId?{nbl_youtube_id:youtubeId}:{nbl_external_video_url:chosenVideo.url}}:{})});
     }catch(error){
       // Also clean up partial photo uploads when a later upload fails, rather
