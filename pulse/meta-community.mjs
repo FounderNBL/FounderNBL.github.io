@@ -99,9 +99,10 @@ export function initMetaCommunity(invoke){
   if(ig.status==="verified"){
    const match=ig.matches_pulse_app===true?"Instagram token belongs to NBL Pulse Live.":
      "Instagram token is not associated with NBL Pulse Live.";
-   const missing=Array.isArray(ig.missing_scopes)?ig.missing_scopes:[];
-   apiReport.textContent=match+(missing.length?
-     " Permissions missing from this token: "+missing.join(", ")+".":" Required Instagram scopes are present.");
+   const reported=Array.isArray(ig.permissions_reported)?ig.permissions_reported:[];
+   apiReport.textContent=match+(reported.length?
+     " Meta lists these Instagram scopes: "+reported.join(", ")+".":" Meta's token debugger did not list Instagram scopes. This does NOT establish that permissions are missing.");
+   apiReport.textContent+=" Photo publishing and comment replies have worked, but Meta's App Review test-call counters must be checked separately.";
   }else if(ig.status==="token_invalid"){
    apiReport.textContent="Instagram token is invalid. Reauthorization is required before new API tests.";
   }else if(ig.status==="instagram_token_missing"){
