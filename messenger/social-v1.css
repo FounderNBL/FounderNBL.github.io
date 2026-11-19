@@ -50,3 +50,12 @@
 .pulse-new-beat-notice span{flex:1 1 200px;font-weight:750}
 .pulse-new-beat-notice a,.pulse-new-beat-notice button{color:#fff;border:1px solid #8052b0;background:#382054;border-radius:8px;padding:8px 11px;text-decoration:none;font:inherit;cursor:pointer}
 .pulse-new-beat-notice :is(a,button):focus-visible{outline:3px solid #deb4ff;outline-offset:2px}
+
+/* Explicit user-click public Meta embeds; never auto-load cross-platform trackers. */
+.social-provider-embed{grid-column:1/-1;width:100%;min-width:0;display:grid;gap:10px;margin:4px 0 10px;overflow:hidden}
+.social-provider-embed .social-embed-play{width:100%;min-height:118px}
+.social-provider-source{display:inline-flex;justify-self:start;color:var(--gold2,#cf9fff);font-weight:700;overflow-wrap:anywhere}
+.social-provider-embed .social-post-embed{height:650px;min-height:450px;aspect-ratio:auto;max-width:100%}
+.social-provider-embed .text-post-media{width:100%;max-width:100%;min-width:0;background:#fff;border-radius:12px}
+.social-provider-embed .instagram-media{max-width:100%!important;min-width:0!important;width:100%;margin:0!important}
+@media(max-width:620px){.social-provider-embed .social-post-embed{height:600px;min-height:420px}}
