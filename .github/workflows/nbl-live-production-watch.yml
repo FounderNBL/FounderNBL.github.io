@@ -560,7 +560,8 @@ jobs:
             pulse/index.html
             messenger/index.html
             messenger/messenger-skin.css
-            NBL_Pulse_World_Card.png
+            NBL_Pulse_Worldcard.png
+            NBL Pulse_Icon.png
             NBL_Messenger_Beans_Worldcard.png
             config/nbl-website-green-baseline.json
             config/nbl-website-fixer-policy.json
