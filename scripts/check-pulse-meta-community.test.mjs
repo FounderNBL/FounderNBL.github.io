@@ -13,7 +13,7 @@ test("New Founder Meta UI module is valid JS and stays out of member feeds",()=>
  assert.match(pulse,/state\.me\?\.role==="founder"/);
  assert.match(pulse,/founderFacebookShareButton/);
  assert.match(pulse,/initMetaCommunity\(/);
- assert.match(page,/20261119-instagram-founder-crosspost-meta-community/);
+ assert.match(page,/20261119-meta-review-api/);
  assert.doesNotMatch(view,/localStorage|sessionStorage|innerHTML|META_APP_SECRET|PAGE_ACCESS_TOKEN/);
 });
 test("No unauthorized Meta posting or comment replies",()=>{
@@ -40,4 +40,17 @@ test("Existing Instagram photo publish and Messenger remain unmodified",()=>{
  assert.match(pulse,/facebookShareLink\(activity.id\)/);
  assert.match(pulse,/location.assign\("\/messenger\/"/);
  assert.doesNotMatch(backend,/nbl-live|nbl-messenger-push/);
+});
+
+test("Meta review API diagnostic is Founder-only and never exposes credentials",()=>{
+ assert.match(backend,/const PULSE_APP_ID="1167499339147411"/);
+ assert.match(backend,/if\(route==="\/review\/diagnostics"\)/);
+ assert.match(backend,/debug_token/);
+ assert.match(backend,/matches_pulse_app/);
+ assert.match(backend,/APP_ID===PULSE_APP_ID/);
+ assert.match(backend,/HKDF/);
+ assert.match(backend,/AES-GCM/);
+ assert.match(view,/Check Meta API permissions/);
+ assert.match(view,/review\/diagnostics/);
+ assert.doesNotMatch(view,/IG_TOKEN|APP_SECRET|access_token|token_ciphertext/);
 });

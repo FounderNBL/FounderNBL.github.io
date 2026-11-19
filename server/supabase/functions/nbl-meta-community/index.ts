@@ -8,7 +8,9 @@ import {createRemoteJWKSet,jwtVerify} from "npm:jose@5.9.6";
 const API="v27.0",GRAPH="https://graph.facebook.com/"+API+"/";
 const BASE=(Deno.env.get("SUPABASE_URL")||"").replace(/\/+$/,"");
 const DB=createClient(BASE,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"",{auth:{persistSession:false,autoRefreshToken:false}});
-const APP_ID=(Deno.env.get("NBL_PULSE_META_APP_ID")||"").trim();
+// Meta app ID is public; use the verified Pulse Live app ID when the optional env setting is missing.
+const PULSE_APP_ID="1167499339147411";
+const APP_ID=(Deno.env.get("NBL_PULSE_META_APP_ID")||PULSE_APP_ID).trim();
 const APP_SECRET=(Deno.env.get("NBL_PULSE_META_APP_SECRET")||"").trim();
 const AES_KEY=(Deno.env.get("NBL_CONNECT_TOKEN_AES_KEY")||"").trim();
 const IG_TOKEN=(Deno.env.get("NBL_PULSE_INSTAGRAM_ACCESS_TOKEN")||"").trim();
@@ -40,9 +42,20 @@ async function founder(req){
  }catch{return null;}
 }
 async function key(){
- const raw=Uint8Array.from(atob(AES_KEY),ch=>ch.charCodeAt(0));
- if(raw.length!==32)throw Error("encryption_not_configured");
- return crypto.subtle.importKey("raw",raw,{name:"AES-GCM"},false,["encrypt","decrypt"]);
+ if(AES_KEY){
+  const raw=Uint8Array.from(atob(AES_KEY),ch=>ch.charCodeAt(0));
+  if(raw.length!==32)throw Error("encryption_not_configured");
+  return crypto.subtle.importKey("raw",raw,{name:"AES-GCM"},false,["encrypt","decrypt"]);
+ }
+ // Derive a purpose-scoped encryption key from the already-configured Meta app
+ // secret when a separate NBL_CONNECT_TOKEN_AES_KEY has not yet been provisioned.
+ // No token or encryption key is exposed to the browser or persisted in source.
+ if(APP_SECRET.length<16)throw Error("encryption_not_configured");
+ const master=await crypto.subtle.importKey("raw",text.encode(APP_SECRET),"HKDF",false,["deriveKey"]);
+ return crypto.subtle.deriveKey({
+  name:"HKDF",hash:"SHA-256",salt:text.encode("NBL-Pulse-"+APP_ID),
+  info:text.encode("facebook-page-access-token-AES-GCM-v1")
+ },master,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
 }
 async function seal(token){
  const iv=crypto.getRandomValues(new Uint8Array(12));
@@ -67,6 +80,39 @@ async function graph(method,path,token,params={}){
   return {ok:res.ok&&!body?.error,body,status:res.status};
  }catch{return {ok:false,body:null,status:502};}
 }
+
+async function instagramReviewDiagnostics(){
+ if(!IG_TOKEN)return {status:"instagram_token_missing",matches_pulse_app:null};
+ if(APP_ID!==PULSE_APP_ID||APP_SECRET.length<16)
+  return {status:"pulse_app_credentials_missing",matches_pulse_app:null};
+ const url=new URL(GRAPH+"debug_token");
+ url.searchParams.set("input_token",IG_TOKEN);
+ try{
+  // The official debugger first tries the Pulse app's app token. If the
+  // Instagram token came from a different Meta app, Meta may reject that check;
+  // try the provided token as a self-debug credential without revealing it.
+  let data=null;
+  for(const bearer of [APP_ID+"|"+APP_SECRET,IG_TOKEN]){
+   const r=await fetch(url,{
+    method:"GET",headers:{"authorization":"Bearer "+bearer,"accept":"application/json"},
+    redirect:"error",signal:AbortSignal.timeout(9000)
+   });
+   const body=await r.json().catch(()=>null);
+   if(r.ok&&!body?.error&&body?.data){data=body.data;break;}
+  }
+  if(!data)return {status:"token_debug_unavailable",matches_pulse_app:null};
+  const scopes=Array.isArray(data.scopes)?data.scopes.filter(x=>typeof x==="string"):[];
+  const expected=["instagram_basic","instagram_content_publish","instagram_manage_comments"];
+  return {
+   status:data.is_valid===true?"verified":"token_invalid",
+   matches_pulse_app:String(data.app_id||"")===PULSE_APP_ID,
+   token_app_id:/^\d{6,24}$/.test(String(data.app_id||""))?String(data.app_id):null,
+   scopes:expected.filter(p=>scopes.includes(p)),
+   missing_scopes:expected.filter(p=>!scopes.includes(p))
+  };
+ }catch{return {status:"token_debug_unavailable",matches_pulse_app:null};}
+}
+
 async function instagramId(){
  if(!IG_TOKEN)return null;
  const r=await graph("GET","me/assigned_instagram_accounts",IG_TOKEN,{fields:"id,username",limit:"100"});
@@ -101,7 +147,7 @@ async function ownMedia(id,account){
  return {ok:true,items,idIsMine:id?items.some(m=>String(m.id)===id):undefined};
 }
 async function beginFacebook(req,user){
- if(!/^\d{6,24}$/.test(APP_ID)||APP_SECRET.length<16||AES_KEY.length<40)
+ if(APP_ID!==PULSE_APP_ID||APP_SECRET.length<16)
   return json(req,{ok:false,reason:"facebook_oauth_secrets_unavailable"},503);
  const nonce=b64(crypto.getRandomValues(new Uint8Array(32))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
  const digest=b64(new Uint8Array(await crypto.subtle.digest("SHA-256",text.encode(nonce))));
@@ -118,7 +164,7 @@ async function beginFacebook(req,user){
  return json(req,{ok:true,authorization_url:u.toString()});
 }
 async function facebookCallback(req){
- if(!/^\d{6,24}$/.test(APP_ID)||APP_SECRET.length<16||AES_KEY.length<40)return finish("not_configured");
+ if(APP_ID!==PULSE_APP_ID||APP_SECRET.length<16)return finish("not_configured");
  const q=new URL(req.url).searchParams,nonce=q.get("state")||"",code=q.get("code")||"";
  if(q.get("error")||!code||code.length>2500||!/^[A-Za-z0-9_-]{40,120}$/.test(nonce))return finish("denied");
  const digest=b64(new Uint8Array(await crypto.subtle.digest("SHA-256",text.encode(nonce))));
@@ -168,8 +214,9 @@ async function actions(req,user,route){
  if(route==="/status"){
   const [page,ig]=await Promise.all([facebookPage(user),instagramId()]);
   return json(req,{ok:true,facebook_connected:!!page,facebook_page:page?.name||null,
-   instagram_connected:!!ig,facebook_login_ready:/^\d{6,24}$/.test(APP_ID)&&APP_SECRET.length>=16&&AES_KEY.length>=40});
+   instagram_connected:!!ig,facebook_login_ready:/^\d{6,24}$/.test(APP_ID)&&APP_SECRET.length>=16});
  }
+ if(route==="/review/diagnostics")return json(req,{ok:true,instagram:await instagramReviewDiagnostics(),facebook_oauth_ready:APP_ID===PULSE_APP_ID&&APP_SECRET.length>=16,facebook_connected:!!(await facebookPage(user))});
  if(route==="/facebook/begin")return beginFacebook(req,user);
  if(route==="/facebook/posts"||route==="/facebook/publish"){
   const page=await facebookPage(user);
