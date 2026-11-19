@@ -120,7 +120,7 @@ async function beginFacebook(req,user){
 async function facebookCallback(req){
  if(!/^\d{6,24}$/.test(APP_ID)||APP_SECRET.length<16||AES_KEY.length<40)return finish("not_configured");
  const q=new URL(req.url).searchParams,nonce=q.get("state")||"",code=q.get("code")||"";
- if(q.get("error")||!code||code.length>2500||!/[A-Za-z0-9_-]{40,120}/.test(nonce))return finish("denied");
+ if(q.get("error")||!code||code.length>2500||!/^[A-Za-z0-9_-]{40,120}$/.test(nonce))return finish("denied");
  const digest=b64(new Uint8Array(await crypto.subtle.digest("SHA-256",text.encode(nonce))));
  const now=new Date().toISOString();
  const r=await DB.from("nbl_connect_oauth_states").update({consumed_at:now})
@@ -231,7 +231,9 @@ async function actions(req,user,route){
  return json(req,{ok:false,reason:"not_found"},404);
 }
 Deno.serve(async(req)=>{
- const path=new URL(req.url).pathname.replace(/^\/functions\/v1\/nbl-meta-community/,"");
+ const pathname=new URL(req.url).pathname;
+ const split=pathname.indexOf("/nbl-meta-community");
+ const path=split>=0?pathname.slice(split+"/nbl-meta-community".length)||"/":pathname;
  if(req.method==="OPTIONS")return json(req,{ok:true});
  if(req.method==="GET"&&path==="/facebook/callback")return facebookCallback(req);
  if(req.method==="GET"&&path==="/")return json(req,{ok:true,service:"nbl_meta_community",founder_only:true});
