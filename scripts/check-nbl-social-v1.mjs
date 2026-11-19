@@ -85,6 +85,16 @@ assert.match(campus,/https:\/\/nblschool\.com\//); // University now uses its in
 assert.match(releases,/not yet a Play Store Android package/);
 console.log("PASS: separate NBL Social preview source, server-owned identity, Stream Feeds calls, existing DMs and University preserved.");
 
+const metaBackend=read("server/supabase/functions/nbl-meta-community/index.ts");
+const metaClient=read("pulse/meta-community.mjs");
+assert.ok(metaBackend.includes("founder_access_required"));
+assert.ok(metaBackend.includes('confirm!=="publish"'));
+assert.ok(metaBackend.includes('confirm!=="reply"'));
+assert.ok(metaBackend.includes('provider:"facebook"'));
+assert.ok(metaClient.includes("Connect NBL Facebook Page"));
+assert.ok(metaClient.includes("Manage Instagram comments"));
+assert.ok(js.includes("initMetaCommunity("));
+
 const pulse=read("pulse/index.html"),home=read("index.html");
 assert.match(home,/id="nbl-pulse-door"/);
 assert.match(home,/href="\/pulse\/"/);
