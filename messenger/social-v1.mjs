@@ -398,10 +398,15 @@ function renderActivity(activity){
   if(ownPublicVideo){
     const video=activity.attachments[0];
     const reel=element("button",null,"Prepare Instagram Reel");reel.type="button";
+    // Keep progress and errors in sight beside the action, not below a long post.
+    feedback.setAttribute("role","status");feedback.setAttribute("aria-live","polite");
+    feedback.style.flexBasis="100%";
     let containerId=null,done=false;
     reel.addEventListener("click",async()=>{
       if(done||reel.disabled)return;
       reel.disabled=true;
+      reel.textContent=containerId?"Checking Instagram Reel…":"Preparing Instagram Reel…";
+      feedback.textContent=containerId?"Checking Reel processing with Instagram…":"Contacting Instagram to prepare your Reel…";
       try{
         assertCurrentAccount(authorId);
         if(!containerId){
@@ -415,7 +420,11 @@ function renderActivity(activity){
           reel.textContent="Publish Reel to @nbl_world";
           feedback.textContent="Reel prepared. Instagram may still be processing the video. Tap Publish when ready.";
         }else{
-          if(!window.confirm("Publish this video publicly as an Instagram Reel on @nbl_world?"))return;
+          if(!window.confirm("Publish this video publicly as an Instagram Reel on @nbl_world?")){
+            reel.textContent="Publish Reel to @nbl_world";
+            feedback.textContent="Reel is prepared. Publishing canceled; nothing was posted to Instagram.";
+            return;
+          }
           feedback.textContent="Checking Instagram Reel processing and publishing…";
           const result=await secured(INSTAGRAM_API+"/publish/confirm",{
             confirm:"confirm",creation_id:containerId,media_type:"REELS"
@@ -431,6 +440,7 @@ function renderActivity(activity){
           }
         }
       }catch(error){
+        reel.textContent=containerId?"Publish Reel to @nbl_world":"Prepare Instagram Reel";
         const why=String(error?.message||"");
         feedback.textContent=why==="media_container_not_ready"
           ?"Instagram is still processing your Reel. Tap Publish Reel again after it finishes."
@@ -439,7 +449,7 @@ function renderActivity(activity){
           :"Instagram Reel: "+safeError(error);
       }finally{reel.disabled=done;}
     });
-    actions.append(reel);
+    actions.append(reel,feedback);
   }
   if(signedActor&&authorId!==state.user.id){
     const follow=element("button",null,"Follow");follow.type="button";
@@ -495,7 +505,9 @@ function renderActivity(activity){
   }
   mountPublicVideo(activity.custom,media);
   hydrateAvatar(authorId,avatar);
-  card.append(head,time,text,media,meta,actions,feedback,form,commentsArea);
+  card.append(head,time,text,media,meta,actions);
+  if(!ownPublicVideo)card.append(feedback);
+  card.append(form,commentsArea);
   return card;
 }
 async function loadLinkedPost(){
