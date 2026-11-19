@@ -8,10 +8,10 @@ const door=html.split('<section class="pulse-world-door"')[1]?.split("</section>
 const cases=[
  {label:"Pulse",href:"/pulse/",img:"/NBL_Pulse_Worldcard.png",
   file:"NBL_Pulse_Worldcard.png",gitBlobSha1:"31803af57c53a84bdbdf60d3494e16bb4bb0ffbb",sizeBytes:2143645},
- {label:"Messenger",href:"/messenger/",img:"/NBL_Messenger_Beans_Worldcard.png",
-  file:"NBL_Messenger_Beans_Worldcard.png",
-  hash:"0c6041b211aa0b1f4d32db4108a0ad440f9ea069d51ccfba7609d8a6fab1fdd7",
-  width:1254,height:1254}
+ {label:"Messenger",href:"/messenger/",img:"/NBL_Messenger_Worldcard.png",
+  file:"NBL_Messenger_Worldcard.png",
+  gitBlobSha1:"89a9e27d8a0004462349af7614178710c50e3b90",sizeBytes:2074930,
+  width:1672,height:941}
 ];
 test("Social World cards retain separate original art and destinations",()=>{
  assert.ok(door,"social World-card section is present");
@@ -21,6 +21,8 @@ test("Social World cards retain separate original art and destinations",()=>{
  }
  assert.ok(!door.includes("pulse-world.svg"),"Pulse placeholder must not remain");
  assert.ok(!door.includes("messenger/icon.svg"),"Messenger placeholder must not remain on World card");
+ assert.ok(!door.includes("NBL_Messenger_Beans_Worldcard.png"),"Messenger card must not use the retired Beans artwork");
+ assert.match(door,/Brought to you by NBL Pulse/,"Messenger must credit NBL Pulse");
  assert.match(html,/\.pulse-world-door \.social-door-grid \.world-card \.media img,[\s\S]*?object-fit:contain;object-position:center/,"keep entire card art uncropped");
 });
 for(const c of cases){

@@ -19,7 +19,7 @@ async function visit(page,path="/"){
 test("Pulse and Messenger have exact approved artwork, separate links, and uncropped images",async({page},info)=>{
  if(!await visit(page))return;
  const cases=[["/pulse/","/NBL_Pulse_Worldcard.png",0,0],
-              ["/messenger/","/NBL_Messenger_Beans_Worldcard.png",1254,1254]];
+              ["/messenger/","/NBL_Messenger_Worldcard.png",1672,941]];
  const cards=page.locator(".pulse-world-door .social-door-grid .world-card");
  await expect(cards).toHaveCount(2);
  for(const [href,src,width,height] of cases){
