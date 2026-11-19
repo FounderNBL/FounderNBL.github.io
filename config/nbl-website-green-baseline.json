@@ -123,10 +123,9 @@
       {
         "id": "messenger",
         "route": "/messenger/",
-        "sourceImage": "NBL_Messenger_Beans_Worldcard.png",
-        "sha256": "0c6041b211aa0b1f4d32db4108a0ad440f9ea069d51ccfba7609d8a6fab1fdd7",
-        "width": 1254,
-        "height": 1254
+        "sourceImage": "NBL_Messenger_Worldcard.png",
+        "gitBlobSha1": "89a9e27d8a0004462349af7614178710c50e3b90",
+        "sizeBytes": 2074930
       }
     ],
     "existingRegressionSuites": [
