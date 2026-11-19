@@ -28,10 +28,19 @@ export function checkContract(c=contract){
  }
  for(const a of c.source?.officialWorldArt||[]){
    if(!["pulse","messenger"].includes(a.id)||!allowedPath(a.route)||
-     !/^[A-Za-z0-9_-]+\.png$/.test(a.sourceImage)||!/^[a-f0-9]{64}$/.test(a.sha256))
+     !/^[A-Za-z0-9_-]+\.png$/.test(a.sourceImage)||!((/^[a-f0-9]{64}$/.test(a.sha256||"")&&Number.isInteger(a.width)&&Number.isInteger(a.height))||(/^[a-f0-9]{40}$/.test(a.gitBlobSha1||"")&&Number.isInteger(a.sizeBytes)&&a.sizeBytes>0)))
      errors.push("art_authority_invalid");
  }
  return errors;
+}
+function approvedArtMatches(a,b){
+ if(b.length<24||b.subarray(0,8).toString("hex")!=="89504e470d0a1a0a")return false;
+ if(Number.isInteger(a.width)&&b.readUInt32BE(16)!==a.width)return false;
+ if(Number.isInteger(a.height)&&b.readUInt32BE(20)!==a.height)return false;
+ if(Number.isInteger(a.sizeBytes)&&b.length!==a.sizeBytes)return false;
+ return a.gitBlobSha1
+  ?createHash("sha1").update("blob "+b.length+"\0").update(b).digest("hex")===a.gitBlobSha1
+  :createHash("sha256").update(b).digest("hex")===a.sha256;
 }
 const getText=(p)=>readFileSync(join(root,p),"utf8");
 const getBytes=(p)=>readFileSync(join(root,p));
@@ -49,13 +58,11 @@ export function checkSource(c=contract,{text=getText,bytes=getBytes}={}){
  for(const a of c.source.officialWorldArt){
    try{
      const b=bytes(a.sourceImage);
-     const hash=createHash("sha256").update(b).digest("hex");
-     const png=b.length>=24&&b.subarray(0,8).toString("hex")==="89504e470d0a1a0a";
-     const dimensions=png&&b.readUInt32BE(16)===a.width&&b.readUInt32BE(20)===a.height;
+     const verified=approvedArtMatches(a,b);
      const anchor=new RegExp('<a\\b[^>]*href="'+a.route.replaceAll("/","\\/")+'"[^>]*>[\\s\\S]*?<img\\s+src="/'+a.sourceImage.replaceAll(".","\\.")+'"');
      const rightCard=anchor.test(door);
-     findings.push(item("art:"+a.id,png&&dimensions&&hash===a.sha256&&rightCard?"PASS":"FAIL",
-       png&&dimensions&&hash===a.sha256&&rightCard?"exact_approved_art_bytes_and_door":"wrong_art_hash_dimensions_or_route","source-visual"));
+     findings.push(item("art:"+a.id,verified&&rightCard?"PASS":"FAIL",
+       verified&&rightCard?"exact_approved_art_bytes_and_door":"wrong_art_hash_dimensions_or_route","source-visual"));
    }catch{findings.push(item("art:"+a.id,"FAIL","approved_art_unreadable","source-visual"));}
  }
  try{
@@ -108,11 +115,9 @@ async function liveArt(c){
      const indicated=Number(response.headers.get("content-length")||0);
      if(indicated>8_000_000){out.push(item("live-art:"+a.id,"UNVERIFIED","asset_oversize_for_safe_probe","live-art"));continue;}
      const bytes=Buffer.from(await response.arrayBuffer());
-     const signature=bytes.subarray(0,8).toString("hex")==="89504e470d0a1a0a";
-     const dimensions=bytes.length>=24&&bytes.readUInt32BE(16)===a.width&&bytes.readUInt32BE(20)===a.height;
-     const hash=createHash("sha256").update(bytes).digest("hex");
-     out.push(item("live-art:"+a.id,signature&&dimensions&&hash===a.sha256?"PASS":"FAIL",
-        signature&&dimensions&&hash===a.sha256?"cdn_bytes_match_approved_source":"cdn_art_differs_from_approved_art","live-art"));
+     const verified=approvedArtMatches(a,bytes);
+     out.push(item("live-art:"+a.id,verified?"PASS":"FAIL",
+        verified?"cdn_bytes_match_approved_source":"cdn_art_differs_from_approved_art","live-art"));
    }catch{out.push(item("live-art:"+a.id,"UNVERIFIED","asset_content_unreadable","live-art"));}
  }
  return out;
