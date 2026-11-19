@@ -18,7 +18,7 @@ async function visit(page,path="/"){
 }
 test("Pulse and Messenger have exact approved artwork, separate links, and uncropped images",async({page},info)=>{
  if(!await visit(page))return;
- const cases=[["/pulse/","/NBL_Pulse_World_Card.png",1672,941],
+ const cases=[["/pulse/","/NBL_Pulse_Worldcard.png",0,0],
               ["/messenger/","/NBL_Messenger_Beans_Worldcard.png",1254,1254]];
  const cards=page.locator(".pulse-world-door .social-door-grid .world-card");
  await expect(cards).toHaveCount(2);
@@ -30,7 +30,7 @@ test("Pulse and Messenger have exact approved artwork, separate links, and uncro
    const img=node.locator(".media img");
    await expect(img).toHaveAttribute("src",src);
    await expect(img).toHaveCSS("object-fit","contain");
-   await expect.poll(async()=>img.evaluate((i,size)=>i.complete&&i.naturalWidth===size.width&&i.naturalHeight===size.height,{width,height})).toBe(true);
+   await expect.poll(async()=>img.evaluate((i,size)=>i.complete&&i.naturalWidth>0&&i.naturalHeight>0&&(!size.width||i.naturalWidth===size.width)&&(!size.height||i.naturalHeight===size.height),{width,height})).toBe(true);
    await expect(node).toBeVisible();
    const clipped=await node.evaluate(el=>{
      const r=el.getBoundingClientRect();

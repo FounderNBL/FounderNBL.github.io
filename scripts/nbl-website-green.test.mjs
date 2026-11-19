@@ -30,7 +30,7 @@ test("The actual approved artwork and homepage references must match their offic
 });
 test("Tampered PNG cannot receive source GREEN",()=>{
  const text=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
- const bytes=p=>p==="NBL_Pulse_World_Card.png"?Buffer.from("not the official image"):
+ const bytes=p=>p==="NBL_Pulse_Worldcard.png"?Buffer.from("not the official image"):
    readFileSync(new URL("../"+p,import.meta.url));
  const findings=checkSource(contract,{text,bytes});
  assert.equal(findings.find(x=>x.id==="art:pulse").status,"FAIL");
@@ -39,7 +39,7 @@ test("Tampered PNG cannot receive source GREEN",()=>{
 test("Wrong Pulse artwork reference cannot receive source GREEN even with correct PNG bytes",()=>{
  const text=p=>{
    const content=readFileSync(new URL("../"+p,import.meta.url),"utf8");
-   return p==="index.html"?content.replace('src="/NBL_Pulse_World_Card.png"','src="/pulse/pulse-world.svg"'):content;
+   return p==="index.html"?content.replace('src="/NBL_Pulse_Worldcard.png"','src="/pulse/pulse-world.svg"'):content;
  };
  const findings=checkSource(contract,{text});
  assert.equal(findings.find(x=>x.id==="art:pulse").status,"FAIL");

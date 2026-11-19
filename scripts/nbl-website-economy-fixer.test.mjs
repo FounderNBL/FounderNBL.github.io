@@ -13,12 +13,12 @@ test("The approved World-card recipe repairs actual stale source without an AI c
  const original='<section class="pulse-world-door"><a href="/pulse/"><img src="/pulse/pulse-world.svg"></a></section>';
  const edits=recipeEdits(incident,()=>original,"/website");
  assert.equal(edits.length,1);
- assert.equal(edits[0].replace,'src="/NBL_Pulse_World_Card.png"');
+ assert.equal(edits[0].replace,'src="/NBL_Pulse_Worldcard.png"');
  const fs=new Map([["/website/index.html",original]]);
  const write=(path,text)=>fs.set(path,text),read=(path)=>fs.get(path);
  const changed=applyEdits("/website",edits,{read,write});
  assert.deepEqual(changed,["index.html"]);
- assert.ok(fs.get("/website/index.html").includes("NBL_Pulse_World_Card.png"));
+ assert.ok(fs.get("/website/index.html").includes("NBL_Pulse_Worldcard.png"));
 });
 test("NBL refuses repeated or no-longer-matching AI edits",()=>{
  const text="old text and old text";
