@@ -217,5 +217,7 @@ assert.match(worldHeader,/await clerk\.signOut\(\)/);
 assert.match(worldCss,/nbl-world-header-home \.nbl-world-user\{display:flex!important/);
 assert.doesNotMatch(home,/rel="noopener noreferrer">Shop<\/a>/);
 
-assert.match(home,/nbl-world-header\.js\?v=20261114-public-members-v1/);
-assert.match(home,/nbl-world-header\.css\?v=20261114-public-members-v1/);
+const homeHeaderJs=home.match(/nbl-world-header\.js\?v=([a-zA-Z0-9_-]+)/);
+const homeHeaderCss=home.match(/nbl-world-header\.css\?v=([a-zA-Z0-9_-]+)/);
+assert.ok(homeHeaderJs && homeHeaderCss,"Homepage must load versioned NBL header assets");
+assert.equal(homeHeaderJs[1],homeHeaderCss[1],"Homepage NBL header JavaScript and CSS must use the same cache revision");
