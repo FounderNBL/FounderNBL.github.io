@@ -88,14 +88,19 @@ async function instagramReviewDiagnostics(){
  const url=new URL(GRAPH+"debug_token");
  url.searchParams.set("input_token",IG_TOKEN);
  try{
-  const r=await fetch(url,{
-   method:"GET",headers:{"authorization":"Bearer "+APP_ID+"|"+APP_SECRET,"accept":"application/json"},
-   redirect:"error",signal:AbortSignal.timeout(9000)
-  });
-  const body=await r.json().catch(()=>null);
-  if(!r.ok||body?.error||!body?.data)
-   return {status:"token_debug_unavailable",matches_pulse_app:null,meta_status:r.status};
-  const data=body.data;
+  // The official debugger first tries the Pulse app's app token. If the
+  // Instagram token came from a different Meta app, Meta may reject that check;
+  // try the provided token as a self-debug credential without revealing it.
+  let data=null;
+  for(const bearer of [APP_ID+"|"+APP_SECRET,IG_TOKEN]){
+   const r=await fetch(url,{
+    method:"GET",headers:{"authorization":"Bearer "+bearer,"accept":"application/json"},
+    redirect:"error",signal:AbortSignal.timeout(9000)
+   });
+   const body=await r.json().catch(()=>null);
+   if(r.ok&&!body?.error&&body?.data){data=body.data;break;}
+  }
+  if(!data)return {status:"token_debug_unavailable",matches_pulse_app:null};
   const scopes=Array.isArray(data.scopes)?data.scopes.filter(x=>typeof x==="string"):[];
   const expected=["instagram_basic","instagram_content_publish","instagram_manage_comments"];
   return {
