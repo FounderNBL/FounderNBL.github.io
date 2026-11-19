@@ -102,13 +102,24 @@ async function instagramReviewDiagnostics(){
   }
   if(!data)return {status:"token_debug_unavailable",matches_pulse_app:null};
   const scopes=Array.isArray(data.scopes)?data.scopes.filter(x=>typeof x==="string"):[];
-  const expected=["instagram_basic","instagram_content_publish","instagram_manage_comments"];
+  // Meta exposes different scope names for the Instagram Business login and
+  // legacy Facebook-login flows. A missing legacy string is NOT proof that an
+  // authorized Meta system-user token lacks working media/comment access.
+  const recognized=[
+   "instagram_basic","instagram_content_publish","instagram_manage_comments",
+   "instagram_business_basic","instagram_business_content_publish",
+   "instagram_business_content_publishing","instagram_business_manage_comments"
+  ];
   return {
    status:data.is_valid===true?"verified":"token_invalid",
    matches_pulse_app:String(data.app_id||"")===PULSE_APP_ID,
    token_app_id:/^\d{6,24}$/.test(String(data.app_id||""))?String(data.app_id):null,
-   scopes:expected.filter(p=>scopes.includes(p)),
-   missing_scopes:expected.filter(p=>!scopes.includes(p))
+   token_type:["USER","PAGE","APP","SYSTEM_USER"].includes(String(data.type||""))?data.type:"unknown",
+   permissions_reported:recognized.filter(p=>scopes.includes(p)),
+   // No missing_scopes: the debugger may not list Page tasks or equivalent
+   // permissions for system-user credentials. Only Meta's review UI can
+   // confirm whether required API calls have been credited.
+   scopes_list_available:Array.isArray(data.scopes)
   };
  }catch{return {status:"token_debug_unavailable",matches_pulse_app:null};}
 }
