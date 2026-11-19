@@ -410,7 +410,7 @@ function renderActivity(activity){
             confirm:"prepare",media_type:"REELS",video_url:video.asset_url,
             caption:String(activity.text||"").slice(0,1500)
           });
-          if(!/^\\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram did not return a Reel container.");
+          if(!/^\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram did not return a Reel container.");
           containerId=result.container_id;
           reel.textContent="Publish Reel to @nbl_world";
           feedback.textContent="Reel prepared. Instagram may still be processing the video. Tap Publish when ready.";
@@ -424,7 +424,7 @@ function renderActivity(activity){
           done=true;
           reel.textContent="Reel published on Instagram";
           feedback.textContent="Instagram Reel published on @nbl_world.";
-          if(typeof result.permalink==="string"&&/^https:\/\/(?:www\\.)?instagram\\.com\//.test(result.permalink)){
+          if(typeof result.permalink==="string"&&/^https:\/\/(?:www\.)?instagram\.com\//.test(result.permalink)){
             const view=element("a","btn small","View Instagram Reel");
             view.href=result.permalink;view.target="_blank";view.rel="noopener noreferrer";
             feedback.append(" ",view);
