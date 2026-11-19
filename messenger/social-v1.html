@@ -10,8 +10,8 @@
 <meta property="og:description" content="Discover a post shared by a New Beansland member. Visit NBL Social to see the original post.">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
-<link rel="stylesheet" href="/messenger/social-v1.css?v=20261108-provider-video">
-<script type="module" src="/messenger/social-v1.mjs?v=20261114-public-members-v1"></script>
+<link rel="stylesheet" href="/messenger/social-v1.css?v=20261119-public-meta-embeds">
+<script type="module" src="/messenger/social-v1.mjs?v=20261114-public-members-v1-meta-embeds"></script>
 </head><body>
 <header class="topbar">
   <a class="brand" href="/messenger/">NBL Messenger</a>
@@ -46,9 +46,9 @@
         <label for="postMedia">Add photos or a video (optional)</label>
         <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" multiple>
         <p class="social-feedback" id="mediaSelection" role="status">Up to 4 photos (8 MB each) or 1 video (40 MB).</p>
-        <label for="videoLink">Or share a public YouTube, Facebook or Instagram video</label>
-        <input id="videoLink" type="url" placeholder="Paste your public video link" autocomplete="off">
-        <label><input id="videoShareRights" type="checkbox"> I own or have permission to share this video</label>
+        <label for="videoLink">Or embed a public Facebook, Instagram, Threads post or YouTube video</label>
+        <input id="videoLink" type="url" placeholder="Paste a public post or video link" autocomplete="off">
+        <label><input id="videoShareRights" type="checkbox"> I confirm this is a public post or video</label>
         <div class="compose-bottom"><small id="postCount">0 / 1500</small><button class="btn primary" type="submit">Post</button></div>
       </form>
     </section>
