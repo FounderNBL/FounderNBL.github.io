@@ -57,6 +57,7 @@ function setBusy(on) {
 const REASON_TEXT = {
   host_not_eligible: "You need an active NBL Pulse member profile to start a live broadcast.",
   facebook_failed: "Facebook Live could not be started. Your Pulse broadcast is still in backstage — try again or go live on Pulse only.",
+  facebook_requires_admin: "Only the Founder account can broadcast to the New Beansland Facebook Page.",
   facebook_not_configured: "Facebook Live is not configured for Pulse yet. You can still go live on Pulse only.",
   facebook_auth_required: "Facebook Live needs a fresh sign-in. Your Pulse broadcast is still in backstage.",
   live_already_active: "A Pulse Live broadcast is already running.",
@@ -312,11 +313,14 @@ async function refreshStatus(silent = false) {
   if (data.isHost === true) { show("#pulseLiveSetup", data.enabled === true && state.mode === "idle"); show("#pulseLiveHost", state.mode !== "idle"); }
   else if (data.isHost === false) { show("#pulseLiveSetup", false); show("#pulseLiveHost", false); }
   else if (state.mode === "idle") { show("#pulseLiveSetup", data.enabled === true); show("#pulseLiveHost", false); }
-  if (data.facebook) {
-    state.facebookConfigured = data.facebook.configured === true;
-    const cb = $("#pulseLiveFacebook"); if (cb) { cb.disabled = !state.facebookConfigured; if (!state.facebookConfigured) cb.checked = false; }
-    show("#pulseLiveFacebookNote", !state.facebookConfigured);
+  state.facebookConfigured = data.isAdmin === true && data.facebook?.canStart === true;
+  const facebookCheckbox = $("#pulseLiveFacebook");
+  if (facebookCheckbox) {
+    facebookCheckbox.disabled = !state.facebookConfigured;
+    if (!state.facebookConfigured) facebookCheckbox.checked = false;
   }
+  show("#pulseLiveFacebookOption", state.facebookConfigured);
+  show("#pulseLiveFacebookNote", state.facebookConfigured);
   const status = data.status;
   if (status === "ended" || status === "failed") {
     if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
