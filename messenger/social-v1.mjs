@@ -8,6 +8,7 @@ import {recentHomeBeats} from "./pulse-home-recent.mjs";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
+const INSTAGRAM_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-instagram-connect";
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 // Public deep links contain only a provider activity ID, never message bodies or account credentials.
@@ -323,6 +324,61 @@ function renderActivity(activity){
     // A click is NOT proof the external share completed.
     share.addEventListener("click",()=>announcePulseMetric("pulse_share_link_opened"));
     actions.append(share);
+  }
+  // Only the Founder can send an already-published original Pulse photo to
+  // the official @nbl_world Instagram asset. This never auto-shares member posts.
+  const ownPublicPhoto=activity.visibility==="public"&&activity.type==="post"&&
+    authorId===state.user?.id&&state.me?.role==="founder"&&
+    !["remove","shadow","shadow_block","bounce"].includes(String(activity.moderation?.action||"").toLowerCase())&&
+    Array.isArray(activity.attachments)&&activity.attachments.length===1&&
+    activity.attachments[0]?.type==="image"&&
+    Boolean(trustedMediaLink(activity.attachments[0]?.image_url));
+  if(ownPublicPhoto){
+    const photo=activity.attachments[0];
+    const instagram=element("button",null,"Send to Instagram");instagram.type="button";
+    let containerId=null,done=false;
+    instagram.setAttribute("aria-label","Prepare your Pulse photo for NBL Instagram @nbl_world");
+    instagram.addEventListener("click",async()=>{
+      if(done||instagram.disabled)return;
+      instagram.disabled=true;
+      try{
+        assertCurrentAccount(authorId);
+        if(!containerId){
+          // Meta creates a private media container; this is not a live post.
+          feedback.textContent="Preparing your Pulse photo for Instagram…";
+          const result=await secured(INSTAGRAM_API+"/publish/prepare",{
+            confirm:"prepare",image_url:photo.image_url,caption:String(activity.text||"").slice(0,1500)
+          });
+          if(!/^\\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram preparation did not return a media container.");
+          containerId=result.container_id;
+          instagram.textContent="Publish to @nbl_world";
+          instagram.setAttribute("aria-label","Publish the prepared Pulse photo to the official NBL Instagram account");
+          feedback.textContent="Instagram photo prepared. Tap Publish to @nbl_world to post it.";
+        }else{
+          if(!window.confirm("Publish this Pulse photo and caption to @nbl_world on Instagram?"))return;
+          feedback.textContent="Publishing to @nbl_world…";
+          const result=await secured(INSTAGRAM_API+"/publish/confirm",{
+            confirm:"confirm",creation_id:containerId
+          });
+          if(result.published!==true)throw new Error("Instagram has not confirmed publishing.");
+          done=true;instagram.textContent="Published on Instagram";
+          feedback.textContent="Published to @nbl_world.";
+          if(typeof result.permalink==="string"&&/^https:\/\/(?:www\.)?instagram\.com\//.test(result.permalink)){
+            const view=element("a","btn small","View Instagram post");
+            view.href=result.permalink;view.target="_blank";view.rel="noopener noreferrer";
+            feedback.append(" ",view);
+          }
+        }
+      }catch(error){
+        const why=String(error?.message||"");
+        feedback.textContent=why==="meta_media_prepare_rejected"
+          ?"Instagram rejected this image. Post one JPG photo on Pulse, then try again."
+          :why==="media_container_not_ready"
+          ?"Instagram is processing the photo. Tap Publish to @nbl_world again shortly."
+          :"Instagram: "+safeError(error);
+      }finally{instagram.disabled=done;}
+    });
+    actions.append(instagram);
   }
   if(signedActor&&authorId!==state.user.id){
     const follow=element("button",null,"Follow");follow.type="button";
@@ -680,7 +736,7 @@ async function publishPost(event){
         const response=image?await state.client.uploadImage({file}):await state.client.uploadFile({file});
         const trusted=trustedMediaLink(response?.file);
         if(!trusted)throw new Error("Upload did not return a trusted Stream media link.");
-        attachments.push(image?{type:"image",image_url:trusted,custom:{}}:{type:"video",asset_url:trusted,custom:{}});
+        attachments.push(image?{type:"image",image_url:trusted,custom:{nbl_media_mime:file.type}}:{type:"video",asset_url:trusted,custom:{}});
       }
       result=await feed.addActivity({type:"post",text:text||"Shared a video",attachments,visibility:"public",
         ...(chosenVideo?{custom:youtubeId?{nbl_youtube_id:youtubeId}:{nbl_external_video_url:chosenVideo.url}}:{})});
