@@ -38,7 +38,8 @@ test.describe("New Beansland web app browser smoke", () => {
     for(const [href,name] of cards) {
       const img=page.locator('.world-card.official-art[href="'+href+'"] .media img');
       await expect.poll(async()=>img.getAttribute("src")).toContain(name);
-      await expect(img).toHaveCSS("object-fit","contain");
+      await expect(img).toHaveCSS("object-fit",href==="books.html"?"cover":"contain");
+      await expect(img).toHaveCSS("object-position","50% 50%");
       await expect.poll(async()=>img.evaluate(node=>node.complete&&node.naturalWidth>0)).toBe(true);
     }
     await expect(page.locator('.world-card[href="clothing.html"]')).toHaveCount(1);
