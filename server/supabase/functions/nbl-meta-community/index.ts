@@ -9,7 +9,8 @@ const API="v27.0",GRAPH="https://graph.facebook.com/"+API+"/";
 const BASE=(Deno.env.get("SUPABASE_URL")||"").replace(/\/+$/,"");
 const DB=createClient(BASE,Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")||"",{auth:{persistSession:false,autoRefreshToken:false}});
 // Meta app ID is public; use the verified Pulse Live app ID when the optional env setting is missing.
-const APP_ID=(Deno.env.get("NBL_PULSE_META_APP_ID")||"1167499339147411").trim();
+const PULSE_APP_ID="1167499339147411";
+const APP_ID=(Deno.env.get("NBL_PULSE_META_APP_ID")||PULSE_APP_ID).trim();
 const APP_SECRET=(Deno.env.get("NBL_PULSE_META_APP_SECRET")||"").trim();
 const AES_KEY=(Deno.env.get("NBL_CONNECT_TOKEN_AES_KEY")||"").trim();
 const IG_TOKEN=(Deno.env.get("NBL_PULSE_INSTAGRAM_ACCESS_TOKEN")||"").trim();
@@ -82,7 +83,7 @@ async function graph(method,path,token,params={}){
 
 async function instagramReviewDiagnostics(){
  if(!IG_TOKEN)return {status:"instagram_token_missing",matches_pulse_app:null};
- if(!/^\d{6,24}$/.test(APP_ID)||APP_SECRET.length<16)
+ if(APP_ID!==PULSE_APP_ID||APP_SECRET.length<16)
   return {status:"pulse_app_credentials_missing",matches_pulse_app:null};
  const url=new URL(GRAPH+"debug_token");
  url.searchParams.set("input_token",IG_TOKEN);
@@ -99,7 +100,7 @@ async function instagramReviewDiagnostics(){
   const expected=["instagram_basic","instagram_content_publish","instagram_manage_comments"];
   return {
    status:data.is_valid===true?"verified":"token_invalid",
-   matches_pulse_app:String(data.app_id||"")===APP_ID,
+   matches_pulse_app:String(data.app_id||"")===PULSE_APP_ID,
    token_app_id:/^\d{6,24}$/.test(String(data.app_id||""))?String(data.app_id):null,
    scopes:expected.filter(p=>scopes.includes(p)),
    missing_scopes:expected.filter(p=>!scopes.includes(p))
@@ -141,7 +142,7 @@ async function ownMedia(id,account){
  return {ok:true,items,idIsMine:id?items.some(m=>String(m.id)===id):undefined};
 }
 async function beginFacebook(req,user){
- if(!/^\d{6,24}$/.test(APP_ID)||APP_SECRET.length<16)
+ if(APP_ID!==PULSE_APP_ID||APP_SECRET.length<16)
   return json(req,{ok:false,reason:"facebook_oauth_secrets_unavailable"},503);
  const nonce=b64(crypto.getRandomValues(new Uint8Array(32))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"");
  const digest=b64(new Uint8Array(await crypto.subtle.digest("SHA-256",text.encode(nonce))));
@@ -158,7 +159,7 @@ async function beginFacebook(req,user){
  return json(req,{ok:true,authorization_url:u.toString()});
 }
 async function facebookCallback(req){
- if(!/^\d{6,24}$/.test(APP_ID)||APP_SECRET.length<16)return finish("not_configured");
+ if(APP_ID!==PULSE_APP_ID||APP_SECRET.length<16)return finish("not_configured");
  const q=new URL(req.url).searchParams,nonce=q.get("state")||"",code=q.get("code")||"";
  if(q.get("error")||!code||code.length>2500||!/^[A-Za-z0-9_-]{40,120}$/.test(nonce))return finish("denied");
  const digest=b64(new Uint8Array(await crypto.subtle.digest("SHA-256",text.encode(nonce))));
@@ -210,7 +211,7 @@ async function actions(req,user,route){
   return json(req,{ok:true,facebook_connected:!!page,facebook_page:page?.name||null,
    instagram_connected:!!ig,facebook_login_ready:/^\d{6,24}$/.test(APP_ID)&&APP_SECRET.length>=16});
  }
- if(route==="/review/diagnostics")return json(req,{ok:true,instagram:await instagramReviewDiagnostics(),facebook_oauth_ready:/^\d{6,24}$/.test(APP_ID)&&APP_SECRET.length>=16,facebook_connected:!!(await facebookPage(user))});
+ if(route==="/review/diagnostics")return json(req,{ok:true,instagram:await instagramReviewDiagnostics(),facebook_oauth_ready:APP_ID===PULSE_APP_ID&&APP_SECRET.length>=16,facebook_connected:!!(await facebookPage(user))});
  if(route==="/facebook/begin")return beginFacebook(req,user);
  if(route==="/facebook/posts"||route==="/facebook/publish"){
   const page=await facebookPage(user);
