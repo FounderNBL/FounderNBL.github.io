@@ -38,6 +38,7 @@ const state = {
   hls: null, tracks: new Map(), previewBound: null,
   liveSince: null, timerId: null, pollId: null, busy: false,
   facebookConfigured: false, recordingRequested: false, liveEnabled: false,
+  isAdmin: false, screenOnly: false, screenReady: false,
 };
 
 function setStatus(text) { const el = $("#pulseLiveStatus"); if (el) el.textContent = text; }
@@ -49,8 +50,8 @@ function showError(text) {
 function show(id, on) { const el = $(id); if (el) el.hidden = !on; }
 function setBusy(on) {
   state.busy = on;
-  for (const id of ["#pulseLiveStart", "#pulseLiveGoLive", "#pulseLiveEnd", "#pulseLiveToggle"]) {
-    const el = $(id); if (el) el.disabled = on;
+  for (const id of ["#pulseLiveStart", "#pulseLiveGoLive", "#pulseLiveEnd", "#pulseLiveToggle", "#pulseLiveShareScreen"]) {
+    const el = $(id); if (el) el.disabled = on || (id === "#pulseLiveGoLive" && state.screenOnly && !state.screenReady);
   }
 }
 
@@ -202,6 +203,8 @@ async function teardownStream() {
   try { await state.call?.leave(); } catch {}
   try { await state.client?.disconnectUser(); } catch {}
   state.call = null; state.client = null; state.mode = "idle";
+  state.screenOnly = false; state.screenReady = false;
+  show("#pulseLiveShareScreen", false);
 }
 
 // --- HLS viewer (preferred) ---
@@ -249,7 +252,8 @@ function renderViewerParticipants(participants) {
     const label = document.createElement("p");
     label.className = "pulse-live-meta"; label.textContent = p.name || "NBL Pulse Live";
     wrapper.append(video, label);
-    const cleanup = [state.call.bindVideoElement(video, p.sessionId, "videoTrack")];
+    const kind = p.isScreenSharing || p.screenShareStream ? "screenShareTrack" : "videoTrack";
+    const cleanup = [state.call.bindVideoElement(video, p.sessionId, kind)];
     const audio = document.createElement("audio"); audio.autoplay = true;
     wrapper.append(audio);
     cleanup.push(state.call.bindAudioElement(audio, p.sessionId, "audioTrack"));
@@ -271,7 +275,7 @@ function renderHostPreview(participants) {
   if (state.previewBound === local.sessionId) return;
   clearTracks();
   try {
-    const unbind = state.call.bindVideoElement(video, local.sessionId, "videoTrack");
+    const unbind = state.call.bindVideoElement(video, local.sessionId, state.screenOnly ? "screenShareTrack" : "videoTrack");
     state.tracks.set(local.sessionId, { wrapper: video, cleanup: [unbind] });
     state.previewBound = local.sessionId;
   } catch { /* preview stays hidden; audio/camera still live */ }
@@ -308,6 +312,7 @@ async function refreshStatus(silent = false) {
   }
   if (!data || typeof data !== "object") return;
   state.liveEnabled = data.enabled === true;
+  state.isAdmin = data.isAdmin === true;
   show("#pulseLiveAdmin", data.isAdmin === true);
   const toggle = $("#pulseLiveToggle");
   if (toggle) toggle.textContent = state.liveEnabled ? "Turn Pulse Live OFF" : "Turn Pulse Live ON";
@@ -416,8 +421,11 @@ async function onStart() {
   const title = ($("#pulseLiveTitleInput")?.value || "").trim().slice(0, 140) || DEFAULT_TITLE;
   const facebookEnabled = $("#pulseLiveFacebook")?.checked === true && state.facebookConfigured;
   const recordRequested = $("#pulseLiveRecord")?.checked === true;
+  const screenOnly = $("#pulseLiveScreenOnly")?.checked === true;
   setBusy(true); showError(""); setStatus("Starting your backstage…");
   try {
+    // Founder Start explicitly prepares the existing call-member screenshare grant.
+    if (screenOnly && state.isAdmin) await liveApi("admin-switch", { enabled: true }, "required");
     const data = await liveApi("start", { title, facebook_enabled: facebookEnabled, record_requested: recordRequested }, "required");
     if (!data.key || !data.token || !data.callId || data.callType !== CALL_TYPE)
       throw Error("Live session identity verification failed.");
@@ -428,14 +436,19 @@ async function onStart() {
   state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
     state.call = state.client.call(CALL_TYPE, data.callId);
     await state.call.join({ create: false });
-    await state.call.camera.enable();
-    await state.call.microphone.enable(); // backend start() creates the call
+    state.screenOnly = screenOnly; state.screenReady = !screenOnly;
+    // Camera and mic are never enabled when sharing a desktop screen only.
+    if (!screenOnly) {
+      await state.call.camera.enable();
+      await state.call.microphone.enable();
+    }
     state.mode = "backstage";
     state.liveSince = Date.now();
     show("#pulseLiveSetup", false); show("#pulseLiveHost", true);
     show("#pulseLiveGoLive", true); show("#pulseLiveEnd", true);
-    show("#pulseLivePreview", true);
-    setStatus("Backstage — only you can see this");
+    show("#pulseLiveShareScreen", screenOnly);
+    show("#pulseLivePreview", !screenOnly);
+    setStatus(screenOnly ? "Backstage — camera and microphone OFF. Click Share screen, then Go Live." : "Backstage — only you can see this");
     state.sub = state.call.state.participants$.subscribe(renderHostPreview);
     startPoll(); startTimer();
   } catch (e) {
@@ -451,8 +464,27 @@ async function onStart() {
     setStatus("Could not start Pulse Live.");
   } finally { setBusy(false); }
 }
+async function onShareScreen() {
+  if (state.busy || !state.call || !state.screenOnly || state.mode !== "backstage") return;
+  setBusy(true); showError("");
+  try {
+    // Browser screen consent must come from a separate user gesture.
+    await state.call.screenShare.enable();
+    state.screenReady = true;
+    state.previewBound = null;
+    show("#pulseLivePreview", true);
+    setStatus("Screen sharing ready; camera and microphone remain OFF. Press Go Live when ready.");
+    const button = $("#pulseLiveShareScreen"); if (button) button.textContent = "Screen sharing enabled";
+  } catch {
+    state.screenReady = false;
+    showError("Screen sharing was not enabled. Select a screen or window in the browser prompt and retry.");
+  } finally { setBusy(false); }
+}
 async function onGoLive() {
   if (state.busy || !state.callId) return;
+  if (state.screenOnly && !state.screenReady) {
+    showError("Click Share screen first. Your camera and microphone will stay off."); return;
+  }
   setBusy(true); showError("");
   try {
     const data = await liveApi("go-live", { callId: state.callId }, "required");
@@ -554,6 +586,7 @@ export function initPulseLive() {
   $("#pulseLiveStart")?.addEventListener("click", () => { void onStart(); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
+  $("#pulseLiveShareScreen")?.addEventListener("click", () => { void onShareScreen(); });
   $("#pulseLiveEnd")?.addEventListener("click", () => { void onEnd(); });
   $("#pulseLiveFindRecording")?.addEventListener("click", () => { void onFindRecording(); });
   window.addEventListener("pagehide", () => {
