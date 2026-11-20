@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 // Automated rehearsal of the REAL Pulse page. All auth, Stream media and API
 // responses are fixtures. Not a substitute for signed-in provider media proof.
 const LIVE = "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-live";
-const VIDEO_SDK = "export class StreamVideoClient { constructor(c){this.user=c.user;} call(){ const id=this.user.id; return { camera:{enable:async()=>{}}, microphone:{enable:async()=>{}}, state:{participantCount:2,participants$:{subscribe(f){f([{sessionId:'local-'+id,isLocalParticipant:true},{sessionId:'remote-host',name:'Synthetic host',isLocalParticipant:false}]);return {unsubscribe(){}};}}},join:async()=>{},leave:async()=>{},bindVideoElement:()=>()=>{},bindAudioElement:()=>()=>{} };} async disconnectUser(){} }";
+const VIDEO_SDK = "export class StreamVideoClient { constructor(c){this.user=c.user;} call(){ const id=this.user.id; return { camera:{enable:async()=>{}}, microphone:{enable:async()=>{}}, screenShare:{enable:async()=>{}}, state:{participantCount:2,participants$:{subscribe(f){f([{sessionId:'local-'+id,isLocalParticipant:true},{sessionId:'remote-host',name:'Synthetic host',isLocalParticipant:false}]);return {unsubscribe(){}};}}},join:async()=>{},leave:async()=>{},bindVideoElement:()=>()=>{},bindAudioElement:()=>()=>{} };} async disconnectUser(){} }";
 const response=(body,status=200)=>({
  status,contentType:"application/json",headers:{"access-control-allow-origin":"*","access-control-allow-headers":"authorization, content-type","access-control-allow-methods":"POST, OPTIONS"},
  body:JSON.stringify(body)
@@ -76,6 +76,9 @@ test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({
  await open(viewer);
  await expect(viewer.locator("#pulseLiveStatus")).toContainText("getting ready");
  expect(api.s.actions.some(x=>x.user==="viewer"&&x.action==="join-viewer")).toBe(false);
+ await expect(host.locator("#pulseLiveScreenOnly")).toBeChecked();
+ await host.locator("#pulseLiveShareScreen").click();
+ await expect(host.locator("#pulseLiveStatus")).toContainText("Screen sharing ready");
  await host.locator("#pulseLiveGoLive").click();
  await expect(host.locator("#pulseLiveStatus")).toContainText("You are LIVE");
  await open(viewer);
