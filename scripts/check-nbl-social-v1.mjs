@@ -34,7 +34,7 @@ assert.match(css,/social-media/);
 // Facebook uses user-controlled sharing of a public NBL post URL, never Page admin scopes.
 assert.match(ui,/id="sharedPost"[^>]*hidden/);
 assert.match(ui,/og:title/);
-assert.match(ui,/social-v1\.mjs\?v=20261114-public-members-v1/);
+assert.match(ui,/social-v1\.mjs\?v=20261120-public-author-handles/);
 assert.match(js,/const PUBLIC_SOCIAL_URL="https:\/\/newbeansland\.org\/messenger\/social-v1\.html"/);
 assert.match(js,/new URL\(PUBLIC_SOCIAL_URL\)/);
 assert.match(js,/dest\.searchParams\.set\("post",id\)/);
@@ -133,7 +133,7 @@ assert.match(js,/location\.pathname\.startsWith\("\/pulse"\)/);
 assert.match(pulse,/postMedia" type="file" accept="image\/jpeg,image\/png,image\/webp,video\/mp4,video\/webm" multiple/);
 assert.doesNotMatch(pulse,/postMedia" type="file" disabled/);
 assert.match(pulse,/postMedia"[^>]*video\/mp4/);
-assert.match(pulse,/social-v1\.mjs\?v=20261120-threads-share-resolve/);
+assert.match(pulse,/social-v1\.mjs\?v=20261120-public-author-handles/);
 assert.match(js,/import \{recentHomeBeats\} from "\.\/pulse-home-recent\.mjs"/);
 assert.match(js,/ownFeed=selected==="foryou"\?state\.client\.feed\("user",actorId\):null/);
 assert.match(js,/recentHomeBeats\(\[primaryRows,ownRows\],\{limit:8\}\)/);
@@ -256,3 +256,23 @@ const homeHeaderJs=home.match(/nbl-world-header\.js\?v=([a-zA-Z0-9_-]+)/);
 const homeHeaderCss=home.match(/nbl-world-header\.css\?v=([a-zA-Z0-9_-]+)/);
 assert.ok(homeHeaderJs && homeHeaderCss,"Homepage must load versioned NBL header assets");
 assert.equal(homeHeaderJs[1],homeHeaderCss[1],"Homepage NBL header JavaScript and CSS must use the same cache revision");
+
+
+// Public author labels are the authenticated NBL username, never a stale
+// Stream actor name or a private Messenger contact nickname.
+assert.match(js,/handle:state\.me\?\.handle/);
+assert.match(js,/function hydrateAuthorName\(userId,label,avatar\)/);
+assert.match(js,/const name=pulseHandle\(profile\)/);
+assert.match(js,/const authorLabel=signedActor\?"NBL member"/);
+assert.match(js,/hydrateAuthorName\(authorId,authorName,avatar\)/);
+assert.match(js,/hydrateAuthorName\(commenterId,who\)/);
+assert.match(js,/state\.clerk\?\.user\?\.id!==viewer/);
+const igPublish=read("server/supabase/functions/nbl-instagram-connect/index.ts");
+const fbPublish=read("server/supabase/functions/nbl-meta-community/index.ts");
+assert.match(igPublish,/Originally on NBL Pulse · @NBLFounderOfficial/);
+assert.match(fbPublish,/Originally on NBL Pulse · @NBLFounderOfficial/);
+assert.match(igPublish,/caption:stamped/);
+assert.match(fbPublish,/message:sharedMessage/);
+assert.match(igPublish,/founder_access_required/);
+assert.match(fbPublish,/founder_access_required/);
+console.log("PASS: Pulse author handles follow NBL profiles; official Meta posts credit the original Founder.");

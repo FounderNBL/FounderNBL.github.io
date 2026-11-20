@@ -276,7 +276,10 @@ async function actions(req,user,route){
      !/^[A-Za-z0-9._:-]{1,160}$/.test(target.searchParams.get("post")||"")||
      target.searchParams.size!==1||target.hash)throw Error();
   }catch{return json(req,{ok:false,reason:"invalid_pulse_link"},400);}
-  const r=await graph("POST",page.id+"/feed",page.token,{message:message.trim(),link:target.href});
+  // The Page is still the publisher; credit the original verified Pulse user.
+  const credit="Originally on NBL Pulse · @NBLFounderOfficial";
+  const sharedMessage=message.trim().slice(0,1500-credit.length-2)+"\n\n"+credit;
+  const r=await graph("POST",page.id+"/feed",page.token,{message:sharedMessage,link:target.href});
   if(!r.ok||typeof r.body?.id!=="string")return json(req,{ok:false,reason:"facebook_publish_rejected"},502);
   const posted=await graph("GET",String(r.body.id),page.token,{fields:"permalink_url"});
   const url=typeof posted.body?.permalink_url==="string"&&

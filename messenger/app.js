@@ -114,7 +114,7 @@ async function showIncomingCall(callId,from){
     panel.hidden=false;
     $("[data-chat-incoming-answer]").focus();
     // Browser autoplay rules can suppress in-page sounds; phone alerts use device settings.
-    window.NBLInfinitySound?.play("people");
+    window.NBLMessengerSounds?.play("call");
     incomingRingTimer=setInterval(()=>{
       if(incomingCall&&Date.now()>=incomingCall.expiresAt){
         hideIncomingCall();
@@ -122,7 +122,7 @@ async function showIncomingCall(callId,from){
         return;
       }
       if(incomingCall&&document.visibilityState==="visible")
-        window.NBLInfinitySound?.play("people");
+        window.NBLMessengerSounds?.play("call");
     },3500);
   }catch{
     // An expired, blocked, or forged invitation must never trigger the call screen.
@@ -169,7 +169,7 @@ function rememberIncoming(threadId,messages,{announce=false}={}){
   const incoming=Boolean(announce&&old&&rows.some(item=>item?.id&&!old.has(String(item.id))
     &&!item.deleted&&String(item.sender?.handle||"").toLowerCase()!==me));
   lastSeenMessages.set(threadId,seen);
-  if(incoming&&!state.selected?.muted)window.NBLInfinitySound?.play("people");
+  if(incoming&&!state.selected?.muted)window.NBLMessengerSounds?.play("message");
 }
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el;};
 
@@ -396,6 +396,25 @@ async function subscription(){
  if(!supportsPhonePush())return null;
  const reg=await messengerWorker();
  return await reg.pushManager.getSubscription();
+}
+function showMessengerSounds(){
+ const api=window.NBLMessengerSounds;
+ const card=$("[data-chat-sound-settings]");
+ if(!card||!api||!state.clerk?.user?.id)return;
+ const select=$("[data-chat-sound-choice]");
+ const old=api.getSettings();
+ select.replaceChildren(...api.options().map(sound=>new Option(sound.name,sound.id)));
+ select.value=api.options().some(item=>item.id===old.selected)?old.selected:"infinity";
+ $("[data-chat-sound-muted]").checked=old.muted;
+ card.hidden=false;
+ $("[data-chat-sound-status]").textContent="In-app sounds only. Background phone notifications use your device's sound settings.";
+}
+async function loadMessengerSounds(userId,generation){
+ const api=window.NBLMessengerSounds;
+ if(!api)return;
+ await api.loadCatalog();
+ if(state.clerk?.user?.id!==userId||generation!==authSyncGeneration)return;
+ showMessengerSounds();
 }
 async function loadPhoneSettings(){
  const card=$("[data-chat-notification-settings]");
@@ -928,6 +947,8 @@ async function syncClerkSession(){
   $("[data-chat-export-status]").textContent="";
   $("[data-chat-app]").hidden=true;
   $("[data-chat-notification-settings]").hidden=true;
+  $("[data-chat-sound-settings]").hidden=true;
+  window.NBLMessengerSounds?.setUser(userId);
   pushConfig=null;
   $("[data-chat-myhandle]").textContent="@NBL member";
   $("[data-chat-founder-marker]").hidden=true;
@@ -956,6 +977,7 @@ async function syncClerkSession(){
   $("[data-chat-guest]").hidden=true;
   $("[data-chat-userbar]").hidden=false;
   $("[data-chat-app]").hidden=false;
+  void loadMessengerSounds(userId,generation);
   watchInbox();
   await refresh();
   if(generation!==authSyncGeneration||state.clerk?.user?.id!==userId)return;
@@ -980,7 +1002,18 @@ async function boot(){
   $("[data-chat-profile-form]").addEventListener("submit",event=>{void saveAccountUsername(event);});
   $("[data-chat-open-clerk]").addEventListener("click",manageLoginConnections);
   $("[data-chat-download-messages]").addEventListener("click",()=>{void downloadRecentMessages();});
-  $("[data-nbl-infinity-preview]")?.addEventListener("click",()=>{window.NBLInfinitySound?.play("people");});
+  $("[data-nbl-infinity-preview]")?.addEventListener("click",()=>{window.NBLMessengerSounds?.preview();});
+  $("[data-chat-sound-preview]")?.addEventListener("click",()=>{
+    window.NBLMessengerSounds?.preview();
+    $("[data-chat-sound-status]").textContent="Previewing your selected sound. If silent, check browser media permission or volume.";
+  });
+  $("[data-chat-sound-choice]")?.addEventListener("change",event=>{
+    if(window.NBLMessengerSounds?.choose(event.target.value))showMessengerSounds();
+  });
+  $("[data-chat-sound-muted]")?.addEventListener("change",event=>{
+    window.NBLMessengerSounds?.setMuted(event.target.checked);
+    showMessengerSounds();
+  });
   $("[data-chat-notify-enable]").addEventListener("click",()=>{void enablePhonePush();});
   $("[data-chat-notify-disable]").addEventListener("click",()=>{void disablePhonePush();});
   $("[data-chat-notify-preview]").addEventListener("click",()=>{void previewPhoneNotification();});

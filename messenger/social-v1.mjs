@@ -44,10 +44,23 @@ function youtubeVideoId(raw){
   }catch{return null;}
 }
 async function authorProfile(userId){
-  if(userId===state.user?.id)return {avatarUrl:state.me?.avatarUrl,verified:state.me?.role==="founder"};
+  if(userId===state.user?.id)return {handle:state.me?.handle,avatarUrl:state.me?.avatarUrl,verified:state.me?.role==="founder"};
   if(!/^user_[A-Za-z0-9_-]+$/.test(userId))return null;
   if(!avatarCache.has(userId))avatarCache.set(userId,secured(SOCIAL_API,{action:"social_profile",userId}).then(x=>x.profile||null).catch(()=>null));
   return avatarCache.get(userId);
+}
+function hydrateAuthorName(userId,label,avatar){
+ if(!/^user_[A-Za-z0-9_-]+$/.test(userId))return;
+ const viewer=state.clerk?.user?.id;
+ void authorProfile(userId).then(profile=>{
+   if(state.clerk?.user?.id!==viewer||!label.isConnected)return;
+   // Use the NBL account's server-confirmed public handle, never a stale
+   // Stream display name, contact nickname, or private external account.
+   const name=pulseHandle(profile);
+   if(!name)return;
+   label.textContent=name;
+   if(avatar)avatar.alt=name+" profile picture";
+ });
 }
 function hydrateAvatar(userId,img){
   const owner=state.clerk?.user?.id;
@@ -245,7 +258,8 @@ async function loadComments(activity,area){
     if(!comments.length){area.append(element("p","social-meta","No comments yet."));return;}
     for(const c of comments){
       const line=element("div","social-comment");
-      const who=element("strong",null,c.user?.name||"NBL member");
+      const commenterId=String(c.user?.id||"");
+      const who=element("strong",null,/^user_[A-Za-z0-9_-]+$/.test(commenterId)?"NBL member":c.user?.name||"NBL member");
       const words=element("p",null,c.comment||"");
       line.append(who,words);
     if(c.id&&c.user?.id!==state.user?.id){
@@ -262,6 +276,7 @@ async function loadComments(activity,area){
       line.append(report);
     }
     area.append(line);
+    hydrateAuthorName(commenterId,who);
     }
   }catch(error){area.replaceChildren(element("p","social-feedback",safeError(error)));}
 }
@@ -269,10 +284,13 @@ function renderActivity(activity){
   const card=element("article","social-card");
   const authorId=String(activity.user?.id||activity.user_id||"");
   const signedActor=Boolean(/^user_[a-zA-Z0-9_-]+$/.test(authorId));
-  const authorLabel=activity.user?.name||"NBL member";
+  // Public author identity must come from the verified NBL profile, not
+  // Stream's cached/display name (which may be a generated member ID).
+  const authorLabel=signedActor?"NBL member":activity.user?.name||"NBL member";
   const head=element("div","social-author-row");
   const avatar=element("img","social-avatar");avatar.src="/messenger/icon.svg";avatar.alt=authorLabel+" profile picture";avatar.loading="lazy";
-  head.append(avatar,element("div","social-author",authorLabel));
+  const authorName=element("div","social-author",authorLabel);
+  head.append(avatar,authorName);
   const time=element("div","social-time",activity.created_at?new Date(activity.created_at).toLocaleString():"");
   const text=element("p","social-body",activity.text||"");
   const meta=element("div","social-meta",Number(activity.comment_count||0)+" comments");
@@ -550,6 +568,7 @@ function renderActivity(activity){
   }
   mountPublicVideo(activity.custom,media);
   hydrateAvatar(authorId,avatar);
+  hydrateAuthorName(authorId,authorName,avatar);
   card.append(head,time,text,media,meta,actions);
   if(!ownPublicVideo)card.append(feedback);
   card.append(form,commentsArea);
