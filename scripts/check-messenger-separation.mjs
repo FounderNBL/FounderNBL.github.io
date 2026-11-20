@@ -55,7 +55,7 @@ assert.match(app, /data-chat-founder-marker hidden/);
 assert.doesNotMatch(app, /Class Chat|Study Hall|Student rooms|University Social Chat|University enrollment|university-campus\.html/);
 assert.match(app, /data-chat-account-toggle/);
 assert.doesNotMatch(app, /pulse-embedded|iframe/);
-assert.match(app,/href="\/messenger\/messenger-skin.css\?v=20261113-call-ui"/);
+assert.match(app,/href="\/messenger\/messenger-skin.css\?v=20261120-sound-choice"/);
 assert.match(app,/data-chat-app hidden/);
 assert.match(app, /data-chat-profile-form/);
 assert.match(app, /data-chat-open-clerk/);
@@ -64,7 +64,7 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261120-private-contact-nicknames'),
+assert.ok(app.includes('/messenger/app.js?v=20261120-sound-library'),
   "Pulse Messenger must load the current account and call handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
@@ -180,7 +180,7 @@ assert.match(js,/function needsIphoneHomeScreen\(\)/);
 assert.match(js,/navigator\.standalone===true/);
 assert.match(js,/Add to Home Screen/);
 assert.match(app,/apple-touch-icon/);
-assert.match(app,/app\.js\?v=20261120-private-contact-nicknames/);
+assert.match(app,/app\.js\?v=20261120-sound-library/);
 assert.match(callPage,/id="callSound"/);
 assert.match(callJs,/async function enableRemoteSound\(\)/);
 assert.match(callJs,/await audio\.play\(\)/);
@@ -199,3 +199,24 @@ assert.match(push,/NBLMember\[a-f0-9\]/);
 assert.match(app,/data-chat-rename/);
 assert.match(js,/action:"contact_nickname"/);
 assert.match(js,/row\.contactNickname/);
+
+
+// Each member can select first-party original NBL audio independently on this
+// device. Browser background notification sounds remain device-controlled.
+const soundCatalog=JSON.parse(read("messenger/sounds.json"));
+const soundScript=read("messenger/sounds.js");
+assert.equal(soundCatalog.sounds[0].id,"infinity");
+assert.equal(soundCatalog.sounds[0].url,"/assets/sounds/nbl-infinity.mp3");
+assert.match(app,/data-chat-sound-choice/);
+assert.match(app,/data-chat-sound-preview/);
+assert.match(app,/data-chat-sound-muted/);
+assert.match(app,/sounds\.js\?v=20261120-sound-library/);
+assert.match(js,/NBLMessengerSounds\?\.play\("call"\)/);
+assert.match(js,/NBLMessengerSounds\?\.play\("message"\)/);
+assert.match(js,/NBLMessengerSounds\?\.setUser\(userId\)/);
+assert.match(js,/loadMessengerSounds\(userId,generation\)/);
+assert.match(soundScript,/nbl-messenger-sounds-v1:/);
+assert.match(soundScript,/VALID_FILE/);
+assert.match(soundScript,/selected,muted/);
+assert.doesNotMatch(soundScript,/AudioContext\(\)|new Notification\(/);
+console.log("PASS: Per-account Messenger sound settings use NBL original files, no private data or background-audio claim.");
