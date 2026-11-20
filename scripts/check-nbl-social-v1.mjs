@@ -184,7 +184,7 @@ assert.equal(parsePublicVideo("http://www.instagram.com/p/C8h9Yi7ABCD/"),null);
 assert.equal(parsePublicVideo("javascript:alert(1)"),null);
 
 assert.match(pulse,/href="\/pulse\/embed-preview\.html"/);
-assert.match(js,/public-meta-posts/);
+assert.match(js,/threads-share-resolve/);
 
 assert.ok(embeds.includes("www.youtube-nocookie.com/embed/"));
 assert.ok(js.includes("mountPublicVideo(activity.custom,media)"));
