@@ -84,3 +84,17 @@ test("Reel processing status is read-only and publishing requires explicit confi
  assert.match(feed,/window\.confirm\("Publish this video publicly/);
  assert.match(feed,/INSTAGRAM_API\+"\/publish\/confirm"/);
 });
+
+test("Facebook Live review OAuth requests Page Live scope without leaking tokens",()=>{
+ assert.match(backend,/pages_read_user_content/);
+ assert.match(backend,/pages_manage_posts/);
+ assert.match(backend,/pages_show_list/);
+ const client=read("pulse/live.mjs");
+ assert.match(page,/id="pulseLiveFacebookOption"/);
+ assert.match(page,/id="pulseLiveScreenOnly"[^>]*checked/);
+ assert.match(page,/id="pulseLiveShareScreen"/);
+ assert.match(client,/await state\.call\.screenShare\.enable\(\)/);
+ assert.match(client,/if \(!screenOnly\) \{\s*await state\.call\.camera\.enable\(\);\s*await state\.call\.microphone\.enable\(\);/);
+ assert.match(client,/if \(state\.screenOnly && !state\.screenReady\)/);
+ assert.doesNotMatch(client,/FB_PAGE_ACCESS_TOKEN|NBL_PULSE_META_APP_SECRET/);
+});
