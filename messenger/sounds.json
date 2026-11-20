@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "sounds": [
+    {
+      "id": "infinity",
+      "name": "NBL Infinity ♾️",
+      "url": "/assets/sounds/nbl-infinity.mp3"
+    }
+  ]
+}
