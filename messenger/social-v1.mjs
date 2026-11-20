@@ -401,31 +401,60 @@ function renderActivity(activity){
     // Keep progress and errors in sight beside the action, not below a long post.
     feedback.setAttribute("role","status");feedback.setAttribute("aria-live","polite");
     feedback.style.flexBasis="100%";
-    let containerId=null,done=false;
+    let containerId=null,done=false,ready=false,failed=false;
     reel.addEventListener("click",async()=>{
-      if(done||reel.disabled)return;
+      if(done||failed||reel.disabled)return;
       reel.disabled=true;
-      reel.textContent=containerId?"Checking Instagram Reel…":"Preparing Instagram Reel…";
-      feedback.textContent=containerId?"Checking Reel processing with Instagram…":"Contacting Instagram to prepare your Reel…";
       try{
         assertCurrentAccount(authorId);
         if(!containerId){
-          feedback.textContent="Preparing your video as an Instagram Reel…";
+          reel.textContent="Preparing Instagram Reel…";
+          feedback.textContent="Sending the Reel to Instagram for processing…";
           const result=await secured(INSTAGRAM_API+"/publish/prepare",{
             confirm:"prepare",media_type:"REELS",video_url:video.asset_url,
             caption:String(activity.text||"").slice(0,1500)
           });
           if(!/^\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram did not return a Reel container.");
           containerId=result.container_id;
-          reel.textContent="Publish Reel to @nbl_world";
-          feedback.textContent="Reel prepared. Instagram may still be processing the video. Tap Publish when ready.";
+          reel.textContent="Check Reel status";
+          feedback.textContent="Instagram received the Reel. Tap Check Reel status after it processes; nothing has been published yet.";
+        }else if(!ready){
+          reel.textContent="Checking Reel status…";
+          const result=await secured(INSTAGRAM_API+"/publish/status",{
+            confirm:"status",creation_id:containerId
+          });
+          const status=String(result.status_code||"UNKNOWN");
+          if(status==="FINISHED"){
+            ready=true;
+            reel.textContent="Publish Reel to @nbl_world";
+            feedback.textContent="Instagram finished processing! Tap Publish Reel to @nbl_world when ready.";
+          }else if(status==="IN_PROGRESS"){
+            reel.textContent="Check Reel status";
+            feedback.textContent="Instagram is still processing this Reel. No need to upload it again; check its status later.";
+          }else if(status==="ERROR"){
+            failed=true;
+            reel.textContent="Instagram processing failed";
+            feedback.textContent="Instagram failed to process this video. This container cannot be published. Check the MP4 encoding or source video.";
+          }else if(status==="EXPIRED"){
+            containerId=null;
+            reel.textContent="Prepare Instagram Reel";
+            feedback.textContent="Instagram expired this Reel draft. You can prepare a new one from the existing Pulse video.";
+          }else if(status==="PUBLISHED"){
+            done=true;
+            reel.textContent="Already published on Instagram";
+            feedback.textContent="Meta says this Reel is already published. Check @nbl_world before trying another.";
+          }else{
+            reel.textContent="Check Reel status";
+            feedback.textContent="Meta did not report a known processing state. Nothing has been published by this check.";
+          }
         }else{
           if(!window.confirm("Publish this video publicly as an Instagram Reel on @nbl_world?")){
+            feedback.textContent="Publishing canceled; nothing was posted to Instagram.";
             reel.textContent="Publish Reel to @nbl_world";
-            feedback.textContent="Reel is prepared. Publishing canceled; nothing was posted to Instagram.";
             return;
           }
-          feedback.textContent="Checking Instagram Reel processing and publishing…";
+          reel.textContent="Publishing Reel…";
+          feedback.textContent="Instagram confirmed processing is complete. Publishing Reel…";
           const result=await secured(INSTAGRAM_API+"/publish/confirm",{
             confirm:"confirm",creation_id:containerId,media_type:"REELS"
           });
@@ -440,14 +469,30 @@ function renderActivity(activity){
           }
         }
       }catch(error){
-        reel.textContent=containerId?"Publish Reel to @nbl_world":"Prepare Instagram Reel";
+        reel.textContent=containerId?(ready?"Publish Reel to @nbl_world":"Check Reel status"):"Prepare Instagram Reel";
         const why=String(error?.message||"");
-        feedback.textContent=why==="media_container_not_ready"
-          ?"Instagram is still processing your Reel. Tap Publish Reel again after it finishes."
-          :why==="meta_media_prepare_rejected"
-          ?"Instagram could not prepare this video. Use a supported MP4 video and try again."
-          :"Instagram Reel: "+safeError(error);
-      }finally{reel.disabled=done;}
+        if(why==="media_container_expired"){
+          containerId=null;ready=false;
+          reel.textContent="Prepare Instagram Reel";
+          feedback.textContent="Instagram expired this Reel draft. Prepare it again from the Pulse post.";
+        }else if(why==="media_container_failed"){
+          failed=true;
+          reel.textContent="Instagram processing failed";
+          feedback.textContent="Instagram could not process this video. The same draft will not publish; check the original MP4.";
+        }else if(why==="media_container_already_published"){
+          done=true;
+          reel.textContent="Already published on Instagram";
+          feedback.textContent="Meta reports this Reel was already published. Check @nbl_world.";
+        }else if(why==="media_container_not_ready"){
+          ready=false;
+          reel.textContent="Check Reel status";
+          feedback.textContent="Instagram is processing this video; check status before publishing again.";
+        }else if(why==="meta_media_prepare_rejected"){
+          feedback.textContent="Instagram rejected this video during preparation. Check the MP4 format and source URL.";
+        }else{
+          feedback.textContent="Instagram Reel: "+safeError(error);
+        }
+      }finally{reel.disabled=done||failed;}
     });
     actions.append(reel,feedback);
   }

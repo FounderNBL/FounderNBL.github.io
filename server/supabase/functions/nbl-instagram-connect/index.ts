@@ -337,7 +337,7 @@ function allowedPublicReel(value:unknown):value is string{
   return u.hostname.endsWith(".stream-io-cdn.com")&&u.pathname.startsWith("/")&&u.pathname.length>1;
  }catch{return false;}
 }
-async function founderPublish(req:Request,kind:"prepare"|"confirm"){
+async function founderPublish(req:Request,kind:"prepare"|"confirm"|"status"){
  const origin=req.headers.get("origin")||"";
  if(origin&&!ORIGINS.has(origin))return response(req,{ok:false,reason:"origin_not_allowed"},403);
  if(!await founderUser(req))return response(req,{ok:false,reason:"founder_access_required"},403);
@@ -374,11 +374,24 @@ async function founderPublish(req:Request,kind:"prepare"|"confirm"){
   const creation=body.creation_id;
   if(typeof creation!=="string"||!/^\d{6,30}$/.test(creation))
    return response(req,{ok:false,reason:"invalid_creation_id"},400);
+  // Read-only status check: never publishes. Distinguish processing from a
+  // terminal media error before the Founder attempts to publish.
   const status=await metaGet(creation,{"fields":"status_code"},ig.host,ig.token);
-  if(!status.ok||status.body?.status_code!=="FINISHED")
-   return response(req,{ok:false,reason:"media_container_not_ready",status_code:
-    ["IN_PROGRESS","FINISHED","ERROR","EXPIRED"].includes(status.body?.status_code)?
-    status.body.status_code:"UNKNOWN"},409);
+  if(!status.ok)return response(req,{ok:false,reason:"media_container_status_unavailable"},502);
+  const code=["IN_PROGRESS","FINISHED","PUBLISHED","ERROR","EXPIRED"]
+   .includes(status.body?.status_code)?status.body.status_code:"UNKNOWN";
+  if(kind==="status")return response(req,{
+   ok:true,status_code:code,ready:code==="FINISHED",
+   // These are safe finite values; no provider token or raw error contents.
+   terminal:code==="ERROR"||code==="EXPIRED"||code==="PUBLISHED"
+  });
+  if(code!=="FINISHED")
+   return response(req,{
+    ok:false,reason:code==="ERROR"?"media_container_failed":
+     code==="EXPIRED"?"media_container_expired":
+     code==="PUBLISHED"?"media_container_already_published":"media_container_not_ready",
+    status_code:code
+   },409);
   // Founder must independently call /publish/confirm to authorize external publication.
   const published=await metaPost(ig.id+"/media_publish",{creation_id:creation},ig.host,ig.token);
   if(!published.ok||!/^\d{6,30}$/.test(String(published.body?.id||"")))
@@ -433,6 +446,7 @@ Deno.serve(async(req:Request)=>{
  if(req.method==="GET"&&pathname.endsWith("/callback"))return callback(req);
  if(req.method==="GET"&&pathname.endsWith("/publishing-check"))return instagramPublishingCheck(req);
  if(req.method==="POST"&&pathname.endsWith("/publish/prepare"))return founderPublish(req,"prepare");
+ if(req.method==="POST"&&pathname.endsWith("/publish/status"))return founderPublish(req,"status");
  if(req.method==="POST"&&pathname.endsWith("/publish/confirm"))return founderPublish(req,"confirm");
  if(req.method==="GET"&&pathname.endsWith("/token-check")){
   const check=await probeInstagram();
