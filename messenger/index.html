@@ -15,7 +15,8 @@
   <link rel="stylesheet" href="/messenger/messenger-skin.css?v=20261113-call-ui">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
-  <script defer src="/messenger/app.js?v=20261120-private-contact-nicknames"></script>
+  <script defer src="/messenger/sounds.js?v=20261120-sound-library"></script>
+  <script defer src="/messenger/app.js?v=20261120-sound-library"></script>
 </head>
 <body>
   <header class="topbar">
@@ -39,7 +40,7 @@
         <span>Signed in as <img class="chat-avatar" data-chat-my-avatar src="/messenger/icon.svg" width="35" height="35" alt="My profile picture"> <strong data-chat-myhandle>@NBL member</strong> <span class="founder-marker" data-chat-founder-marker hidden>Verified Founder</span></span>
         <details class="compact-menu account-menu"><summary class="btn small">☰ Account & settings</summary><div class="userbar-actions">
           <button class="btn small" type="button" data-chat-account-toggle aria-expanded="false" aria-controls="messenger-account-settings">My account</button>
-          <button class="btn small" type="button" data-nbl-infinity-preview aria-label="Test NBL Infinity notification sound">Test ♾️ sound</button>
+          <button class="btn small" type="button" data-nbl-infinity-preview aria-label="Test your selected Messenger sound">Test sound</button>
           <button class="btn small" type="button" data-chat-signout>Sign out</button>
         </div></details>
       </div>
@@ -146,6 +147,22 @@
           <p class="invite-note">Real people only. No fake accounts, no extra Messenger registration, and no Beans AI credits.</p>
         </section>
         </div></details>
+        <section class="notification-settings" data-chat-sound-settings hidden aria-label="Messenger sound selection">
+          <div class="notification-heading"><div>
+            <p class="eyebrow">NBL original sounds</p>
+            <h2>Your Messenger sound</h2>
+            <p>Choose the sound you hear for messages and calls while Messenger is open. Each account remembers its own choice on this device.</p>
+          </div></div>
+          <label for="messengerSoundChoice">In-app message &amp; call sound</label>
+          <select id="messengerSoundChoice" data-chat-sound-choice aria-label="Messenger in-app alert sound">
+            <option value="infinity">NBL Infinity ♾️</option>
+          </select>
+          <div class="notification-actions">
+            <label><input type="checkbox" data-chat-sound-muted> Mute in-app sounds</label>
+            <button class="btn" type="button" data-chat-sound-preview>Preview selected sound</button>
+          </div>
+          <p class="hint" data-chat-sound-status role="status">More original NBL sounds will appear here as they are added.</p>
+        </section>
         <section class="notification-settings" data-chat-notification-settings hidden aria-label="NBL Messenger phone notifications">
           <div class="notification-heading">
             <div>
