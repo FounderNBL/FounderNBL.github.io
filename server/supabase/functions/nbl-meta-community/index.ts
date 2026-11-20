@@ -1,5 +1,5 @@
 // NBL Pulse — Founder-only Meta Page posting + Instagram comment tools.
-// Isolated from the existing /nbl-instagram-connect publishing and /nbl-live services.
+// Owns Meta Page OAuth and posting only; livestream media remains in the separate Pulse service.
 // No Meta token or Page credential ever leaves this service.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import {createClient} from "npm:@supabase/supabase-js@2.57.4";
@@ -196,7 +196,7 @@ async function beginFacebook(req,user){
  const u=new URL("https://www.facebook.com/"+API+"/dialog/oauth");
  for(const [k,v] of Object.entries({
   client_id:APP_ID,redirect_uri:CALLBACK,state:nonce,response_type:"code",
-  scope:"pages_show_list,pages_read_engagement,pages_manage_posts"
+  scope:"pages_show_list,pages_read_engagement,pages_manage_posts,pages_read_user_content"
  }))u.searchParams.set(k,v);
  return json(req,{ok:true,authorization_url:u.toString()});
 }
@@ -235,7 +235,7 @@ async function facebookCallback(req){
   const saved=await DB.from("nbl_connected_accounts").upsert({
    clerk_user_id:user,provider:"facebook",external_account_id:String(page.id),external_label:String(page.name),
    ...enc,token_expires_at:null,permissions:{flow:"facebook_page_login",scope_requested:[
-      "pages_show_list","pages_read_engagement","pages_manage_posts"]},
+      "pages_show_list","pages_read_engagement","pages_manage_posts","pages_read_user_content"]},
    connected_at:now,updated_at:now
   },{onConflict:"clerk_user_id,provider"});
   if(saved.error)return finish("save_failed");

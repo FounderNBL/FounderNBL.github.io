@@ -70,7 +70,7 @@
 <link rel="stylesheet" href="/pulse/pulse-founder-ui.css?v=20261118-live-visibility">
 <link rel="stylesheet" href="/pulse/pulse-mobile-app.css?v=20261118-phone-app-v1" media="(max-width: 760px)">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
-<script type="module" src="/pulse/live.mjs?v=20261119-facebook-preflight"></script></head><body class="pulse-body">
+<script type="module" src="/pulse/live.mjs?v=20261120-meta-screen-only"></script></head><body class="pulse-body">
 <header class="pulse-topbar" aria-label="NBL Pulse site navigation">
   <a class="pulse-company-logo" href="/" aria-label="New Beansland home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" width="40" height="40"><span class="pulse-company-wordmark">NBL<small>New Beansland™</small></span></a>
   <nav class="pulse-site-nav" aria-label="NBL destinations">
@@ -157,11 +157,14 @@
     <label class="pulse-live-check" id="pulseLiveFacebookOption" hidden><input id="pulseLiveFacebook" type="checkbox" disabled aria-describedby="pulseLiveFacebookNote"> Also broadcast to the New Beansland Facebook Page</label>
      <label class="pulse-live-check" hidden><input id="pulseLiveRecord" type="checkbox" disabled> Save recording (later)</label>
     <p class="pulse-live-meta" id="pulseLiveFacebookNote" hidden>Go Live will also start a public broadcast on Facebook.</p>
+    <label class="pulse-live-check" for="pulseLiveScreenOnly"><input id="pulseLiveScreenOnly" type="checkbox" checked> Screen only (desktop) — do not use camera or microphone</label>
+    <p class="pulse-live-meta">Screen-only mode asks you to choose a window or tab after entering backstage. Never share passwords, chats or private windows.</p>
     <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
      <button id="pulseLiveFindRecording" type="button">Find latest saved livestream</button>
      <p class="pulse-live-meta" id="pulseLiveSavedResult" aria-live="polite"></p>
   </div>
   <div id="pulseLiveHost" hidden>
+    <button id="pulseLiveShareScreen" type="button" hidden>Share screen (camera and microphone OFF)</button>
     <button id="pulseLiveGoLive" type="button" class="pulse-live-primary">Go Live</button>
     <button id="pulseLiveEnd" type="button" class="pulse-live-danger">End Live</button>
   </div>
