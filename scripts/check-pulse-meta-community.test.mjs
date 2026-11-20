@@ -98,3 +98,10 @@ test("Facebook Live review OAuth requests Page Live scope without leaking tokens
  assert.match(client,/if \(state\.screenOnly && !state\.screenReady\)/);
  assert.doesNotMatch(client,/FB_PAGE_ACCESS_TOKEN|NBL_PULSE_META_APP_SECRET/);
 });
+
+
+test("Mobile NBL residents continue camera broadcasting without mandatory screen sharing",()=>{
+  const live=read("pulse/live.mjs");
+  assert.match(live,/option\.disabled = mobile\.matches/);
+  assert.match(live,/if \(mobile\.matches\) option\.checked = false/);
+});

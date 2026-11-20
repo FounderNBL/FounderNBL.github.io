@@ -582,7 +582,19 @@ export function initPulseLive() {
   const root = $("#pulseLive");
   if (!root) return;
   placeLivePanel();
-  window.matchMedia("(max-width: 760px)").addEventListener("change", placeLivePanel);
+  // Desktop-only screen capture must not replace the normal camera/mic path
+  // on phones where window/tab selection is generally unavailable.
+  const option = $("#pulseLiveScreenOnly");
+  const mobile = window.matchMedia("(max-width: 760px)");
+  const syncScreenOption = () => {
+    if (!option) return;
+    option.disabled = mobile.matches;
+    if (mobile.matches) option.checked = false;
+    const label = option.closest("label");
+    if (label) label.hidden = mobile.matches;
+  };
+  syncScreenOption();
+  mobile.addEventListener("change", () => { placeLivePanel(); syncScreenOption(); });
   $("#pulseLiveStart")?.addEventListener("click", () => { void onStart(); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
