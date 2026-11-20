@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#0b0817">
+<title>Public Social Post Preview | NBL Pulse</title>
+<meta name="description" content="Preview publicly shareable Facebook, Instagram and Threads posts inside NBL Pulse.">
+<style>
+:root{color-scheme:dark;font-family:Arial,sans-serif;background:#0b0817;color:#f8f2ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 70% 0%,#251344,#0b0817 65%);min-height:100vh}
+header{border-bottom:1px solid #6b4286;padding:18px clamp(16px,4vw,48px);display:flex;align-items:center;justify-content:space-between;gap:20px}
+header a{color:#e7b6ff;text-decoration:none;font-weight:800}
+header strong{font-size:1.2rem;color:#f6d58f}main{width:min(1120px,100%);margin:0 auto;padding:24px 16px 64px}
+h1{font-size:clamp(1.6rem,3.6vw,2.5rem);margin:12px 0 10px}
+p{line-height:1.55;color:#d9cde8}small{color:#c0b3d1}a{color:#e2b7ff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px;margin:25px 0}
+section{background:#181129;border:1px solid #654787;border-radius:16px;padding:20px;min-width:0}
+section h2{font-size:1.25rem;margin:0 0 10px}label{display:block;margin:16px 0 7px;font-weight:700}
+input{width:100%;padding:13px;border-radius:10px;border:1px solid #8d69ac;background:#0d0a17;color:#fff}
+button{margin-top:13px;padding:12px 20px;border:1px solid #b592dc;background:#604082;color:#fff;border-radius:11px;font-weight:750;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #f0c96e;outline-offset:3px}
+.preview{margin-top:16px;min-height:120px;border-radius:12px;background:#100b1d;padding:12px;overflow-wrap:anywhere}
+.preview .social-video-embed{width:100%;height:500px;max-width:100%;border:0;background:white;border-radius:10px}
+.preview .instagram-media,.preview .text-post-media{width:100%;max-width:100%;min-width:0!important;margin:0 auto!important}
+.preview .social-embed-play{margin:8px 0}
+.status{font-size:.94rem;min-height:1.4em}
+.notice{padding:15px 20px;border-left:3px solid #f0c96e;background:#1b142b;border-radius:4px}
+</style>
+<script type="module">
+import {parsePublicVideo,mountPublicVideo} from "/messenger/social-video-connect.mjs?v=20261120-public-meta-posts";
+for(const form of document.querySelectorAll("form[data-embed]")){
+ form.addEventListener("submit",event=>{
+  event.preventDefault();
+  const source=form.querySelector("input").value.trim();
+  const required=form.dataset.embed;
+  const result=form.querySelector(".preview");
+  const status=form.querySelector(".status");
+  result.replaceChildren();
+  const parsed=parsePublicVideo(source);
+  const allowed=required==="threads"?parsed?.provider==="threads":
+   parsed?.provider==="instagram"||parsed?.provider==="facebook"||parsed?.provider==="facebook-post";
+  if(!allowed){status.textContent=required==="threads"?
+   "Paste a public Threads post link from threads.com or threads.net.":
+   "Paste a public Facebook post/video or Instagram post/Reel link.";return;}
+  status.textContent="Valid public "+(parsed.provider==="threads"?"Threads":"Meta")+" link. Tap Show post to load the provider's embed.";
+  mountPublicVideo({nbl_external_video_url:parsed.url},result);
+  if(!result.firstElementChild){status.textContent="This post could not be previewed. Open the original source link.";return;}
+  const link=document.createElement("a");
+  link.href=parsed.url;link.target="_blank";link.rel="noopener noreferrer";
+  link.textContent="Open original public post";
+  result.append(document.createElement("p")).append(link);
+ });
+}
+</script>
+</head><body>
+<header><strong>NBL Pulse™</strong><a href="/pulse/">Back to Pulse</a></header>
+<main>
+<h1>Public Post Preview</h1>
+<p>Share public Facebook, Instagram and Threads content inside New Beansland. This is a read-only demonstration of external posts—not a login, repost, DM or download.</p>
+<div class="grid">
+ <section aria-labelledby="meta-title">
+  <h2 id="meta-title">Facebook &amp; Instagram</h2>
+  <p>Paste a public Facebook post/video or Instagram post/Reel URL.</p>
+  <form data-embed="meta">
+   <label for="meta-url">Public Meta post link</label>
+   <input id="meta-url" type="url" inputmode="url" placeholder="https://www.instagram.com/p/..." required maxlength="350">
+   <button type="submit">Prepare public preview</button>
+   <p class="status" role="status" aria-live="polite">No external content loaded.</p>
+   <div class="preview" aria-label="Facebook or Instagram post preview"></div>
+  </form>
+ </section>
+ <section aria-labelledby="threads-title">
+  <h2 id="threads-title">Threads</h2>
+  <p>Paste a public Threads post URL. Your Threads account does not need to be connected.</p>
+  <form data-embed="threads">
+   <label for="threads-url">Public Threads post link</label>
+   <input id="threads-url" type="url" inputmode="url" placeholder="https://www.threads.com/@threads/post/..." required maxlength="350">
+   <button type="submit">Prepare public preview</button>
+   <p class="status" role="status" aria-live="polite">No external content loaded.</p>
+   <div class="preview" aria-label="Threads post preview"></div>
+  </form>
+ </section>
+</div>
+<p class="notice">Public posts only. The original platform must allow embedding, and content loads from that platform only after you choose to show it. Private, deleted, restricted or non-embeddable posts will not display. No credentials, API keys, private messages, post text or analytics are collected by this preview.</p>
+</main>
+</body></html>
