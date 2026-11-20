@@ -180,7 +180,7 @@ assert.match(js,/function needsIphoneHomeScreen\(\)/);
 assert.match(js,/navigator\.standalone===true/);
 assert.match(js,/Add to Home Screen/);
 assert.match(app,/apple-touch-icon/);
-assert.match(app,/app\.js\?v=20261117-ios-notify/);
+assert.match(app,/app\.js\?v=20261120-private-contact-nicknames/);
 assert.match(callPage,/id="callSound"/);
 assert.match(callJs,/async function enableRemoteSound\(\)/);
 assert.match(callJs,/await audio\.play\(\)/);
