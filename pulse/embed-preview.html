@@ -16,9 +16,9 @@ p{line-height:1.55;color:#d9cde8}small{color:#c0b3d1}a{color:#e2b7ff}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:18px;margin:25px 0}
 section{background:#181129;border:1px solid #654787;border-radius:16px;padding:20px;min-width:0}
 section h2{font-size:1.25rem;margin:0 0 10px}label{display:block;margin:16px 0 7px;font-weight:700}
-input{width:100%;padding:13px;border-radius:10px;border:1px solid #8d69ac;background:#0d0a17;color:#fff}
+input,textarea{width:100%;padding:13px;border-radius:10px;border:1px solid #8d69ac;background:#0d0a17;color:#fff}
 button{margin-top:13px;padding:12px 20px;border:1px solid #b592dc;background:#604082;color:#fff;border-radius:11px;font-weight:750;cursor:pointer}
-button:focus-visible,input:focus-visible{outline:3px solid #f0c96e;outline-offset:3px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #f0c96e;outline-offset:3px}
 .preview{margin-top:16px;min-height:120px;border-radius:12px;background:#100b1d;padding:12px;overflow-wrap:anywhere}
 .preview .social-video-embed{width:100%;height:500px;max-width:100%;border:0;background:white;border-radius:10px}
 .preview .instagram-media,.preview .text-post-media{width:100%;max-width:100%;min-width:0!important;margin:0 auto!important}
@@ -27,21 +27,26 @@ button:focus-visible,input:focus-visible{outline:3px solid #f0c96e;outline-offse
 .notice{padding:15px 20px;border-left:3px solid #f0c96e;background:#1b142b;border-radius:4px}
 </style>
 <script type="module">
-import {parsePublicVideo,mountPublicVideo} from "/messenger/social-video-connect.mjs?v=20261120-public-meta-posts";
+import {parsePublicVideo,resolvePublicVideo,mountPublicVideo} from "/messenger/social-video-connect.mjs?v=20261120-threads-share-resolve";
 for(const form of document.querySelectorAll("form[data-embed]")){
- form.addEventListener("submit",event=>{
+ form.addEventListener("submit",async event=>{
   event.preventDefault();
   const source=form.querySelector("input").value.trim();
   const required=form.dataset.embed;
   const result=form.querySelector(".preview");
   const status=form.querySelector(".status");
   result.replaceChildren();
-  const parsed=parsePublicVideo(source);
-  const allowed=required==="threads"?parsed?.provider==="threads":
+  let parsed=parsePublicVideo(source);
+  const allowed=required==="threads"?(parsed?.provider==="threads"||parsed?.provider==="threads-share"):
    parsed?.provider==="instagram"||parsed?.provider==="facebook"||parsed?.provider==="facebook-post";
   if(!allowed){status.textContent=required==="threads"?
    "Paste a public Threads post link from threads.com or threads.net.":
    "Paste a public Facebook post/video or Instagram post/Reel link.";return;}
+  if(parsed.provider==="threads-share"){
+    status.textContent="Resolving Threads sharing link to its public post…";
+    try{parsed=await resolvePublicVideo(parsed);}
+    catch{status.textContent="Threads could not resolve that share link. Open it in Threads and copy the post URL or official embed code.";return;}
+  }
   status.textContent="Valid public "+(parsed.provider==="threads"?"Threads":"Meta")+" link. Tap Show post to load the provider's embed.";
   mountPublicVideo({nbl_external_video_url:parsed.url},result);
   if(!result.firstElementChild){status.textContent="This post could not be previewed. Open the original source link.";return;}
@@ -71,10 +76,10 @@ for(const form of document.querySelectorAll("form[data-embed]")){
  </section>
  <section aria-labelledby="threads-title">
   <h2 id="threads-title">Threads</h2>
-  <p>Paste a public Threads post URL. Your Threads account does not need to be connected.</p>
+  <p>Paste a public Threads post link, including a <code>/share/</code> link, or official Threads embed code. Your Threads account does not need to be connected.</p>
   <form data-embed="threads">
    <label for="threads-url">Public Threads post link</label>
-   <input id="threads-url" type="url" inputmode="url" placeholder="https://www.threads.com/@threads/post/..." required maxlength="350">
+   <textarea id="threads-url" rows="2" placeholder="https://www.threads.com/share/... or a public post URL" required maxlength="12000"></textarea>
    <button type="submit">Prepare public preview</button>
    <p class="status" role="status" aria-live="polite">No external content loaded.</p>
    <div class="preview" aria-label="Threads post preview"></div>

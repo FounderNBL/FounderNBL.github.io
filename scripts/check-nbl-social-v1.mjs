@@ -133,7 +133,7 @@ assert.match(js,/location\.pathname\.startsWith\("\/pulse"\)/);
 assert.match(pulse,/postMedia" type="file" accept="image\/jpeg,image\/png,image\/webp,video\/mp4,video\/webm" multiple/);
 assert.doesNotMatch(pulse,/postMedia" type="file" disabled/);
 assert.match(pulse,/postMedia"[^>]*video\/mp4/);
-assert.match(pulse,/social-v1\.mjs\?v=20261120-public-meta-embeds/);
+assert.match(pulse,/social-v1\.mjs\?v=20261120-threads-share-resolve/);
 assert.match(js,/import \{recentHomeBeats\} from "\.\/pulse-home-recent\.mjs"/);
 assert.match(js,/ownFeed=selected==="foryou"\?state\.client\.feed\("user",actorId\):null/);
 assert.match(js,/recentHomeBeats\(\[primaryRows,ownRows\],\{limit:8\}\)/);
@@ -184,7 +184,7 @@ assert.equal(parsePublicVideo("http://www.instagram.com/p/C8h9Yi7ABCD/"),null);
 assert.equal(parsePublicVideo("javascript:alert(1)"),null);
 
 assert.match(pulse,/href="\/pulse\/embed-preview\.html"/);
-assert.match(js,/public-meta-posts/);
+assert.match(js,/threads-share-resolve/);
 
 assert.ok(embeds.includes("www.youtube-nocookie.com/embed/"));
 assert.ok(js.includes("mountPublicVideo(activity.custom,media)"));
