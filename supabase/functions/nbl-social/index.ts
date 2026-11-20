@@ -505,7 +505,7 @@ Deno.serve(async(req:Request)=>{
     }
 
     if(action==="list_threads"){
-      const memberships=await db.from("nbl_social_thread_members").select("thread_id,member_role,muted,last_read_at")
+      const memberships=await db.from("nbl_social_thread_members").select("thread_id,member_role,muted,last_read_at,contact_nickname")
         .eq("clerk_user_id",me.userId).order("joined_at",{ascending:false}).limit(200);
       const ids=(memberships.data||[]).map((x:any)=>String(x.thread_id));
       if(!ids.length)return json(req,{ok:true,threads:[]});
@@ -523,7 +523,7 @@ Deno.serve(async(req:Request)=>{
         }
         if(["study_hall","class","semester"].includes(row.thread_type)&&!(await universityAccess(me.userId)).allowed)continue;
         const own:any=membershipMap.get(String(row.id))||{};
-        out.push({...row,peer,muted:Boolean(own.muted),memberRole:own.member_role||"member"});
+        out.push({...row,peer,muted:Boolean(own.muted),contactNickname:clean(own.contact_nickname,48)||null,memberRole:own.member_role||"member"});
       }
       return json(req,{ok:true,threads:out});
     }
@@ -611,6 +611,22 @@ Deno.serve(async(req:Request)=>{
       });
       if(board.error)throw new Error("helper_board_unavailable");
       return json(req,{ok:true,board:board.data});
+    }
+
+    if(action==="contact_nickname"){
+      const threadId=uuid(body?.threadId);
+      if(!threadId)return json(req,{ok:false,reason:"thread_required"},400);
+      const raw=body?.nickname;
+      if(typeof raw!=="string"||raw.length>48||/[\u0000-\u001f\u007f]/.test(raw))
+        return json(req,{ok:false,reason:"invalid_contact_nickname"},400);
+      const current=await thread(threadId);
+      if(current?.thread_type!=="direct")return json(req,{ok:false,reason:"direct_thread_required"},403);
+      // This nickname belongs ONLY to the currently signed-in member. Never rename the peer's public handle.
+      const nickname=raw.trim()||null;
+      const saved=await db.from("nbl_social_thread_members").update({contact_nickname:nickname})
+        .eq("thread_id",threadId).eq("clerk_user_id",me.userId).select("contact_nickname").maybeSingle();
+      if(saved.error||!saved.data)return json(req,{ok:false,reason:"thread_access_denied"},403);
+      return json(req,{ok:true,contactNickname:saved.data.contact_nickname||null});
     }
 
     if(action==="mute"){
