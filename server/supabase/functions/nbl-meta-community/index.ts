@@ -1,5 +1,5 @@
 // NBL Pulse — Founder-only Meta Page posting + Instagram comment tools.
-// Isolated from the existing /nbl-instagram-connect publishing and /nbl-live services.
+// Owns Meta Page OAuth and posting only; livestream media remains in the separate Pulse service.
 // No Meta token or Page credential ever leaves this service.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import {createClient} from "npm:@supabase/supabase-js@2.57.4";
