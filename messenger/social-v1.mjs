@@ -2,7 +2,7 @@
 // Clerk-bound accounts, Stream user feeds and moderation review; media/Go Live remain separately disabled.
 // Existing Supabase human DMs remain unchanged; Beans AI and V12 are out of scope.
 import { FeedsClient } from "https://esm.sh/@stream-io/feeds-client@2.9.0?bundle";
-import {parsePublicVideo,mountPublicVideo} from "./social-video-connect.mjs?v=20261120-public-meta-posts";
+import {parsePublicVideo,resolvePublicVideo,mountPublicVideo} from "./social-video-connect.mjs?v=20261120-threads-share-resolve";
 import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
@@ -827,7 +827,7 @@ async function publishPost(event){
   }
   const text=$("#postText").value.trim();
   const videoLink=$("#videoLink").value.trim();
-  const chosenVideo=videoLink?parsePublicVideo(videoLink):null;
+  let chosenVideo=videoLink?parsePublicVideo(videoLink):null;
   if(videoLink&&!chosenVideo){status("Use a public YouTube, Facebook post/video, Instagram post/Reel, or Threads post link.");return;}
   if(videoLink&&!$("#videoShareRights").checked){
     status("Please confirm the original public post allows embedding.");return;
@@ -840,6 +840,11 @@ async function publishPost(event){
   state.busy=true;
   const submit=$("#postForm button[type=submit]");submit.disabled=true;
   try{
+    if(chosenVideo?.provider==="threads-share"){
+      status("Resolving Threads share link to the original public post…");
+      chosenVideo=await resolvePublicVideo(chosenVideo);
+      if(!chosenVideo||chosenVideo.provider!=="threads")throw new Error("Threads link could not be resolved.");
+    }
     const feed=state.client.feed("user",state.user.id);
     // A brand-new Clerk member may not yet have a Stream user feed.
     // Initialize it with their existing verified identity before publishing.
