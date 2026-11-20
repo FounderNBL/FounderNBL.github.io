@@ -414,7 +414,7 @@ function renderActivity(activity){
             confirm:"prepare",media_type:"REELS",video_url:video.asset_url,
             caption:String(activity.text||"").slice(0,1500)
           });
-          if(!/^\\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram did not return a Reel container.");
+          if(!/^\d{6,30}$/.test(String(result.container_id||"")))throw new Error("Instagram did not return a Reel container.");
           containerId=result.container_id;
           reel.textContent="Check Reel status";
           feedback.textContent="Instagram received the Reel. Tap Check Reel status after it processes; nothing has been published yet.";
