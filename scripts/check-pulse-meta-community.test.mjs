@@ -69,3 +69,18 @@ test("Instagram account discovery supports all official Meta login routes",()=>{
  assert.match(instagram,/founder_access_required/);
  assert.doesNotMatch(view,/IG_TOKEN|APP_SECRET|access_token|token_ciphertext/);
 });
+
+test("Reel processing status is read-only and publishing requires explicit confirmation",()=>{
+ const instagram=read("server/supabase/functions/nbl-instagram-connect/index.ts");
+ const feed=read("messenger/social-v1.mjs");
+ assert.match(instagram,/publish\/status/);
+ assert.match(instagram,/if\(kind==="status"\)return response/);
+ assert.match(instagram,/ready:code==="FINISHED"/);
+ assert.match(instagram,/if\(body\.confirm!==kind\)/);
+ assert.match(instagram,/founder_access_required/);
+ assert.match(feed,/INSTAGRAM_API\+"\/publish\/status"/);
+ assert.match(feed,/Instagram processing failed/);
+ assert.match(feed,/Check Reel status/);
+ assert.match(feed,/window\.confirm\("Publish this video publicly/);
+ assert.match(feed,/INSTAGRAM_API\+"\/publish\/confirm"/);
+});
