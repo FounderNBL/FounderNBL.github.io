@@ -511,7 +511,7 @@ async function previewPhoneNotification(){
  }catch(error){setPushStatus(error.message||"Phone preview unavailable.");}
 }
 function displayThread(row){
-  if(row.thread_type==="direct")return row.peer?.handle?"@"+row.peer.handle:"Direct message";
+  if(row.thread_type==="direct")return row.contactNickname|| (row.peer?.handle?"@"+row.peer.handle:"Direct message");
   return row.title||"NBL conversation";
 }
 function resetComposer(){
@@ -523,6 +523,7 @@ function resetComposer(){
   const callButton=$("[data-chat-video-call]");
   if(callButton){callButton.hidden=!ready||state.selected?.thread_type!=="direct";callButton.disabled=!ready||state.busy;}
   $("[data-chat-mute]").hidden=!ready;
+  $("[data-chat-rename]").hidden=!ready||state.selected?.thread_type!=="direct";
   $("[data-chat-block]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
   $("[data-chat-unblock]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
 }
@@ -582,7 +583,7 @@ function renderThreads(){
     item.type="button";
     const photo=safeAvatar(row.peer?.avatarUrl);
     if(photo){const image=node("img","chat-avatar");image.src=photo;image.alt="Conversation profile picture";image.loading="lazy";item.prepend(image);}
-    const info=node("small",null,(row.thread_type==="direct"?"Direct message":String(row.thread_type||"Chat").replaceAll("_"," "))+(row.muted?" · Muted":""));
+    const info=node("small",null,(row.thread_type==="direct"?"Direct message"+(row.contactNickname&&row.peer?.handle?" · @"+row.peer.handle:""):String(row.thread_type||"Chat").replaceAll("_"," "))+(row.muted?" · Muted":""));
     item.append(info);
     item.addEventListener("click",()=>{void openThread(row.id).catch(error=>status(error.message));});
     area.append(item);
@@ -619,11 +620,13 @@ function renderMessages(messages){
   for(const message of messages){
     const from=message.sender?.handle||((message.officialRole==="grey")?"greyhart":"NBL member");
     const mine=from.toLowerCase()===me;
+    const displayFrom=!mine&&state.selected?.contactNickname&&from.toLowerCase()===String(state.selected.peer?.handle||"").toLowerCase()
+      ?state.selected.contactNickname+" (@"+from+")":"@"+from;
     const bubble=node("div","message"+(mine?" mine":""));
     const verified=message.sender?.verified||Boolean(message.officialRole);
     const photo=safeAvatar(message.sender?.avatarUrl);
-    if(photo){const image=node("img","chat-avatar");image.src=photo;image.alt="@"+from+" profile picture";image.loading="lazy";bubble.append(image);}
-    bubble.append(node("div","byline","@"+from+(verified?" · Verified":"")+(message.createdAt?" · "+new Date(message.createdAt).toLocaleString():"")));
+    if(photo){const image=node("img","chat-avatar");image.src=photo;image.alt=displayFrom+" profile picture";image.loading="lazy";bubble.append(image);}
+    bubble.append(node("div","byline",displayFrom+(verified?" · Verified":"")+(message.createdAt?" · "+new Date(message.createdAt).toLocaleString():"")));
     bubble.append(node("p",null,message.body||""));
     const invite=VIDEO_INVITE_RE.exec(String(message.body||""));
     if(invite&&!message.deleted&&IS_CALL_ID.test(invite[1])){
@@ -679,7 +682,7 @@ async function openThread(id){
   $("[data-chat-app]").classList.add("chat-open");
   watchOpenThread(id);
   $("[data-chat-thread-title]").textContent=displayThread(row||{});
-  $("[data-chat-thread-kind]").textContent=row?.thread_type==="direct"?"Direct message":String(row?.thread_type||"Message").replaceAll("_"," ");
+  $("[data-chat-thread-kind]").textContent=row?.thread_type==="direct"?"Direct message"+(row?.contactNickname&&row.peer?.handle?" · @"+row.peer.handle:""):String(row?.thread_type||"Message").replaceAll("_"," ");
   $("[data-chat-messages]").replaceChildren(node("p","hint","Loading messages…"));
   $("[data-chat-mute]").textContent=row?.muted?"Unmute":"Mute";
   $("[data-chat-block]").textContent="Block member";
@@ -859,6 +862,18 @@ async function sendMessage(event){
   }catch(error){status(error.message||"Message not sent.");}
   finally{state.busy=false;resetComposer();}
 }
+async function renameContact(){
+  const row=state.selected;
+  if(!row?.id||row.thread_type!=="direct"||state.busy)return;
+  const name=window.prompt("Private name for this contact (leave blank to use their public username)",row.contactNickname||"");
+  if(name===null)return;
+  if(name.length>48){status("Contact nickname must be 48 characters or fewer.");return;}
+  try{
+    await social({action:"contact_nickname",threadId:row.id,nickname:name});
+    await refresh();
+    status(name.trim()?"Contact nickname saved for your account only.":"Contact nickname cleared.");
+  }catch(error){status(error.message||"Could not rename this contact.");}
+}
 async function toggleMute(){
   if(!state.selectedId||state.busy)return;
   const row=state.selected;
@@ -1001,6 +1016,7 @@ async function boot(){
   $("[data-chat-refresh]").addEventListener("click",()=>{void refresh();});
   $("[data-chat-thread-search]").addEventListener("input",renderThreads);
   $("[data-chat-mute]").addEventListener("click",()=>{void toggleMute();});
+  $("[data-chat-rename]").addEventListener("click",()=>{void renameContact();});
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
   $("[data-chat-unblock]").addEventListener("click",()=>{void unblockPeer();});
   $("[data-chat-signout]").addEventListener("click",async()=>{

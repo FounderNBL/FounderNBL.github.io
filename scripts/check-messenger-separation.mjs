@@ -64,7 +64,7 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261117-ios-notify'),
+assert.ok(app.includes('/messenger/app.js?v=20261120-private-contact-nicknames'),
   "Pulse Messenger must load the current account and call handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
@@ -180,8 +180,22 @@ assert.match(js,/function needsIphoneHomeScreen\(\)/);
 assert.match(js,/navigator\.standalone===true/);
 assert.match(js,/Add to Home Screen/);
 assert.match(app,/apple-touch-icon/);
-assert.match(app,/app\.js\?v=20261117-ios-notify/);
+assert.match(app,/app\.js\?v=20261120-private-contact-nicknames/);
 assert.match(callPage,/id="callSound"/);
 assert.match(callJs,/async function enableRemoteSound\(\)/);
 assert.match(callJs,/await audio\.play\(\)/);
 assert.match(callJs,/callSound"\)\.addEventListener/);
+
+const social=read("supabase/functions/nbl-social/index.ts");
+const push=read("supabase/functions/nbl-messenger-push/index.ts");
+const nicknameMigration=read("supabase/migrations/20261120_nbl_messenger_contact_nicknames.sql");
+assert.match(nicknameMigration,/add column if not exists contact_nickname/);
+assert.match(social,/action==="contact_nickname"/);
+assert.match(social,/eq\("clerk_user_id",me\.userId\)/);
+assert.match(social,/contactNickname:clean\(own\.contact_nickname,48\)/);
+assert.match(push,/privateNicknames\.get\(member\)/);
+assert.match(push,/const title=callId\?"Incoming NBL video call"/);
+assert.match(push,/NBLMember\[a-f0-9\]/);
+assert.match(app,/data-chat-rename/);
+assert.match(js,/action:"contact_nickname"/);
+assert.match(js,/row\.contactNickname/);
