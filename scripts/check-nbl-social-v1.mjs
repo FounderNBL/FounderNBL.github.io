@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
+import {parsePublicVideo} from "../messenger/social-video-connect.mjs";
 const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
 const ui=read("messenger/social-v1.html"),js=read("messenger/social-v1.mjs"),css=read("messenger/social-v1.css"),embeds=read("messenger/social-video-connect.mjs");
 const existing=read("messenger/app.js");
@@ -132,7 +133,7 @@ assert.match(js,/location\.pathname\.startsWith\("\/pulse"\)/);
 assert.match(pulse,/postMedia" type="file" accept="image\/jpeg,image\/png,image\/webp,video\/mp4,video\/webm" multiple/);
 assert.doesNotMatch(pulse,/postMedia" type="file" disabled/);
 assert.match(pulse,/postMedia"[^>]*video\/mp4/);
-assert.match(pulse,/social-v1\.mjs\?v=20261120-reels-ready/);
+assert.match(pulse,/social-v1\.mjs\?v=20261120-public-meta-embeds/);
 assert.match(js,/import \{recentHomeBeats\} from "\.\/pulse-home-recent\.mjs"/);
 assert.match(js,/ownFeed=selected==="foryou"\?state\.client\.feed\("user",actorId\):null/);
 assert.match(js,/recentHomeBeats\(\[primaryRows,ownRows\],\{limit:8\}\)/);
@@ -165,6 +166,26 @@ assert.match(pulse,/id="videoShareRights"/);
 assert.match(embeds,/parsePublicVideo/);
 assert.ok(embeds.includes("plugins/video.php"));
 assert.ok(embeds.includes("www.instagram.com/embed.js"));
+assert.match(embeds,/www\.threads\.com\/embed\.js/);
+assert.match(embeds,/plugins\/post\.php/);
+assert.match(embeds,/facebook-post/);
+assert.match(embeds,/text-post-media/);
+assert.deepEqual(parsePublicVideo("https://www.threads.net/@threads/post/DCkkKl_OGb1"),{
+  provider:"threads",url:"https://www.threads.com/@threads/post/DCkkKl_OGb1/"
+});
+assert.deepEqual(parsePublicVideo("https://www.instagram.com/p/C8h9Yi7ABCD/"),{
+  provider:"instagram",url:"https://www.instagram.com/p/C8h9Yi7ABCD/"
+});
+assert.deepEqual(parsePublicVideo("https://www.facebook.com/NewBeansland/posts/123456789"),{
+  provider:"facebook-post",url:"https://www.facebook.com/NewBeansland/posts/123456789/"
+});
+assert.equal(parsePublicVideo("https://threads.com.evil.invalid/@threads/post/DCkkKl_OGb1"),null);
+assert.equal(parsePublicVideo("http://www.instagram.com/p/C8h9Yi7ABCD/"),null);
+assert.equal(parsePublicVideo("javascript:alert(1)"),null);
+
+assert.match(pulse,/href="\/pulse\/embed-preview\.html"/);
+assert.match(js,/public-meta-posts/);
+
 assert.ok(embeds.includes("www.youtube-nocookie.com/embed/"));
 assert.ok(js.includes("mountPublicVideo(activity.custom,media)"));
 assert.match(js,/nbl_external_video_url:chosenVideo.url/);

@@ -2,7 +2,7 @@
 // Clerk-bound accounts, Stream user feeds and moderation review; media/Go Live remain separately disabled.
 // Existing Supabase human DMs remain unchanged; Beans AI and V12 are out of scope.
 import { FeedsClient } from "https://esm.sh/@stream-io/feeds-client@2.9.0?bundle";
-import {parsePublicVideo,mountPublicVideo} from "./social-video-connect.mjs";
+import {parsePublicVideo,mountPublicVideo} from "./social-video-connect.mjs?v=20261120-public-meta-posts";
 import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
@@ -828,9 +828,9 @@ async function publishPost(event){
   const text=$("#postText").value.trim();
   const videoLink=$("#videoLink").value.trim();
   const chosenVideo=videoLink?parsePublicVideo(videoLink):null;
-  if(videoLink&&!chosenVideo){status("Use a public YouTube, Facebook video/Reel, or Instagram post/Reel link.");return;}
+  if(videoLink&&!chosenVideo){status("Use a public YouTube, Facebook post/video, Instagram post/Reel, or Threads post link.");return;}
   if(videoLink&&!$("#videoShareRights").checked){
-    status("Please confirm you own or have permission to share this video.");return;
+    status("Please confirm the original public post allows embedding.");return;
   }
   const youtubeId=chosenVideo?.provider==="youtube"?chosenVideo.id:null;
   let files;

@@ -21,7 +21,7 @@
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261119-meta-community-v1">
 <link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261119-independent-columns-v1">
-<script type="module" src="/messenger/social-v1.mjs?v=20261120-reels-ready"></script>
+<script type="module" src="/messenger/social-v1.mjs?v=20261120-public-meta-embeds"></script>
 <script type="module" src="/pulse/pulse-google-insights.mjs?v=20261118-consent-v1"></script>
 <style>
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
@@ -196,7 +196,8 @@
         <div class="pulse-compose-actions">
           <button type="button" class="pulse-compose-tool" data-pulse-compose="photo"><span aria-hidden="true">▧</span> Photo</button>
           <button type="button" class="pulse-compose-tool" data-pulse-compose="video"><span aria-hidden="true">▣</span> Video</button>
-          <button type="button" class="pulse-compose-tool" data-pulse-compose="link"><span aria-hidden="true">↗</span> Video link</button>
+          <button type="button" class="pulse-compose-tool" data-pulse-compose="link"><span aria-hidden="true">↗</span> Public link</button>
+          <a class="pulse-compose-tool" href="/pulse/embed-preview.html" title="Preview public Facebook, Instagram and Threads posts">Public embeds</a>
           <button class="btn primary pulse-submit" type="submit">Post</button>
         </div>
         <div id="pulseComposerExtra" class="pulse-composer-extra" hidden>
@@ -204,10 +205,10 @@
           <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" multiple>
           <p class="social-feedback" id="mediaSelection" role="status">Up to 4 photos (8 MB each) or 1 MP4/WebM video (40 MB).</p>
           <div id="videoLinkArea">
-            <label for="videoLink">Or share a YouTube, Facebook or Instagram video</label>
-            <input id="videoLink" type="url" inputmode="url" placeholder="Paste your public video link" autocomplete="off">
-            <label class="pulse-video-rights"><input id="videoShareRights" type="checkbox"> I own or have permission to share this video</label>
-            <p class="social-feedback">Public videos play in Pulse when their provider allows embedding.</p>
+            <label for="videoLink">Or share a public YouTube, Facebook, Instagram or Threads post/video</label>
+            <input id="videoLink" type="url" inputmode="url" placeholder="Paste a public post or video link" autocomplete="off">
+            <label class="pulse-video-rights"><input id="videoShareRights" type="checkbox"> I confirm the original public post can be shared by embedding</label>
+            <p class="social-feedback">Public posts and videos display when their original provider allows embedding. <a href="/pulse/embed-preview.html">Preview Facebook, Instagram or Threads posts</a>.</p>
           </div>
         </div>
         <div class="compose-bottom"><small id="postCount">0 / 1500</small></div>

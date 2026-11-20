@@ -20,6 +20,20 @@ export function parsePublicVideo(raw){
       const m=p.match(/^\/(reel|p|tv)\/([A-Za-z0-9_-]{5,30})\/?$/);
       if(m)return {provider:"instagram",url:"https://www.instagram.com/"+m[1]+"/"+m[2]+"/"};
     }
+    if(["threads.com","www.threads.com","threads.net","www.threads.net"].includes(h)){
+      const m=p.match(/^\/@([A-Za-z0-9._]{1,30})\/post\/([A-Za-z0-9_-]{5,30})\/?$/);
+      if(m)return {provider:"threads",url:"https://www.threads.com/@"+m[1]+"/post/"+m[2]+"/"};
+      const short=p.match(/^\/t\/([A-Za-z0-9_-]{5,30})\/?$/);
+      if(short)return {provider:"threads",url:"https://www.threads.com/t/"+short[1]+"/"};
+    }
+    if(["facebook.com","www.facebook.com","m.facebook.com","web.facebook.com"].includes(h)){
+      const post=p.match(/^\/([A-Za-z0-9._-]{1,100})\/posts\/((?:\d{5,30}|pfbid[A-Za-z0-9]{12,140}))\/?$/);
+      if(post)return {provider:"facebook-post",url:"https://www.facebook.com/"+post[1]+"/posts/"+post[2]+"/"};
+      if(p==="/permalink.php"&&/^\d{4,30}$/.test(u.searchParams.get("id")||"")&&
+        /^(?:\d{4,30}|pfbid[A-Za-z0-9]{12,140})$/.test(u.searchParams.get("story_fbid")||""))
+        return {provider:"facebook-post",url:"https://www.facebook.com/permalink.php?story_fbid="+
+          encodeURIComponent(u.searchParams.get("story_fbid"))+"&id="+u.searchParams.get("id")};
+    }
     return null;
   }catch{return null;}
 }
@@ -40,11 +54,26 @@ export function mountPublicVideo(custom,media){
   if(!clip||clip.provider==="youtube")return;
   const button=document.createElement("button");
   button.type="button";button.className="social-embed-play";
-  button.textContent="Play "+(clip.provider==="facebook"?"Facebook":"Instagram")+" video in Pulse";
+  button.textContent="Show public "+(clip.provider==="facebook"||clip.provider==="facebook-post"?"Facebook":clip.provider==="threads"?"Threads":"Instagram")+" post in Pulse";
   button.addEventListener("click",()=>{
     button.remove();
-    if(clip.provider==="facebook"){
-      media.append(frame("Facebook video inside NBL Pulse","https://www.facebook.com/plugins/video.php?href="+encodeURIComponent(clip.url)+"&show_text=false&width=560"));
+    if(clip.provider==="facebook"||clip.provider==="facebook-post"){
+      const embedBase=clip.provider==="facebook-post"?
+        "https://www.facebook.com/plugins/post.php":"https://www.facebook.com/plugins/video.php";
+      media.append(frame("Facebook "+(clip.provider==="facebook-post"?"post":"video")+" inside NBL Pulse",
+        embedBase+"?href="+encodeURIComponent(clip.url)+"&show_text=true&width=500"));
+    }else if(clip.provider==="threads"){
+      // Only official public Threads post markup; no member-supplied HTML or scripts.
+      const quote=document.createElement("blockquote");
+      quote.className="text-post-media";
+      quote.dataset.textPostPermalink=clip.url;
+      quote.dataset.textPostVersion="0";
+      const fallback=document.createElement("a");fallback.href=clip.url;
+      fallback.target="_blank";fallback.rel="noopener noreferrer";fallback.textContent="View original public Threads post";
+      quote.append(fallback);media.append(quote);
+      const script=document.createElement("script");
+      script.src="https://www.threads.com/embed.js";script.async=true;
+      document.head.append(script);
     }else{
       const quote=document.createElement("blockquote");
       quote.className="instagram-media";quote.dataset.instgrmPermalink=clip.url;quote.dataset.instgrmVersion="14";
