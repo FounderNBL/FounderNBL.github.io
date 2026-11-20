@@ -363,9 +363,13 @@ async function founderPublish(req:Request,kind:"prepare"|"confirm"|"status"){
    if(!isReel&&!allowedPublicPhoto(body.image_url))
     return response(req,{ok:false,reason:"invalid_public_jpeg_or_caption"},400);
    // Preparing is not publishing. The Founder must explicitly confirm later.
+   // Instagram publishes as @nbl_world. Identify the original verified Pulse
+   // Founder in the caption without changing or spoofing external identities.
+   const credit="Originally on NBL Pulse · @NBLFounderOfficial";
+   const stamped=caption.trim().slice(0,2100-credit.length-2)+"\n\n"+credit;
    const media=isReel
-    ?{media_type:"REELS",video_url:String(body.video_url),caption}
-    :{image_url:String(body.image_url),caption};
+    ?{media_type:"REELS",video_url:String(body.video_url),caption:stamped}
+    :{image_url:String(body.image_url),caption:stamped};
    const created=await metaPost(ig.id+"/media",media,ig.host,ig.token);
    if(!created.ok||!/^\d{6,30}$/.test(String(created.body?.id||"")))
     return response(req,{ok:false,reason:"meta_media_prepare_rejected"},502);
