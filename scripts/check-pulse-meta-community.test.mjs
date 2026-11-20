@@ -54,3 +54,18 @@ test("Meta review API diagnostic is Founder-only and never exposes credentials",
  assert.match(view,/review\/diagnostics/);
  assert.doesNotMatch(view,/IG_TOKEN|APP_SECRET|access_token|token_ciphertext/);
 });
+
+test("Instagram account discovery supports all official Meta login routes",()=>{
+ const instagram=read("server/supabase/functions/nbl-instagram-connect/index.ts");
+ for(const source of [backend,instagram]){
+  assert.match(source,/me\/assigned_instagram_accounts/);
+  assert.match(source,/me\/accounts/);
+  assert.match(source,/graph\.instagram\.com/);
+  assert.match(source,/instagram_business_account/);
+ }
+ assert.match(backend,/account\.host/);
+ assert.match(instagram,/ig\.host/);
+ assert.match(instagram,/publish\/confirm/);
+ assert.match(instagram,/founder_access_required/);
+ assert.doesNotMatch(view,/IG_TOKEN|APP_SECRET|access_token|token_ciphertext/);
+});

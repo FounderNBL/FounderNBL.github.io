@@ -67,8 +67,8 @@ async function open(row){
  const bytes=Uint8Array.from(atob(row.token_ciphertext),c=>c.charCodeAt(0));
  return new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv},await key(),bytes));
 }
-async function graph(method,path,token,params={}){
- const url=new URL(GRAPH+path);
+async function graph(method,path,token,params={},host=GRAPH){
+ const url=new URL(host+path);
  const data=new URLSearchParams(params);
  if(method==="GET")for(const [k,v] of data)url.searchParams.set(k,v);
  let res;
@@ -126,10 +126,36 @@ async function instagramReviewDiagnostics(){
 
 async function instagramId(){
  if(!IG_TOKEN)return null;
- const r=await graph("GET","me/assigned_instagram_accounts",IG_TOKEN,{fields:"id,username",limit:"100"});
- if(!r.ok||!Array.isArray(r.body?.data))return null;
- const matches=r.body.data.filter(p=>p.username==="nbl_world"&&numberId(p.id));
- return matches.length===1?String(matches[0].id):null;
+ const number=v=>numberId(String(v||""));
+ const matches=name=>typeof name==="string"&&name.toLowerCase()==="nbl_world";
+ // System-user tokens: keep the original assigned-asset route.
+ const assigned=await graph("GET","me/assigned_instagram_accounts",IG_TOKEN,{fields:"id,username",limit:"100"});
+ if(assigned.ok&&Array.isArray(assigned.body?.data)){
+  const list=assigned.body.data.filter(a=>matches(a?.username)&&number(a?.id));
+  if(list.length===1)return {id:String(list[0].id),token:IG_TOKEN,host:GRAPH,via:"assigned"};
+  if(list.length>1)return null;
+ }
+ // Facebook Login for Business: Instagram may be attached to a Page.
+ const pages=await graph("GET","me/accounts",IG_TOKEN,{
+  fields:"id,access_token,instagram_business_account{id,username}",limit:"100"
+ });
+ if(pages.ok&&Array.isArray(pages.body?.data)){
+  const list=pages.body.data.filter(a=>matches(a?.instagram_business_account?.username)&&number(a?.instagram_business_account?.id));
+  if(list.length===1)return {
+   id:String(list[0].instagram_business_account.id),
+   token:typeof list[0].access_token==="string"&&list[0].access_token.length>10?list[0].access_token:IG_TOKEN,
+   host:GRAPH,via:"page"
+  };
+  if(list.length>1)return null;
+ }
+ // Instagram Business Login tokens must be used on graph.instagram.com.
+ for(const fields of ["user_id,username","id,username"]){
+  const r=await graph("GET","me",IG_TOKEN,{fields},"https://graph.instagram.com/"+API+"/");
+  if(r.ok&&matches(r.body?.username)&&number(r.body?.user_id||r.body?.id))
+   return {id:String(r.body.user_id||r.body.id),token:IG_TOKEN,
+    host:"https://graph.instagram.com/"+API+"/",via:"instagram_login"};
+ }
+ return null;
 }
 async function facebookPage(user){
  const r=await DB.from("nbl_connected_accounts")
@@ -151,8 +177,8 @@ function safeMedia(m){
   comments_count:Number(m.comments_count||0),timestamp:String(m.timestamp||"").slice(0,40)};
 }
 async function ownMedia(id,account){
- const r=await graph("GET",account+"/media",IG_TOKEN,
-  {fields:"id,caption,permalink,comments_count,timestamp",limit:"50"});
+ const r=await graph("GET",account.id+"/media",account.token,
+  {fields:"id,caption,permalink,comments_count,timestamp",limit:"50"},account.host);
  if(!r.ok||!Array.isArray(r.body?.data))return {ok:false,items:[]};
  const items=r.body.data.filter(m=>numberId(String(m.id||"")));
  return {ok:true,items,idIsMine:id?items.some(m=>String(m.id)===id):undefined};
@@ -271,8 +297,8 @@ async function actions(req,user,route){
   const owned=await ownMedia(mediaId,ig);
   if(!owned.ok)return json(req,{ok:false,reason:"instagram_media_unavailable"},502);
   if(!owned.idIsMine)return json(req,{ok:false,reason:"not_official_instagram_media"},403);
-  const c=await graph("GET",mediaId+"/comments",IG_TOKEN,
-   {fields:"id,text,username,timestamp",limit:"50"});
+  const c=await graph("GET",mediaId+"/comments",ig.token,
+   {fields:"id,text,username,timestamp",limit:"50"},ig.host);
   if(!c.ok||!Array.isArray(c.body?.data))return json(req,{ok:false,reason:"instagram_comments_permission_unavailable"},502);
   const comments=c.body.data.filter(x=>numberId(String(x.id||""))).map(x=>({
    id:String(x.id),text:String(x.text||"").slice(0,1100),username:String(x.username||"").slice(0,80),
@@ -283,7 +309,7 @@ async function actions(req,user,route){
     !comments.some(c=>c.id===body.comment_id)||
     typeof body.message!=="string"||body.message.trim().length<1||body.message.length>600)
    return json(req,{ok:false,reason:"invalid_comment_or_reply_confirmation"},400);
-  const r=await graph("POST",body.comment_id+"/replies",IG_TOKEN,{message:body.message.trim()});
+  const r=await graph("POST",body.comment_id+"/replies",ig.token,{message:body.message.trim()},ig.host);
   return r.ok&&numberId(String(r.body?.id||""))
    ?json(req,{ok:true,replied:true,reply_id:String(r.body.id)})
    :json(req,{ok:false,reason:"instagram_comment_reply_rejected"},502);
