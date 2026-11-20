@@ -58,9 +58,10 @@ export function mountPublicVideo(custom,media){
   button.addEventListener("click",()=>{
     button.remove();
     if(clip.provider==="facebook"||clip.provider==="facebook-post"){
-      const kind=clip.provider==="facebook-post"?"post.php":"video.php";
+      const embedBase=clip.provider==="facebook-post"?
+        "https://www.facebook.com/plugins/post.php":"https://www.facebook.com/plugins/video.php";
       media.append(frame("Facebook "+(clip.provider==="facebook-post"?"post":"video")+" inside NBL Pulse",
-        "https://www.facebook.com/plugins/"+kind+"?href="+encodeURIComponent(clip.url)+"&show_text=true&width=500"));
+        embedBase+"?href="+encodeURIComponent(clip.url)+"&show_text=true&width=500"));
     }else if(clip.provider==="threads"){
       // Only official public Threads post markup; no member-supplied HTML or scripts.
       const quote=document.createElement("blockquote");
