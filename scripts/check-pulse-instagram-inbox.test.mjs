@@ -49,7 +49,7 @@ test("Pulse Founder inbox is on the Pulse page with a separate NBL Messenger lin
  assert.match(panel,/location\.assign\(url\.href\)/);
  assert.doesNotMatch(panel,/messaging permission is not approved for this connected account\/app/);
  assert.match(ui,/href="\/messenger\/"/);
- assert.match(ui,/social-v1\.mjs\?v=20261120-instagram-direct-inbox/);
+ assert.match(ui,/social-v1\.mjs\?v=20261121-instagram-dm-oauth-connect-v1/);
  assert.match(social,/import \{mountInstagramInbox\} from "\.\.\/pulse\/instagram-inbox\.mjs/);
  assert.match(social,/if\(state\.me\?\.role==="founder"&&location\.pathname\.startsWith\("\/pulse"\)\)/);
  assert.match(social,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
