@@ -6,6 +6,7 @@ import {parsePublicVideo,resolvePublicVideo,mountPublicVideo} from "./social-vid
 import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
+import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261120-ig-direct-v1";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -953,8 +954,10 @@ async function boot(){
     assertCurrentAccount(initialNBLUserId);
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
     selectTab();
-    if(state.me?.role==="founder"&&location.pathname.startsWith("/pulse"))
+    if(state.me?.role==="founder"&&location.pathname.startsWith("/pulse")){
       initMetaCommunity((path,payload)=>secured(META_COMMUNITY_API+path,payload));
+      mountInstagramInbox((path,payload)=>secured(INSTAGRAM_API+path,payload));
+    }
     await loadFeed();
     await loadLinkedPost();
   }catch(error){
