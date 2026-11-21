@@ -6,6 +6,7 @@ const engine=read("messenger/social-v1.mjs");
 const liveCss=read("pulse/pulse-live-design.css"),liveUi=read("pulse/pulse-live-design.mjs");
 const founderCss=read("pulse/pulse-founder-ui.css");
 const mobileCss=read("pulse/pulse-mobile-app.css"), liveClient=read("pulse/live.mjs");
+const businessClient=read("pulse/business-assets.mjs"),businessCss=read("pulse/pulse-meta-business.css");
 assert.doesNotMatch(html+css, /the[\s-]*city|thecity|cityworld|phone.mockup/i, "Pulse must not include forbidden promotional content");
 assert.match(html,/href="\/pulse\/" class="pulse-site-current" aria-current="page"/);
 assert.match(html,/href="\/messenger\/" class="pulse-message-tab"/);
@@ -18,6 +19,16 @@ assert.match(html,/social-v1\.mjs/);
 assert.match(html,/pulse-story-highlights\.mjs\?v=20261121-existing-video/);
 assert.match(html,/pulse-story-highlights\.css\?v=20261121-existing-video/);
 assert.match(html,/id="pulseStoryFeedVideos"/);
+for (const id of ["manageBusinessAssets","metaBusinessPanel","metaBusinessConnect","metaBusinessBusinesses","metaBusinessPages","metaBusinessInstagramAccounts"])
+  assert.ok(html.includes('id="'+id+'"'),"Live Pulse Meta Business hook missing: "+id);
+assert.match(html,/business-assets\.mjs\?v=20261121-live-meta-business-v1/);
+assert.match(html,/pulse-meta-business\.css\?v=20261121-live-meta-business-v1/);
+assert.match(businessClient,/nbl-meta-business/);
+assert.match(businessClient,/initMetaBusiness/);
+assert.match(businessClient,/asset_sync_failed/);
+assert.match(businessCss,/#metaBusinessPanel/);
+for (const secret of ["NBL_PULSE_META_APP_SECRET","SUPABASE_SERVICE_ROLE_KEY","client_secret","STREAM_API_SECRET"])
+  assert.ok(!businessClient.includes(secret),"Secret marker must not ship in browser: "+secret);
 assert.match(html,/https:\/\/openai\.com\/news\//);
 const requiredIds=["socialApp","identity","guest","signIn","socialStatus","postForm","postText","postMedia","mediaSelection","videoLink","videoShareRights","copyPulseInvite","composerAvatar","profileAvatarFile","saveProfileAvatar","friendsPanel","friendForm","feedPanel","feedItems","refreshFeed","sharedPost"];
 for(const id of requiredIds)assert.ok(html.includes('id="'+id+'"'),"Existing runtime hook missing: "+id);
