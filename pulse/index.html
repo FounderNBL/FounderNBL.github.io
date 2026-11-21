@@ -141,6 +141,7 @@
     <span class="pulse-nav-future"><span class="pulse-nav-glyph" aria-hidden="true">◯</span><span>Stories <small>Coming soon</small></span></span>
     <a class="pulse-nav-live" href="#pulseLive"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live <small id="pulseLiveNavStatus">Checking…</small></span></a>
     <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
+    <button id="pulseMemberInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open private NBL member messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Messages</span></button>
     <button id="pulseInstagramInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open Instagram Direct messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Instagram DMs</span></button>
     <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="30" height="30" alt=""><span>Messenger</span></a>
     <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Pulse post"><span aria-hidden="true">＋</span><span>Create</span></a>
@@ -238,6 +239,25 @@
           <div id="pulseMemberItems" aria-live="polite"><p class="social-meta">Finding people…</p></div>
         </section>
         <div id="friendItems" aria-live="polite"></div>
+    </section>
+    <section class="social-list pulse-ig-inbox" id="pulseMemberInbox" aria-labelledby="pulseMemberInboxHeading" hidden>
+      <div class="social-list-head"><h2 id="pulseMemberInboxHeading">Pulse Messages</h2><button id="pulseMemberClose" type="button" class="btn small">Close inbox</button></div>
+      <p class="social-meta">Private messages between New Beansland members, powered by the existing NBL messaging service. No separate app needed.</p>
+      <p class="social-feedback" id="pulseMemberMsgStatus" role="status" aria-live="polite">Open messages to see your conversations.</p>
+      <form id="pulseMemberNewForm"><label for="pulseMemberHandle">NBL username</label>
+        <input id="pulseMemberHandle" maxlength="65" placeholder="@username" autocomplete="off" required>
+        <button class="btn small" type="submit">Message member</button>
+      </form>
+      <div class="pulse-ig-grid">
+        <section aria-label="Your private NBL conversations"><h3>Conversations</h3><button class="btn small" type="button" id="pulseMemberRefresh">Refresh</button><div id="pulseMemberThreads" class="pulse-ig-conversations"></div></section>
+        <section aria-label="NBL private message thread"><h3 id="pulseMemberThreadTitle">Choose a conversation</h3>
+          <div id="pulseMemberMessages" class="pulse-ig-thread" aria-live="polite"></div>
+          <form id="pulseMemberReplyForm" hidden><label for="pulseMemberReplyText">Your private message</label>
+            <textarea id="pulseMemberReplyText" maxlength="8000" rows="3" placeholder="Write an NBL message"></textarea>
+            <button class="btn primary" type="submit">Send message</button>
+          </form>
+        </section>
+      </div>
     </section>
     <section class="social-list pulse-ig-inbox" id="pulseInstagramInbox" aria-labelledby="pulseIgHeading" hidden>
       <div class="social-list-head"><h2 id="pulseIgHeading">Instagram Direct · @nbl_world</h2><button id="pulseIgClose" type="button" class="btn small">Close inbox</button></div>
