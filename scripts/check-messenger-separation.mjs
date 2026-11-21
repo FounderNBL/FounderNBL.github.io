@@ -109,7 +109,7 @@ for(const forbidden of ["data-chat-notification-founder","notification-founder",
  assert.ok(!js.includes(forbidden),"Public Messenger JS exposes internal control code: "+forbidden);
 }
 assert.match(app,/data-chat-notification-settings hidden/);
-assert.match(js,/window.NBLInfinitySound\?\.play\("people"\)/);
+assert.match(js,/window.NBLMessengerSounds\?\.play\("message"\)/);
 assert.match(sw,/self.addEventListener\("push"/);
 assert.match(sw,/self.addEventListener\("notificationclick"/);
 assert.match(sw,/new URL\(target,self.location.origin\)/);
