@@ -126,18 +126,14 @@ test("Pulse links into the same signed-in Messenger without automatically sendin
   await expect(page.locator("a[href='/pulse/']")).toHaveCount(1);
 });
 
-test("Old embedded Messenger links open the full Messenger screen and preserve a DM target",async({page})=>{
-  await page.route("**/functions/v1/nbl-social",route=>{
-    const action=route.request().postDataJSON()?.action;
-    return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(
-      action==="me"?{ok:true,me:{handle:"alice",role:"member"}}:{ok:true,threads:[]}
-    )});
-  });
-  await page.goto("/pulse/?messages=1&dm=friend_123");
-  await page.waitForURL("**/messenger/?dm=friend_123");
-  await expect(page.locator("[data-chat-dm-handle]")).toHaveCount(1);
-  await expect(page.locator("#pulseMessengerFrame")).toHaveCount(0);
-  await expect(page.locator("[data-chat-app]")).toHaveCount(1);
+test("Pulse DM deep links stay on Pulse, while the full Messenger app remains optional",async({page})=>{
+ await page.goto("/pulse/?messages=1&dm=friend_123");
+ await expect(page).toHaveURL(/\/pulse\/\?messages=1&dm=friend_123/);
+ await expect(page.locator("#pulseMemberInbox")).toHaveCount(1);
+ await expect(page.locator("#pulseMemberInboxNav")).toHaveCount(1);
+ await expect(page.locator("#pulseMemberReplyForm")).toHaveCount(1);
+ await expect(page.locator("#pulseInstagramInbox")).toHaveCount(1);
+ await expect(page.locator("iframe#pulseMessengerFrame")).toHaveCount(0);
 });
 
 test("Pulse has a separate Messenger link without an embedded call or chat frame",async({page})=>{
