@@ -1,0 +1,34 @@
+/* Last-loaded Stories activation: existing navigation and Stream videos, no new service. */
+.pulse-body .pulse-stories{display:block!important;scroll-margin-top:96px}
+.pulse-body .pulse-story-feed-videos{display:contents}
+.pulse-body .pulse-story-feed-videos[hidden]{display:none}
+.pulse-body button.pulse-story-video-highlight{
+  appearance:none;background:transparent;border:0;padding:0;margin:0;
+  font:inherit;cursor:pointer;color:inherit
+}
+.pulse-body .pulse-story-video-circle{position:relative;isolation:isolate}
+.pulse-body .pulse-story-video-circle img{
+  width:100%;height:100%;max-height:none;max-width:none;object-fit:cover;filter:brightness(.68)
+}
+.pulse-body .pulse-story-video-play{
+  position:absolute;inset:0;display:grid;place-items:center;
+  font-size:1.4rem;color:#fff;text-shadow:0 2px 9px #000
+}
+.pulse-body .pulse-story-video-title{display:block;overflow:hidden;text-overflow:ellipsis;max-width:80px}
+.pulse-body .pulse-story-video-highlight .pulse-highlight-circle,
+.pulse-body .pulse-story-source .pulse-highlight-circle{
+  animation:pulse-story-glow 3.5s ease-in-out infinite
+}
+@keyframes pulse-story-glow{
+  0%,100%{box-shadow:0 0 0 3px #0d0815,0 0 8px #b526f557}
+  50%{box-shadow:0 0 0 3px #0d0815,0 0 19px #bc38f7bd}
+}
+@media(max-width:760px){
+  .pulse-body .pulse-stories{display:block!important;border-radius:0;margin:0 0 10px;padding:10px 9px 6px}
+  .pulse-body .pulse-highlights{gap:13px}
+  .pulse-body .pulse-highlight{flex-basis:69px}
+}
+@media(prefers-reduced-motion:reduce){
+  .pulse-body .pulse-story-video-highlight .pulse-highlight-circle,
+  .pulse-body .pulse-story-source .pulse-highlight-circle{animation:none}
+}
