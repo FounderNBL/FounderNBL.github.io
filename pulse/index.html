@@ -21,11 +21,26 @@
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261119-meta-community-v1">
 <link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261119-independent-columns-v1">
-<script type="module" src="/messenger/social-v1.mjs?v=20261120-instagram-direct-inbox-post-controls-first-party-share"></script>
+<script type="module" src="/messenger/social-v1.mjs?v=20261120-instagram-direct-inbox-post-controls-first-party-share-unified-20261121"></script>
 <script type="module" src="/pulse/pulse-google-insights.mjs?v=20261118-consent-v1"></script>
 <style>
 .pulse-post-menu{margin-left:auto;position:relative;flex-shrink:0;color:var(--cream)}.pulse-post-menu summary{list-style:none;cursor:pointer;min-width:44px;min-height:44px;display:grid;place-items:center;font-size:1.6rem;line-height:1;border:1px solid var(--line);border-radius:10px;background:#211536;color:#f5ebff}.pulse-post-menu summary::-webkit-details-marker{display:none}.pulse-post-menu-options{position:absolute;right:0;top:100%;min-width:150px;max-width:260px;z-index:8;display:grid;gap:5px;padding:8px;background:#221634;border:1px solid #744e98;border-radius:10px;box-shadow:0 8px 24px #0008}.pulse-post-menu-options button{text-align:left;padding:10px;cursor:pointer;border:0;border-radius:7px;background:#3b2857;color:#f6ecff;font:inherit;white-space:nowrap}.pulse-post-menu-options .pulse-post-delete{color:#ffb6c2}.pulse-post-menu-options button:disabled{opacity:.5}.pulse-post-menu-options .social-feedback:empty{display:none}.pulse-post-menu-options .social-feedback{overflow-wrap:anywhere}
 .pulse-ig-inbox{scroll-margin-top:100px}.pulse-ig-grid{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2fr);gap:18px}.pulse-ig-conversations{display:grid;gap:8px;margin-top:12px}.pulse-ig-conversation{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;white-space:normal}.pulse-ig-thread{display:grid;gap:10px;max-height:380px;overflow:auto;padding:10px;border-radius:12px;background:#160f28}.pulse-ig-message{padding:9px 13px;border-radius:12px;border:1px solid #41345a;background:#281d3b;overflow-wrap:anywhere}.pulse-ig-outgoing{margin-left:12%;background:#302247}.pulse-ig-message strong{display:block}.pulse-ig-message small{display:block;margin:3px 0}.pulse-ig-message p{margin:6px 0}.pulse-ig-inbox textarea{display:block;width:100%;margin:8px 0}.pulse-ig-inbox .social-list-head{flex-wrap:wrap}@media(max-width:730px){.pulse-ig-grid{grid-template-columns:1fr}.pulse-ig-thread{max-height:300px}}
+.pulse-legacy-message-tab{display:none!important}
+.pulse-unified-inbox{scroll-margin-top:95px}
+.pulse-unified-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pulse-unified-top h2{margin:0 0 5px}
+.pulse-unified-tabs{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:14px 0}
+.pulse-unified-tabs button{font:inherit;font-weight:800;cursor:pointer;color:#f3e5ff;background:#251737;border:1px solid #67417c;border-radius:10px;padding:11px 14px;min-height:44px}
+.pulse-unified-tabs button[aria-selected=true]{background:#7542bc;border-color:#bd85f2;color:white}
+.pulse-unified-list{display:grid;gap:8px;margin-top:12px}
+.pulse-unified-thread{width:100%;background:#1e142f;border:1px solid #65447f;border-radius:12px;padding:13px;text-align:left;color:#f8ecff;cursor:pointer}
+.pulse-unified-thread:hover,.pulse-unified-thread:focus-visible{outline:2px solid #b683eb;outline-offset:1px}
+.pulse-unified-thread-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.pulse-unified-provider{color:#d9b4ff}
+.pulse-unified-note{padding:14px;border:1px solid #59436c;border-radius:10px;background:#1d152b;color:#e8d8f8;line-height:1.5}
+.pulse-unified-thread small{display:block;margin-top:4px}
+.pulse-unified-inbox .pulse-ig-inbox{margin-top:12px}
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
 .pulse-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(16px,calc((100vw - 1400px)/2));background:#0d0919;border-bottom:1px solid #51326d;position:sticky;top:0;z-index:20}.pulse-topbar>a{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.4rem;color:#fff;text-decoration:none}.pulse-topbar strong{color:#e6b5ff}.pulse-topbar nav{display:flex;gap:15px;flex-wrap:wrap}.pulse-topbar nav a{color:#e4d5f3;text-decoration:none;font-size:.82rem;font-weight:700}
 .pulse-shell{max-width:1380px}.pulse-shell .preview-bar{border-color:#78409b;background:#1d1131;color:#e7c9ff}.pulse-shell .social-intro h1{font:bold clamp(2.6rem,5vw,4.4rem) Arial,sans-serif;letter-spacing:-.04em;color:#f7e5ff}.pulse-shell .eyebrow{color:#d18fff;font-weight:900}
@@ -142,8 +157,9 @@
     <span class="pulse-nav-future"><span class="pulse-nav-glyph" aria-hidden="true">◯</span><span>Stories <small>Coming soon</small></span></span>
     <a class="pulse-nav-live" href="#pulseLive"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live <small id="pulseLiveNavStatus">Checking…</small></span></a>
     <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
-    <button id="pulseMemberInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open private NBL member messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Messages</span></button>
-    <button id="pulseInstagramInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open Instagram Direct messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Instagram DMs</span></button>
+    <button id="pulseUnifiedInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open all private messages in one Pulse inbox"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Messages</span></button>
+    <button id="pulseMemberInboxNav" type="button" class="pulse-message-tab pulse-legacy-message-tab" hidden aria-label="Open private NBL member messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Messages</span></button>
+    <button id="pulseInstagramInboxNav" type="button" class="pulse-message-tab pulse-legacy-message-tab" hidden aria-label="Open Instagram Direct messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Instagram DMs</span></button>
     <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="30" height="30" alt=""><span>Messenger</span></a>
     <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Pulse post"><span aria-hidden="true">＋</span><span>Create</span></a>
   </nav>
@@ -240,6 +256,27 @@
           <div id="pulseMemberItems" aria-live="polite"><p class="social-meta">Finding people…</p></div>
         </section>
         <div id="friendItems" aria-live="polite"></div>
+    </section>
+    <section class="social-list pulse-unified-inbox" id="pulseUnifiedInbox" aria-labelledby="pulseUnifiedInboxHeading" hidden>
+      <div class="pulse-unified-top">
+        <div><h2 id="pulseUnifiedInboxHeading">Messages</h2><p class="social-meta">Your conversations in one place. Pulse and authorized Instagram messages appear together; other networks connect when their messaging APIs are approved.</p></div>
+        <button id="pulseInboxClose" class="btn small" type="button">Close messages</button>
+      </div>
+      <div class="pulse-unified-tabs" role="tablist" aria-label="Message networks">
+        <button role="tab" type="button" data-pulse-inbox="all" aria-selected="true">All</button>
+        <button role="tab" type="button" data-pulse-inbox="pulse" aria-selected="false">Pulse</button>
+        <button role="tab" type="button" data-pulse-inbox="instagram" aria-selected="false">Instagram</button>
+        <button role="tab" type="button" data-pulse-inbox="facebook" aria-selected="false">Facebook</button>
+        <button role="tab" type="button" data-pulse-inbox="tiktok" aria-selected="false">TikTok</button>
+      </div>
+      <p id="pulseInboxStatus" class="social-feedback" role="status" aria-live="polite">Open Messages to check your conversations.</p>
+      <div id="pulseInboxAll">
+        <button type="button" id="pulseInboxRefresh" class="btn small">Refresh all messages</button>
+        <div id="pulseInboxList" class="pulse-unified-list" aria-label="Conversations from connected networks"></div>
+        <p class="social-meta">To start a new NBL conversation, choose Pulse above. Messages remain private with their original services.</p>
+      </div>
+      <p id="pulseInboxProviderNote" class="pulse-unified-note" hidden></p>
+      <div id="pulseInboxThreadHost"></div>
     </section>
     <section class="social-list pulse-ig-inbox" id="pulseMemberInbox" aria-labelledby="pulseMemberInboxHeading" hidden>
       <div class="social-list-head"><h2 id="pulseMemberInboxHeading">Pulse Messages</h2><button id="pulseMemberClose" type="button" class="btn small">Close inbox</button></div>

@@ -1,6 +1,7 @@
 import "./check-pulse-share-worker.test.mjs";
 import "./check-pulse-instagram-inbox.test.mjs";
 import "./check-pulse-member-inbox.test.mjs";
+import "./check-pulse-unified-inbox.test.mjs";
 import "./check-pulse-post-controls.test.mjs";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";

@@ -25,6 +25,10 @@ function errorText(error){
  };
  return messages[name]||"Instagram: "+name.replace(/_/g," ")||"Instagram inbox unavailable.";
 }
+let openInstagramThread=null;
+export function showPulseInstagramThread(id){
+ if(openInstagramThread&&/^\d{6,50}$/.test(String(id)))void openInstagramThread(String(id));
+}
 export function mountInstagramInbox(invoke){
  const panel=document.querySelector("#pulseInstagramInbox");
  const nav=document.querySelector("#pulseInstagramInboxNav");
@@ -49,6 +53,12 @@ export function mountInstagramInbox(invoke){
   panel.scrollIntoView({behavior:"smooth",block:"start"});
   void loadList(false);
  }
+ openInstagramThread=async id=>{
+  panel.hidden=false;
+  panel.scrollIntoView({behavior:"smooth",block:"start"});
+  await loadList(false);
+  await openThread(id);
+ };
  nav.addEventListener("click",show);
  close.addEventListener("click",()=>{panel.hidden=true;nav.focus();});
  refresh.addEventListener("click",()=>{void loadList(false);});
