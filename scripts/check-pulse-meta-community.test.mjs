@@ -114,3 +114,11 @@ test("Go Live selects the screen on its own click, without extra button or prema
   assert.match(client,/facebookSelectionTouched/);
   assert.doesNotMatch(client,/#pulseLiveShareScreen/);
 });
+
+test("Pulse distinguishes Meta Live publishing access denial from an expired Page token",()=>{
+  const client=read("pulse/live.mjs");
+  assert.match(client,/facebook_live_permission_denied/);
+  assert.match(client,/facebook_live_restricted/);
+  assert.match(client,/You are NOT live/);
+  assert.doesNotMatch(client,/Supabase needs a valid Page access token/);
+});
