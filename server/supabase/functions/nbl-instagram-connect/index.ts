@@ -34,7 +34,7 @@ function response(req:Request,body:unknown,status=200){
 }
 function finish(status:string){
  // Return no Meta code, token, query string, or state to any public page.
- return Response.redirect("https://newbeansland.org/pulse/?messages=1&instagram_connect="+encodeURIComponent(status),303);
+ return Response.redirect("https://newbeansland.org/pulse/?instagram_dm=1&instagram_connect="+encodeURIComponent(status),303);
 }
 function b64(bytes:Uint8Array){
  let s="";for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));
