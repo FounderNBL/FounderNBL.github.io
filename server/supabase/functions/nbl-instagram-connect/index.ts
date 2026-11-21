@@ -19,6 +19,10 @@ const INSTAGRAM_TOKEN=(Deno.env.get("NBL_PULSE_INSTAGRAM_ACCESS_TOKEN")||"").tri
 const WEBHOOK_VERIFY_TOKEN=(Deno.env.get("NBL_PULSE_IG_WEBHOOK_VERIFY_TOKEN")||"").trim();
 const VERSION="v27.0"; // Current Pulse source already uses this Graph API generation.
 const CALLBACK=PROJECT+"/functions/v1/nbl-instagram-connect/callback";
+// Existing Facebook Login for Business / Unified Login uses config_id, not
+// a hand-built Instagram Login scope URL. Meta Dashboard's configuration
+// must grant this exact permission for Graph API Instagram DMs.
+const REQUIRED_DM_PERMISSION="instagram_manage_messages";
 const ORIGINS=new Set(["https://newbeansland.org","https://www.newbeansland.org"]);
 const enc=new TextEncoder();
 const db=createClient(PROJECT,SERVICE,{auth:{persistSession:false,autoRefreshToken:false}});
@@ -60,10 +64,12 @@ async function encryptToken(raw:string){
 type InboxToken={token:string|null,reason?:string,source?:"oauth"|"legacy"};
 async function founderInboxToken(userId:string):Promise<InboxToken>{
  const {data,error}=await db.from("nbl_connected_accounts")
-  .select("token_ciphertext,token_nonce,token_expires_at")
+  .select("token_ciphertext,token_nonce,token_expires_at,permissions")
   .eq("clerk_user_id",userId).eq("provider","instagram").maybeSingle();
  if(error)return {token:null,reason:"instagram_dm_connection_unavailable"};
  if(data?.token_ciphertext&&data?.token_nonce){
+  if(data.permissions?.messaging==="missing")
+   return {token:null,reason:"instagram_dm_permission_missing"};
   if(data.token_expires_at&&Date.parse(data.token_expires_at)<Date.now()+60000)
    return {token:null,reason:"instagram_dm_oauth_expired"};
   try{
@@ -100,7 +106,9 @@ async function begin(req:Request){
  if(!id)return response(req,{ok:false,reason:"founder_access_required"},403);
  if(!configured())return response(req,{ok:false,reason:"instagram_meta_secrets_not_configured"},503);
  const state=randomState(),hashed=await stateHash(state);
- const expires=new Date(Date.now()+10*60*1000).toISOString();
+ // Business-asset selection can take longer than a normal login. Keep
+ // state single-use and random, but give the Founder an hour to finish.
+ const expires=new Date(Date.now()+60*60*1000).toISOString();
  const row=await db.from("nbl_connect_oauth_states").insert({
   state_hash:hashed,provider:"instagram",clerk_user_id:id,expires_at:expires
  });
@@ -108,9 +116,28 @@ async function begin(req:Request){
  const url=new URL("https://www.facebook.com/"+VERSION+"/dialog/oauth");
  for(const [key,value] of Object.entries({
    client_id:APP_ID,redirect_uri:CALLBACK,config_id:CONFIG_ID,
-   response_type:"code",override_default_response_type:"true",state
+   response_type:"code",override_default_response_type:"true",auth_type:"rerequest",state
  }))url.searchParams.set(key,value);
  return response(req,{ok:true,authorization_url:url.toString(),redirect_uri:CALLBACK});
+}
+type MessagingGrantStatus="granted"|"missing"|"unverified";
+async function inspectMessagingGrant(token:string):Promise<{status:MessagingGrantStatus,granted:string[]}>{
+ // Facebook Login for Business configuration determines the permissions.
+ // Read the issued user/system-user token permissions; never expose it in
+ // URLs, telemetry, browser responses, or application logs.
+ const url=new URL("https://graph.facebook.com/"+VERSION+"/me/permissions");
+ url.searchParams.set("limit","100");
+ try{
+  const res=await fetch(url.toString(),{method:"GET",
+   headers:{"authorization":"Bearer "+token,"accept":"application/json"},
+   redirect:"error",signal:AbortSignal.timeout(9000)});
+  if(!res.ok)return {status:"unverified",granted:[]};
+  const body=await res.json();
+  if(!Array.isArray(body?.data)||body?.paging?.next)return {status:"unverified",granted:[]};
+  const granted=body.data.filter((v:any)=>typeof v?.permission==="string"&&v.status==="granted")
+   .map((v:any)=>String(v.permission).slice(0,100)).slice(0,100);
+  return {status:granted.includes(REQUIRED_DM_PERMISSION)?"granted":"missing",granted};
+ }catch{return {status:"unverified",granted:[]};}
 }
 async function callback(req:Request){
  if(!configured())return finish("instagram_not_configured");
@@ -137,6 +164,7 @@ async function callback(req:Request){
   const grant=await grantResponse.json();
   if(typeof grant?.access_token!=="string"||grant.access_token.length<10)return finish("instagram_exchange_failed");
   const encrypted=await encryptToken(grant.access_token);
+  const dmGrant=await inspectMessagingGrant(grant.access_token);
   // Meta's Unified Login returns a business/system-user grant. It is NOT an
   // NBL member login, and this is not yet proof that an IG asset can publish.
   const expires=Number(grant.expires_in);
@@ -147,11 +175,15 @@ async function callback(req:Request){
    external_account_id:"meta_business_authorization",
    external_label:"Instagram — NBL Pulse business authorization",
    ...encrypted,token_expires_at:exp,refresh_ciphertext:null,refresh_nonce:null,refresh_expires_at:null,
-   permissions:{flow:"meta_unified_login",asset_access:"unverified",publishing:"not_verified"},
+   permissions:{flow:"meta_unified_login",asset_access:"unverified",publishing:"not_verified",
+    messaging:dmGrant.status,required_messaging_permission:REQUIRED_DM_PERMISSION,
+    granted_scopes:dmGrant.granted},
    connected_at:now,updated_at:now
   },{onConflict:"clerk_user_id,provider"});
   if(saved.error)return finish("instagram_save_failed");
-  return finish("instagram_authorization_received");
+  // Do not claim that an inbox works merely because a token was returned.
+  // Meta dashboard must grant instagram_manage_messages in the config_id.
+  return finish(dmGrant.status==="missing"?"instagram_dm_permission_missing":"instagram_authorization_received");
  }catch{return finish("instagram_exchange_failed");}
 }
 

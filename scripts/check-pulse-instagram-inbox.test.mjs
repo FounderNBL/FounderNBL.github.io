@@ -66,3 +66,32 @@ test("Only explicit sends can message; no demo fakes, leaked tokens or HTML inje
  assert.match(panel,/document\.visibilityState==="visible"/);
  assert.match(panel,/window\.setInterval/);
 });
+
+test("OAuth state is one-time, tied to Founder and lasts through Meta business selection",()=>{
+ assert.match(api,/Date\.now\(\)\+60\*60\*1000/,"Allow one hour for existing asset selection");
+ assert.match(api,/state_hash:hashed,provider:"instagram",clerk_user_id:id/);
+ assert.match(api,/\.eq\("state_hash",hashed\)\.eq\("provider","instagram"\)\.is\("consumed_at",null\)/);
+ assert.match(api,/\.gt\("expires_at",now\)/);
+ assert.match(api,/auth_type:"rerequest"/,"Re-request permissions when the config has been corrected");
+ assert.match(api,/config_id:CONFIG_ID/,"Use the existing Business Login config rather than a second Instagram app");
+ assert.doesNotMatch(api,/url\.searchParams\.set\("scope"/,"Business Login config_id is the permission authority");
+});
+test("Meta Business Login Instagram messaging grant is checked and recorded without leaking secrets",()=>{
+ assert.match(api,/REQUIRED_DM_PERMISSION="instagram_manage_messages"/);
+ assert.match(api,/async function inspectMessagingGrant\(token:string\)/);
+ assert.match(api,/graph\.facebook\.com\/"\+VERSION\+"\/me\/permissions/);
+ assert.match(api,/authorization":"Bearer "\+token/);
+ assert.match(api,/messaging:dmGrant\.status,required_messaging_permission:REQUIRED_DM_PERMISSION/);
+ assert.match(api,/granted_scopes:dmGrant\.granted/);
+ assert.match(api,/dmGrant\.status==="missing"\?"instagram_dm_permission_missing":"instagram_authorization_received"/);
+ assert.match(api,/data\.permissions\?\.messaging==="missing"/);
+ assert.match(api,/reason:"instagram_dm_permission_missing"/);
+ assert.doesNotMatch(api,/console\.(log|warn|error)\(/,"OAuth state, user tokens and message contents stay out of logs");
+});
+test("Pulse inbox explains Meta permission remediation without claiming a real DM exchange",()=>{
+ assert.match(panel,/instagram_dm_permission_missing:/);
+ assert.match(panel,/instagram_manage_messages is missing from the existing Facebook Login for Business configuration/);
+ assert.match(panel,/Press Refresh inbox to verify messaging access/);
+ assert.match(panel,/connected==="instagram_dm_permission_missing"/);
+ assert.doesNotMatch(panel,/instagram_business_manage_messages/,"Do not mix Instagram Login and Facebook Login scopes");
+});
