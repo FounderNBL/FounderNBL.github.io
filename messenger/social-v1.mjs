@@ -7,6 +7,7 @@ import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
 import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261120-ig-direct-v1";
+import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261120-native-pulse-dms";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -88,13 +89,7 @@ function trustedMediaLink(raw){
   }catch{return null;}
 }
 const pulseInitialQuery=new URL(location.href).searchParams;
-// Existing bookmarks to the former embedded inbox now open Messenger as its own page.
-if(location.pathname.startsWith("/pulse")&&pulseInitialQuery.get("messages")==="1"){
-  const destination=new URL("/messenger/",location.origin);
-  const dm=pulseInitialQuery.get("dm")||"";
-  if(/^@?[A-Za-z0-9_-]{2,64}$/.test(dm))destination.searchParams.set("dm",dm);
-  location.replace(destination.pathname+destination.search);
-}
+// Pulse deep links now open the native inbox instead of forcing Messenger.
 const state={clerk:null,client:null,user:null,me:null,selected:"foryou",feed:null,unsubscribe:null,busy:false,timeline:null};
 let initialNBLUserId=null,accountChanged=false;
 function assertCurrentAccount(userId){
@@ -545,9 +540,12 @@ function renderActivity(activity){
         const handle=String(result.profile?.handle||"");
         if(!/^[A-Za-z0-9_-]{2,64}$/.test(handle))
           throw new Error("This creator cannot receive messages.");
-        const url=new URL("/messenger/",location.origin);
-        url.searchParams.set("dm",handle);
-        location.assign(url.pathname+url.search);
+        if(location.pathname.startsWith("/pulse"))showPulseMemberInbox(handle);
+        else {
+          const url=new URL("/messenger/",location.origin);
+          url.searchParams.set("dm",handle);
+          location.assign(url.pathname+url.search);
+        }
       }catch(error){feedback.textContent="Messenger could not open: "+safeError(error);}
       finally{message.disabled=false;}
     });
@@ -640,8 +638,12 @@ function memberListItem(item){
     account.href="/account.html";
     controls.append(account);
   }else{
-    const message=element("a","btn small","Message");
-    message.href="/messenger/?dm="+encodeURIComponent(item.handle);
+    const message=element("button","btn small","Message");
+    message.type="button";
+    message.addEventListener("click",()=>{
+      if(location.pathname.startsWith("/pulse"))showPulseMemberInbox(item.handle);
+      else location.assign("/messenger/?dm="+encodeURIComponent(item.handle));
+    });
     const add=element("button","btn small","Add friend");
     add.type="button";
     add.addEventListener("click",async()=>{
@@ -929,7 +931,11 @@ async function boot(){
   });
   $("#postText").addEventListener("input",e=>{$("#postCount").textContent=e.target.value.length+" / 1500";});
   document.querySelectorAll("[data-feed]").forEach(button=>button.addEventListener("click",()=>{
-    if(button.dataset.feed==="messages"){location.assign("/messenger/");return;}
+    if(button.dataset.feed==="messages"){
+      if(location.pathname.startsWith("/pulse"))showPulseMemberInbox();
+      else location.assign("/messenger/");
+      return;
+    }
     if(!state.client||state.selected===button.dataset.feed)return;
     state.selected=button.dataset.feed;
     if(location.pathname.startsWith("/pulse")){
@@ -954,12 +960,19 @@ async function boot(){
     assertCurrentAccount(initialNBLUserId);
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
     selectTab();
+    if(location.pathname.startsWith("/pulse"))mountMemberInbox(payload=>secured(SOCIAL_API,payload));
     if(state.me?.role==="founder"&&location.pathname.startsWith("/pulse")){
       initMetaCommunity((path,payload)=>secured(META_COMMUNITY_API+path,payload));
       mountInstagramInbox((path,payload)=>secured(INSTAGRAM_API+path,payload));
     }
     await loadFeed();
     await loadLinkedPost();
+    if(location.pathname.startsWith("/pulse")){
+      const parameters=new URL(location.href).searchParams;
+      const target=parameters.get("dm")||"";
+      if(parameters.get("messages")==="1"||/^@?[A-Za-z0-9_-]{2,64}$/.test(target))
+        showPulseMemberInbox(/^@?[A-Za-z0-9_-]{2,64}$/.test(target)?target:"");
+    }
   }catch(error){
     status("Social integration not available: "+safeError(error));
   }
