@@ -16,7 +16,7 @@ function syntheticBackend(){
   const body=req.postDataJSON()||{},action=body.action;
   s.actions.push({user,action,body});
   if(action==="status"){
-   const payload={ok:true,status:s.phase,isAdmin:user==="host",isHost:s.phase==="idle"?true:user===s.host,enabled:s.enabled,allowance:{remainingSeconds:1200,rollover:false},facebook:{canStart:user==="host",configured:user==="host",enabled:s.facebook_enabled,status:s.phase==="live"&&s.facebook_enabled?"live":"disabled"}};
+   const payload={ok:true,status:s.phase,isAdmin:user==="host",isHost:s.phase==="idle"?true:user===s.host,enabled:s.enabled,allowance:{remainingSeconds:1200,rollover:false},facebook:{canStart:false,configured:false,enabled:false,status:"disabled"}};
    if(s.phase!=="idle")Object.assign(payload,{callId:s.callId,title:s.title,hlsPlaylistUrl:null,startedAt:s.phase==="live"?new Date().toISOString():null});
    return route.fulfill(response(payload));
   }
@@ -85,7 +85,7 @@ test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({
  await host.locator("#pulseLiveGoLive").click();
  expect(await host.evaluate(()=>window.__pulseScreenRequests)).toBe(1);
  expect(await host.evaluate(()=>Boolean(window.__pulseCameraEnabled||window.__pulseMicrophoneEnabled))).toBe(false);
- expect(api.s.actions.find(x=>x.action==="start")?.body?.facebook_enabled).toBe(true);
+ expect(api.s.actions.find(x=>x.action==="start")?.body?.facebook_enabled).toBe(false);
  expect(api.s.actions.filter(x=>x.action==="go-live")).toHaveLength(1);
  await expect(host.locator("#pulseLiveStatus")).toContainText("You are LIVE");
  await open(viewer);
@@ -137,18 +137,16 @@ test("cancel screen picker does not go LIVE, and retry uses the same Go Live but
  expect(await page.evaluate(()=>window.__pulseScreenRequests)).toBe(2);
 });
 
-test("Founder can explicitly uncheck Facebook before Start; option survives status polls",async({page})=>{
+test("Pulse Live starts independently with no Facebook Live control or relay request",async({page})=>{
  const api=syntheticBackend();
  await setup(page,"host",api);await open(page);
- await expect(page.locator("#pulseLiveFacebook")).toBeChecked();
- await page.locator("#pulseLiveFacebook").uncheck();
- await page.waitForTimeout(50);
- await expect(page.locator("#pulseLiveFacebook")).not.toBeChecked();
+ await expect(page.locator("#pulseLiveFacebook")).toHaveCount(0);
+ await expect(page.locator("#pulseLiveStart")).toBeVisible();
  await page.locator("#pulseLiveStart").click();
  await expect(page.locator("#pulseLiveStatus")).toContainText("Backstage");
  expect(api.s.actions.find(x=>x.action==="start")?.body?.facebook_enabled).toBe(false);
+ expect(api.s.facebook_enabled).toBe(false);
 });
-
 test("mobile normal Live camera path is unchanged and needs no screen picker",async({page})=>{
  await page.setViewportSize({width:390,height:740});
  const api=syntheticBackend();

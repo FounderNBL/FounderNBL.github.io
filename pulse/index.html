@@ -70,7 +70,7 @@
 <link rel="stylesheet" href="/pulse/pulse-founder-ui.css?v=20261118-live-visibility">
 <link rel="stylesheet" href="/pulse/pulse-mobile-app.css?v=20261118-phone-app-v1" media="(max-width: 760px)">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
-<script type="module" src="/pulse/live.mjs?v=20261120-meta-live-diagnostics"></script></head><body class="pulse-body">
+<script type="module" src="/pulse/live.mjs?v=20261120-standalone-live"></script></head><body class="pulse-body">
 <header class="pulse-topbar" aria-label="NBL Pulse site navigation">
   <a class="pulse-company-logo" href="/" aria-label="New Beansland home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" width="40" height="40"><span class="pulse-company-wordmark">NBL<small>New Beansland™</small></span></a>
   <nav class="pulse-site-nav" aria-label="NBL destinations">
@@ -154,9 +154,7 @@
     <p class="pulse-live-meta">NBL members · 20 free Live minutes each UTC calendar month, no rollover · maximum 5 minutes per broadcast · up to 25 viewers. Two starts per resident per 24 hours. The shared pilot reserve permits up to 120 total starts monthly, subject to budget availability. Founder operations have separate allowances.</p>
     <label for="pulseLiveTitleInput">Broadcast title</label>
     <input id="pulseLiveTitleInput" type="text" maxlength="140" value="NBL Pulse Live" autocomplete="off">
-    <label class="pulse-live-check" id="pulseLiveFacebookOption" hidden><input id="pulseLiveFacebook" type="checkbox" disabled aria-describedby="pulseLiveFacebookNote"> Also broadcast to the New Beansland Facebook Page</label>
      <label class="pulse-live-check" hidden><input id="pulseLiveRecord" type="checkbox" disabled> Save recording (later)</label>
-    <p class="pulse-live-meta" id="pulseLiveFacebookNote" hidden>Go Live will also start a public broadcast on Facebook.</p>
     <label class="pulse-live-check" for="pulseLiveScreenOnly"><input id="pulseLiveScreenOnly" type="checkbox" checked> Screen only (desktop) — camera and microphone OFF</label>
     <p class="pulse-live-meta">After Start Live, press Go Live. Edge will ask which window or tab to show. Do not share passwords, chats or private windows.</p>
     <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>

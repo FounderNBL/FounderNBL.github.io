@@ -37,9 +37,8 @@ const state = {
   callId: null, userId: null, mode: "idle", // idle | backstage | live | viewing
   hls: null, tracks: new Map(), previewBound: null,
   liveSince: null, timerId: null, pollId: null, busy: false,
-  facebookConfigured: false, recordingRequested: false, liveEnabled: false,
+  recordingRequested: false, liveEnabled: false,
   isAdmin: false, screenOnly: false, screenReady: false,
-  facebookSelectionTouched: false,
 };
 
 function setStatus(text) { const el = $("#pulseLiveStatus"); if (el) el.textContent = text; }
@@ -58,16 +57,6 @@ function setBusy(on) {
 
 const REASON_TEXT = {
   host_not_eligible: "You need an active NBL Pulse member profile to start a live broadcast.",
-  facebook_failed: "Facebook Live could not be started. Your Pulse broadcast is still in backstage — try again or go live on Pulse only.",
-  facebook_requires_admin: "Only the Founder account can broadcast to the New Beansland Facebook Page.",
-  facebook_not_configured: "Facebook Live is not configured for Pulse yet. You can still go live on Pulse only.",
-  facebook_auth_required: "Facebook rejected this Page's authorization. Reconnect New Beansland only if Facebook access has expired.",
-  facebook_live_permission_denied: "Meta denied permission to publish Live Video for this Page or app. Your Facebook connection may be valid; Meta approval is required. You are NOT live.",
-  facebook_live_restricted: "Meta blocked Live on this Facebook Page. Check Facebook Live eligibility (account age and Page followers). You are NOT live.",
-  facebook_unavailable: "Pulse could not verify the New Beansland Page with Facebook. Try Start Live again.",
-  facebook_ingest_unavailable: "Facebook did not return a usable secure streaming destination. The session ended. Start a new session to retry.",
-  facebook_rtmp_failed: "Stream could not send video to Facebook. The session ended. Start a new session to retry.",
-  facebook_cleanup_pending: "Pulse could not confirm that Facebook stopped. Press End Live to retry shutdown.",
   live_already_active: "A Pulse Live broadcast is already running.",
   live_disabled: "Pulse Live is OFF until the NBL launch switch is approved.",
   admin_only: "The NBL Founder account is required to operate this switch.",
@@ -329,19 +318,7 @@ async function refreshStatus(silent = false) {
   if (data.isHost === true) { show("#pulseLiveSetup", data.enabled === true && state.mode === "idle"); show("#pulseLiveHost", state.mode !== "idle"); }
   else if (data.isHost === false) { show("#pulseLiveSetup", false); show("#pulseLiveHost", false); }
   else if (state.mode === "idle") { show("#pulseLiveSetup", data.enabled === true); show("#pulseLiveHost", false); }
-  state.facebookConfigured = data.isAdmin === true && data.facebook?.canStart === true;
-  const facebookCheckbox = $("#pulseLiveFacebook");
-  if (facebookCheckbox) {
-    facebookCheckbox.disabled = !state.facebookConfigured;
-    if (!state.facebookConfigured) facebookCheckbox.checked = false;
-    else if (!state.facebookSelectionTouched) facebookCheckbox.checked = true;
-  }
-  show("#pulseLiveFacebookOption", state.facebookConfigured);
-  const facebookNote = $("#pulseLiveFacebookNote");
-  if (facebookNote) facebookNote.textContent = state.facebookConfigured
-    ? "Go Live will also start a public broadcast on Facebook."
-    : "Facebook Live is unavailable. Check the Facebook switch and Page secrets in Supabase.";
-  show("#pulseLiveFacebookNote", data.isAdmin === true && data.status === "idle");
+  // Facebook Live simulcast is disabled; ordinary Facebook/Instagram posting stays separate.
   const status = data.status;
   if (status === "ended" || status === "failed") {
     if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
@@ -375,22 +352,12 @@ async function refreshStatus(silent = false) {
     return;
   }
   if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
-    if (data.facebook?.status === "live") {
-      const badge = $("#pulseLiveBadge"); if (badge) badge.textContent = "LIVE · Facebook";
-      if (state.mode === "live") setStatus("You are LIVE on Pulse and Facebook");
-    } else if (state.mode === "live" && data.facebook?.status === "connecting" &&
-      Date.now() - Date.parse(data.startedAt) >= 60_000) {
-      setStatus("Live on Pulse. Facebook video is still unconfirmed. Check the New Beansland Page.");
-    }
     return;
   } // already watching/hosting
   if (data.startedAt) state.liveSince = new Date(data.startedAt).getTime();
   show("#pulseLiveBadge", status === "live");
   if (status !== "live") show("#pulseLiveElapsed", false);
   setStatus(status === "live" ? "LIVE — " + (data.title || DEFAULT_TITLE) : "Backstage — only you can see this");
-  if (data.facebook?.status === "live") {
-    const b = $("#pulseLiveBadge"); if (b) b.textContent = "LIVE · Facebook";
-  }
   if (data.hlsPlaylistUrl) {
     state.mode = "viewing";
     const ok = await attachHls(data.hlsPlaylistUrl);
@@ -428,19 +395,17 @@ async function onToggleLive() {
 async function onStart() {
   if (state.busy) return;
   const title = ($("#pulseLiveTitleInput")?.value || "").trim().slice(0, 140) || DEFAULT_TITLE;
-  const facebookEnabled = $("#pulseLiveFacebook")?.checked === true && state.facebookConfigured;
   const recordRequested = $("#pulseLiveRecord")?.checked === true;
   const screenOnly = $("#pulseLiveScreenOnly")?.checked === true;
   setBusy(true); showError(""); setStatus("Starting your backstage…");
   try {
     // Founder Start explicitly prepares the existing call-member screenshare grant.
     if (screenOnly && state.isAdmin) await liveApi("admin-switch", { enabled: true }, "required");
-    const data = await liveApi("start", { title, facebook_enabled: facebookEnabled, record_requested: recordRequested }, "required");
+    const data = await liveApi("start", { title, facebook_enabled: false, record_requested: recordRequested }, "required");
     if (!data.key || !data.token || !data.callId || data.callType !== CALL_TYPE)
       throw Error("Live session identity verification failed.");
     state.callId = data.callId;
     state.recordingRequested = recordRequested;
-    if (data.facebook?.enabled === false && facebookEnabled) showError(REASON_TEXT.facebook_not_configured);
     const VideoClient = await videoClientConstructor();
   state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
     state.call = state.client.call(CALL_TYPE, data.callId);
@@ -500,24 +465,13 @@ async function onGoLive() {
     show("#pulseLiveGoLive", false);
     show("#pulseLiveBadge", true);
     const b = $("#pulseLiveBadge");
-    if (b) b.textContent = data.facebook?.status === "live" ? "LIVE · Facebook" : "LIVE";
-    setStatus("You are LIVE on Pulse" + (data.facebook?.status === "live" ? " and Facebook" : (data.facebook?.status === "connecting" ? " · connecting to Facebook…" : "")));
+    if (b) b.textContent = "LIVE";
+    setStatus("You are LIVE on Pulse");
     startTimer();
   } catch (e) {
     if (choosingScreen) {
       setStatus("Backstage — you are NOT live. Camera and microphone remain OFF.");
       showError("Choose a screen or window when Edge asks. Press Go Live again if you cancelled.");
-    } else if (["facebook_ingest_unavailable", "facebook_rtmp_failed"].includes(e.reason)) {
-      await teardownStream();
-      state.callId = null;
-      show("#pulseLiveHost", false);
-      await refreshStatus(true);
-      setStatus("Facebook broadcast could not start.");
-      showError(plainError(e));
-    } else if (e.reason === "facebook_cleanup_pending") {
-      show("#pulseLiveGoLive", false);
-      setStatus("Facebook shutdown is unconfirmed.");
-      showError(plainError(e));
     } else {
       setStatus("Backstage — you are NOT live. Press Go Live to retry.");
       showError(plainError(e));
@@ -609,7 +563,6 @@ export function initPulseLive() {
   $("#pulseLiveStart")?.addEventListener("click", () => { void onStart(); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
-  $("#pulseLiveFacebook")?.addEventListener("change", () => { state.facebookSelectionTouched = true; });
   $("#pulseLiveEnd")?.addEventListener("click", () => { void onEnd(); });
   $("#pulseLiveFindRecording")?.addEventListener("click", () => { void onFindRecording(); });
   window.addEventListener("pagehide", () => {
