@@ -47,6 +47,8 @@ test("Pulse Founder inbox is on the Pulse page with a separate NBL Messenger lin
  assert.match(ui,/id="pulseIgConnect"/);
  assert.match(panel,/invoke\("\/begin",\{\}\)/);
  assert.match(panel,/location\.assign\(url\.href\)/);
+ assert.match(social,/parameters\.get\("instagram_dm"\)==="1"/);
+ assert.match(api,/instagram_dm=1&instagram_connect=/);
  assert.doesNotMatch(panel,/messaging permission is not approved for this connected account\/app/);
  assert.match(ui,/href="\/messenger\/"/);
  assert.match(ui,/social-v1\.mjs\?v=20261121-instagram-dm-oauth-connect-v1/);
