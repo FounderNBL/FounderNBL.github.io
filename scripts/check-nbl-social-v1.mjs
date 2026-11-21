@@ -108,7 +108,7 @@ assert.doesNotMatch(pulse,/<iframe|pulseMessengerFrame/);
 assert.match(pulse,/src="\/messenger\/icon.svg"/);
 assert.doesNotMatch(pulse,/data-feed="messages"/);
 assert.match(pulse,/href="\/messenger\/"/);
-assert.match(js,/location.replace\(destination.pathname\+destination.search\)/);
+assert.match(js,/showPulseMemberInbox\(/);
 assert.doesNotMatch(pulse,/<h2>Private Messages<\/h2>|Open Messenger ↗/);
 assert.match(pulse,/id="socialApp" hidden/);
 assert.match(pulse,/data-feed="foryou"/);
