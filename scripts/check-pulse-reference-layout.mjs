@@ -9,7 +9,8 @@ const mobileCss=read("pulse/pulse-mobile-app.css"), liveClient=read("pulse/live.
 const businessClient=read("pulse/business-assets.mjs"),businessCss=read("pulse/pulse-meta-business.css");
 assert.doesNotMatch(html+css, /the[\s-]*city|thecity|cityworld|phone.mockup/i, "Pulse must not include forbidden promotional content");
 assert.match(html,/href="\/pulse\/" class="pulse-site-current" aria-current="page"/);
-assert.match(html,/href="\/messenger\/" class="pulse-message-tab"/);
+assert.match(html,/id="pulseUnifiedInboxNav"[^>]*class="pulse-message-tab"/);
+assert.match(html,/href="\/messenger\/">Open the full Pulse Connect app/);
 assert.match(html,/pulse\/pulse-reference-ui\.css\?v=20261109-no-city/);
 assert.match(html,/class="pulse-rail"/);
 assert.match(html,/id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels"/);
@@ -58,7 +59,7 @@ assert.match(liveUi,/input\.focus\(\{preventScroll:true\}\)/);
 assert.doesNotMatch(html+liveCss,/\b(?:followers|watching|12\.4K|24\.7K)\b/i,"No invented popularity metrics");
 // Founder-supplied reference: full desktop Pulse product, not a fake image/post.
 assert.ok(html.includes('/pulse/pulse-founder-ui.css?v=20261118-live-visibility'));
-assert.ok(html.includes('/pulse/pulse-mobile-app.css?v=20261118-phone-app-v1'));
+assert.ok(html.includes('/pulse/pulse-mobile-app.css?v=20261121-pulse-connect-v1'));
 assert.ok(html.indexOf('/pulse/pulse-mobile-app.css')>html.indexOf('/pulse/pulse-founder-ui.css'), 'Mobile CSS must load after desktop styles');
 assert.ok(html.includes('media="(max-width: 760px)"'), 'Mobile styles must be phone-only');
 assert.ok(mobileCss.includes('grid-template-columns:repeat(5,minmax(0,1fr))'), 'Exactly five phone tabs');

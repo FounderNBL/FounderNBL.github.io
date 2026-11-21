@@ -27,7 +27,7 @@ self.addEventListener("push", event => {
       &&/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(data.callId);
     const isCall=data.type==="video_call"&&validId;
     const title=isCall?"Incoming NBL video call":
-      typeof data.title==="string"?data.title.slice(0,100):"NBL Messenger";
+      typeof data.title==="string"?data.title.slice(0,100):"Pulse Connect";
     const body=isCall?"Tap to answer the private video call.":
       typeof data.body==="string"?data.body.slice(0,140):"You have a new message.";
     // Destinations are assembled locally, never read from untrusted push URLs.

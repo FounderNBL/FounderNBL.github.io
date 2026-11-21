@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>NBL Messenger | Private messages & calls · New Beansland</title>
-  <meta name="description" content="NBL Messenger: your private messages and member-to-member calls under one secure NBL account.">
+  <title>Pulse Connect | Private messages & calls · New Beansland</title>
+  <meta name="description" content="Pulse Connect: your private messages and member-to-member calls under one secure NBL account.">
   <link rel="canonical" href="https://newbeansland.org/messenger/index.html">
   <meta name="theme-color" content="#06111d">
-  <meta name="application-name" content="NBL Messenger">
+  <meta name="application-name" content="Pulse Connect">
   <link rel="manifest" href="/messenger/manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
   <link rel="apple-touch-icon" href="/assets/brand/nbl-official-mark.png?v=9e7ecbb9">
@@ -16,13 +16,13 @@
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
   <script defer src="/messenger/sounds.js?v=20261120-sound-library"></script>
-  <script defer src="/messenger/app.js?v=20261120-sound-library"></script>
+  <script defer src="/messenger/app.js?v=20261121-pulse-connect-v1"></script>
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/" aria-label="New Beansland company home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" width="36" height="36" alt=""> <span>NBL <em>Messenger</em></span></a>
+    <a class="brand" href="/" aria-label="New Beansland company home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" width="36" height="36" alt=""> <span>Pulse <em>Connect</em></span></a>
     <nav aria-label="NBL World navigation">
-      <a href="/pulse/">Pulse Feed</a>
+      <a href="/pulse/">Pulse Beats</a>
       <a href="/chat.html">NBL World</a>
       <a href="https://newbeansland.org/">Explore New Beansland</a>
     </nav>
@@ -30,8 +30,8 @@
   <main>
     <section class="intro">
       <p class="eyebrow">NEW BEANSLAND · PRIVATE CONNECTIONS</p>
-      <h1><img class="messenger-heading-mark" src="/messenger/icon.svg" alt="" width="58" height="58">NBL Messenger</h1>
-      <p class="hint">Your messages. Your people. One NBL account.</p>
+      <h1><img class="messenger-heading-mark" src="/messenger/icon.svg" alt="" width="58" height="58">Pulse Connect</h1>
+      <p class="hint">Your messages. Your people. One NBL account. Formerly NBL Messenger.</p>
       <div class="signin-panel" data-chat-guest>
         <p data-chat-auth-status>Sign in with your NBL account to see your conversations.</p>
         <a class="btn primary" data-chat-signin href="https://newbeansland.org/account.html">Sign in / create account</a>
@@ -90,7 +90,7 @@
         </div>
       </section>
     </section>
-    <section class="chat-app" data-chat-app hidden aria-label="NBL Messenger">
+    <section class="chat-app" data-chat-app hidden aria-label="Pulse Connect">
       <aside class="sidebar">
         <div class="sidebar-heading"><h2>Messages</h2><button class="btn small" type="button" data-chat-refresh>Refresh</button></div>
         <div class="thread-search">
@@ -135,7 +135,7 @@
             <button class="btn" type="submit">Open</button>
           </div>
         </form>
-        <section class="invite-card" data-chat-invite hidden aria-label="Invite friends to NBL Messenger">
+        <section class="invite-card" data-chat-invite hidden aria-label="Invite friends to Pulse Connect">
           <p class="eyebrow">Welcome to the neighborhood</p>
           <h3 data-chat-invite-title>You're early. Bring a friend!</h3>
           <p data-chat-invite-description>Your inbox is ready. When another NBL member joins, you can message each other using your NBL handles.</p>
@@ -163,7 +163,7 @@
           </div>
           <p class="hint" data-chat-sound-status role="status">More original NBL sounds will appear here as they are added.</p>
         </section>
-        <section class="notification-settings" data-chat-notification-settings hidden aria-label="NBL Messenger phone notifications">
+        <section class="notification-settings" data-chat-notification-settings hidden aria-label="Pulse Connect phone notifications">
           <div class="notification-heading">
             <div>
               <p class="eyebrow">NBL Infinity ♾️ · Phone alerts</p>
@@ -197,7 +197,7 @@
 
         <p class="video-call-feedback" data-chat-video-feedback role="status" aria-live="polite" hidden></p>
         <div class="messages" data-chat-messages role="log" aria-live="polite" aria-label="Messages">
-          <p class="hint">Choose a conversation or invite someone to join NBL Messenger.</p>
+          <p class="hint">Choose a conversation or invite someone to join Pulse Connect.</p>
         </div>
         <form data-chat-send-form class="composer">
           <label for="chat-compose">Message</label>
@@ -218,9 +218,9 @@
           </div>
         </section>
 
-    <p class="status" data-chat-status role="status" aria-live="polite">NBL Messenger uses your existing NBL account. Private messages are visible only to participants.</p>
+    <p class="status" data-chat-status role="status" aria-live="polite">Pulse Connect uses your existing NBL account. Private messages are visible only to participants.</p>
   </main>
-  <footer>NBL Messenger · <a href="/">New Beansland home</a></footer>
+  <footer>Pulse Connect · <a href="/">New Beansland home</a></footer>
 <script>if ("serviceWorker" in navigator && location.protocol === "https:") { window.addEventListener("load", () => navigator.serviceWorker.register("/messenger/sw.js", {scope:"/messenger/"}).catch(() => {})); }</script>
 <script type="module" src="/messenger/firebase-web.js?v=20261107" defer></script>
 </body>

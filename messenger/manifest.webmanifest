@@ -1,8 +1,8 @@
 {
   "id": "/messenger/",
-  "name": "NBL Messenger",
-  "short_name": "NBL Messenger",
-  "description": "Private messages, people and calls with your existing New Beansland account. NBL Pulse remains a connected, separate social experience.",
+  "name": "Pulse Connect",
+  "short_name": "Pulse Connect",
+  "description": "Private messages, people and calls with your existing New Beansland account. The full private communication service of NBL Pulse.",
   "start_url": "/messenger/",
   "scope": "/messenger/",
   "display": "standalone",

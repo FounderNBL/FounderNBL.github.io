@@ -72,3 +72,5 @@ test("Meta opaque conversation IDs survive the unified inbox without path inject
  assert.equal(threads.length,1);
  assert.equal(threads[0].id,"t_abc123_-XYZ=");
 });
+
+ test("Pulse Connect opens native inbox first and preserves separate full communication service",()=>{assert.match(hub,/let current = "pulse"/);assert.match(hub,/function open\(name = "pulse"/);assert.match(page,/id="pulseUnifiedInboxHeading">Pulse Connect/);assert.match(page,/href="\/messenger\/">Open the full Pulse Connect app/);assert.match(client,/user:"My Beats"/);assert.match(hub,/instagram-inbox\.mjs\?v=20261121-pulse-connect-v1/);assert.match(client,/instagram-inbox\.mjs\?v=20261121-pulse-connect-v1/);});

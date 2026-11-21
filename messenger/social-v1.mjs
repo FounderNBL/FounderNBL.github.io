@@ -7,9 +7,9 @@ import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {ownPost,mediaCaption,displayedCaption,mutateOwnPost} from "./pulse-post-controls.mjs?v=20261120-own-post";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
-import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-dm-diag-v1";
-import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261121-unified";
-import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-dm-diag-v1";
+import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-pulse-connect-v1";
+import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261121-pulse-connect-v1";
+import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-pulse-connect-v1";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -21,7 +21,7 @@ const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 // The NBL server/provider still decides which activity the signed-in viewer may read.
 const PUBLIC_SOCIAL_URL="https://newbeansland.org/messenger/social-v1.html";
 const linkedPostId=new URL(location.href).searchParams.get("post");
-const LABELS={foryou:"For You",timeline:"Following",user:"My Posts",notification:"Notifications",friends:"Friends"};
+const LABELS={foryou:"For You",timeline:"Following",user:"My Beats",notification:"Notifications",friends:"Friends"};
 const MAX_PHOTO_BYTES=8*1024*1024,MAX_VIDEO_BYTES=40*1024*1024,MAX_PHOTOS=4;
 const IMAGE_TYPES=new Set(["image/jpeg","image/png","image/webp"]);
 const VIDEO_TYPES=new Set(["video/mp4","video/webm"]);
@@ -592,7 +592,7 @@ function renderActivity(activity){
           url.searchParams.set("dm",handle);
           location.assign(url.pathname+url.search);
         }
-      }catch(error){feedback.textContent="Messenger could not open: "+safeError(error);}
+      }catch(error){feedback.textContent="Pulse Connect could not open: "+safeError(error);}
       finally{message.disabled=false;}
     });
     actions.append(message);
