@@ -67,6 +67,7 @@ async function open(page){
  await page.evaluate(()=>{document.querySelector("#socialApp").hidden=false;});
 }
 test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({page,context})=>{
+ test.skip((page.viewportSize()?.width??1024)<=760,"Desktop screen-share flow; mobile has its own camera test");
  const api=syntheticBackend(),host=page,viewer=await context.newPage();
  await setup(host,"host",api);await setup(viewer,"viewer",api);
  await open(host);
@@ -116,6 +117,7 @@ test("Founder switch and signed-out visitor restrictions",async({page,context})=
 });
 
 test("cancel screen picker does not go LIVE, and retry uses the same Go Live button",async({page})=>{
+ test.skip((page.viewportSize()?.width??1024)<=760,"Screen picker is desktop-only");
  const api=syntheticBackend();
  await setup(page,"host",api);await open(page);
  await page.locator("#pulseLiveStart").click();
@@ -143,6 +145,7 @@ test("Founder can explicitly uncheck Facebook before Start; option survives stat
  await page.waitForTimeout(50);
  await expect(page.locator("#pulseLiveFacebook")).not.toBeChecked();
  await page.locator("#pulseLiveStart").click();
+ await expect(page.locator("#pulseLiveStatus")).toContainText("Backstage");
  expect(api.s.actions.find(x=>x.action==="start")?.body?.facebook_enabled).toBe(false);
 });
 
