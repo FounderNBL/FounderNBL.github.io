@@ -14,7 +14,8 @@ function readableTime(value){
 function errorText(error){
  const name=String(error?.message||"").slice(0,120);
  const messages={
-  instagram_dm_permission_or_token_required:"Meta rejected this Instagram DM token. The reason may be a missing permission, an expired token or an account-role restriction. Connect Instagram DMs again. App-role testing can happen before approval.",
+  instagram_dm_permission_or_token_required:"Meta rejected the Instagram DM token. For this Facebook Login for Business flow, check instagram_manage_messages in the app's Login configuration and reconnect. App-role testing may work before review approval.",
+  instagram_dm_permission_missing:"Meta authorization completed, but the Login for Business configuration did not grant instagram_manage_messages. Add that permission to the existing Meta login configuration, then reconnect Instagram DMs in Pulse.",
   instagram_dm_connection_required:"Connect Instagram DMs to @nbl_world, then refresh the inbox. You can test with Meta app roles before App Review.",
   instagram_dm_oauth_expired:"The Instagram DM connection has expired. Press Connect Instagram DMs to authorize it again.",
   instagram_dm_connection_unavailable:"The saved Instagram authorization could not be read. Press Connect Instagram DMs again.",
@@ -56,7 +57,9 @@ export function mountInstagramInbox(invoke){
  if(connected){
    say(connected==="instagram_authorization_received"?
     "Meta authorization received. Press Refresh inbox to verify messaging access.":
-    "Instagram connection not completed ("+String(connected).slice(0,60)+"). Press Connect Instagram DMs to try again.");
+    connected==="instagram_dm_permission_missing"?
+    "Meta connected, but instagram_manage_messages is missing from the existing Facebook Login for Business configuration. Add that permission in Meta, then reconnect Instagram DMs.":
+    "Instagram connection not completed ("+String(connected).slice(0,60)+"). Check Meta authorization before retrying.");
  }
  connect.addEventListener("click",async()=>{
    connect.disabled=true;
