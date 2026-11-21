@@ -1022,7 +1022,9 @@ async function boot(){
     if(location.pathname.startsWith("/pulse")){
       const parameters=new URL(location.href).searchParams;
       const target=parameters.get("dm")||"";
-      if(parameters.get("messages")==="1"||/^@?[A-Za-z0-9_-]{2,64}$/.test(target))
+      if(parameters.get("instagram_dm")==="1"&&state.me?.role==="founder")
+        document.querySelector('[data-pulse-inbox="instagram"]')?.click();
+      else if(parameters.get("messages")==="1"||/^@?[A-Za-z0-9_-]{2,64}$/.test(target))
         showPulseMemberInbox(/^@?[A-Za-z0-9_-]{2,64}$/.test(target)?target:"");
     }
   }catch(error){
