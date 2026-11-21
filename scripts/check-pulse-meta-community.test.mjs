@@ -85,20 +85,21 @@ test("Reel processing status is read-only and publishing requires explicit confi
  assert.match(feed,/INSTAGRAM_API\+"\/publish\/confirm"/);
 });
 
-test("Facebook Live review OAuth requests Page Live scope without leaking tokens",()=>{
+test("Facebook and Instagram video publishing stays available but Facebook Live relay is removed",()=>{
  assert.match(backend,/pages_read_user_content/);
  assert.match(backend,/pages_manage_posts/);
  assert.match(backend,/pages_show_list/);
  const client=read("pulse/live.mjs");
- assert.match(page,/id="pulseLiveFacebookOption"/);
+ assert.doesNotMatch(page,/id="pulseLiveFacebookOption"/);
+ assert.doesNotMatch(page,/id="pulseLiveFacebook"/);
  assert.match(page,/id="pulseLiveScreenOnly"[^>]*checked/);
  assert.doesNotMatch(page,/id="pulseLiveShareScreen"/);
  assert.match(client,/await state\.call\.screenShare\.enable\(\)/);
+ assert.match(client,/facebook_enabled: false/);
  assert.match(client,/if \(!screenOnly\) \{\s*await state\.call\.camera\.enable\(\);\s*await state\.call\.microphone\.enable\(\);/);
  assert.match(client,/if \(state\.screenOnly && !state\.screenReady\)/);
  assert.doesNotMatch(client,/FB_PAGE_ACCESS_TOKEN|NBL_PULSE_META_APP_SECRET/);
 });
-
 
 test("Mobile NBL residents continue camera broadcasting without mandatory screen sharing",()=>{
   const live=read("pulse/live.mjs");
@@ -111,14 +112,14 @@ test("Go Live selects the screen on its own click, without extra button or prema
   assert.match(client,/async function onGoLive\(\)[\s\S]*?await state\.call\.screenShare\.enable\(\)/);
   assert.match(client,/show\("#pulseLiveBadge", status === "live"\)/);
   assert.match(client,/state\.liveSince = null/);
-  assert.match(client,/facebookSelectionTouched/);
+  assert.doesNotMatch(client,/facebookSelectionTouched/);
   assert.doesNotMatch(client,/#pulseLiveShareScreen/);
 });
 
-test("Pulse distinguishes Meta Live publishing access denial from an expired Page token",()=>{
-  const client=read("pulse/live.mjs");
-  assert.match(client,/facebook_live_permission_denied/);
-  assert.match(client,/facebook_live_restricted/);
-  assert.match(client,/You are NOT live/);
-  assert.doesNotMatch(client,/Supabase needs a valid Page access token/);
+test("Pulse Live is independent of Facebook while regular Meta video publishing remains",()=>{
+ const client=read("pulse/live.mjs");
+ assert.match(client,/facebook_enabled: false/);
+ assert.doesNotMatch(client,/facebook_live_permission_denied|facebook_live_restricted/);
+ assert.match(page,/id="pulseLiveGoLive"/);
+ assert.match(page,/id="pulseLiveEnd"/);
 });
