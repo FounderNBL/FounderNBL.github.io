@@ -14,7 +14,11 @@ function readableTime(value){
 function errorText(error){
  const name=String(error?.message||"").slice(0,120);
  const messages={
-  instagram_dm_permission_or_token_required:"Instagram messaging permission is not approved for this connected account/app yet. The Pulse inbox is wired, but Meta rejected access.",
+  instagram_dm_permission_or_token_required:"Meta rejected this Instagram DM token. The reason may be a missing permission, an expired token or an account-role restriction. Connect Instagram DMs again. App-role testing can happen before approval.",
+  instagram_dm_connection_required:"Connect Instagram DMs to @nbl_world, then refresh the inbox. You can test with Meta app roles before App Review.",
+  instagram_dm_oauth_expired:"The Instagram DM connection has expired. Press Connect Instagram DMs to authorize it again.",
+  instagram_dm_connection_unavailable:"The saved Instagram authorization could not be read. Press Connect Instagram DMs again.",
+  instagram_meta_secrets_not_configured:"Meta Instagram authorization is not configured for this app. Check the existing Meta app ID, login configuration and encryption secret.",
   official_instagram_not_accessible:"Pulse cannot verify the official @nbl_world Instagram account. Check the existing Meta business connection.",
   instagram_token_secret_missing:"The official Instagram API token is not configured.",
   instagram_dm_reply_window_closed:"Meta's normal 24-hour reply window has closed. Ask the person to message @nbl_world again.",
@@ -43,10 +47,28 @@ export function mountInstagramInbox(invoke){
  const field=panel.querySelector("#pulseIgReplyText");
  const submit=form.querySelector("button[type=submit]");
  const refresh=panel.querySelector("#pulseIgRefresh");
+ const connect=panel.querySelector("#pulseIgConnect");
  const close=panel.querySelector("#pulseIgClose");
  let selected=null,loading=false,pending=false,lastReadAt=0;
+ const connected=new URL(location.href).searchParams.get("instagram_connect");
  const say=s=>{status.textContent=s;};
  const call=(path,payload)=>invoke("/inbox/"+path,payload);
+ if(connected){
+   say(connected==="instagram_authorization_received"?
+    "Meta authorization received. Press Refresh inbox to verify messaging access.":
+    "Instagram connection not completed ("+String(connected).slice(0,60)+"). Press Connect Instagram DMs to try again.");
+ }
+ connect.addEventListener("click",async()=>{
+   connect.disabled=true;
+   say("Opening official Meta authorization for @nbl_world…");
+   try{
+     const auth=await invoke("/begin",{});
+     const url=new URL(auth.authorization_url);
+     if(url.protocol!=="https:"||url.hostname!=="www.facebook.com"||!url.pathname.endsWith("/dialog/oauth"))
+       throw Error("Invalid Meta authorization URL");
+     location.assign(url.href);
+   }catch(error){say(errorText(error));connect.disabled=false;}
+ });
  function show(){
   panel.hidden=false;
   // Keep focus inside Pulse instead of navigating to another application.

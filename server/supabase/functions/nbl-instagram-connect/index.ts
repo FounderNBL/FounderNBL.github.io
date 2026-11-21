@@ -34,7 +34,7 @@ function response(req:Request,body:unknown,status=200){
 }
 function finish(status:string){
  // Return no Meta code, token, query string, or state to any public page.
- return Response.redirect("https://newbeansland.org/account.html?connect="+encodeURIComponent(status),303);
+ return Response.redirect("https://newbeansland.org/pulse/?instagram_dm=1&instagram_connect="+encodeURIComponent(status),303);
 }
 function b64(bytes:Uint8Array){
  let s="";for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));
@@ -55,6 +55,31 @@ async function encryptToken(raw:string){
  const iv=crypto.getRandomValues(new Uint8Array(12));
  const data=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(raw)));
  return {token_ciphertext:b64(data),token_nonce:b64(iv)};
+}
+// Founder-only OAuth grant lookup. No Instagram credentials leave this service.
+type InboxToken={token:string|null,reason?:string,source?:"oauth"|"legacy"};
+async function founderInboxToken(userId:string):Promise<InboxToken>{
+ const {data,error}=await db.from("nbl_connected_accounts")
+  .select("token_ciphertext,token_nonce,token_expires_at")
+  .eq("clerk_user_id",userId).eq("provider","instagram").maybeSingle();
+ if(error)return {token:null,reason:"instagram_dm_connection_unavailable"};
+ if(data?.token_ciphertext&&data?.token_nonce){
+  if(data.token_expires_at&&Date.parse(data.token_expires_at)<Date.now()+60000)
+   return {token:null,reason:"instagram_dm_oauth_expired"};
+  try{
+   const rawKey=Uint8Array.from(atob(AES_KEY),c=>c.charCodeAt(0));
+   if(rawKey.byteLength!==32)throw Error("invalid_token_key");
+   const key=await crypto.subtle.importKey("raw",rawKey,{name:"AES-GCM"},false,["decrypt"]);
+   const iv=Uint8Array.from(atob(data.token_nonce),c=>c.charCodeAt(0));
+   const cipher=Uint8Array.from(atob(data.token_ciphertext),c=>c.charCodeAt(0));
+   if(iv.length!==12||cipher.length<16)throw Error("invalid_cipher");
+   const token=new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv},key,cipher));
+   if(token.length<10)throw Error("invalid_token");
+   return {token,source:"oauth"};
+  }catch{return {token:null,reason:"instagram_dm_connection_unavailable"};}
+ }
+ return INSTAGRAM_TOKEN?{token:INSTAGRAM_TOKEN,source:"legacy"}:
+  {token:null,reason:"instagram_dm_connection_required"};
 }
 async function founderUser(req:Request){
  const authorization=req.headers.get("authorization")||"";
@@ -203,8 +228,8 @@ async function probeInstagram():Promise<InstagramProbe>{
 type InstagramTarget={
  id:string,host:"graph.facebook.com"|"graph.instagram.com",token:string,via:"assigned"|"page"|"instagram_login",pageId?:string
 };
-async function officialInstagramAccount():Promise<InstagramTarget|null>{
- if(!INSTAGRAM_TOKEN)return null;
+async function officialInstagramAccount(accessToken=INSTAGRAM_TOKEN):Promise<InstagramTarget|null>{
+ if(!accessToken)return null;
  const validId=(v:unknown)=>/^\d{6,30}$/.test(String(v||""));
  const correctName=(v:unknown)=>typeof v==="string"&&v.toLowerCase()==="nbl_world";
  // Preserve the original system-user path, including pagination.
@@ -215,14 +240,14 @@ async function officialInstagramAccount():Promise<InstagramTarget|null>{
    const u=new URL("https://graph.facebook.com/"+VERSION+"/me/assigned_instagram_accounts");
    u.searchParams.set("fields","id,username");
    if(after)u.searchParams.set("after",after);
-   const r=await fetch(u,{headers:{"authorization":"Bearer "+INSTAGRAM_TOKEN,"accept":"application/json"},
+   const r=await fetch(u,{headers:{"authorization":"Bearer "+accessToken,"accept":"application/json"},
     signal:AbortSignal.timeout(9000)});
    if(!r.ok)break;
    const body=await r.json();
    if(!Array.isArray(body?.data))break;
    const found=body.data.filter((a:unknown)=>typeof a==="object"&&a!==null&&
     correctName((a as {username?:unknown}).username)&&validId((a as {id?:unknown}).id));
-   if(found.length===1)return {id:String(found[0].id),host:"graph.facebook.com",token:INSTAGRAM_TOKEN,via:"assigned"};
+   if(found.length===1)return {id:String(found[0].id),host:"graph.facebook.com",token:accessToken,via:"assigned"};
    if(found.length>1)return null;
    const next=body.paging?.cursors?.after;
    if(!body.data.length||!next||seen.has(next)||next===after)break;
@@ -234,7 +259,7 @@ async function officialInstagramAccount():Promise<InstagramTarget|null>{
   const u=new URL("https://graph.facebook.com/"+VERSION+"/me/accounts");
   u.searchParams.set("fields","id,access_token,instagram_business_account{id,username}");
   u.searchParams.set("limit","100");
-  const r=await fetch(u,{headers:{"authorization":"Bearer "+INSTAGRAM_TOKEN,"accept":"application/json"},
+  const r=await fetch(u,{headers:{"authorization":"Bearer "+accessToken,"accept":"application/json"},
    signal:AbortSignal.timeout(9000)});
   if(r.ok){
    const body=await r.json();
@@ -246,7 +271,7 @@ async function officialInstagramAccount():Promise<InstagramTarget|null>{
     });
     if(matches.length===1){
      const page=matches[0];
-     const t=typeof page.access_token==="string"&&page.access_token.length>10?page.access_token:INSTAGRAM_TOKEN;
+     const t=typeof page.access_token==="string"&&page.access_token.length>10?page.access_token:accessToken;
      return {id:String(page.instagram_business_account.id),host:"graph.facebook.com",token:t,via:"page",pageId:String(page.id)};
     }
     if(matches.length>1)return null;
@@ -259,13 +284,13 @@ async function officialInstagramAccount():Promise<InstagramTarget|null>{
   try{
    const u=new URL("https://graph.instagram.com/"+VERSION+"/me");
    u.searchParams.set("fields",fields);
-   const r=await fetch(u,{headers:{"authorization":"Bearer "+INSTAGRAM_TOKEN,"accept":"application/json"},
+   const r=await fetch(u,{headers:{"authorization":"Bearer "+accessToken,"accept":"application/json"},
     signal:AbortSignal.timeout(9000)});
    if(!r.ok)continue;
    const a=await r.json();
    const id=a?.user_id||a?.id;
    if(correctName(a?.username)&&validId(id))
-    return {id:String(id),host:"graph.instagram.com",token:INSTAGRAM_TOKEN,via:"instagram_login"};
+    return {id:String(id),host:"graph.instagram.com",token:accessToken,via:"instagram_login"};
   }catch{/* Continue to alternate field request. */}
  }
  return null;
@@ -445,16 +470,18 @@ async function graphInboxRead(path:string,params:Record<string,string>,ig:Instag
 async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
  const origin=req.headers.get("origin")||"";
  if(!ORIGINS.has(origin))return response(req,{ok:false,reason:"origin_not_allowed"},403);
- if(!await founderUser(req))return response(req,{ok:false,reason:"founder_access_required"},403);
+ const actor=await founderUser(req);
+ if(!actor)return response(req,{ok:false,reason:"founder_access_required"},403);
  if(Number(req.headers.get("content-length")||0)>5000)return response(req,{ok:false,reason:"invalid_request"},413);
  let body:any;
  try{const raw=await req.text();if(raw.length>5000)throw Error();body=JSON.parse(raw);
   if(!body||Array.isArray(body)||typeof body!=="object")throw Error();
  }catch{return response(req,{ok:false,reason:"invalid_json"},400);}
  if(body.action!==action)return response(req,{ok:false,reason:"invalid_action"},400);
- if(!INSTAGRAM_TOKEN)return response(req,{ok:false,reason:"instagram_token_secret_missing"},503);
+ const grant=await founderInboxToken(actor);
+ if(!grant.token)return response(req,{ok:false,reason:grant.reason||"instagram_dm_connection_required"},409);
  try{
-  const ig=await officialInstagramAccount();
+  const ig=await officialInstagramAccount(grant.token);
   if(!ig)return response(req,{ok:false,reason:"official_instagram_not_accessible"},403);
   if(action==="list"){
    const params:Record<string,string>={fields:"id,updated_time,participants{id,username}",limit:"25"};
