@@ -523,9 +523,14 @@ function safeMessage(record:any){
 }
 function privateGraphError(req:Request,status:number,body:any){
  const code=Number(body?.error?.code)||0;
+ const subcode=Number(body?.error?.error_subcode)||0;
  const permission=[10,190,200,201,250].includes(code)||status===401||status===403;
- return response(req,{ok:false,reason:permission?"instagram_dm_permission_or_token_required":
-  status===429?"instagram_dm_rate_limited":"instagram_dm_meta_unavailable",meta_error_code:code||null},permission?403:503);
+ const reason=code===190?"instagram_dm_oauth_expired":
+  subcode===2534037?"instagram_dm_routing_owned":
+  permission?"instagram_dm_permission_or_token_required":
+  status===429?"instagram_dm_rate_limited":"instagram_dm_meta_unavailable";
+ // Only numeric provider diagnostics, never Meta's raw response or private content.
+ return response(req,{ok:false,reason,meta_error_code:code||null,meta_error_subcode:subcode||null},permission?403:status===429?429:503);
 }
 async function graphInboxRead(path:string,params:Record<string,string>,ig:InstagramTarget){
  const u=new URL("https://"+ig.host+"/"+VERSION+"/"+path);
@@ -591,7 +596,7 @@ async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
    participant:{id:String(others[0].id),username:String(others[0].username||"").slice(0,80)},
    messages,reply_window_open:replyWindowOpen});
   const message=body.message;
-  if(body.confirm!=="send"||typeof message!=="string"||message.trim().length<1||message.length>1000)
+  if(body.confirm!=="send"||typeof message!=="string"||message.trim().length<1||new TextEncoder().encode(message.trim()).length>1000)
    return response(req,{ok:false,reason:"invalid_or_unconfirmed_reply"},400);
   // Meta requires the customer to initiate and imposes a standard reply window.
   if(!replyWindowOpen)return response(req,{ok:false,reason:"instagram_dm_reply_window_closed"},403);
@@ -600,15 +605,18 @@ async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
   const sendId=ig.host==="graph.facebook.com"?ig.pageId:ig.id;
   if(!sendId||!IG_PARTICIPANT_ID.test(sendId))
    return response(req,{ok:false,reason:"instagram_dm_page_access_required"},403);
+  // Use Meta's documented Instagram freeform text envelope for Page login.
+  const payload={recipient:{id:String(others[0].id)},message:{text:message.trim()}};
+  const pageLogin=ig.host==="graph.facebook.com";
+  const sendBody=pageLogin?new URLSearchParams({recipient:JSON.stringify(payload.recipient),message:JSON.stringify(payload.message)}):JSON.stringify(payload);
   const outbound=await fetch("https://"+ig.host+"/"+VERSION+"/"+sendId+"/messages",{
-   method:"POST",headers:{"authorization":"Bearer "+ig.token,"content-type":"application/json","accept":"application/json"},
-   body:JSON.stringify({recipient:{id:String(others[0].id)},message:{text:message.trim()},
-    ...(ig.host==="graph.facebook.com"?{messaging_type:"RESPONSE"}:{})}),
+   method:"POST",headers:{"authorization":"Bearer "+ig.token,"content-type":pageLogin?"application/x-www-form-urlencoded":"application/json","accept":"application/json"},
+   body:sendBody,
    redirect:"error",signal:AbortSignal.timeout(12000)
   });
   const sent=await outbound.json().catch(()=>null);
   if(!outbound.ok||sent?.error)return privateGraphError(req,outbound.status,sent);
-  if(typeof sent?.message_id!=="string"&&typeof sent?.id!=="string")
+  if(typeof sent?.message_id!=="string"||!sent.message_id||(sent.recipient_id!=null&&String(sent.recipient_id)!==String(others[0].id)))
    return response(req,{ok:false,reason:"instagram_dm_send_unconfirmed"},502);
   return response(req,{ok:true,sent:true,conversation_id:conversationId,message_id:String(sent.message_id||sent.id).slice(0,120)});
  }catch{return response(req,{ok:false,reason:"instagram_dm_meta_unavailable"},503);}

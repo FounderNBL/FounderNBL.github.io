@@ -2,7 +2,7 @@
 // Direct messages stay at their existing NBL/Meta providers. No DM content,
 // access tokens, or message identifiers are copied to analytics or storage.
 import {showPulseMemberThread} from "./member-inbox.mjs?v=20261121-unified";
-import {showPulseInstagramThread} from "./instagram-inbox.mjs?v=20261121-dm-page-v3";
+import {showPulseInstagramThread} from "./instagram-inbox.mjs?v=20261121-dm-send-v1";
 
 const $ = selector => document.querySelector(selector);
 const create = (tag, cls, value) => {

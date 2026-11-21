@@ -51,7 +51,7 @@ test("Pulse Founder inbox is on the Pulse page with a separate NBL Messenger lin
  assert.match(api,/instagram_dm=1&instagram_connect=/);
  assert.doesNotMatch(panel,/messaging permission is not approved for this connected account\/app/);
  assert.match(ui,/href="\/messenger\/"/);
- assert.match(ui,/social-v1\.mjs\?v=20261121-instagram-dm-page-v3/);
+ assert.match(ui,/social-v1\.mjs\?v=20261121-dm-send-v1/);
  assert.match(social,/import \{mountInstagramInbox\} from "\.\.\/pulse\/instagram-inbox\.mjs/);
  assert.match(social,/if\(state\.me\?\.role==="founder"&&location\.pathname\.startsWith\("\/pulse"\)\)/);
  assert.match(social,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
@@ -105,4 +105,22 @@ test("Instagram Facebook Login inbox uses the verified linked Page token and opa
  assert.match(api,/graphInboxRead\(encodeURIComponent\(conversationId\)/);
  assert.match(api,/ownIds\.has\(String\(p\?\.id/);
  assert.match(panel,/instagram_dm_page_access_required:/);
+});
+
+test("IG text reply follows Meta's Page form envelope and preserves retry state",()=>{
+ assert.match(api,/new URLSearchParams\(\{recipient:JSON.stringify\(payload.recipient\),message:JSON.stringify\(payload.message\)\}\)/);
+ assert.match(api,/application\/x-www-form-urlencoded/);
+ assert.doesNotMatch(api,/messaging_type:"RESPONSE"/);
+ assert.match(api,/meta_error_subcode:subcode\|\|null/);
+ assert.match(panel,/finally\{pending=false;updateReply\(canReply\);\}/);
+ assert.match(panel,/submit.disabled=pending\|\|!canReply/);
+ assert.doesNotMatch(panel,/submit.disabled=field.disabled===false/);
+ assert.match(ui,/id="pulseIgReplyStatus"/);
+ assert.match(social,/error.metaCode=Number\(data.meta_error_code\)/);
+});
+test("Provider error codes remain visible",async()=>{
+ const {errorText}=await import("../pulse/instagram-inbox.mjs");
+ const error=Object.assign(new Error("instagram_dm_permission_or_token_required"),{metaCode:10,metaSubcode:2018001});
+ assert.match(errorText(error),/Meta code 10\/2018001/);
+ assert.match(errorText(error),/app-role account/);
 });
