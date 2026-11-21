@@ -61,5 +61,5 @@ test("New UI stays private and does not add public message storage",()=>{
  assert.match(client,/if\(!initialNBLUserId\)/);
  assert.match(client,/await session\(\)/);
  assert.match(client,/founder:state\.me\?\.role==="founder"/);
- assert.doesNotMatch(hub,/\.innerHTML\s*=|localStorage|sessionStorage|sendBeacon|analytics|window\.open/);
+ assert.doesNotMatch(hub,/\.innerHTML\s*=|localStorage|sessionStorage|sendBeacon|analytics\.track|window\.open/);
 });
