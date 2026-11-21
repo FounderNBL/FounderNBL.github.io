@@ -220,7 +220,7 @@ assert.match(pulseSkin,/grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/);
 assert.match(pulseSkin,/a\.pulse-message-tab/);
 assert.doesNotMatch(pulseSkin,/pulseMessengerFrame|pulse-messenger-panel/);
 assert.doesNotMatch(pulse,/<iframe|pulseMessengerFrame/);
-assert.match(pulse,/href="\/messenger\/"/);
+assert.doesNotMatch(pulse,/href="\/messenger\/"/);
 
 
 // One Clerk account must become a discoverable public NBL member automatically.
