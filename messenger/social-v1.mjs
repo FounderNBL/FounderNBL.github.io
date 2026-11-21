@@ -5,6 +5,7 @@ import { FeedsClient } from "https://esm.sh/@stream-io/feeds-client@2.9.0?bundle
 import {parsePublicVideo,resolvePublicVideo,mountPublicVideo} from "./social-video-connect.mjs?v=20261120-threads-share-resolve";
 import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
+import {ownPost,mediaCaption,displayedCaption,mutateOwnPost} from "./pulse-post-controls.mjs?v=20261120-own-post";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
 import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261120-ig-direct-v1";
 import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261120-native-pulse-dms";
@@ -92,6 +93,7 @@ const pulseInitialQuery=new URL(location.href).searchParams;
 // Pulse deep links now open the native inbox instead of forcing Messenger.
 const state={clerk:null,client:null,user:null,me:null,selected:"foryou",feed:null,unsubscribe:null,busy:false,timeline:null};
 let initialNBLUserId=null,accountChanged=false;
+const deletedPostIds=new Set(),postMutations=new Set();
 function assertCurrentAccount(userId){
   if(accountChanged||!userId||state.clerk?.user?.id!==userId||!state.clerk?.isSignedIn||!state.clerk?.session)
     throw new Error("Your NBL account changed. Reload Social to continue securely.");
@@ -104,7 +106,7 @@ function handleNBLAccountChange(){
   accountChanged=true;
   state.unsubscribe?.();state.unsubscribe=null;
   void Promise.resolve(state.client?.disconnectUser?.()).catch(()=>{});
-  state.client=null;state.feed=null;state.user=null;state.me=null;avatarCache.clear();
+  state.client=null;state.feed=null;state.user=null;state.me=null;avatarCache.clear();deletedPostIds.clear();postMutations.clear();
   $("#socialApp").hidden=true;$("#identity").hidden=true;$("#guest").hidden=true;
   status("Your NBL account changed. Refreshing to protect your feeds.");
   location.reload();
@@ -278,6 +280,7 @@ async function loadComments(activity,area){
 }
 function renderActivity(activity){
   const card=element("article","social-card");
+  if(isValidPostId(activity.id))card.dataset.pulsePostId=activity.id;
   const authorId=String(activity.user?.id||activity.user_id||"");
   const signedActor=Boolean(/^user_[a-zA-Z0-9_-]+$/.test(authorId));
   // Public author identity must come from the verified NBL profile, not
@@ -288,10 +291,52 @@ function renderActivity(activity){
   const authorName=element("div","social-author",authorLabel);
   head.append(avatar,authorName);
   const time=element("div","social-time",activity.created_at?new Date(activity.created_at).toLocaleString():"");
-  const text=element("p","social-body",activity.text||"");
+  const text=element("p","social-body",displayedCaption(activity));
   const meta=element("div","social-meta",Number(activity.comment_count||0)+" comments");
   const actions=element("div","social-actions");
   const feedback=element("p","social-feedback","");
+  if(ownPost(activity,state.user?.id)){
+    const menu=element("details","pulse-post-menu");
+    const summary=element("summary",null,"⋯");
+    summary.setAttribute("aria-label","Manage your post");
+    summary.title="Edit or delete your post";
+    const choices=element("div","pulse-post-menu-options");
+    const edit=element("button",null,"Edit Post"),remove=element("button","pulse-post-delete","Delete Post");
+    edit.type=remove.type="button";
+    const notice=element("p","social-feedback","");
+    notice.setAttribute("role","status");
+    choices.append(edit,remove,notice);menu.append(summary,choices);head.append(menu);
+    const actor=state.user.id,client=state.client;
+    const operate=async(action,caption)=>{
+      if(postMutations.has(activity.id))return;
+      postMutations.add(activity.id);edit.disabled=remove.disabled=true;
+      notice.textContent=action==="delete"?"Deleting…":"Saving…";
+      try{
+        await mutateOwnPost({client,activity,actor,assertAccount:assertCurrentAccount,action,caption});
+        if(action==="delete"){
+          deletedPostIds.add(activity.id);
+          document.querySelectorAll("[data-pulse-post-id]").forEach(node=>{
+            if(node.dataset.pulsePostId===activity.id)node.remove();
+          });
+        }
+        menu.open=false;
+        // Refresh the actual provider state, including a shared-post deep link.
+        await loadFeed();
+        if(linkedPostId===activity.id)await loadLinkedPost();
+        status(action==="delete"?"Post deleted from Pulse. Facebook and Instagram copies were not changed.":"Post updated.");
+      }catch(error){
+        if(!accountChanged){notice.textContent=safeError(error);status("Post not "+(action==="delete"?"deleted":"updated")+": "+safeError(error));}
+      }finally{postMutations.delete(activity.id);edit.disabled=remove.disabled=false;}
+    };
+    edit.addEventListener("click",()=>{
+      const caption=window.prompt("Edit your Pulse post caption (photo/video stays attached):",displayedCaption(activity));
+      if(caption!==null)void operate("edit",caption);
+    });
+    remove.addEventListener("click",()=>{
+      if(window.confirm("Permanently delete this post from Pulse and its feeds? Copies on Facebook or Instagram are not changed."))
+        void operate("delete");
+    });
+  }
   let liked=Boolean((activity.own_reactions||[]).some(reaction=>reaction.type==="like"));
   let likeCount=Number(activity.reaction_groups?.like?.count||0);
   const like=element("button",null,"");like.type="button";
@@ -588,7 +633,7 @@ async function loadLinkedPost(){
     const response=await state.client.getActivity({id:linkedPostId});
     assertCurrentAccount(actorId);
     const activity=response.activity;
-    if(!isShareablePost(activity)||activity.id!==linkedPostId)
+    if(!isShareablePost(activity)||activity.id!==linkedPostId||deletedPostIds.has(activity.id))
       throw new Error("This post is not publicly shareable.");
     content.replaceChildren(renderActivity(activity));
     announcePulseMetric("pulse_linked_post_opened");
@@ -729,6 +774,7 @@ async function requestFriend(event){
 }
 
 function renderFeed(rows){
+  rows=rows.filter(row=>!deletedPostIds.has(row.id));
   const out=$("#feedItems");out.replaceChildren();
   if(!rows.length){
     const message=state.selected==="foryou"?"The For You feed is quiet. It needs real community activity to get started.":
@@ -883,7 +929,7 @@ async function publishPost(event){
         if(!trusted)throw new Error("Upload did not return a trusted Stream media link.");
         attachments.push(image?{type:"image",image_url:trusted,custom:{nbl_media_mime:file.type}}:{type:"video",asset_url:trusted,custom:{}});
       }
-      result=await feed.addActivity({type:"post",text:text||"Shared a video",attachments,visibility:"public",
+      result=await feed.addActivity({type:"post",text:text||mediaCaption(attachments,Boolean(chosenVideo)),attachments,visibility:"public",
         ...(chosenVideo?{custom:youtubeId?{nbl_youtube_id:youtubeId}:{nbl_external_video_url:chosenVideo.url}}:{})});
     }catch(error){
       // Also clean up partial photo uploads when a later upload fails, rather
