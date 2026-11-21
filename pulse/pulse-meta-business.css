@@ -1,0 +1,23 @@
+/* Meta Business asset management only. Does not replace Pulse messaging or Live. */
+.pulse-body #metaBusinessPanel{
+  scroll-margin-top:95px;padding:16px 18px;margin:14px 0 20px;
+  border:1px solid #754d9d;border-radius:16px;background:#140e22;color:#f5e8ff
+}
+.pulse-body #metaBusinessPanel h2{font-size:1.15rem;margin:0 0 8px;color:#f3d9ff}
+.pulse-body #metaBusinessPanel h3{font-size:1rem;margin:14px 0 5px}
+.pulse-body #metaBusinessPanel .status{color:#e6c8fa;margin:9px 0;line-height:1.5}
+.pulse-body #metaBusinessPanel button{
+  font:inherit;font-weight:700;color:#fff;border:1px solid #8954bb;
+  border-radius:9px;background:#532b7a;padding:10px 14px;margin:7px 9px 7px 0;cursor:pointer
+}
+.pulse-body #metaBusinessPanel button:hover{background:#6f3a9e}
+.pulse-body #metaBusinessPanel button:disabled{opacity:.6;cursor:wait}
+.pulse-body #metaBusinessList{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.pulse-body #metaBusinessList>div{min-width:0}
+.pulse-body #metaBusinessList label{display:flex;align-items:flex-start;gap:8px;line-height:1.45;margin:9px 0}
+.pulse-body #metaBusinessList input{accent-color:#af4df4;margin-top:4px}
+.pulse-body #metaBusinessPanel a{color:#e3baff}
+.pulse-body #metaBusinessPanel a:focus-visible,.pulse-body #metaBusinessPanel button:focus-visible{
+  outline:3px solid #e1b5ff;outline-offset:2px
+}
+@media(max-width:600px){.pulse-body #metaBusinessPanel{padding:12px;margin:8px 0 14px}}
