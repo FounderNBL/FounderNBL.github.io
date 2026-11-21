@@ -1,8 +1,8 @@
 // NBL Pulse unified message center: one private view for supported inboxes.
 // Direct messages stay at their existing NBL/Meta providers. No DM content,
 // access tokens, or message identifiers are copied to analytics or storage.
-import {showPulseMemberThread} from "./member-inbox.mjs?v=20261121-unified";
-import {showPulseInstagramThread} from "./instagram-inbox.mjs?v=20261121-dm-send-v1";
+import {showPulseMemberThread} from "./member-inbox.mjs?v=20261121-pulse-connect-v1";
+import {showPulseInstagramThread} from "./instagram-inbox.mjs?v=20261121-pulse-connect-v1";
 
 const $ = selector => document.querySelector(selector);
 const create = (tag, cls, value) => {
@@ -62,7 +62,7 @@ export function mountUnifiedInbox({social, instagram, founder = false}) {
   host.append(member, ig);
   nav.hidden = false;
   const tabs = Array.from(hub.querySelectorAll("[data-pulse-inbox]"));
-  let current = "all", loading = false, refreshGeneration = 0;
+  let current = "pulse", loading = false, refreshGeneration = 0;
   let recent = [];
 
   function message(text) { summary.textContent = String(text); }
@@ -87,7 +87,7 @@ export function mountUnifiedInbox({social, instagram, founder = false}) {
       ig.hidden = true;
     }
     if (name === "pulse" || name === "instagram" && founder) note.hidden = true;
-    if (name !== "all") message(name === "pulse" ? "NBL private messages." :
+    if (name !== "all") message(name === "pulse" ? "Pulse Connect · private NBL messages." :
       name === "instagram" ? "Official Instagram business messages." :
       "This provider needs its own authorized messaging connection.");
   }
@@ -97,7 +97,7 @@ export function mountUnifiedInbox({social, instagram, founder = false}) {
     if (!entries.length) {
       list.append(create("p","social-meta",errors.length ?
         "No connected conversations could be loaded. Check the connection messages below." :
-        "No conversations yet. Open Pulse Messages to start one."));
+        "No conversations yet. Open Pulse Connect to start one."));
     }
     for (const entry of entries) {
       const button = create("button","pulse-unified-thread");
@@ -152,7 +152,7 @@ export function mountUnifiedInbox({social, instagram, founder = false}) {
     }
   }
 
-  function open(name = "all", load = true) {
+  function open(name = "pulse", load = true) {
     setTab(name);
     hub.scrollIntoView({behavior:"smooth",block:"start"});
     if (!load) return;
@@ -161,14 +161,14 @@ export function mountUnifiedInbox({social, instagram, founder = false}) {
     else if (name === "instagram" && founder) $("#pulseInstagramInboxNav")?.click();
   }
 
-  nav.addEventListener("click", () => open("all"));
+  nav.addEventListener("click", () => open("pulse"));
   refresh.addEventListener("click", () => { void loadOverview(); });
   for (const tab of tabs) tab.addEventListener("click", () => open(tab.dataset.pulseInbox));
   hub.querySelector("#pulseInboxClose")?.addEventListener("click", () => {
     hub.hidden = true; member.hidden = true; ig.hidden = true; nav.focus();
   });
-  member.querySelector("#pulseMemberClose")?.addEventListener("click", () => open("all"));
-  ig.querySelector("#pulseIgClose")?.addEventListener("click", () => open("all"));
+  member.querySelector("#pulseMemberClose")?.addEventListener("click", () => open("pulse"));
+  ig.querySelector("#pulseIgClose")?.addEventListener("click", () => open("pulse"));
   // A member's profile Message action and ?dm= links must land in the unified section.
   document.addEventListener("pulse:member-inbox-open", () => {
     setTab("pulse");

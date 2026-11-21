@@ -47,9 +47,9 @@ export function mountMemberInbox(invoke){
    box.append(node("strong",null,label),node("small","social-meta",time),node("p",null,m.deleted?"[Message removed]":String(m.body||"")));
    transcript.append(box);
   }
-  compose.hidden=false;heading.textContent="NBL private conversation";
+  compose.hidden=false;heading.textContent="Pulse Connect · Private conversation";
   transcript.scrollTop=transcript.scrollHeight;
-  say("Private NBL conversation open. Messages stay in Pulse.");
+  say("Pulse Connect conversation open. Messages stay within NBL.");
  }
  async function loadThreads(){
   if(loading||panel.hidden)return;
@@ -99,7 +99,7 @@ export function mountMemberInbox(invoke){
   try{
    await service({action:"send",threadId:current,message:message.slice(0,8000)});
    input.value="";await readThread(current);await loadThreads();
-   say("NBL message sent.");
+   say("Pulse Connect message sent.");
   }catch(error){say("Message not sent: "+String(error.message||"Unavailable").slice(0,120));}
   finally{sending=false;send.disabled=false;}
  });

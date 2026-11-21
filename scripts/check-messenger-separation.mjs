@@ -1,4 +1,4 @@
-// NBL Messenger: source-only release gate. Does not access user content.
+// Pulse Connect: source-only release gate. Does not access user content.
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 
@@ -11,7 +11,7 @@ const university = read("university-campus.html");
 const oldHumanChat = read("member-chat.html");
 const website = read("index.html");
 
-assert.match(app, /<h1>[\s\S]*?NBL Messenger<\/h1>/);
+assert.match(app, /<h1>[\s\S]*?Pulse Connect<\/h1>/);
 assert.match(app, /href="\/messenger\/manifest.webmanifest"/);
 assert.match(app, /src="\/messenger\/app.js/);
 assert.match(app, /data-chat-find-form/);
@@ -64,7 +64,7 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261120-sound-library'),
+assert.ok(app.includes('/messenger/app.js?v=20261121-pulse-connect-v1'),
   "Pulse Messenger must load the current account and call handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
@@ -124,9 +124,9 @@ assert.ok(js.includes("const suggested=pulseMessageIntent()"),"Pulse suggested r
 assert.ok(js.includes("Press Open to start the private conversation"),"Explicit member action required");
 assert.ok(!js.includes('action:"direct",handle:suggested'),"A link must never auto-create a private conversation");
 assert.ok(app.includes('href="/pulse/"'),"Pulse navigation lost");
-assert.match(app,/NBL Messenger/);
-assert.equal(manifest.name,"NBL Messenger");
-console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and customer phone alerts preserved without Founder controls.");
+assert.match(app,/Pulse Connect/);
+assert.equal(manifest.name,"Pulse Connect");
+console.log("PASS: Pulse Connect independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and customer phone alerts preserved without Founder controls.");
 
 const callPage=read("messenger/call.html"), callJs=read("messenger/call.mjs");
 assert.match(app,/data-chat-video-call hidden/);
@@ -173,14 +173,14 @@ assert.doesNotMatch(callJs,/client\.call\(access\.callType,callId\)|client\.call
 assert.match(callPage,/NBL Private · Member-only video/);
 assert.match(callPage,/call\.mjs\?v=20261117-call-sound/);
 assert.doesNotMatch(js,/STREAM_API_SECRET|VIDEO_SECRET/);
-console.log("PASS: NBL Messenger draft video invitation uses direct chats and secured call service.");
+console.log("PASS: Pulse Connect draft video invitation uses direct chats and secured call service.");
 
 // 10-5-5 Messenger safety extensions: iPhone install instructions and user-gesture sound recovery.
 assert.match(js,/function needsIphoneHomeScreen\(\)/);
 assert.match(js,/navigator\.standalone===true/);
 assert.match(js,/Add to Home Screen/);
 assert.match(app,/apple-touch-icon/);
-assert.match(app,/app\.js\?v=20261120-sound-library/);
+assert.match(app,/app\.js\?v=20261121-pulse-connect-v1/);
 assert.match(callPage,/id="callSound"/);
 assert.match(callJs,/async function enableRemoteSound\(\)/);
 assert.match(callJs,/await audio\.play\(\)/);

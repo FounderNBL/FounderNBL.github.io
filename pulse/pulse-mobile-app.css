@@ -180,7 +180,7 @@
   }
   .pulse-body .pulse-sidebar .social-tabs :is(
     button[data-feed="foryou"],button[data-feed="timeline"],
-    a.pulse-mobile-create,button[data-feed="notification"],a.pulse-message-tab
+    a.pulse-mobile-create,button[data-feed="notification"],#pulseUnifiedInboxNav:not([hidden])
   ) {
     display:flex!important;flex-direction:column;
     justify-content:center!important;align-items:center;
@@ -193,7 +193,7 @@
   .pulse-body .pulse-sidebar .social-tabs [data-feed="timeline"] {order:2}
   .pulse-body .pulse-sidebar .social-tabs a.pulse-mobile-create {order:3}
   .pulse-body .pulse-sidebar .social-tabs [data-feed="notification"] {order:4}
-  .pulse-body .pulse-sidebar .social-tabs a.pulse-message-tab {order:5}
+  .pulse-body .pulse-sidebar .social-tabs #pulseUnifiedInboxNav {order:5}
   .pulse-body .pulse-sidebar .social-tabs .pulse-nav-glyph {
     font-size:1.3rem;line-height:1;height:22px;
   }

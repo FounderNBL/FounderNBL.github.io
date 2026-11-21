@@ -174,7 +174,7 @@ function rememberIncoming(threadId,messages,{announce=false}={}){
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el;};
 
 function signInUrl(){
-  // Sign-in returns to this standalone NBL Messenger route.
+  // Sign-in returns to this standalone Pulse Connect route.
   const dest=new URL(window.location.href);
   dest.hash="";
   if(!["https:","http:"].includes(dest.protocol))return ACCOUNT_PORTAL+"/sign-in";
@@ -234,7 +234,7 @@ async function social(body){
   const payload=await response.json().catch(()=>({}));
   assertCurrent();
   if(!response.ok||payload?.ok!==true){
-    const error=new Error(payload?.message||"NBL Messenger is temporarily unavailable. Try again.");
+    const error=new Error(payload?.message||"Pulse Connect is temporarily unavailable. Try again.");
     error.status=response.status;error.reason=payload?.reason;throw error;
   }
   return payload;
@@ -349,7 +349,7 @@ function needsIphoneHomeScreen(){
  return ios&&!installed;
 }
 function iphoneHomeScreenHelp(){
- return "iPhone: open Messenger in Safari, tap Share → Add to Home Screen, then open the NBL Messenger icon, sign in, and tap Enable phone alerts.";
+ return "iPhone: open Pulse Connect in Safari, tap Share → Add to Home Screen, then open the Pulse Connect icon, sign in, and tap Enable phone alerts.";
 }
 function supportsPhonePush(){
  return Boolean(window.isSecureContext!==false
@@ -370,7 +370,7 @@ function base64UrlBytes(text){
  return bytes;
 }
 async function pushApi(body){
- // Use the SAME signed-in Clerk account isolation as normal NBL Messenger.
+ // Use the SAME signed-in Clerk account isolation as normal Pulse Connect.
  const userId=state.clerk?.user?.id||null,generation=authSyncGeneration;
  const token=await authToken();
  const current=()=>Boolean(userId&&generation===authSyncGeneration&&state.clerk?.user?.id===userId&&state.clerk?.isSignedIn);
@@ -520,8 +520,8 @@ async function previewPhoneNotification(){
   const permission=await window.Notification.requestPermission();
   if(permission!=="granted"){setPushStatus("Allow notifications to see a phone preview.");return;}
   const reg=await messengerWorker();
-  const conf=pushConfig||{title:"NBL Messenger",body:"You have a new message.",showSender:true};
-  await reg.showNotification(conf.title||"NBL Messenger",{
+  const conf=pushConfig||{title:"Pulse Connect",body:"You have a new message.",showSender:true};
+  await reg.showNotification(conf.title||"Pulse Connect",{
    body:conf.body||"You have a new message.",
    icon:"/messenger/icon.svg",badge:"/messenger/icon.svg",
    tag:"nbl-messenger-preview",data:{url:"/messenger/"}
@@ -574,7 +574,7 @@ function renderInviteState(){
     if(title)title.textContent=founder?"Welcome, Founder. The neighborhood starts here.":"You're early. Bring a friend!";
     const description=$("[data-chat-invite-description]");
     if(description)description.textContent=founder
-      ?"Your official NBL Messenger inbox is ready. Invite a real member to join the neighborhood and start talking."
+      ?"Your official Pulse Connect inbox is ready. Invite a real member to join the neighborhood and start talking."
       :"Your inbox is ready. Invite a real NBL member, then find each other by your NBL usernames.";
   }
   if(!state.selectedId){
@@ -715,7 +715,7 @@ async function openThread(id){
 }
 async function refresh(){
   try{
-    status("Refreshing NBL Messenger…");
+    status("Refreshing Pulse Connect…");
     const [identity,threads]=await Promise.all([social({action:"me"}),social({action:"list_threads"})]);
     renderIdentity(identity.me||{});
     state.threads=(threads.threads||[]).filter(row=>row.thread_type==="direct");
@@ -732,9 +732,9 @@ async function refresh(){
     void loadFeaturedFounder();
     await loadPhoneSettings();
     if(state.selectedId)await openThread(state.selectedId);
-    else status("NBL Messenger is ready. Open a DM or select a conversation.");
+    else status("Pulse Connect is ready. Open a DM or select a conversation.");
     void scanIncomingCalls();
-  }catch(error){status(error.message||"NBL Messenger could not refresh.");}
+  }catch(error){status(error.message||"Pulse Connect could not refresh.");}
 }
 async function openDM(handle){
   if(!handle||state.busy)return;
@@ -752,7 +752,7 @@ async function copyInvite(){
   try{
     if(!navigator.clipboard?.writeText)throw new Error("Clipboard unavailable");
     await navigator.clipboard.writeText(INVITE_URL);
-    status("NBL Messenger invite link copied. Share it with someone you know.");
+    status("Pulse Connect invite link copied. Share it with someone you know.");
   }catch{
     status("You can copy the invitation address shown in the welcome card.");
   }
@@ -762,7 +762,7 @@ async function shareInvite(){
   if(typeof navigator.share==="function"){
     try{
       await navigator.share({
-        title:"NBL Messenger",
+        title:"Pulse Connect",
         text:"Come join me on New Beansland! Sign in or create your NBL account and let's chat.",
         url:INVITE_URL
       });
@@ -789,14 +789,14 @@ async function invitePhoneContact(){
     const contact=contacts[0];
     const name=String(contact.name?.[0]||"your friend").slice(0,80);
     const phone=String(contact.tel?.[0]||"").trim();
-    const body="Join me on NBL Messenger: "+INVITE_URL;
+    const body="Join me on Pulse Connect: "+INVITE_URL;
     // The recipient is selected explicitly; no automatic SMS is sent.
     if(phone && /^[+0-9() .-]{5,32}$/.test(phone)){
       const sms="sms:"+encodeURIComponent(phone)+"?body="+encodeURIComponent(body);
       message.textContent="Opening your text app for "+name+". Review before sending.";
       window.location.href=sms;
     }else if(navigator.share){
-      await navigator.share({title:"NBL Messenger",text:body,url:INVITE_URL});
+      await navigator.share({title:"Pulse Connect",text:body,url:INVITE_URL});
       message.textContent="Invitation shared.";
     }else{
       await copyInvite();
@@ -833,7 +833,7 @@ async function startVideoCall(){
   // Reserve the caller's call window directly on the tap. Opening after async
   // network calls is blocked as a popup by many mobile browsers.
   const callWindow=window.open("","_blank");
-  if(callWindow){callWindow.document.title="NBL Messenger · Connecting call";callWindow.document.body.textContent="Connecting your NBL video call…";}
+  if(callWindow){callWindow.document.title="Pulse Connect · Connecting call";callWindow.document.body.textContent="Connecting your NBL video call…";}
   callFeedback("Preparing your private video call…");
   status("Preparing your private video call…");
   try{
@@ -971,7 +971,7 @@ async function syncClerkSession(){
   if(!userId){
     $("[data-chat-guest]").hidden=false;
     $("[data-chat-auth-status]").textContent="Sign in to send and read direct messages.";
-    status("NBL Messenger conversations are private until you sign in.");
+    status("Pulse Connect conversations are private until you sign in.");
     return;
   }
   $("[data-chat-guest]").hidden=true;
