@@ -414,7 +414,104 @@ async function founderPublish(req:Request,kind:"prepare"|"confirm"|"status"){
   return response(req,{ok:true,published:true,media_id:String(published.body.id),permalink,account:"@nbl_world"});
  }catch{return response(req,{ok:false,reason:"meta_unavailable"},503);}
 }
-// Meta webhook transport only. No DM, comment, or member-content processing enabled.
+// Founder-only Instagram Direct inbox. Meta is the source of truth: we do not
+// copy DM bodies into NBL databases, logs, analytics or public feeds. Polling
+// refreshes incoming messages while the Pulse inbox is open.
+const IG_CONVERSATION_ID=/^\d{6,50}$/;
+function safeMessage(record:any){
+ const sender=record?.from||{};
+ return {
+  id:String(record?.id||"").slice(0,100),
+  text:typeof record?.message==="string"?record.message.slice(0,4000):"",
+  sender_id:String(sender.id||"").slice(0,80),
+  sender_username:typeof sender.username==="string"?sender.username.slice(0,80):"",
+  created_at:typeof record?.created_time==="string"?record.created_time:""
+ };
+}
+function privateGraphError(req:Request,status:number,body:any){
+ const code=Number(body?.error?.code)||0;
+ const permission=[10,190,200,201,250].includes(code)||status===401||status===403;
+ return response(req,{ok:false,reason:permission?"instagram_dm_permission_or_token_required":
+  status===429?"instagram_dm_rate_limited":"instagram_dm_meta_unavailable",meta_error_code:code||null},permission?403:503);
+}
+async function graphInboxRead(path:string,params:Record<string,string>,ig:InstagramTarget){
+ const u=new URL("https://"+ig.host+"/"+VERSION+"/"+path);
+ for(const [k,v] of Object.entries(params))u.searchParams.set(k,v);
+ const res=await fetch(u,{headers:{"authorization":"Bearer "+ig.token,"accept":"application/json"},
+  redirect:"error",signal:AbortSignal.timeout(11000)});
+ const data=await res.json().catch(()=>null);
+ return {ok:res.ok&&!data?.error,status:res.status,data};
+}
+async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
+ const origin=req.headers.get("origin")||"";
+ if(!ORIGINS.has(origin))return response(req,{ok:false,reason:"origin_not_allowed"},403);
+ if(!await founderUser(req))return response(req,{ok:false,reason:"founder_access_required"},403);
+ if(Number(req.headers.get("content-length")||0)>5000)return response(req,{ok:false,reason:"invalid_request"},413);
+ let body:any;
+ try{const raw=await req.text();if(raw.length>5000)throw Error();body=JSON.parse(raw);
+  if(!body||Array.isArray(body)||typeof body!=="object")throw Error();
+ }catch{return response(req,{ok:false,reason:"invalid_json"},400);}
+ if(body.action!==action)return response(req,{ok:false,reason:"invalid_action"},400);
+ if(!INSTAGRAM_TOKEN)return response(req,{ok:false,reason:"instagram_token_secret_missing"},503);
+ try{
+  const ig=await officialInstagramAccount();
+  if(!ig)return response(req,{ok:false,reason:"official_instagram_not_accessible"},403);
+  if(action==="list"){
+   const params:Record<string,string>={fields:"id,updated_time,participants{id,username}",limit:"25"};
+   if(ig.host==="graph.facebook.com")params.platform="instagram";
+   const list=await graphInboxRead(ig.id+"/conversations",params,ig);
+   if(!list.ok)return privateGraphError(req,list.status,list.data);
+   const conversations=(Array.isArray(list.data?.data)?list.data.data:[]).map((c:any)=>({
+    id:String(c.id||"").slice(0,80),updated_at:String(c.updated_time||"").slice(0,60),
+    people:(Array.isArray(c.participants?.data)?c.participants.data:[])
+     .filter((p:any)=>p&&p.id&&String(p.id)!==ig.id)
+     .map((p:any)=>({id:String(p.id).slice(0,80),username:typeof p.username==="string"?p.username.slice(0,80):""}))
+   })).filter((c:any)=>IG_CONVERSATION_ID.test(c.id));
+   return response(req,{ok:true,account:"@nbl_world",conversations,has_more:!!list.data?.paging?.next,
+    mode:ig.via});
+  }
+  const conversationId=String(body.conversation_id||"");
+  if(!IG_CONVERSATION_ID.test(conversationId))return response(req,{ok:false,reason:"invalid_conversation"},400);
+  // Verify the conversation belongs to @nbl_world, never trust a client ID.
+  const details=await graphInboxRead(conversationId,
+   {fields:"id,participants{id,username},updated_time"},ig);
+  if(!details.ok)return privateGraphError(req,details.status,details.data);
+  const members=Array.isArray(details.data?.participants?.data)?details.data.participants.data:[];
+  const owner=members.some((p:any)=>String(p?.id||"")===ig.id);
+  const others=members.filter((p:any)=>IG_CONVERSATION_ID.test(String(p?.id||""))&&String(p.id)!==ig.id);
+  if(!owner||others.length!==1||String(details.data?.id)!==conversationId)
+   return response(req,{ok:false,reason:"conversation_not_owned"},403);
+  const thread=await graphInboxRead(conversationId+"/messages",
+   {fields:"id,message,created_time,from{id,username},to{id,username}",limit:"20"},ig);
+  if(!thread.ok)return privateGraphError(req,thread.status,thread.data);
+  const messages=(Array.isArray(thread.data?.data)?thread.data.data:[]).map(safeMessage)
+   .filter((m:any)=>m.id&&m.created_at).sort((a:any,b:any)=>Date.parse(a.created_at)-Date.parse(b.created_at));
+  const lastInbound=messages.filter((m:any)=>m.sender_id===String(others[0].id))
+   .map((m:any)=>Date.parse(m.created_at)).filter((n:number)=>Number.isFinite(n)).sort((a:number,b:number)=>b-a)[0]||0;
+  const replyWindowOpen=lastInbound>0&&Date.now()-lastInbound<=24*60*60*1000&&lastInbound-Date.now()<60000;
+  if(action==="thread")return response(req,{ok:true,conversation_id:conversationId,account:"@nbl_world",
+   participant:{id:String(others[0].id),username:String(others[0].username||"").slice(0,80)},
+   messages,reply_window_open:replyWindowOpen});
+  const message=body.message;
+  if(body.confirm!=="send"||typeof message!=="string"||message.trim().length<1||message.length>1000)
+   return response(req,{ok:false,reason:"invalid_or_unconfirmed_reply"},400);
+  // Meta requires the customer to initiate and imposes a standard reply window.
+  if(!replyWindowOpen)return response(req,{ok:false,reason:"instagram_dm_reply_window_closed"},403);
+  const outbound=await fetch("https://"+ig.host+"/"+VERSION+"/"+ig.id+"/messages",{
+   method:"POST",headers:{"authorization":"Bearer "+ig.token,"content-type":"application/json","accept":"application/json"},
+   body:JSON.stringify({recipient:{id:String(others[0].id)},message:{text:message.trim()},
+    ...(ig.host==="graph.facebook.com"?{messaging_type:"RESPONSE"}:{})}),
+   redirect:"error",signal:AbortSignal.timeout(12000)
+  });
+  const sent=await outbound.json().catch(()=>null);
+  if(!outbound.ok||sent?.error)return privateGraphError(req,outbound.status,sent);
+  if(typeof sent?.message_id!=="string"&&typeof sent?.id!=="string")
+   return response(req,{ok:false,reason:"instagram_dm_send_unconfirmed"},502);
+  return response(req,{ok:true,sent:true,conversation_id:conversationId,message_id:String(sent.message_id||sent.id).slice(0,120)});
+ }catch{return response(req,{ok:false,reason:"instagram_dm_meta_unavailable"},503);}
+}
+// Verified Meta webhook transport; the Pulse inbox reads the latest messages directly.
+
 function webhookReady(){return APP_SECRET.length>=16&&WEBHOOK_VERIFY_TOKEN.length>=20;}
 async function webhook(req:Request){
  if(!webhookReady())return response(req,{ok:false,reason:"webhook_secrets_missing"},503);
@@ -439,8 +536,9 @@ async function webhook(req:Request){
  const sig=Uint8Array.from((signature.slice(7).match(/../g)||[]),s=>parseInt(s,16));
  const verified=await crypto.subtle.verify("HMAC",key,sig,raw);
  if(!verified)return response(req,{ok:false,reason:"invalid_signature"},403);
- // Acknowledge verified transport only; never log or act on private message content here.
- return response(req,{ok:true,received:true,processing:"not_enabled"});
+ // No private message bodies are stored. The signed-in inbox pulls from Meta.
+ // The webhook is authenticated and acknowledged; polling picks up new DMs.
+ return response(req,{ok:true,received:true,processing:"inbox_polling"});
 }
 
 Deno.serve(async(req:Request)=>{
@@ -449,6 +547,9 @@ Deno.serve(async(req:Request)=>{
  if(pathname.endsWith("/webhook"))return webhook(req);
  if(req.method==="GET"&&pathname.endsWith("/callback"))return callback(req);
  if(req.method==="GET"&&pathname.endsWith("/publishing-check"))return instagramPublishingCheck(req);
+ if(req.method==="POST"&&pathname.endsWith("/inbox/list"))return privateInbox(req,"list");
+ if(req.method==="POST"&&pathname.endsWith("/inbox/thread"))return privateInbox(req,"thread");
+ if(req.method==="POST"&&pathname.endsWith("/inbox/reply"))return privateInbox(req,"reply");
  if(req.method==="POST"&&pathname.endsWith("/publish/prepare"))return founderPublish(req,"prepare");
  if(req.method==="POST"&&pathname.endsWith("/publish/status"))return founderPublish(req,"status");
  if(req.method==="POST"&&pathname.endsWith("/publish/confirm"))return founderPublish(req,"confirm");
