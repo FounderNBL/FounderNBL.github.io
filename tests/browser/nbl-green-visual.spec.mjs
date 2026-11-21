@@ -16,12 +16,11 @@ async function visit(page,path="/"){
  expect(response.status(),"public route must respond successfully").toBeLessThan(400);
  return true;
 }
-test("Pulse and Messenger have exact approved artwork, separate links, and uncropped images",async({page},info)=>{
+test("Pulse has exact approved artwork and one active social door",async({page},info)=>{
  if(!await visit(page))return;
- const cases=[["/pulse/","/NBL_Pulse_Worldcard.png",0,0],
-              ["/messenger/","/NBL_Messenger_Worldcard.png",1672,941]];
+ const cases=[["/pulse/","/NBL_Pulse_Worldcard.png",0,0]];
  const cards=page.locator(".pulse-world-door .social-door-grid .world-card");
- await expect(cards).toHaveCount(2);
+ await expect(cards).toHaveCount(1);
  for(const [href,src,width,height] of cases){
    const card=cards.filter({has:page.locator('a[href="'+href+'"]')});
    // Use direct descendant query because filter(has) on same element does not match itself.
@@ -49,9 +48,9 @@ test("Beans opens independently from Pulse and Messenger",async({page})=>{
  await expect(page.locator("#nbl-beans-panel")).toBeVisible();
  await expect(page.locator(".nbl-beans-head .nbl-beans-people-link")).toHaveCount(0);
 });
-test("Messenger public door never displays private threads to signed-out visitors",async({page})=>{
+test("Legacy Messenger redirects to Pulse without exposing private threads",async({page})=>{
  if(!await visit(page,"/messenger/"))return;
- await expect(page.locator("[data-chat-guest]")).toBeVisible();
- await expect(page.locator("[data-chat-app]")).toBeHidden();
- await expect(page.locator("[data-chat-messages]")).not.toContainText("PRIVATE_A_THREAD");
+ await expect(page).toHaveURL(/\/pulse\/\?messages=1/);
+ await expect(page.locator("#socialApp")).toBeHidden();
+ await expect(page.locator("#pulseMemberMessages")).toBeEmpty();
 });
