@@ -51,7 +51,7 @@ test("Pulse Founder inbox is on the Pulse page with a separate NBL Messenger lin
  assert.match(api,/instagram_dm=1&instagram_connect=/);
  assert.doesNotMatch(panel,/messaging permission is not approved for this connected account\/app/);
  assert.match(ui,/href="\/messenger\/"/);
- assert.match(ui,/social-v1\.mjs\?v=20261121-dm-send-v1/);
+ assert.match(ui,/social-v1\.mjs\?v=20261121-dm-diag-v1/);
  assert.match(social,/import \{mountInstagramInbox\} from "\.\.\/pulse\/instagram-inbox\.mjs/);
  assert.match(social,/if\(state\.me\?\.role==="founder"&&location\.pathname\.startsWith\("\/pulse"\)\)/);
  assert.match(social,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
@@ -126,3 +126,14 @@ test("Provider error codes remain visible",async()=>{
  assert.match(errorText(error),/Meta code 10\/2018001/);
  assert.match(errorText(error),/app-role account/);
 });
+
+ test("Optional diagnostics cannot replace required inbox fields and expose only bounded results",()=>{
+ assert.match(api,/optionalRead=.*graphInboxRead/);
+ assert.match(api,/optionalRead\(encodeURIComponent\(conversationId\),"is_owner"\)/);
+ assert.match(api,/if\(threadOwner===false\)return response/);
+ assert.match(api,/recipient_identity_matches:recipientIdentity,token_identity_matches:pageTokenIdentity/);
+ assert.match(api,/meta_trace_id:trace/);
+ assert.match(panel,/App owns thread:/);
+ assert.match(panel,/data.is_owner!==false/);
+ assert.match(social,/error.metaTrace=/);
+ });

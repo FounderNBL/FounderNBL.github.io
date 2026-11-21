@@ -23,15 +23,16 @@ export function errorText(error){
   instagram_meta_secrets_not_configured:"Meta Instagram authorization is not configured for this app. Check the existing Meta app ID, login configuration and encryption secret.",
   official_instagram_not_accessible:"Pulse cannot verify the official @nbl_world Instagram account. Check the existing Meta business connection.",
   instagram_token_secret_missing:"The official Instagram API token is not configured.",
-  instagram_dm_reply_window_closed:"Meta's normal 24-hour reply window has closed. Ask the person to message @nbl_world again.",
+  instagram_dm_reply_window_closed:"Meta rejected the reply as outside its 24-hour window. This can happen even when Pulse sees a recent inbound. Do not repeat the send without checking the diagnostics.",
   conversation_not_owned:"This conversation does not belong to the connected Instagram account.",
   instagram_dm_meta_unavailable:"Instagram messaging is temporarily unavailable. Try Refresh.",
+  instagram_dm_routing_not_owner:"Meta reports that another app owns this conversation. Check Conversation Routing in Meta Business Suite.",
   instagram_dm_routing_owned:"Meta Conversation Routing assigns this thread to another app. Check the conversation owner in Meta Business Suite.",
   instagram_dm_rate_limited:"Instagram asked us to slow down. Try again later.",
   instagram_dm_send_unconfirmed:"Meta did not confirm the reply. Refresh before trying again."
  };
  const code=Number(error?.metaCode)||0,subcode=Number(error?.metaSubcode)||0;
- return (messages[name]||"Instagram: "+name.replace(/_/g," ")||"Instagram inbox unavailable.")+(code?" (Meta code "+code+(subcode?"/"+subcode:"")+")":"");
+ return (messages[name]||"Instagram: "+name.replace(/_/g," ")||"Instagram inbox unavailable.")+(code?" (Meta code "+code+(subcode?"/"+subcode:"")+")":"")+(typeof error?.metaTrace==="string"&&/^[A-Za-z0-9_-]{6,100}$/.test(error.metaTrace)?" · Trace: "+error.metaTrace:"");
 }
 let openInstagramThread=null;
 export function showPulseInstagramThread(id){
@@ -112,8 +113,11 @@ export function mountInstagramInbox(invoke){
    const text=el("p",null,m.text||"[Attachment or unsupported message type]");
    line.append(who,stamp,text);thread.append(line);
   }
-  updateReply(data.reply_window_open===true);
-  say(data.reply_window_open===true?
+  const flag=v=>v===true?"yes":v===false?"no":"unknown";
+  const kind=["text","sticker","share","attachment","unknown","none"].includes(data.last_inbound_kind)?data.last_inbound_kind:"unknown";
+  thread.append(el("p","social-meta","Diagnostics · App owns thread: "+flag(data.is_owner)+" · Last inbound: "+kind+" · Recipient identity matches: "+flag(data.recipient_identity_matches)+" · Token identity matches: "+flag(data.token_identity_matches)));
+  updateReply(data.reply_window_open===true&&data.is_owner!==false);
+  say(data.is_owner===false?"Meta reports another app owns this thread.":data.reply_window_open===true?
    "Conversation loaded from Instagram. Replies go directly to that person.":
    "Messages loaded. A new message from the person is required before Pulse can reply.");
   lastReadAt=Date.now();
