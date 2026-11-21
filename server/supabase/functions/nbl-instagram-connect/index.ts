@@ -201,7 +201,7 @@ async function probeInstagram():Promise<InstagramProbe>{
 // Instagram business/system-user account discovery is rechecked before EVERY write.
 // Restrict integration to the official NBL asset, never the first arbitrary shared account.
 type InstagramTarget={
- id:string,host:"graph.facebook.com"|"graph.instagram.com",token:string,via:"assigned"|"page"|"instagram_login"
+ id:string,host:"graph.facebook.com"|"graph.instagram.com",token:string,via:"assigned"|"page"|"instagram_login",pageId?:string
 };
 async function officialInstagramAccount():Promise<InstagramTarget|null>{
  if(!INSTAGRAM_TOKEN)return null;
@@ -247,7 +247,7 @@ async function officialInstagramAccount():Promise<InstagramTarget|null>{
     if(matches.length===1){
      const page=matches[0];
      const t=typeof page.access_token==="string"&&page.access_token.length>10?page.access_token:INSTAGRAM_TOKEN;
-     return {id:String(page.instagram_business_account.id),host:"graph.facebook.com",token:t,via:"page"};
+     return {id:String(page.instagram_business_account.id),host:"graph.facebook.com",token:t,via:"page",pageId:String(page.id)};
     }
     if(matches.length>1)return null;
    }
@@ -497,7 +497,12 @@ async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
    return response(req,{ok:false,reason:"invalid_or_unconfirmed_reply"},400);
   // Meta requires the customer to initiate and imposes a standard reply window.
   if(!replyWindowOpen)return response(req,{ok:false,reason:"instagram_dm_reply_window_closed"},403);
-  const outbound=await fetch("https://"+ig.host+"/"+VERSION+"/"+ig.id+"/messages",{
+  // Facebook Login sends through the linked Page's messages endpoint;
+  // Instagram Login sends through the verified Instagram business user.
+  const sendId=ig.host==="graph.facebook.com"?ig.pageId:ig.id;
+  if(!sendId||!IG_CONVERSATION_ID.test(sendId))
+   return response(req,{ok:false,reason:"instagram_dm_page_access_required"},403);
+  const outbound=await fetch("https://"+ig.host+"/"+VERSION+"/"+sendId+"/messages",{
    method:"POST",headers:{"authorization":"Bearer "+ig.token,"content-type":"application/json","accept":"application/json"},
    body:JSON.stringify({recipient:{id:String(others[0].id)},message:{text:message.trim()},
     ...(ig.host==="graph.facebook.com"?{messaging_type:"RESPONSE"}:{})}),
