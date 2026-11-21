@@ -63,3 +63,12 @@ test("New UI stays private and does not add public message storage",()=>{
  assert.match(client,/founder:state\.me\?\.role==="founder"/);
  assert.doesNotMatch(hub,/\.innerHTML\s*=|localStorage|sessionStorage|sendBeacon|analytics\.track|window\.open/);
 });
+
+test("Meta opaque conversation IDs survive the unified inbox without path injection",()=>{
+ const threads=normalizeInstagramThreads({conversations:[
+  {id:"t_abc123_-XYZ=",people:[{username:"friend"}]},
+  {id:"../bad/path",people:[]}
+ ]});
+ assert.equal(threads.length,1);
+ assert.equal(threads[0].id,"t_abc123_-XYZ=");
+});

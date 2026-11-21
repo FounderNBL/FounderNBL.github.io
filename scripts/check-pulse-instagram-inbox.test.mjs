@@ -11,7 +11,7 @@ test("Instagram Direct API stays founder-only and requires browser Origin",()=>{
  assert.match(api,/if\(!ORIGINS\.has\(origin\)\)/);
  assert.match(api,/const actor=await founderUser\(req\)/);
  assert.match(api,/if\(!actor\)return response\(req,\{ok:false,reason:"founder_access_required"\},403\)/);
- assert.match(api,/const ig=await officialInstagramAccount\(grant\.token\)/);
+ assert.match(api,/const ig=await officialInstagramInboxAccount\(grant\.token\)/);
  assert.match(api,/if\(!owner\|\|others\.length!==1/);
  assert.match(api,/reason:"conversation_not_owned"/);
  assert.match(api,/if\(body\.confirm!=="send"/);
@@ -22,8 +22,8 @@ test("Instagram Direct API stays founder-only and requires browser Origin",()=>{
  assert.doesNotMatch(api,/console\.(log|warn|error)\([^\n]*(message|token|raw|body)\b/i);
 });
 test("Instagram Inbox reads Meta conversations and messages with no DM persistence",()=>{
- assert.match(api,/ig\.id\+"\/conversations"/);
- assert.match(api,/conversationId\+"\/messages"/);
+ assert.match(api,/inboxId\+"\/conversations"/);
+ assert.match(api,/encodeURIComponent\(conversationId\)\+"\/messages"/);
  assert.match(api,/safeMessage/);
  assert.match(api,/async function founderInboxToken\(userId:string\)/);
  assert.match(api,/\.eq\("clerk_user_id",userId\)\.eq\("provider","instagram"\)/);
@@ -51,7 +51,7 @@ test("Pulse Founder inbox is on the Pulse page with a separate NBL Messenger lin
  assert.match(api,/instagram_dm=1&instagram_connect=/);
  assert.doesNotMatch(panel,/messaging permission is not approved for this connected account\/app/);
  assert.match(ui,/href="\/messenger\/"/);
- assert.match(ui,/social-v1\.mjs\?v=20261121-instagram-dm-permission-v2/);
+ assert.match(ui,/social-v1\.mjs\?v=20261121-instagram-dm-page-v3/);
  assert.match(social,/import \{mountInstagramInbox\} from "\.\.\/pulse\/instagram-inbox\.mjs/);
  assert.match(social,/if\(state\.me\?\.role==="founder"&&location\.pathname\.startsWith\("\/pulse"\)\)/);
  assert.match(social,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
@@ -94,4 +94,15 @@ test("Pulse inbox explains Meta permission remediation without claiming a real D
  assert.match(panel,/Press Refresh inbox to verify messaging access/);
  assert.match(panel,/connected==="instagram_dm_permission_missing"/);
  assert.doesNotMatch(panel,/instagram_business_manage_messages/,"Do not mix Instagram Login and Facebook Login scopes");
+});
+
+test("Instagram Facebook Login inbox uses the verified linked Page token and opaque safe IDs",()=>{
+ assert.match(api,/async function officialInstagramInboxAccount/);
+ assert.match(api,/page\.access_token,via:"page",pageId/);
+ assert.match(api,/instagram_business_account\{id,username\}/);
+ assert.match(api,/const inboxId=ig\.host==="graph\.facebook\.com"\?ig\.pageId:ig\.id/);
+ assert.match(api,/params\.platform="instagram"/);
+ assert.match(api,/graphInboxRead\(encodeURIComponent\(conversationId\)/);
+ assert.match(api,/ownIds\.has\(String\(p\?\.id/);
+ assert.match(panel,/instagram_dm_page_access_required:/);
 });

@@ -16,6 +16,7 @@ function errorText(error){
  const messages={
   instagram_dm_permission_or_token_required:"Meta rejected the Instagram DM token. For this Facebook Login for Business flow, check instagram_manage_messages in the app's Login configuration and reconnect. App-role testing may work before review approval.",
   instagram_dm_permission_missing:"Meta authorization completed, but the Login for Business configuration did not grant instagram_manage_messages. Add that permission to the existing Meta login configuration, then reconnect Instagram DMs in Pulse.",
+  instagram_dm_page_access_required:"The saved Instagram grant must include access to the linked New Beansland Facebook Page. Check pages_manage_metadata, pages_show_list, and pages_messaging in the existing Meta login configuration, and approve the Page once.",
   instagram_dm_connection_required:"Connect Instagram DMs to @nbl_world, then refresh the inbox. You can test with Meta app roles before App Review.",
   instagram_dm_oauth_expired:"The Instagram DM connection has expired. Press Connect Instagram DMs to authorize it again.",
   instagram_dm_connection_unavailable:"The saved Instagram authorization could not be read. Press Connect Instagram DMs again.",
@@ -32,7 +33,7 @@ function errorText(error){
 }
 let openInstagramThread=null;
 export function showPulseInstagramThread(id){
- if(openInstagramThread&&/^\d{6,50}$/.test(String(id)))void openInstagramThread(String(id));
+ if(openInstagramThread&&/^[A-Za-z0-9_=-]{6,512}$/.test(String(id)))void openInstagramThread(String(id));
 }
 export function mountInstagramInbox(invoke){
  const panel=document.querySelector("#pulseInstagramInbox");
@@ -114,7 +115,7 @@ export function mountInstagramInbox(invoke){
   lastReadAt=Date.now();
  }
  async function openThread(id,quiet=false){
-  if(!/^\d{6,50}$/.test(id))return;
+  if(!/^[A-Za-z0-9_=-]{6,512}$/.test(id))return;
   try{
    const result=await call("thread",{action:"thread",conversation_id:id});
    if(panel.hidden)return;
@@ -130,9 +131,9 @@ export function mountInstagramInbox(invoke){
    if(panel.hidden)return;
    conversations.replaceChildren();
    const entries=Array.isArray(result.conversations)?result.conversations:[];
-   if(!entries.length)conversations.append(el("p","social-meta","No Instagram conversations returned. A person must message @nbl_world first."));
+   if(!entries.length)conversations.append(el("p","social-meta","Meta returned no accessible Instagram conversations. Refresh after checking for incoming messages."));
    for(const item of entries){
-    if(!/^\d{6,50}$/.test(String(item.id||"")))continue;
+    if(!/^[A-Za-z0-9_=-]{6,512}$/.test(String(item.id||"")))continue;
     const name=item.people?.[0]?.username||"Instagram conversation";
     const button=el("button","btn small pulse-ig-conversation","@"+name);
     button.type="button";button.setAttribute("aria-label","Read Instagram messages from @"+name);
@@ -143,7 +144,7 @@ export function mountInstagramInbox(invoke){
    }
    if(result.has_more)conversations.append(el("p","social-meta","Showing the 25 most recent conversations."));
    if(selected)await openThread(selected,true);
-   if(!selected)say("Instagram inbox connected. Choose a conversation to read and reply.");
+   if(!selected)say(entries.length?"Instagram inbox connected. Choose a conversation to read and reply.":"Meta returned no accessible conversations.");
   }catch(error){say(errorText(error));}
   finally{loading=false;}
  }
