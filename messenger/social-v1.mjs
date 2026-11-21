@@ -131,7 +131,7 @@ function nblPostLink(id){
 }
 // Facebook does not execute Pulse JavaScript. Its crawler needs the server-rendered
 // per-post Open Graph image rather than the static /pulse/ landing-page metadata.
-// The public Supabase preview checks the real Stream activity and only exposes
+// The first-party share route uses backend-verified Stream metadata and only exposes
 // photos/captions belonging to explicitly public, non-moderated posts.
 async function announceNewBeat(activity,viewerId){
   const notice=$("#pulseNewBeatNotice");
@@ -152,7 +152,7 @@ async function announceNewBeat(activity,viewerId){
   notice.hidden=false;
 }
 function facebookShareLink(id){
-  const shareURL="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-pulse-share?post="+encodeURIComponent(id);
+  const shareURL="https://newbeansland.org/pulse/share?post="+encodeURIComponent(id);
   return "https://www.facebook.com/sharer/sharer.php?u="+encodeURIComponent(shareURL);
 }
 function safeError(error){return String(error?.message||"Unable to connect to NBL Social right now.").slice(0,220);}
