@@ -29,6 +29,10 @@ test("One Messages navigation entry retains old authenticated inbox transports",
  for(const provider of ["all","pulse","instagram","facebook","tiktok"])
   assert.ok(page.includes('data-pulse-inbox="'+provider+'"'),provider);
  assert.match(page,/pulse-legacy-message-tab\{display:none!important\}/);
+ assert.match(hub,/nav\.addEventListener\("click", \(\) => open\("pulse"\)\)/);
+ assert.match(page,/data-pulse-inbox="pulse" aria-selected="true"/);
+ assert.match(page,/id="pulseInboxAll" hidden/);
+ assert.doesNotMatch(page,/href="\/messenger\/"/);
  assert.match(client,/mountUnifiedInbox\(\{/);
  assert.match(client,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\)\)/);
  assert.match(client,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
@@ -71,4 +75,9 @@ test("Meta opaque conversation IDs survive the unified inbox without path inject
  ]});
  assert.equal(threads.length,1);
  assert.equal(threads[0].id,"t_abc123_-XYZ=");
+});
+
+test("NBL contact and safety controls reuse the original social service",()=>{
+ for(const action of ["contact_nickname","mute","block","unblock","report"])assert.ok(member.includes('action:"'+action+'"'));
+ assert.match(page,/id="pulseMemberTools" hidden/);
 });

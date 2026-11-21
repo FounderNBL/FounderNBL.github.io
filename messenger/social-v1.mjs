@@ -8,8 +8,8 @@ import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {ownPost,mediaCaption,displayedCaption,mutateOwnPost} from "./pulse-post-controls.mjs?v=20261120-own-post";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
 import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-dm-page-v3";
-import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261121-unified";
-import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-dm-page-v3";
+import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261121-single-social-v1";
+import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-single-social-v1";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
