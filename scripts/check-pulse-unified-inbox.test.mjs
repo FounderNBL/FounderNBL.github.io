@@ -53,7 +53,7 @@ test("Opening unified threads delegates to original, confirmed reply handlers",(
  assert.match(member,/action:"send"/);
  assert.match(instagram,/confirm:"send"/);
  assert.match(instagram,/reply_window_open===true/);
- assert.match(client,/showPulseMemberInbox\(\^@\?/);
+ assert.match(client,/showPulseMemberInbox\(\/\^@\?/);
 });
 test("New UI stays private and does not add public message storage",()=>{
  assert.match(page,/section class="social-list pulse-unified-inbox" id="pulseUnifiedInbox"[^>]*hidden/);
