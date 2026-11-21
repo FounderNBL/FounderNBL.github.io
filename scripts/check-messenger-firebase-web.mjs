@@ -4,7 +4,8 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 
 const load=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
-const page=load("messenger/index.html");
+const page=load("docs/parked-messenger-index.html.txt");
+assert.doesNotMatch(load("messenger/index.html"),/firebase-web|google-analytics/);
 const firebase=load("messenger/firebase-web.js");
 const messenger=load("messenger/app.js");
 const sw=load("messenger/sw.js");

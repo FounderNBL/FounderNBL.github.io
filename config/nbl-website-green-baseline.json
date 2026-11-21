@@ -99,9 +99,9 @@
         "id": "messenger-private-entrance",
         "file": "messenger/index.html",
         "all": [
-          "data-chat-guest",
-          "data-chat-app hidden",
-          "NBL Messenger"
+          "NBL Messenger has moved to Pulse",
+          "location.replace(target.href)",
+          "new URL(\"/pulse/\""
         ]
       },
       {
@@ -125,7 +125,8 @@
         "route": "/messenger/",
         "sourceImage": "NBL_Messenger_Worldcard.png",
         "gitBlobSha1": "89a9e27d8a0004462349af7614178710c50e3b90",
-        "sizeBytes": 2074930
+        "sizeBytes": 2074930,
+        "parked": true
       }
     ],
     "existingRegressionSuites": [
@@ -160,13 +161,13 @@
   "coverage": [
     {
       "id": "visual-identity",
-      "green": "Correct approved Pulse and Messenger PNG bytes and dimensions, no cropping, correct navigation on desktop/mobile",
+      "green": "Exact approved active Pulse card and preserved parked Messenger artwork",
       "evidence": "source hash + live image hash + browser DOM",
       "stage": "implemented"
     },
     {
       "id": "routes-and-journeys",
-      "green": "Public .org website routes respond with HTML, homepage public navigation matches source, Beans launcher and Messenger signed-out states render; no University, Playground or Desk navigation",
+      "green": "Public approved routes and Pulse sign-in; legacy Messenger redirects to Pulse",
       "evidence": "live HTTP + browser",
       "stage": "baseline-in-progress"
     },

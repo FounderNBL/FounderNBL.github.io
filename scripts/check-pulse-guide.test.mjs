@@ -7,7 +7,7 @@ test("Pulse information and legal guide is public and discoverable",()=>{
  for(const href of [
  'https://newbeansland.org/pulse/guide.html',
  '/privacy.html','/terms.html','/account-deletion.html',
- '/pricing.html','/messenger/','/account.html'
+ '/pricing.html','/pulse/?messages=1','/account.html'
  ]) assert.ok(guide.includes(href),href);
  assert.ok(pulse.includes('href="/pulse/guide.html"'));
  assert.match(guide,/<title>NBL Pulse Guide/);

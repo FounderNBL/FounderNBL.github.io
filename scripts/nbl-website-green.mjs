@@ -60,9 +60,9 @@ export function checkSource(c=contract,{text=getText,bytes=getBytes}={}){
      const b=bytes(a.sourceImage);
      const verified=approvedArtMatches(a,b);
      const anchor=new RegExp('<a\\b[^>]*href="'+a.route.replaceAll("/","\\/")+'"[^>]*>[\\s\\S]*?<img\\s+src="/'+a.sourceImage.replaceAll(".","\\.")+'"');
-     const rightCard=anchor.test(door);
+     const rightCard=a.parked===true?!anchor.test(door)&&!door.includes('href="/messenger/"'):anchor.test(door);
      findings.push(item("art:"+a.id,verified&&rightCard?"PASS":"FAIL",
-       verified&&rightCard?"exact_approved_art_bytes_and_door":"wrong_art_hash_dimensions_or_route","source-visual"));
+       verified&&rightCard?(a.parked?"exact_approved_parked_art_and_no_live_door":"exact_approved_art_bytes_and_door"):"wrong_art_hash_dimensions_or_route","source-visual"));
    }catch{findings.push(item("art:"+a.id,"FAIL","approved_art_unreadable","source-visual"));}
  }
  try{
