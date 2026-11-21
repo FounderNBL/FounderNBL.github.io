@@ -474,7 +474,43 @@ async function founderPublish(req:Request,kind:"prepare"|"confirm"|"status"){
 // Founder-only Instagram Direct inbox. Meta is the source of truth: we do not
 // copy DM bodies into NBL databases, logs, analytics or public feeds. Polling
 // refreshes incoming messages while the Pulse inbox is open.
-const IG_CONVERSATION_ID=/^\d{6,50}$/;
+// Messaging with Facebook Login requires the linked Page's own token, not
+// the assigned Instagram publishing token. Keep publishing discovery unchanged.
+async function officialInstagramInboxAccount(accessToken:string):Promise<InstagramTarget|null>{
+ const pageId="1249164184954203"; // Existing official New Beansland Page.
+ const valid=(v:unknown)=>/^\d{6,50}$/.test(String(v||""));
+ function fromPage(page:any):InstagramTarget|null{
+  const ig=page?.instagram_business_account;
+  if(String(page?.id)!==pageId||!valid(ig?.id)||String(ig?.username||"").toLowerCase()!=="nbl_world"||
+    typeof page?.access_token!=="string"||page.access_token.length<10)return null;
+  return {id:String(ig.id),host:"graph.facebook.com",token:page.access_token,via:"page",pageId};
+ }
+ // Direct lookup avoids losing a linked Page beyond /me/accounts pagination.
+ for(const path of [pageId,"me/accounts"]){
+  let after:string|undefined;
+  const seen=new Set<string>();
+  for(let i=0;i<10;i++){
+   try{
+    const u=new URL("https://graph.facebook.com/"+VERSION+"/"+path);
+    u.searchParams.set("fields","id,access_token,instagram_business_account{id,username}");
+    if(path==="me/accounts"){u.searchParams.set("limit","100");if(after)u.searchParams.set("after",after);}
+    const res=await fetch(u,{headers:{authorization:"Bearer "+accessToken,accept:"application/json"},
+     redirect:"error",signal:AbortSignal.timeout(9000)});
+    if(!res.ok)break;
+    const body=await res.json();
+    if(path===pageId){const target=fromPage(body);if(target)return target;break;}
+    for(const page of Array.isArray(body?.data)?body.data:[]){const target=fromPage(page);if(target)return target;}
+    const next=body?.paging?.cursors?.after;
+    if(!body?.paging?.next||typeof next!=="string"||seen.has(next))break;
+    seen.add(next);after=next;
+   }catch{break;}
+  }
+ }
+ const alternate=await officialInstagramAccount(accessToken);
+ return alternate?.host==="graph.instagram.com"?alternate:null;
+}
+const IG_CONVERSATION_ID=/^[A-Za-z0-9_=-]{6,512}$/;
+const IG_PARTICIPANT_ID=/^\d{6,50}$/;
 function safeMessage(record:any){
  const sender=record?.from||{};
  return {
@@ -513,17 +549,20 @@ async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
  const grant=await founderInboxToken(actor);
  if(!grant.token)return response(req,{ok:false,reason:grant.reason||"instagram_dm_connection_required"},409);
  try{
-  const ig=await officialInstagramAccount(grant.token);
-  if(!ig)return response(req,{ok:false,reason:"official_instagram_not_accessible"},403);
+  const ig=await officialInstagramInboxAccount(grant.token);
+  if(!ig)return response(req,{ok:false,reason:"instagram_dm_page_access_required"},403);
+  const ownIds=new Set([ig.id,...(ig.pageId?[ig.pageId]:[])]);
   if(action==="list"){
    const params:Record<string,string>={fields:"id,updated_time,participants{id,username}",limit:"25"};
    if(ig.host==="graph.facebook.com")params.platform="instagram";
-   const list=await graphInboxRead(ig.id+"/conversations",params,ig);
+   const inboxId=ig.host==="graph.facebook.com"?ig.pageId:ig.id;
+   if(!inboxId)return response(req,{ok:false,reason:"instagram_dm_page_access_required"},403);
+   const list=await graphInboxRead(inboxId+"/conversations",params,ig);
    if(!list.ok)return privateGraphError(req,list.status,list.data);
    const conversations=(Array.isArray(list.data?.data)?list.data.data:[]).map((c:any)=>({
-    id:String(c.id||"").slice(0,80),updated_at:String(c.updated_time||"").slice(0,60),
+    id:String(c.id||""),updated_at:String(c.updated_time||"").slice(0,60),
     people:(Array.isArray(c.participants?.data)?c.participants.data:[])
-     .filter((p:any)=>p&&p.id&&String(p.id)!==ig.id)
+     .filter((p:any)=>p&&p.id&&!ownIds.has(String(p.id)))
      .map((p:any)=>({id:String(p.id).slice(0,80),username:typeof p.username==="string"?p.username.slice(0,80):""}))
    })).filter((c:any)=>IG_CONVERSATION_ID.test(c.id));
    return response(req,{ok:true,account:"@nbl_world",conversations,has_more:!!list.data?.paging?.next,
@@ -532,15 +571,15 @@ async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
   const conversationId=String(body.conversation_id||"");
   if(!IG_CONVERSATION_ID.test(conversationId))return response(req,{ok:false,reason:"invalid_conversation"},400);
   // Verify the conversation belongs to @nbl_world, never trust a client ID.
-  const details=await graphInboxRead(conversationId,
+  const details=await graphInboxRead(encodeURIComponent(conversationId),
    {fields:"id,participants{id,username},updated_time"},ig);
   if(!details.ok)return privateGraphError(req,details.status,details.data);
   const members=Array.isArray(details.data?.participants?.data)?details.data.participants.data:[];
-  const owner=members.some((p:any)=>String(p?.id||"")===ig.id);
-  const others=members.filter((p:any)=>IG_CONVERSATION_ID.test(String(p?.id||""))&&String(p.id)!==ig.id);
+  const owner=members.some((p:any)=>ownIds.has(String(p?.id||"")));
+  const others=members.filter((p:any)=>IG_PARTICIPANT_ID.test(String(p?.id||""))&&!ownIds.has(String(p.id)));
   if(!owner||others.length!==1||String(details.data?.id)!==conversationId)
    return response(req,{ok:false,reason:"conversation_not_owned"},403);
-  const thread=await graphInboxRead(conversationId+"/messages",
+  const thread=await graphInboxRead(encodeURIComponent(conversationId)+"/messages",
    {fields:"id,message,created_time,from{id,username},to{id,username}",limit:"20"},ig);
   if(!thread.ok)return privateGraphError(req,thread.status,thread.data);
   const messages=(Array.isArray(thread.data?.data)?thread.data.data:[]).map(safeMessage)
@@ -559,7 +598,7 @@ async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
   // Facebook Login sends through the linked Page's messages endpoint;
   // Instagram Login sends through the verified Instagram business user.
   const sendId=ig.host==="graph.facebook.com"?ig.pageId:ig.id;
-  if(!sendId||!IG_CONVERSATION_ID.test(sendId))
+  if(!sendId||!IG_PARTICIPANT_ID.test(sendId))
    return response(req,{ok:false,reason:"instagram_dm_page_access_required"},403);
   const outbound=await fetch("https://"+ig.host+"/"+VERSION+"/"+sendId+"/messages",{
    method:"POST",headers:{"authorization":"Bearer "+ig.token,"content-type":"application/json","accept":"application/json"},

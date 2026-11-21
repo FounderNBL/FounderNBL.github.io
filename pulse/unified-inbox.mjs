@@ -2,7 +2,7 @@
 // Direct messages stay at their existing NBL/Meta providers. No DM content,
 // access tokens, or message identifiers are copied to analytics or storage.
 import {showPulseMemberThread} from "./member-inbox.mjs?v=20261121-unified";
-import {showPulseInstagramThread} from "./instagram-inbox.mjs?v=20261121-unified";
+import {showPulseInstagramThread} from "./instagram-inbox.mjs?v=20261121-dm-page-v3";
 
 const $ = selector => document.querySelector(selector);
 const create = (tag, cls, value) => {
@@ -12,7 +12,7 @@ const create = (tag, cls, value) => {
   return item;
 };
 const memberThreadId = /^[0-9a-f-]{36}$/i;
-const instagramThreadId = /^\d{6,50}$/;
+const instagramThreadId = /^[A-Za-z0-9_=-]{6,512}$/;
 const readableDate = value => {
   const time = Date.parse(String(value || ""));
   return Number.isFinite(time) ? new Date(time).toLocaleString() : "";

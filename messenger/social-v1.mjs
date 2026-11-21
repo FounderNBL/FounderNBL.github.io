@@ -7,9 +7,9 @@ import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {ownPost,mediaCaption,displayedCaption,mutateOwnPost} from "./pulse-post-controls.mjs?v=20261120-own-post";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
-import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-dm-permission-v2";
+import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-dm-page-v3";
 import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261121-unified";
-import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-unified-messages";
+import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-dm-page-v3";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
