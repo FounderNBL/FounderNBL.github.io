@@ -63,7 +63,7 @@ assert.match(html,/data-feed="notification" aria-label="View Pulse notifications
 assert.match(html,/class="pulse-nav-future"/,"Unreleased features must be visibly noninteractive");
 assert.match(html,/Stories <small>Coming soon/);
 assert.match(html,/class="pulse-nav-live" href="#pulseLive"/,"Real Live nav points to actual Pulse controls");
-assert.match(html,/Live <small>OFF until enabled/,"Do not imply a public broadcast is already active");
+assert.match(html,/Live <small id="pulseLiveNavStatus">Checking…<\/small>/,"Nav Live status must come from actual server state, not misleading static OFF/LIVE text");
 assert.match(html,/id="pulseLiveAdmin" hidden/,"Founder-only switch is hidden until server authorization");
 assert.match(html,/id="pulseLiveToggle"/,"Founder ON/OFF button is wired");
 assert.doesNotMatch(html,/Go Live · setup pending/,"Do not retain the fake setup placeholder");
