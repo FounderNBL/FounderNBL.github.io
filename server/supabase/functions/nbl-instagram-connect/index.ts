@@ -527,6 +527,7 @@ function privateGraphError(req:Request,status:number,body:any){
  const permission=[10,190,200,201,250].includes(code)||status===401||status===403;
  const reason=code===190?"instagram_dm_oauth_expired":
   subcode===2534037?"instagram_dm_routing_owned":
+  subcode===2534022?"instagram_dm_reply_window_closed":
   permission?"instagram_dm_permission_or_token_required":
   status===429?"instagram_dm_rate_limited":"instagram_dm_meta_unavailable";
  // Only numeric provider diagnostics, never Meta's raw response or private content.
@@ -605,10 +606,15 @@ async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
   const sendId=ig.host==="graph.facebook.com"?ig.pageId:ig.id;
   if(!sendId||!IG_PARTICIPANT_ID.test(sendId))
    return response(req,{ok:false,reason:"instagram_dm_page_access_required"},403);
-  // Use Meta's documented Instagram freeform text envelope for Page login.
+  // Page-route Send API (Messenger Platform) requires messaging_type: the
+  // send must be classified RESPONSE so Meta evaluates it inside the
+  // 24-hour window. The Instagram Login route (graph.instagram.com) has no
+  // messaging_type; the Page route (graph.facebook.com) does — omitting it
+  // leaves the send unclassified and Meta rejects it as outside the window
+  // (10/2534022) even when the customer messaged minutes ago.
   const payload={recipient:{id:String(others[0].id)},message:{text:message.trim()}};
   const pageLogin=ig.host==="graph.facebook.com";
-  const sendBody=pageLogin?new URLSearchParams({recipient:JSON.stringify(payload.recipient),message:JSON.stringify(payload.message)}):JSON.stringify(payload);
+  const sendBody=pageLogin?new URLSearchParams({recipient:JSON.stringify(payload.recipient),messaging_type:"RESPONSE",message:JSON.stringify(payload.message)}):JSON.stringify(payload);
   const outbound=await fetch("https://"+ig.host+"/"+VERSION+"/"+sendId+"/messages",{
    method:"POST",headers:{"authorization":"Bearer "+ig.token,"content-type":pageLogin?"application/x-www-form-urlencoded":"application/json","accept":"application/json"},
    body:sendBody,

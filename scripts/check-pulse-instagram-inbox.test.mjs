@@ -108,9 +108,11 @@ test("Instagram Facebook Login inbox uses the verified linked Page token and opa
 });
 
 test("IG text reply follows Meta's Page form envelope and preserves retry state",()=>{
- assert.match(api,/new URLSearchParams\(\{recipient:JSON.stringify\(payload.recipient\),message:JSON.stringify\(payload.message\)\}\)/);
+ assert.match(api,/new URLSearchParams\(\{recipient:JSON.stringify\(payload.recipient\),messaging_type:"RESPONSE",message:JSON.stringify\(payload.message\)\}\)/);
  assert.match(api,/application\/x-www-form-urlencoded/);
- assert.doesNotMatch(api,/messaging_type:"RESPONSE"/);
+ assert.match(api,/subcode===2534022\?"instagram_dm_reply_window_closed":/);
+ assert.match(api,/const payload=\{recipient:\{id:String\(others\[0\]\.id\)\},message:\{text:message\.trim\(\)\}\};/);
+ assert.match(api,/\}\):JSON\.stringify\(payload\);/);
  assert.match(api,/meta_error_subcode:subcode\|\|null/);
  assert.match(panel,/finally\{pending=false;updateReply\(canReply\);\}/);
  assert.match(panel,/submit.disabled=pending\|\|!canReply/);
