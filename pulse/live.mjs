@@ -39,6 +39,7 @@ const state = {
   liveSince: null, timerId: null, pollId: null, busy: false,
   facebookConfigured: false, recordingRequested: false, liveEnabled: false,
   isAdmin: false, screenOnly: false, screenReady: false,
+  facebookSelectionTouched: false,
 };
 
 function setStatus(text) { const el = $("#pulseLiveStatus"); if (el) el.textContent = text; }
@@ -50,8 +51,8 @@ function showError(text) {
 function show(id, on) { const el = $(id); if (el) el.hidden = !on; }
 function setBusy(on) {
   state.busy = on;
-  for (const id of ["#pulseLiveStart", "#pulseLiveGoLive", "#pulseLiveEnd", "#pulseLiveToggle", "#pulseLiveShareScreen"]) {
-    const el = $(id); if (el) el.disabled = on || (id === "#pulseLiveGoLive" && state.screenOnly && !state.screenReady);
+  for (const id of ["#pulseLiveStart", "#pulseLiveGoLive", "#pulseLiveEnd", "#pulseLiveToggle"]) {
+    const el = $(id); if (el) el.disabled = on;
   }
 }
 
@@ -170,6 +171,7 @@ function fmtElapsed(ms) {
 }
 function startTimer() {
   stopTimer();
+  if (!state.liveSince || state.mode !== "live") { show("#pulseLiveElapsed", false); return; }
   const tick = () => {
     const el = $("#pulseLiveElapsed");
     if (el && state.liveSince) { el.hidden = false; el.textContent = fmtElapsed(Date.now() - state.liveSince); }
@@ -203,8 +205,8 @@ async function teardownStream() {
   try { await state.call?.leave(); } catch {}
   try { await state.client?.disconnectUser(); } catch {}
   state.call = null; state.client = null; state.mode = "idle";
-  state.screenOnly = false; state.screenReady = false;
-  show("#pulseLiveShareScreen", false);
+  state.screenOnly = false; state.screenReady = false; state.liveSince = null;
+  show("#pulseLiveElapsed", false); show("#pulseLiveBadge", false);
 }
 
 // --- HLS viewer (preferred) ---
@@ -313,6 +315,9 @@ async function refreshStatus(silent = false) {
   if (!data || typeof data !== "object") return;
   state.liveEnabled = data.enabled === true;
   state.isAdmin = data.isAdmin === true;
+  const navStatus = $("#pulseLiveNavStatus");
+  if (navStatus) navStatus.textContent = data.status === "live" ? "LIVE" :
+    data.status === "backstage" ? "Preparing" : (state.liveEnabled ? "ON" : "OFF");
   show("#pulseLiveAdmin", data.isAdmin === true);
   const toggle = $("#pulseLiveToggle");
   if (toggle) toggle.textContent = state.liveEnabled ? "Turn Pulse Live OFF" : "Turn Pulse Live ON";
@@ -327,6 +332,7 @@ async function refreshStatus(silent = false) {
   if (facebookCheckbox) {
     facebookCheckbox.disabled = !state.facebookConfigured;
     if (!state.facebookConfigured) facebookCheckbox.checked = false;
+    else if (!state.facebookSelectionTouched) facebookCheckbox.checked = true;
   }
   show("#pulseLiveFacebookOption", state.facebookConfigured);
   const facebookNote = $("#pulseLiveFacebookNote");
@@ -377,7 +383,8 @@ async function refreshStatus(silent = false) {
     return;
   } // already watching/hosting
   if (data.startedAt) state.liveSince = new Date(data.startedAt).getTime();
-  show("#pulseLiveBadge", true);
+  show("#pulseLiveBadge", status === "live");
+  if (status !== "live") show("#pulseLiveElapsed", false);
   setStatus(status === "live" ? "LIVE — " + (data.title || DEFAULT_TITLE) : "Backstage — only you can see this");
   if (data.facebook?.status === "live") {
     const b = $("#pulseLiveBadge"); if (b) b.textContent = "LIVE · Facebook";
@@ -443,14 +450,16 @@ async function onStart() {
       await state.call.microphone.enable();
     }
     state.mode = "backstage";
-    state.liveSince = Date.now();
+    state.liveSince = null;
+    show("#pulseLiveBadge", false); show("#pulseLiveElapsed", false);
     show("#pulseLiveSetup", false); show("#pulseLiveHost", true);
     show("#pulseLiveGoLive", true); show("#pulseLiveEnd", true);
-    show("#pulseLiveShareScreen", screenOnly);
     show("#pulseLivePreview", !screenOnly);
-    setStatus(screenOnly ? "Backstage — camera and microphone OFF. Click Share screen, then Go Live." : "Backstage — only you can see this");
+    setStatus(screenOnly
+      ? "Backstage — camera and microphone OFF. Click Go Live to choose a screen and broadcast."
+      : "Backstage — only you can see this. Press Go Live when ready.");
     state.sub = state.call.state.participants$.subscribe(renderHostPreview);
-    startPoll(); startTimer();
+    startPoll();
   } catch (e) {
     const originalError = plainError(e);
     // If a call/DB row was created, release it after a browser camera,
@@ -464,33 +473,28 @@ async function onStart() {
     setStatus("Could not start Pulse Live.");
   } finally { setBusy(false); }
 }
-async function onShareScreen() {
-  if (state.busy || !state.call || !state.screenOnly || state.mode !== "backstage") return;
-  setBusy(true); showError("");
-  try {
-    // Browser screen consent must come from a separate user gesture.
-    await state.call.screenShare.enable();
-    state.screenReady = true;
-    state.previewBound = null;
-    show("#pulseLivePreview", true);
-    setStatus("Screen sharing ready; camera and microphone remain OFF. Press Go Live when ready.");
-    const button = $("#pulseLiveShareScreen"); if (button) button.textContent = "Screen sharing enabled";
-  } catch {
-    state.screenReady = false;
-    showError("Screen sharing was not enabled. Select a screen or window in the browser prompt and retry.");
-  } finally { setBusy(false); }
-}
+// Request screen capture directly from the Go Live click; browser user
+// activation cannot survive asynchronous fetches. The browser screen/window
+// picker is still mandatory. No camera/mic is enabled in Screen Only mode.
 async function onGoLive() {
-  if (state.busy || !state.callId) return;
-  if (state.screenOnly && !state.screenReady) {
-    showError("Click Share screen first. Your camera and microphone will stay off."); return;
-  }
+  if (state.busy || !state.callId || state.mode !== "backstage") return;
   setBusy(true); showError("");
+  let choosingScreen = false;
   try {
+    if (state.screenOnly && !state.screenReady) {
+      choosingScreen = true;
+      setStatus("Choose a window or screen to broadcast. Camera and microphone stay OFF.");
+      await state.call.screenShare.enable();
+      choosingScreen = false;
+      state.screenReady = true;
+      state.previewBound = null;
+      show("#pulseLivePreview", true);
+    }
+    setStatus("Connecting your public livestream…");
     const data = await liveApi("go-live", { callId: state.callId }, "required");
     if (data.live !== true) throw Error("Pulse Live could not go live.");
     state.mode = "live";
-    if (data.startedAt) state.liveSince = new Date(data.startedAt).getTime();
+    state.liveSince = data.startedAt ? new Date(data.startedAt).getTime() : Date.now();
     show("#pulseLiveGoLive", false);
     show("#pulseLiveBadge", true);
     const b = $("#pulseLiveBadge");
@@ -498,19 +502,24 @@ async function onGoLive() {
     setStatus("You are LIVE on Pulse" + (data.facebook?.status === "live" ? " and Facebook" : (data.facebook?.status === "connecting" ? " · connecting to Facebook…" : "")));
     startTimer();
   } catch (e) {
-    if (["facebook_ingest_unavailable", "facebook_rtmp_failed"].includes(e.reason)) {
+    if (choosingScreen) {
+      setStatus("Backstage — you are NOT live. Camera and microphone remain OFF.");
+      showError("Choose a screen or window when Edge asks. Press Go Live again if you cancelled.");
+    } else if (["facebook_ingest_unavailable", "facebook_rtmp_failed"].includes(e.reason)) {
       await teardownStream();
       state.callId = null;
       show("#pulseLiveHost", false);
       await refreshStatus(true);
       setStatus("Facebook broadcast could not start.");
+      showError(plainError(e));
     } else if (e.reason === "facebook_cleanup_pending") {
       show("#pulseLiveGoLive", false);
       setStatus("Facebook shutdown is unconfirmed.");
+      showError(plainError(e));
     } else {
-      setStatus("Backstage — only you can see this");
+      setStatus("Backstage — you are NOT live. Press Go Live to retry.");
+      showError(plainError(e));
     }
-    showError(plainError(e));
   } finally { setBusy(false); }
 }
 async function onEnd() {
@@ -598,7 +607,7 @@ export function initPulseLive() {
   $("#pulseLiveStart")?.addEventListener("click", () => { void onStart(); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
-  $("#pulseLiveShareScreen")?.addEventListener("click", () => { void onShareScreen(); });
+  $("#pulseLiveFacebook")?.addEventListener("change", () => { state.facebookSelectionTouched = true; });
   $("#pulseLiveEnd")?.addEventListener("click", () => { void onEnd(); });
   $("#pulseLiveFindRecording")?.addEventListener("click", () => { void onFindRecording(); });
   window.addEventListener("pagehide", () => {
