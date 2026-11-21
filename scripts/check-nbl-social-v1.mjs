@@ -1,3 +1,4 @@
+import "./check-pulse-instagram-inbox.test.mjs";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {parsePublicVideo} from "../messenger/social-video-connect.mjs";
@@ -133,7 +134,11 @@ assert.match(js,/location\.pathname\.startsWith\("\/pulse"\)/);
 assert.match(pulse,/postMedia" type="file" accept="image\/jpeg,image\/png,image\/webp,video\/mp4,video\/webm" multiple/);
 assert.doesNotMatch(pulse,/postMedia" type="file" disabled/);
 assert.match(pulse,/postMedia"[^>]*video\/mp4/);
-assert.match(pulse,/social-v1\.mjs\?v=20261120-public-author-handles/);
+assert.match(pulse,/social-v1\.mjs\?v=20261120-instagram-direct-inbox/);
+assert.match(pulse,/id="pulseInstagramInboxNav"/);
+assert.match(pulse,/id="pulseInstagramInbox"/);
+assert.match(js,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
+
 assert.match(js,/import \{recentHomeBeats\} from "\.\/pulse-home-recent\.mjs"/);
 assert.match(js,/ownFeed=selected==="foryou"\?state\.client\.feed\("user",actorId\):null/);
 assert.match(js,/recentHomeBeats\(\[primaryRows,ownRows\],\{limit:8\}\)/);
