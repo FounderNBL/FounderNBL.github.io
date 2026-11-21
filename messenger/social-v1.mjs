@@ -7,8 +7,9 @@ import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {ownPost,mediaCaption,displayedCaption,mutateOwnPost} from "./pulse-post-controls.mjs?v=20261120-own-post";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
-import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261120-ig-direct-v1";
-import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261120-native-pulse-dms";
+import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-unified";
+import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261121-unified";
+import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-unified-messages";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -1011,7 +1012,12 @@ async function boot(){
       initMetaCommunity((path,payload)=>secured(META_COMMUNITY_API+path,payload));
       mountInstagramInbox((path,payload)=>secured(INSTAGRAM_API+path,payload));
     }
-    await loadFeed();
+    if(location.pathname.startsWith("/pulse"))mountUnifiedInbox({
+       social:payload=>secured(SOCIAL_API,payload),
+       instagram:(path,payload)=>secured(INSTAGRAM_API+path,payload),
+       founder:state.me?.role==="founder"
+     });
+     await loadFeed();
     await loadLinkedPost();
     if(location.pathname.startsWith("/pulse")){
       const parameters=new URL(location.href).searchParams;
