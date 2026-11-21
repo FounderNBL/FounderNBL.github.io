@@ -530,8 +530,9 @@ function privateGraphError(req:Request,status:number,body:any){
   subcode===2534022?"instagram_dm_reply_window_closed":
   permission?"instagram_dm_permission_or_token_required":
   status===429?"instagram_dm_rate_limited":"instagram_dm_meta_unavailable";
- // Only numeric provider diagnostics, never Meta's raw response or private content.
- return response(req,{ok:false,reason,meta_error_code:code||null,meta_error_subcode:subcode||null},permission?403:status===429?429:503);
+ // Only bounded provider diagnostics, never Meta's raw response or private content.
+ const trace=typeof body?.error?.fbtrace_id==="string"&&/^[A-Za-z0-9_-]{6,100}$/.test(body.error.fbtrace_id)?body.error.fbtrace_id:null;
+ return response(req,{ok:false,reason,meta_error_code:code||null,meta_error_subcode:subcode||null,meta_trace_id:trace},permission?403:status===429?429:503);
 }
 async function graphInboxRead(path:string,params:Record<string,string>,ig:InstagramTarget){
  const u=new URL("https://"+ig.host+"/"+VERSION+"/"+path);
@@ -593,14 +594,32 @@ async function privateInbox(req:Request,action:"list"|"thread"|"reply"){
   const lastInbound=messages.filter((m:any)=>m.sender_id===String(others[0].id))
    .map((m:any)=>Date.parse(m.created_at)).filter((n:number)=>Number.isFinite(n)).sort((a:number,b:number)=>b-a)[0]||0;
   const replyWindowOpen=lastInbound>0&&Date.now()-lastInbound<=24*60*60*1000&&lastInbound-Date.now()<60000;
+  // Optional diagnostics never change the existing required inbox fields.
+  // Provider errors in these probes mean unknown, not a broken inbox.
+  const optionalRead=(path:string,fields:string)=>graphInboxRead(path,{fields},ig).catch(()=>null);
+  const latestInbound=messages.filter((m:any)=>m.sender_id===String(others[0].id)&&Number.isFinite(Date.parse(m.created_at))).at(-1);
+  const [routing,profile,tokenIdentity,kindInfo]=await Promise.all([
+   optionalRead(encodeURIComponent(conversationId),"is_owner"),
+   action==="thread"?optionalRead(String(others[0].id),"username"):Promise.resolve(null),
+   action==="thread"?optionalRead("me","id"):Promise.resolve(null),
+   action==="thread"&&latestInbound&&!latestInbound.text?optionalRead(encodeURIComponent(latestInbound.id),"attachments{type},shares,sticker"):Promise.resolve(null)
+  ]);
+  const threadOwner=routing?.ok&&typeof routing.data?.is_owner==="boolean"?routing.data.is_owner:null;
+  const a=kindInfo?.ok?kindInfo.data?.attachments:null;
+  const shares=kindInfo?.ok?kindInfo.data?.shares:null;
+  const lastKind=!latestInbound?"none":latestInbound.text?"text":kindInfo?.ok&&kindInfo.data?.sticker?"sticker":(Array.isArray(shares)?shares.length:Array.isArray(shares?.data)&&shares.data.length)?"share":(Array.isArray(a)?a.length:Array.isArray(a?.data)&&a.data.length)?"attachment":"unknown";
+  const expectedUsername=String(others[0].username||"").toLowerCase();
+  const recipientIdentity=profile?.ok&&typeof profile.data?.username==="string"&&expectedUsername?profile.data.username.toLowerCase()===expectedUsername:null;
+  const pageTokenIdentity=tokenIdentity?.ok&&tokenIdentity.data?.id!=null?String(tokenIdentity.data.id)===(ig.pageId||ig.id):null;
   if(action==="thread")return response(req,{ok:true,conversation_id:conversationId,account:"@nbl_world",
    participant:{id:String(others[0].id),username:String(others[0].username||"").slice(0,80)},
-   messages,reply_window_open:replyWindowOpen});
+   messages,reply_window_open:replyWindowOpen,is_owner:threadOwner,last_inbound_kind:lastKind,recipient_identity_matches:recipientIdentity,token_identity_matches:pageTokenIdentity});
   const message=body.message;
   if(body.confirm!=="send"||typeof message!=="string"||message.trim().length<1||new TextEncoder().encode(message.trim()).length>1000)
    return response(req,{ok:false,reason:"invalid_or_unconfirmed_reply"},400);
   // Meta requires the customer to initiate and imposes a standard reply window.
   if(!replyWindowOpen)return response(req,{ok:false,reason:"instagram_dm_reply_window_closed"},403);
+  if(threadOwner===false)return response(req,{ok:false,reason:"instagram_dm_routing_not_owner"},403);
   // Facebook Login sends through the linked Page's messages endpoint;
   // Instagram Login sends through the verified Instagram business user.
   const sendId=ig.host==="graph.facebook.com"?ig.pageId:ig.id;

@@ -7,9 +7,9 @@ import {createNewBeatTracker,pulseHandle} from "./pulse-new-beat.mjs";
 import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {ownPost,mediaCaption,displayedCaption,mutateOwnPost} from "./pulse-post-controls.mjs?v=20261120-own-post";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261119-review-api-scopes";
-import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-dm-send-v1";
+import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-dm-diag-v1";
 import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261121-unified";
-import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-dm-send-v1";
+import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-dm-diag-v1";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -201,7 +201,7 @@ async function secured(url,body){
   });
   const data=await response.json().catch(()=>({}));
   assertCurrentAccount(userId);
-  if(!response.ok||data.ok!==true){const error=new Error(data.message||data.reason||"NBL service unavailable");error.metaCode=Number(data.meta_error_code)||0;error.metaSubcode=Number(data.meta_error_subcode)||0;throw error;}
+  if(!response.ok||data.ok!==true){const error=new Error(data.message||data.reason||"NBL service unavailable");error.metaTrace=typeof data.meta_trace_id==="string"?data.meta_trace_id:"";error.metaCode=Number(data.meta_error_code)||0;error.metaSubcode=Number(data.meta_error_subcode)||0;throw error;}
   return data;
 }
 async function session(){
