@@ -87,7 +87,9 @@
 <link rel="stylesheet" href="/pulse/pulse-founder-ui.css?v=20261118-live-visibility">
 <link rel="stylesheet" href="/pulse/pulse-mobile-app.css?v=20261118-phone-app-v1" media="(max-width: 760px)">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
-<script type="module" src="/pulse/live.mjs?v=20261120-standalone-live"></script></head><body class="pulse-body">
+<script type="module" src="/pulse/live.mjs?v=20261120-standalone-live"></script>
+<link rel="stylesheet" href="/pulse/pulse-story-highlights.css?v=20261121-existing-video">
+<script type="module" src="/pulse/pulse-story-highlights.mjs?v=20261121-existing-video"></script></head><body class="pulse-body">
 <header class="pulse-topbar" aria-label="NBL Pulse site navigation">
   <a class="pulse-company-logo" href="/" aria-label="New Beansland home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" width="40" height="40"><span class="pulse-company-wordmark">NBL<small>New Beansland™</small></span></a>
   <nav class="pulse-site-nav" aria-label="NBL destinations">
@@ -154,7 +156,7 @@
     <button data-feed="timeline" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">◎</span><span>Following</span></button>
     <button data-feed="user" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">▤</span><span>My Posts</span></button>
     <button data-feed="friends" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">⌕</span><span>Explore <small>(People)</small></span></button>
-    <span class="pulse-nav-future"><span class="pulse-nav-glyph" aria-hidden="true">◯</span><span>Stories <small>Coming soon</small></span></span>
+    <a class="pulse-nav-stories" href="#pulseStories"><span class="pulse-nav-glyph" aria-hidden="true">◯</span><span>Stories <small>Video highlights</small></span></a>
     <a class="pulse-nav-live" href="#pulseLive"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live <small id="pulseLiveNavStatus">Checking…</small></span></a>
     <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
     <button id="pulseUnifiedInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open all private messages in one Pulse inbox"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Messages</span></button>
@@ -192,16 +194,18 @@
   <p class="pulse-live-error" id="pulseLiveError" role="alert" hidden></p>
 </div>
   <a class="pulse-create-shortcut" href="#composeTitle" aria-label="Jump to create a Pulse post"><span aria-hidden="true">＋</span> Create Post</a>
-</aside><div class="pulse-main" tabindex="0" role="region" aria-label="Pulse feed and composer"><section class="pulse-stories" aria-label="Stories coming soon">
-      <div class="pulse-highlights" aria-label="NBL destinations and upcoming stories">
-        <div class="pulse-highlight pulse-highlight-pending" title="Member stories are coming soon"><span class="pulse-highlight-circle pulse-story-ring" aria-hidden="true">＋</span><span>Your Story</span><small>Coming soon</small></div>
+</aside><div class="pulse-main" tabindex="0" role="region" aria-label="Pulse feed and composer"><section id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels">
+      <div class="pulse-highlights" aria-label="Pulse videos, official sources and NBL destinations">
+        <div id="pulseStoryFeedVideos" class="pulse-story-feed-videos" hidden></div>
+        <a class="pulse-highlight pulse-story-source" href="https://www.youtube.com/@NBL_Music_Official" target="_blank" rel="noopener noreferrer" aria-label="Visit New Beansland official YouTube channel"><span class="pulse-highlight-circle pulse-highlight-text" aria-hidden="true">▶</span><span>YouTube</span></a>
+        <a class="pulse-highlight pulse-story-source" href="https://openai.com/news/" target="_blank" rel="noopener noreferrer" aria-label="Read real OpenAI announcements"><span class="pulse-highlight-circle pulse-highlight-text" aria-hidden="true">AI</span><span>OpenAI News</span></a>
         <a class="pulse-highlight" href="/books.html"><span class="pulse-highlight-circle"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" loading="lazy"></span><span>NBL Books</span></a>
         <a class="pulse-highlight" href="/clothing.html"><span class="pulse-highlight-circle pulse-highlight-text">NBL</span><span>Clothing</span></a>
         <a class="pulse-highlight" href="/studio/"><span class="pulse-highlight-circle pulse-highlight-text" aria-hidden="true">♫</span><span>NBL Music</span></a>
         <a class="pulse-highlight" href="/studios.html"><span class="pulse-highlight-circle pulse-highlight-text" aria-hidden="true">▣</span><span>NBL Studios</span></a>
         <a class="pulse-highlight" href="/messenger/"><span class="pulse-highlight-circle"><img src="/messenger/icon.svg" alt="" loading="lazy"></span><span>Messenger</span></a>
       </div>
-      <p class="pulse-story-caption">Explore New Beansland. Member stories are coming soon.</p>
+      <p class="pulse-story-caption">Tap a circle to explore real updates. Videos from your current Pulse feed appear here automatically.</p>
     </section>
     <section class="social-list" id="sharedPost" aria-labelledby="sharedPostTitle" hidden>
       <h2 id="sharedPostTitle">Shared NBL post</h2>
@@ -346,6 +350,6 @@
 </aside></div>
   </section>
 </main>
-<div class="pulse-features" aria-label="NBL Pulse features"><div class="pulse-feature-brand"><span aria-hidden="true">⌁</span><strong>NBL Pulse™</strong><small>The social feed for New Beansland</small></div><div class="pulse-feature"><strong>▧ Post &amp; Share</strong><small>Text, photos, videos &amp; links</small></div><div class="pulse-feature"><strong>◯ Stories</strong><small>Coming soon</small></div><div class="pulse-feature"><strong>◉ Live</strong><small>Free 20-minute monthly pilot</small></div><div class="pulse-feature"><strong>♧ Follow &amp; Discover</strong><small>People and real NBL posts</small></div><div class="pulse-feature"><strong>♢ Notifications</strong><small>Activity from your account</small></div><div class="pulse-feature"><strong>✉ Messages</strong><small>Private member DMs inside Pulse; Messenger for calls</small></div></div>
+<div class="pulse-features" aria-label="NBL Pulse features"><div class="pulse-feature-brand"><span aria-hidden="true">⌁</span><strong>NBL Pulse™</strong><small>The social feed for New Beansland</small></div><div class="pulse-feature"><strong>▧ Post &amp; Share</strong><small>Text, photos, videos &amp; links</small></div><div class="pulse-feature"><strong>◯ Stories</strong><small>Video highlights from Pulse posts</small></div><div class="pulse-feature"><strong>◉ Live</strong><small>Free 20-minute monthly pilot</small></div><div class="pulse-feature"><strong>♧ Follow &amp; Discover</strong><small>People and real NBL posts</small></div><div class="pulse-feature"><strong>♢ Notifications</strong><small>Activity from your account</small></div><div class="pulse-feature"><strong>✉ Messages</strong><small>Private member DMs inside Pulse; Messenger for calls</small></div></div>
 <footer>NBL Pulse™ · <a href="/pulse/guide.html">How Pulse Works &amp; Privacy</a> · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms</a> · <a href="/account-deletion.html">Data Deletion</a> · <a href="/university-campus.html#nbl-social">Protected University</a></footer>
 </body></html>

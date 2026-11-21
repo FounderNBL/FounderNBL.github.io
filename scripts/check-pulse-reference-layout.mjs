@@ -11,10 +11,14 @@ assert.match(html,/href="\/pulse\/" class="pulse-site-current" aria-current="pag
 assert.match(html,/href="\/messenger\/" class="pulse-message-tab"/);
 assert.match(html,/pulse\/pulse-reference-ui\.css\?v=20261109-no-city/);
 assert.match(html,/class="pulse-rail"/);
-assert.match(html,/class="pulse-stories" aria-label="Stories coming soon"/);
+assert.match(html,/id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels"/);
 assert.match(html,/class="pulse-create-shortcut" href="#composeTitle"/);
 assert.match(html,/<section id="socialApp" hidden/);
 assert.match(html,/social-v1\.mjs/);
+assert.match(html,/pulse-story-highlights\.mjs\?v=20261121-existing-video/);
+assert.match(html,/pulse-story-highlights\.css\?v=20261121-existing-video/);
+assert.match(html,/id="pulseStoryFeedVideos"/);
+assert.match(html,/https:\/\/openai\.com\/news\//);
 const requiredIds=["socialApp","identity","guest","signIn","socialStatus","postForm","postText","postMedia","mediaSelection","videoLink","videoShareRights","copyPulseInvite","composerAvatar","profileAvatarFile","saveProfileAvatar","friendsPanel","friendForm","feedPanel","feedItems","refreshFeed","sharedPost"];
 for(const id of requiredIds)assert.ok(html.includes('id="'+id+'"'),"Existing runtime hook missing: "+id);
 for(const feed of ["foryou","timeline","user","friends","notification"])assert.ok(html.includes('data-feed="'+feed+'"'),"Working feed missing: "+feed);
@@ -60,8 +64,8 @@ assert.match(html,/href="\/games\.html" title="NBL Games — coming soon"/,"Game
 assert.doesNotMatch(html+founderCss,/href="[^"]*(?:the-city|thecity)|>The City</i,"Do not promote a Studios preview as a Pulse top-level destination");
 assert.match(html,/data-feed="friends" aria-label="Explore NBL members"/,"Real member discovery in header");
 assert.match(html,/data-feed="notification" aria-label="View Pulse notifications"/,"Real notifications in header");
-assert.match(html,/class="pulse-nav-future"/,"Unreleased features must be visibly noninteractive");
-assert.match(html,/Stories <small>Coming soon/);
+assert.match(html,/class="pulse-nav-stories" href="#pulseStories"/,"Stories must open the active highlights section");
+assert.match(html,/Stories <small>Video highlights/,"Stories navigation must not advertise a retired placeholder");
 assert.match(html,/class="pulse-nav-live" href="#pulseLive"/,"Real Live nav points to actual Pulse controls");
 assert.match(html,/Live <small id="pulseLiveNavStatus">Checking…<\/small>/,"Nav Live status must come from actual server state, not misleading static OFF/LIVE text");
 assert.match(html,/id="pulseLiveAdmin" hidden/,"Founder-only switch is hidden until server authorization");
