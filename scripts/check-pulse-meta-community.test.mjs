@@ -92,7 +92,7 @@ test("Facebook Live review OAuth requests Page Live scope without leaking tokens
  const client=read("pulse/live.mjs");
  assert.match(page,/id="pulseLiveFacebookOption"/);
  assert.match(page,/id="pulseLiveScreenOnly"[^>]*checked/);
- assert.match(page,/id="pulseLiveShareScreen"/);
+ assert.doesNotMatch(page,/id="pulseLiveShareScreen"/);
  assert.match(client,/await state\.call\.screenShare\.enable\(\)/);
  assert.match(client,/if \(!screenOnly\) \{\s*await state\.call\.camera\.enable\(\);\s*await state\.call\.microphone\.enable\(\);/);
  assert.match(client,/if \(state\.screenOnly && !state\.screenReady\)/);
@@ -104,4 +104,13 @@ test("Mobile NBL residents continue camera broadcasting without mandatory screen
   const live=read("pulse/live.mjs");
   assert.match(live,/option\.disabled = mobile\.matches/);
   assert.match(live,/if \(mobile\.matches\) option\.checked = false/);
+});
+
+test("Go Live selects the screen on its own click, without extra button or premature LIVE timer",()=>{
+  const client=read("pulse/live.mjs");
+  assert.match(client,/async function onGoLive\(\)[\s\S]*?await state\.call\.screenShare\.enable\(\)/);
+  assert.match(client,/show\("#pulseLiveBadge", status === "live"\)/);
+  assert.match(client,/state\.liveSince = null/);
+  assert.match(client,/facebookSelectionTouched/);
+  assert.doesNotMatch(client,/#pulseLiveShareScreen/);
 });
