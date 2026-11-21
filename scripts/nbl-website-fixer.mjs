@@ -39,6 +39,7 @@ export function chooseRepairIncident(findings,read=(p)=>readFileSync(join(root,p
   if(f.id.startsWith("art:")){
    // No attempt to hallucinate missing approved art. Only text reference drift.
    const art=contract.source.officialWorldArt.find(x=>x.id===f.id.slice(4));
+   if(art?.parked)continue; // Intentionally retired public door.
    try{
     const b=read(art.sourceImage);
      const valid=art.gitBlobSha1

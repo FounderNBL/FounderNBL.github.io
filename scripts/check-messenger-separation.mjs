@@ -3,7 +3,10 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 
 const read = p => readFileSync(new URL("../" + p, import.meta.url), "utf8");
-const app = read("messenger/index.html");
+const app = read("docs/parked-messenger-index.html.txt");
+const legacyDoor=read("messenger/index.html");
+assert.match(legacyDoor,/location\.replace\(target\.href\)/);
+assert.doesNotMatch(legacyDoor,/firebase-web|app\.js|serviceWorker\.register/);
 const js = read("messenger/app.js");
 const manifest = JSON.parse(read("messenger/manifest.webmanifest"));
 const sw = read("messenger/sw.js");
@@ -37,9 +40,7 @@ assert.match(oldHumanChat, /data-chat-send-form/); // old bookmarks still work
 assert.match(website, /href="\/pulse\//);
 assert.match(website, /class="nav-pulse-launch"/);
 assert.doesNotMatch(website, /people talking to people/i);
-assert.match(website,/class="world-card messenger-world-card/);
-assert.match(website,/href="\/messenger\/"/);
-assert.match(website, /class="world-card messenger-world-card reveal"[^>]*>[\s\S]*?<img src="\/NBL_Messenger_(?:Beans_)?Worldcard\.png"/);
+assert.doesNotMatch(website,/class="world-card messenger-world-card|href="\/messenger\/"/);
 assert.match(app, /data-chat-featured-founder hidden/);
 assert.match(js, /action:"find_users",q:"NBLFounderOfficial"/);
 assert.match(js, /user\.verified===true/); // discoverable without Beans
@@ -126,7 +127,7 @@ assert.ok(!js.includes('action:"direct",handle:suggested'),"A link must never au
 assert.ok(app.includes('href="/pulse/"'),"Pulse navigation lost");
 assert.match(app,/NBL Messenger/);
 assert.equal(manifest.name,"NBL Messenger");
-console.log("PASS: NBL Messenger independent app, direct social runtime, protected University, and legacy routing and authentic early-member invites and customer phone alerts preserved without Founder controls.");
+console.log("PASS: Parked NBL Messenger source, direct social runtime, protected University, and legacy routing and authentic early-member invites and customer phone alerts preserved without Founder controls.");
 
 const callPage=read("messenger/call.html"), callJs=read("messenger/call.mjs");
 assert.match(app,/data-chat-video-call hidden/);

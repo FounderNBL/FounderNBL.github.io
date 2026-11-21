@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>NBL Messenger | Private messages & calls · New Beansland</title>
+  <meta name="description" content="NBL Messenger: your private messages and member-to-member calls under one secure NBL account.">
+  <link rel="canonical" href="https://newbeansland.org/messenger/index.html">
+  <meta name="theme-color" content="#06111d">
+  <meta name="application-name" content="NBL Messenger">
+  <link rel="manifest" href="/messenger/manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/messenger/icon.svg">
+  <link rel="apple-touch-icon" href="/assets/brand/nbl-official-mark.png?v=9e7ecbb9">
+  <link rel="stylesheet" href="/messenger/app.css?v=20261108-incoming-calls">
+  <link rel="stylesheet" href="/messenger/messenger-skin.css?v=20261120-sound-choice">
+  <script defer src="/social-realtime.js?v=20261008"></script>
+  <script defer src="/nbl-infinity-sound.js?v=20261019"></script>
+  <script defer src="/messenger/sounds.js?v=20261120-sound-library"></script>
+  <script defer src="/messenger/app.js?v=20261120-sound-library"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="New Beansland company home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" width="36" height="36" alt=""> <span>NBL <em>Messenger</em></span></a>
+    <nav aria-label="NBL World navigation">
+      <a href="/pulse/">Pulse Feed</a>
+      <a href="/chat.html">NBL World</a>
+      <a href="https://newbeansland.org/">Explore New Beansland</a>
+    </nav>
+  </header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">NEW BEANSLAND · PRIVATE CONNECTIONS</p>
+      <h1><img class="messenger-heading-mark" src="/messenger/icon.svg" alt="" width="58" height="58">NBL Messenger</h1>
+      <p class="hint">Your messages. Your people. One NBL account.</p>
+      <div class="signin-panel" data-chat-guest>
+        <p data-chat-auth-status>Sign in with your NBL account to see your conversations.</p>
+        <a class="btn primary" data-chat-signin href="https://newbeansland.org/account.html">Sign in / create account</a>
+      </div>
+      <div class="userbar" data-chat-userbar hidden>
+        <span>Signed in as <img class="chat-avatar" data-chat-my-avatar src="/messenger/icon.svg" width="35" height="35" alt="My profile picture"> <strong data-chat-myhandle>@NBL member</strong> <span class="founder-marker" data-chat-founder-marker hidden>Verified Founder</span></span>
+        <details class="compact-menu account-menu"><summary class="btn small">☰ Account & settings</summary><div class="userbar-actions">
+          <button class="btn small" type="button" data-chat-account-toggle aria-expanded="false" aria-controls="messenger-account-settings">My account</button>
+          <button class="btn small" type="button" data-nbl-infinity-preview aria-label="Test your selected Messenger sound">Test sound</button>
+          <button class="btn small" type="button" data-chat-signout>Sign out</button>
+        </div></details>
+      </div>
+      <section id="messenger-account-settings" class="account-settings" data-chat-account-settings hidden aria-label="My Messenger account">
+        <div class="account-heading">
+          <div>
+            <p class="eyebrow">Your NBL account</p>
+            <h2>Profile and settings</h2>
+            <p class="hint" data-chat-account-email></p>
+          </div>
+          <button class="btn small" type="button" data-chat-account-close>Close</button>
+        </div>
+        <div class="account-grid">
+          <div>
+            <h3>Your username</h3>
+            <form data-chat-profile-form>
+              <label for="messenger-username">NBL username</label>
+              <div class="form-row">
+                <input id="messenger-username" data-chat-profile-username name="username" type="text" minlength="3" maxlength="30" pattern="[A-Za-z0-9_-]{3,30}" autocomplete="username" required>
+                <button class="btn" type="submit">Save</button>
+              </div>
+            </form>
+            <p class="hint" data-chat-profile-status role="status" aria-live="polite">Letters, numbers, _ and - only.</p>
+          </div>
+          <div>
+            <h3>Facebook and sign-in</h3>
+            <p class="hint">Review connected login methods, email addresses, and account security.</p>
+            <button class="btn" type="button" data-chat-open-clerk>Manage connections</button>
+          </div>
+          <div>
+            <h3>Your information</h3>
+            <p class="hint">See your NBL account, history and other data controls.</p>
+            <div class="account-links">
+              <a class="btn" href="/account.html">View my NBL data</a>
+              <button class="btn" type="button" data-chat-download-messages>Download recent messages</button>
+            </div>
+            <p class="hint">The Messenger download includes up to the 100 most recent messages in each of your latest 200 direct conversations. It is not a complete data archive.</p>
+            <p class="hint" data-chat-export-status role="status" aria-live="polite"></p>
+          </div>
+          <div>
+            <h3>Optional Google Analytics</h3>
+            <p class="hint">Help NBL understand general Messenger page usage. This is optional. NBL does not send message content, contacts, usernames, or account IDs to Google Analytics from this integration.</p>
+            <button class="btn" type="button" data-messenger-analytics-enable>Allow usage analytics</button>
+            <button class="btn" type="button" data-messenger-analytics-disable hidden>Turn off usage analytics</button>
+            <p class="hint" data-messenger-analytics-status role="status" aria-live="polite">Optional analytics is off.</p>
+          </div>
+        </div>
+      </section>
+    </section>
+    <section class="chat-app" data-chat-app hidden aria-label="NBL Messenger">
+      <aside class="sidebar">
+        <div class="sidebar-heading"><h2>Messages</h2><button class="btn small" type="button" data-chat-refresh>Refresh</button></div>
+        <div class="thread-search">
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.8" cy="10.8" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+          <label for="messenger-thread-filter" class="sr-only">Search conversations</label>
+          <input id="messenger-thread-filter" data-chat-thread-search type="search" placeholder="Search conversations" autocomplete="off">
+        </div>
+        <div data-chat-threads aria-label="Your conversations"></div>
+        <section class="featured-founder" data-chat-featured-founder hidden aria-label="Meet the New Beansland Founder">
+          <div class="featured-founder-avatar" aria-hidden="true">NBL</div>
+          <div class="featured-founder-copy">
+            <span class="featured-founder-eyebrow">Featured first member</span>
+            <strong>Jamel Hawkins <span aria-label="Verified Founder" title="Verified Founder">✓</span></strong>
+            <small>@NBLFounderOfficial</small>
+          </div>
+          <button class="btn small founder-message" data-chat-featured-message type="button">Message</button>
+        </section>
+        <details class="compact-menu new-chat-menu"><summary class="btn primary">＋ New conversation</summary><div class="menu-content">
+        <div class="profile-setup" data-chat-handle-setup hidden>
+          <strong>Choose your NBL username first</strong>
+          <p>Other members find you by your NBL handle. Set one in your existing account so friends can message you.</p>
+          <a class="btn" href="/account.html">Set my NBL username</a>
+        </div>
+        <form data-chat-find-form class="find-form">
+          <label for="chat-find">Find an NBL handle</label>
+          <div class="form-row">
+            <input id="chat-find" data-chat-find-input name="handle" type="text" maxlength="80" autocomplete="off" placeholder="@someone" required>
+            <button class="btn" type="submit">Find</button>
+          </div>
+        </form>
+        <div data-chat-search-results aria-live="polite"></div>
+        <section aria-label="Phone contacts" class="phone-contacts">
+          <h3>People from your phone</h3>
+          <p class="hint">Choose a contact to invite. Your address book stays on your device; NBL does not upload or sync it.</p>
+          <button class="btn" type="button" data-chat-phone-contact>Choose phone contact</button>
+          <p class="hint" data-chat-phone-contact-status aria-live="polite">You can also use Invite a friend to share through your phone.</p>
+        </section>
+        <form data-chat-dm-form class="dm-form">
+          <label for="chat-dm">Or open a direct message</label>
+          <div class="form-row">
+            <input id="chat-dm" data-chat-dm-handle name="handle" type="text" maxlength="80" autocomplete="off" placeholder="@username" required>
+            <button class="btn" type="submit">Open</button>
+          </div>
+        </form>
+        <section class="invite-card" data-chat-invite hidden aria-label="Invite friends to NBL Messenger">
+          <p class="eyebrow">Welcome to the neighborhood</p>
+          <h3 data-chat-invite-title>You're early. Bring a friend!</h3>
+          <p data-chat-invite-description>Your inbox is ready. When another NBL member joins, you can message each other using your NBL handles.</p>
+          <div class="invite-actions">
+            <button class="btn primary" type="button" data-chat-share-invite>Invite a friend</button>
+            <button class="btn" type="button" data-chat-copy-invite>Copy invite link</button>
+          </div>
+          <a class="invite-url" data-chat-invite-url href="https://newbeansland.org/messenger/index.html">newbeansland.org/messenger/index.html</a>
+          <p class="invite-note">Real people only. No fake accounts, no extra Messenger registration, and no Beans AI credits.</p>
+        </section>
+        </div></details>
+        <section class="notification-settings" data-chat-sound-settings hidden aria-label="Messenger sound selection">
+          <div class="notification-heading"><div>
+            <p class="eyebrow">NBL original sounds</p>
+            <h2>Your Messenger sound</h2>
+            <p>Choose the sound you hear for messages and calls while Messenger is open. Each account remembers its own choice on this device.</p>
+          </div></div>
+          <label for="messengerSoundChoice">In-app message &amp; call sound</label>
+          <select id="messengerSoundChoice" data-chat-sound-choice aria-label="Messenger in-app alert sound">
+            <option value="infinity">NBL Infinity ♾️</option>
+          </select>
+          <div class="notification-actions">
+            <label><input type="checkbox" data-chat-sound-muted> Mute in-app sounds</label>
+            <button class="btn" type="button" data-chat-sound-preview>Preview selected sound</button>
+          </div>
+          <p class="hint" data-chat-sound-status role="status">More original NBL sounds will appear here as they are added.</p>
+        </section>
+        <section class="notification-settings" data-chat-notification-settings hidden aria-label="NBL Messenger phone notifications">
+          <div class="notification-heading">
+            <div>
+              <p class="eyebrow">NBL Infinity ♾️ · Phone alerts</p>
+              <h2>Call &amp; message alerts</h2>
+              <p>Enable notifications so this phone can alert you to calls and messages when Messenger is closed. Your device controls the notification sound.</p>
+            </div>
+          </div>
+          <div class="notification-actions">
+            <button class="btn primary" type="button" data-chat-notify-enable>Enable phone alerts</button>
+            <button class="btn" type="button" data-chat-notify-disable hidden>Turn off phone alerts</button>
+            <button class="btn" type="button" data-chat-notify-preview>Preview on this phone</button>
+          </div>
+          <p class="hint" data-chat-notify-status aria-live="polite">Phone alerts require permission from your device.</p>
+        </section>
+      </aside>
+      <article class="conversation" aria-label="Current conversation">
+        <div class="conversation-head">
+          <button class="btn small mobile-chat-back" type="button" data-chat-back aria-label="Back to chats">← Chats</button>
+          <div>
+            <p class="eyebrow" data-chat-thread-kind>Private conversation</p>
+            <h2 data-chat-thread-title>Choose a conversation</h2>
+          </div>
+          <button class="btn small video-call-primary" type="button" data-chat-video-call hidden aria-label="Start private video call with this member"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="14" height="14" rx="3"/><path d="m16 10 5-3v10l-5-3"/></svg><span>Video call</span></button>
+          <details class="compact-menu thread-menu"><summary class="btn small">⋯ Chat options</summary><div class="thread-actions">
+            <button class="btn small" type="button" data-chat-rename hidden>Rename contact</button>
+            <button class="btn small" type="button" data-chat-mute hidden>Mute</button>
+            <button class="btn small" type="button" data-chat-block hidden>Block member</button>
+            <button class="btn small" type="button" data-chat-unblock hidden>Unblock member</button>
+          </div></details>
+        </div>
+
+        <p class="video-call-feedback" data-chat-video-feedback role="status" aria-live="polite" hidden></p>
+        <div class="messages" data-chat-messages role="log" aria-live="polite" aria-label="Messages">
+          <p class="hint">Choose a conversation or invite someone to join NBL Messenger.</p>
+        </div>
+        <form data-chat-send-form class="composer">
+          <label for="chat-compose">Message</label>
+          <textarea id="chat-compose" data-chat-compose maxlength="8000" rows="3" placeholder="Write a message…" disabled required></textarea>
+          <button class="btn primary" type="submit" disabled>Send message</button>
+        </form>
+      </article>
+    </section>
+        <section class="incoming-video-call" data-chat-incoming-call role="dialog" aria-modal="true" aria-label="Incoming NBL video call" aria-live="assertive" hidden>
+          <div class="incoming-call-card">
+          <span class="incoming-call-symbol" aria-hidden="true">♾️</span>
+          <div class="incoming-call-details">
+            <strong data-chat-incoming-from>Incoming NBL video call</strong>
+            <p data-chat-incoming-status>Answer or decline this private NBL video call.</p>
+          </div>
+          <a class="btn primary" data-chat-incoming-answer href="/messenger/" target="_top" rel="noopener noreferrer">Answer</a>
+          <button class="btn" data-chat-incoming-decline type="button">Decline</button>
+          </div>
+        </section>
+
+    <p class="status" data-chat-status role="status" aria-live="polite">NBL Messenger uses your existing NBL account. Private messages are visible only to participants.</p>
+  </main>
+  <footer>NBL Messenger · <a href="/">New Beansland home</a></footer>
+<script>if ("serviceWorker" in navigator && location.protocol === "https:") { window.addEventListener("load", () => navigator.serviceWorker.register("/messenger/sw.js", {scope:"/messenger/"}).catch(() => {})); }</script>
+<script type="module" src="/messenger/firebase-web.js?v=20261107" defer></script>
+</body>
+</html>

@@ -1,4 +1,11 @@
 import { test, expect } from "@playwright/test";
+import {readFileSync} from "node:fs";
+const parkedSource=readFileSync(new URL("../../docs/parked-messenger-index.html.txt",import.meta.url),"utf8");
+// Archived implementation regression fixtures; not the live standalone app.
+async function visitParked(page,path="/messenger/"){
+ await page.route("**/messenger/**",route=>new URL(route.request().url()).pathname==="/messenger/"&&route.request().isNavigationRequest()?route.fulfill({contentType:"text/html",body:parkedSource}):route.fallback());
+ await page.goto(path);
+}
 
 // Synthetic Clerk identities, no actual customer credentials or private data.
 const identityFixture = String.raw`
@@ -36,7 +43,7 @@ test("Messenger independently restores Clerk session and clears private UI on lo
       {ok:true,messages:[]};
     return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(payload)});
   });
-  await page.goto("/messenger/");
+  await visitParked(page);
   await expect(page.locator("[data-chat-app]")).toBeHidden();
   await page.evaluate(()=>window.__NBL_TEST_SET_IDENTITY("user_A"));
   await expect(page.locator("[data-chat-myhandle]")).toHaveText("@alice");
@@ -65,7 +72,7 @@ test("Messenger ignores delayed account A responses after account B signs in",as
     await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(payload)});
     if(isA)completedA++;
   });
-  await page.goto("/messenger/");
+  await visitParked(page);
   await page.evaluate(()=>window.__NBL_TEST_SET_IDENTITY("user_A"));
   await expect.poll(()=>requestsA).toBe(2);
   current="B";
@@ -95,7 +102,7 @@ test("Messenger shows a rejected video call beside the conversation, not just in
       ok:false,reason:"video_unavailable",message:"NBL calling is unavailable. No call was placed."
     })});
   });
-  await page.goto("/messenger/");
+  await visitParked(page);
   await page.evaluate(()=>window.__NBL_TEST_SET_IDENTITY("user_founder"));
   await expect(page.locator("[data-chat-threads] .thread")).toHaveCount(1);
   await page.locator("[data-chat-threads] .thread").click();
@@ -109,7 +116,7 @@ test("Messenger shows a rejected video call beside the conversation, not just in
   await expect(page.locator("[data-chat-messages]")).not.toContainText("NBL video call invitation:");
 });
 
-test("Pulse links into the same signed-in Messenger without automatically sending a DM",async({page})=>{
+test("Parked Messenger links do not automatically send a DM",async({page})=>{
   let directRequests=0;
   await page.route("**/functions/v1/nbl-social",route=>{
     const action=route.request().postDataJSON()?.action;
@@ -118,7 +125,7 @@ test("Pulse links into the same signed-in Messenger without automatically sendin
       action==="list_threads"?{ok:true,threads:[]}:{ok:true,messages:[]};
     return route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(result)});
   });
-  await page.goto("/messenger/?dm=friend_123");
+  await visitParked(page,"/messenger/?dm=friend_123");
   await page.evaluate(()=>window.__NBL_TEST_SET_IDENTITY("user_A"));
   await expect(page.locator("[data-chat-dm-handle]")).toHaveValue("@friend_123");
   await expect(page.locator("[data-chat-status]")).toContainText("Press Open");
@@ -126,7 +133,7 @@ test("Pulse links into the same signed-in Messenger without automatically sendin
   await expect(page.locator("a[href='/pulse/']")).toHaveCount(1);
 });
 
-test("Pulse DM deep links stay on Pulse, while the full Messenger app remains optional",async({page})=>{
+test("Pulse DM deep links stay on Pulse, after Messenger retirement",async({page})=>{
  await page.goto("/pulse/?messages=1&dm=friend_123");
  await expect(page).toHaveURL(/\/pulse\/\?messages=1&dm=friend_123/);
  await expect(page.locator("#pulseMemberInbox")).toHaveCount(1);
@@ -136,9 +143,15 @@ test("Pulse DM deep links stay on Pulse, while the full Messenger app remains op
  await expect(page.locator("iframe#pulseMessengerFrame")).toHaveCount(0);
 });
 
-test("Pulse has a separate Messenger link without an embedded call or chat frame",async({page})=>{
+test("Pulse has one Social entrance without embedded call or chat frame",async({page})=>{
   await page.goto("/pulse/");
-  await expect(page.locator("a[href='/messenger/']")).not.toHaveCount(0);
+  await expect(page.locator("a[href='/messenger/']")).toHaveCount(0);
+  await expect(page.locator("#pulseUnifiedInboxNav")).toHaveCount(1);
   await expect(page.locator("iframe#pulseMessengerFrame")).toHaveCount(0);
   await expect(page.locator("[data-feed='messages']")).toHaveCount(0);
+});
+
+test("Old Messenger bookmarks lead to Pulse and preserve requested handle",async({page})=>{
+ await page.goto("/messenger/?dm=friend_123");
+ await expect(page).toHaveURL(/\/pulse\/\?messages=1&dm=friend_123/);
 });

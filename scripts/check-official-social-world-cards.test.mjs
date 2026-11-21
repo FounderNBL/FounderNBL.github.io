@@ -13,16 +13,15 @@ const cases=[
   gitBlobSha1:"89a9e27d8a0004462349af7614178710c50e3b90",sizeBytes:2074930,
   width:1672,height:941}
 ];
-test("Social World cards retain separate original art and destinations",()=>{
+test("Pulse sole active Social card; both approved artworks preserved",()=>{
  assert.ok(door,"social World-card section is present");
- for(const c of cases){
-  assert.ok(door.includes('href="'+c.href+'"'),c.label+" must retain its own route");
-  assert.ok(door.includes('src="'+c.img+'"'),c.label+" must show the exact approved PNG");
- }
+ const c=cases[0];
+ assert.ok(door.includes('href="'+c.href+'"'));
+ assert.ok(door.includes('src="'+c.img+'"'));
+ assert.doesNotMatch(door,/href="\/messenger\/"|src="\/NBL_Messenger_Worldcard.png"/);
  assert.ok(!door.includes("pulse-world.svg"),"Pulse placeholder must not remain");
  assert.ok(!door.includes("messenger/icon.svg"),"Messenger placeholder must not remain on World card");
  assert.ok(!door.includes("NBL_Messenger_Beans_Worldcard.png"),"Messenger card must not use the retired Beans artwork");
- assert.match(door,/Brought to you by NBL Pulse/,"Messenger must credit NBL Pulse");
  assert.match(html,/\.pulse-world-door \.social-door-grid \.world-card \.media img,[\s\S]*?object-fit:contain;object-position:center/,"keep entire card art uncropped");
 });
 for(const c of cases){

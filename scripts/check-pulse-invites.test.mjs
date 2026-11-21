@@ -45,7 +45,7 @@ test("mobile layout, visible links and existing post engine remain intact",()=>{
   assert.match(html,/id="friendsPanel"/);
   assert.match(engine,/async function publishPost\(event\)/);
   assert.match(engine,/feed\.addActivity/);
-  assert.match(html,/href="\/messenger\/"/);
+  assert.doesNotMatch(html,/href="\/messenger\/"/);
 });
 test("native share sends only on the user's button action; cancellation does not send",async()=>{
   let shared=null;const messages=[];
