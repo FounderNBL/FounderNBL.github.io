@@ -11,10 +11,10 @@ function readableTime(value){
  const when=new Date(String(value||""));
  return Number.isNaN(when.getTime())?"":when.toLocaleString();
 }
-function errorText(error){
+export function errorText(error){
  const name=String(error?.message||"").slice(0,120);
  const messages={
-  instagram_dm_permission_or_token_required:"Meta rejected the Instagram DM token. For this Facebook Login for Business flow, check instagram_manage_messages in the app's Login configuration and reconnect. App-role testing may work before review approval.",
+  instagram_dm_permission_or_token_required:"Meta denied this request. If Standard Access is active, test with an accepted app-role account; do not reconnect a working inbox unless the token has expired.",
   instagram_dm_permission_missing:"Meta authorization completed, but the Login for Business configuration did not grant instagram_manage_messages. Add that permission to the existing Meta login configuration, then reconnect Instagram DMs in Pulse.",
   instagram_dm_page_access_required:"The saved Instagram grant must include access to the linked New Beansland Facebook Page. Check pages_manage_metadata, pages_show_list, and pages_messaging in the existing Meta login configuration, and approve the Page once.",
   instagram_dm_connection_required:"Connect Instagram DMs to @nbl_world, then refresh the inbox. You can test with Meta app roles before App Review.",
@@ -26,10 +26,12 @@ function errorText(error){
   instagram_dm_reply_window_closed:"Meta's normal 24-hour reply window has closed. Ask the person to message @nbl_world again.",
   conversation_not_owned:"This conversation does not belong to the connected Instagram account.",
   instagram_dm_meta_unavailable:"Instagram messaging is temporarily unavailable. Try Refresh.",
+  instagram_dm_routing_owned:"Meta Conversation Routing assigns this thread to another app. Check the conversation owner in Meta Business Suite.",
   instagram_dm_rate_limited:"Instagram asked us to slow down. Try again later.",
   instagram_dm_send_unconfirmed:"Meta did not confirm the reply. Refresh before trying again."
  };
- return messages[name]||"Instagram: "+name.replace(/_/g," ")||"Instagram inbox unavailable.";
+ const code=Number(error?.metaCode)||0,subcode=Number(error?.metaSubcode)||0;
+ return (messages[name]||"Instagram: "+name.replace(/_/g," ")||"Instagram inbox unavailable.")+(code?" (Meta code "+code+(subcode?"/"+subcode:"")+")":"");
 }
 let openInstagramThread=null;
 export function showPulseInstagramThread(id){
@@ -48,10 +50,11 @@ export function mountInstagramInbox(invoke){
  const form=panel.querySelector("#pulseIgReplyForm");
  const field=panel.querySelector("#pulseIgReplyText");
  const submit=form.querySelector("button[type=submit]");
+ const replyStatus=panel.querySelector("#pulseIgReplyStatus");
  const refresh=panel.querySelector("#pulseIgRefresh");
  const connect=panel.querySelector("#pulseIgConnect");
  const close=panel.querySelector("#pulseIgClose");
- let selected=null,loading=false,pending=false,lastReadAt=0;
+ let selected=null,loading=false,pending=false,lastReadAt=0,readGeneration=0,canReply=false;
  const connected=new URL(location.href).searchParams.get("instagram_connect");
  const say=s=>{status.textContent=s;};
  const call=(path,payload)=>invoke("/inbox/"+path,payload);
@@ -88,10 +91,11 @@ export function mountInstagramInbox(invoke){
  nav.addEventListener("click",show);
  close.addEventListener("click",()=>{panel.hidden=true;nav.focus();});
  refresh.addEventListener("click",()=>{void loadList(false);});
- function updateReply(canReply){
+ function updateReply(allowed){
+  canReply=allowed;
   form.hidden=!selected;
-  submit.disabled=!canReply;
-  field.disabled=!canReply;
+  submit.disabled=pending||!canReply;
+  field.disabled=pending||!canReply;
   field.placeholder=canReply?"Reply to this Instagram DM":"Meta's 24-hour reply window is closed";
  }
  function renderMessages(data){
@@ -115,15 +119,17 @@ export function mountInstagramInbox(invoke){
   lastReadAt=Date.now();
  }
  async function openThread(id,quiet=false){
-  if(!/^[A-Za-z0-9_=-]{6,512}$/.test(id))return;
+  if(!/^[A-Za-z0-9_=-]{6,512}$/.test(id)||pending)return;
+  const generation=++readGeneration;
+  if(!quiet){updateReply(false);replyStatus.textContent="";}
   try{
    const result=await call("thread",{action:"thread",conversation_id:id});
-   if(panel.hidden)return;
+   if(panel.hidden||generation!==readGeneration||pending)return;
    renderMessages(result);
   }catch(error){if(!quiet)say(errorText(error));}
  }
  async function loadList(quiet=false){
-  if(loading||panel.hidden)return;
+  if(loading||panel.hidden||pending)return;
   loading=true;
   if(!quiet)say("Loading @nbl_world Instagram messages…");
   try{
@@ -150,21 +156,24 @@ export function mountInstagramInbox(invoke){
  }
  form.addEventListener("submit",async event=>{
   event.preventDefault();
-  if(pending||!selected)return;
+  if(pending||!selected||!canReply)return;
   const message=field.value.trim();
-  if(!message||message.length>1000){say("Enter 1–1,000 characters.");return;}
+  if(!message||new TextEncoder().encode(message).length>1000){replyStatus.textContent="Enter a message of up to 1,000 UTF-8 bytes.";return;}
   if(!window.confirm("Send this private reply from @nbl_world on Instagram?"))return;
-  pending=true;submit.disabled=true;
+  pending=true;++readGeneration;updateReply(canReply);
+  replyStatus.textContent="Sending reply to Instagram…";
   say("Sending reply to Instagram…");
   try{
    const id=selected;
    const out=await call("reply",{action:"reply",conversation_id:id,message,confirm:"send"});
    if(out.sent!==true)throw Error("instagram_dm_send_unconfirmed");
    field.value="";
-   await openThread(id);
+   replyStatus.textContent="Instagram confirmed your reply was sent.";
+   pending=false;updateReply(canReply);
+   await openThread(id,true);
    say("Instagram confirmed your reply was sent.");
-  }catch(error){say(errorText(error));}
-  finally{pending=false;submit.disabled=field.disabled===false;}
+  }catch(error){const detail=errorText(error);replyStatus.textContent=detail;say(detail);}
+  finally{pending=false;updateReply(canReply);}
  });
  // Poll only while the Founder has this inbox open and the tab is visible.
  // Never persist message content to storage, telemetry or NBL Messenger.
