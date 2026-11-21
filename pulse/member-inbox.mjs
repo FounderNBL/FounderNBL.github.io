@@ -6,9 +6,15 @@ const node=(tag,cls,text)=>{
  if(text!==undefined)el.textContent=String(text);
  return el;
 };
-let openInbox=null;
+let openInbox=null,openMemberThread=null;
 export function showPulseMemberInbox(handle=""){
- if(openInbox)void openInbox(handle);
+ if(openInbox){
+  document.dispatchEvent(new CustomEvent("pulse:member-inbox-open"));
+  void openInbox(handle);
+ }
+}
+export function showPulseMemberThread(id){
+ if(openMemberThread&&/^[0-9a-f-]{36}$/i.test(String(id)))void openMemberThread(String(id));
 }
 export function mountMemberInbox(invoke){
  const panel=document.querySelector("#pulseMemberInbox");
@@ -78,6 +84,7 @@ export function mountMemberInbox(invoke){
   }else await loadThreads();
  }
  openInbox=open;
+ openMemberThread=async id=>{await open();await readThread(id);};
  nav.addEventListener("click",()=>void open());
  panel.querySelector("#pulseMemberClose").addEventListener("click",()=>{panel.hidden=true;nav.focus();});
  reload.addEventListener("click",()=>void loadThreads());
