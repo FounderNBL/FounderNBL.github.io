@@ -1,4 +1,5 @@
 import "./check-pulse-instagram-inbox.test.mjs";
+import "./check-pulse-member-inbox.test.mjs";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {parsePublicVideo} from "../messenger/social-video-connect.mjs";
