@@ -39,7 +39,7 @@ assert.match(website, /class="nav-pulse-launch"/);
 assert.doesNotMatch(website, /people talking to people/i);
 assert.match(website,/class="world-card messenger-world-card/);
 assert.match(website,/href="\/messenger\/"/);
-assert.match(website, /class="world-card messenger-world-card reveal"[^>]*>[\s\S]*?<img src="\/NBL_Messenger_Beans_Worldcard\.png"/);
+assert.match(website, /class="world-card messenger-world-card reveal"[^>]*>[\s\S]*?<img src="\/NBL_Messenger_(?:Beans_)?Worldcard\.png"/);
 assert.match(app, /data-chat-featured-founder hidden/);
 assert.match(js, /action:"find_users",q:"NBLFounderOfficial"/);
 assert.match(js, /user\.verified===true/); // discoverable without Beans
@@ -109,7 +109,7 @@ for(const forbidden of ["data-chat-notification-founder","notification-founder",
  assert.ok(!js.includes(forbidden),"Public Messenger JS exposes internal control code: "+forbidden);
 }
 assert.match(app,/data-chat-notification-settings hidden/);
-assert.match(js,/window.NBLInfinitySound\?\.play\("people"\)/);
+assert.match(js,/window.NBLMessengerSounds\?\.play\("message"\)/);
 assert.match(sw,/self.addEventListener\("push"/);
 assert.match(sw,/self.addEventListener\("notificationclick"/);
 assert.match(sw,/new URL\(target,self.location.origin\)/);

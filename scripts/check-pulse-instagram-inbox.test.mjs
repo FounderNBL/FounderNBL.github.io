@@ -1,0 +1,54 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {readFileSync} from "node:fs";
+const read=p=>readFileSync(new URL("../"+p,import.meta.url),"utf8");
+const api=read("server/supabase/functions/nbl-instagram-connect/index.ts");
+const ui=read("pulse/index.html");
+const panel=read("pulse/instagram-inbox.mjs");
+const social=read("messenger/social-v1.mjs");
+test("Instagram Direct API stays founder-only and requires browser Origin",()=>{
+ assert.match(api,/async function privateInbox\(/);
+ assert.match(api,/if\(!ORIGINS\.has\(origin\)\)/);
+ assert.match(api,/if\(!await founderUser\(req\)\)/);
+ assert.match(api,/const ig=await officialInstagramAccount\(\)/);
+ assert.match(api,/if\(!owner\|\|others\.length!==1/);
+ assert.match(api,/reason:"conversation_not_owned"/);
+ assert.match(api,/if\(body\.confirm!=="send"/);
+ assert.match(api,/reason:"instagram_dm_reply_window_closed"/);
+ assert.match(api,/Date\.now\(\)-lastInbound<=24\*60\*60\*1000/);
+ assert.match(api,/https:\/\/"\+ig\.host\+"\/"\+VERSION/);
+ assert.match(api,/ig\.host==="graph\.facebook\.com"\?ig\.pageId:ig\.id/);
+ assert.doesNotMatch(api,/console\.(log|warn|error)\([^\n]*(message|token|raw|body)\b/i);
+});
+test("Instagram Inbox reads Meta conversations and messages with no DM persistence",()=>{
+ assert.match(api,/ig\.id\+"\/conversations"/);
+ assert.match(api,/conversationId\+"\/messages"/);
+ assert.match(api,/safeMessage/);
+ assert.match(api,/reply_window_open:replyWindowOpen/);
+ assert.match(api,/processing:"inbox_polling"/);
+ assert.doesNotMatch(api,/nbl_ig_dm_messages|nbl_ig_dm_threads/);
+});
+test("Pulse Founder inbox is on the Pulse page with a separate NBL Messenger link",()=>{
+ assert.match(ui,/id="pulseInstagramInboxNav"/);
+ assert.match(ui,/id="pulseInstagramInbox"/);
+ assert.match(ui,/id="pulseIgConversations"/);
+ assert.match(ui,/id="pulseIgThread"/);
+ assert.match(ui,/id="pulseIgReplyForm"/);
+ assert.match(ui,/id="pulseIgClose"/);
+ assert.match(ui,/id="pulseIgRefresh"/);
+ assert.match(ui,/href="\/messenger\/"/);
+ assert.match(ui,/social-v1\.mjs\?v=20261120-instagram-direct-inbox/);
+ assert.match(social,/import \{mountInstagramInbox\} from "\.\.\/pulse\/instagram-inbox\.mjs/);
+ assert.match(social,/if\(state\.me\?\.role==="founder"&&location\.pathname\.startsWith\("\/pulse"\)\)/);
+ assert.match(social,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
+});
+test("Only explicit sends can message; no demo fakes, leaked tokens or HTML injection",()=>{
+ assert.match(panel,/window\.confirm\("Send this private reply/);
+ assert.match(panel,/confirm:"send"/);
+ assert.match(panel,/invoke\("\/inbox\/"\+path,payload\)/);
+ assert.match(panel,/document\.createElement\(tag\)/);
+ assert.match(panel,/textContent=String\(text\)/);
+ assert.doesNotMatch(panel,/innerHTML|localStorage|sessionStorage|console\.log|autoReply|fakeMessage|testMessage/);
+ assert.match(panel,/document\.visibilityState==="visible"/);
+ assert.match(panel,/window\.setInterval/);
+});

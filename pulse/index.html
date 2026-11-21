@@ -21,9 +21,10 @@
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261119-meta-community-v1">
 <link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261119-independent-columns-v1">
-<script type="module" src="/messenger/social-v1.mjs?v=20261120-public-author-handles"></script>
+<script type="module" src="/messenger/social-v1.mjs?v=20261120-instagram-direct-inbox"></script>
 <script type="module" src="/pulse/pulse-google-insights.mjs?v=20261118-consent-v1"></script>
 <style>
+.pulse-ig-inbox{scroll-margin-top:100px}.pulse-ig-grid{display:grid;grid-template-columns:minmax(180px,1fr) minmax(0,2fr);gap:18px}.pulse-ig-conversations{display:grid;gap:8px;margin-top:12px}.pulse-ig-conversation{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;white-space:normal}.pulse-ig-thread{display:grid;gap:10px;max-height:380px;overflow:auto;padding:10px;border-radius:12px;background:#160f28}.pulse-ig-message{padding:9px 13px;border-radius:12px;border:1px solid #41345a;background:#281d3b;overflow-wrap:anywhere}.pulse-ig-outgoing{margin-left:12%;background:#302247}.pulse-ig-message strong{display:block}.pulse-ig-message small{display:block;margin:3px 0}.pulse-ig-message p{margin:6px 0}.pulse-ig-inbox textarea{display:block;width:100%;margin:8px 0}.pulse-ig-inbox .social-list-head{flex-wrap:wrap}@media(max-width:730px){.pulse-ig-grid{grid-template-columns:1fr}.pulse-ig-thread{max-height:300px}}
 .pulse-body{--gold:#ae63fa;--gold2:#dea8ff;--line:rgba(171,95,240,.34);--navy:#190d31;--cream:#f5ebff;--soft:#baa9cc;background:#090713;color:#f6ecff;font:16px Arial,sans-serif}.pulse-body [hidden]{display:none!important}
 .pulse-topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px max(16px,calc((100vw - 1400px)/2));background:#0d0919;border-bottom:1px solid #51326d;position:sticky;top:0;z-index:20}.pulse-topbar>a{display:flex;align-items:center;gap:8px;font-weight:900;font-size:1.4rem;color:#fff;text-decoration:none}.pulse-topbar strong{color:#e6b5ff}.pulse-topbar nav{display:flex;gap:15px;flex-wrap:wrap}.pulse-topbar nav a{color:#e4d5f3;text-decoration:none;font-size:.82rem;font-weight:700}
 .pulse-shell{max-width:1380px}.pulse-shell .preview-bar{border-color:#78409b;background:#1d1131;color:#e7c9ff}.pulse-shell .social-intro h1{font:bold clamp(2.6rem,5vw,4.4rem) Arial,sans-serif;letter-spacing:-.04em;color:#f7e5ff}.pulse-shell .eyebrow{color:#d18fff;font-weight:900}
@@ -140,6 +141,8 @@
     <span class="pulse-nav-future"><span class="pulse-nav-glyph" aria-hidden="true">◯</span><span>Stories <small>Coming soon</small></span></span>
     <a class="pulse-nav-live" href="#pulseLive"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live <small id="pulseLiveNavStatus">Checking…</small></span></a>
     <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
+    <button id="pulseMemberInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open private NBL member messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Messages</span></button>
+    <button id="pulseInstagramInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open Instagram Direct messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Instagram DMs</span></button>
     <a href="/messenger/" class="pulse-message-tab" aria-label="Open NBL Messenger separately"><img src="/messenger/icon.svg" width="30" height="30" alt=""><span>Messenger</span></a>
     <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Pulse post"><span aria-hidden="true">＋</span><span>Create</span></a>
   </nav>
@@ -237,6 +240,39 @@
         </section>
         <div id="friendItems" aria-live="polite"></div>
     </section>
+    <section class="social-list pulse-ig-inbox" id="pulseMemberInbox" aria-labelledby="pulseMemberInboxHeading" hidden>
+      <div class="social-list-head"><h2 id="pulseMemberInboxHeading">Pulse Messages</h2><button id="pulseMemberClose" type="button" class="btn small">Close inbox</button></div>
+      <p class="social-meta">Private messages between New Beansland members, powered by the existing NBL messaging service. No separate app needed.</p>
+      <p class="social-feedback" id="pulseMemberMsgStatus" role="status" aria-live="polite">Open messages to see your conversations.</p>
+      <form id="pulseMemberNewForm"><label for="pulseMemberHandle">NBL username</label>
+        <input id="pulseMemberHandle" maxlength="65" placeholder="@username" autocomplete="off" required>
+        <button class="btn small" type="submit">Message member</button>
+      </form>
+      <div class="pulse-ig-grid">
+        <section aria-label="Your private NBL conversations"><h3>Conversations</h3><button class="btn small" type="button" id="pulseMemberRefresh">Refresh</button><div id="pulseMemberThreads" class="pulse-ig-conversations"></div></section>
+        <section aria-label="NBL private message thread"><h3 id="pulseMemberThreadTitle">Choose a conversation</h3>
+          <div id="pulseMemberMessages" class="pulse-ig-thread" aria-live="polite"></div>
+          <form id="pulseMemberReplyForm" hidden><label for="pulseMemberReplyText">Your private message</label>
+            <textarea id="pulseMemberReplyText" maxlength="8000" rows="3" placeholder="Write an NBL message"></textarea>
+            <button class="btn primary" type="submit">Send message</button>
+          </form>
+        </section>
+      </div>
+    </section>
+    <section class="social-list pulse-ig-inbox" id="pulseInstagramInbox" aria-labelledby="pulseIgHeading" hidden>
+      <div class="social-list-head"><h2 id="pulseIgHeading">Instagram Direct · @nbl_world</h2><button id="pulseIgClose" type="button" class="btn small">Close inbox</button></div>
+      <p class="social-meta">Founder-only business Instagram messages. Read and reply here without leaving NBL Pulse. NBL member conversations remain separate.</p>
+      <p class="social-feedback" role="status" aria-live="polite" id="pulseIgStatus">Open the inbox to load conversations from Instagram.</p>
+      <div class="pulse-ig-grid">
+        <section aria-label="Instagram conversations"><h3>Conversations</h3><button class="btn small" type="button" id="pulseIgRefresh">Refresh inbox</button><div id="pulseIgConversations" class="pulse-ig-conversations"></div></section>
+        <section aria-label="Instagram direct-message thread"><h3 id="pulseIgThreadTitle">Choose a conversation</h3><div id="pulseIgThread" class="pulse-ig-thread" aria-live="polite"></div>
+          <form id="pulseIgReplyForm" hidden><label for="pulseIgReplyText">Your Instagram reply</label>
+            <textarea id="pulseIgReplyText" maxlength="1000" rows="3" placeholder="Write a reply"></textarea>
+            <button class="btn primary" type="submit">Send Instagram reply</button>
+          </form>
+        </section>
+      </div>
+    </section>
     <section class="social-list" id="feedPanel" aria-labelledby="feedTitle">
       <div class="social-list-head"><h2 id="feedTitle">For You</h2><button id="refreshFeed" class="btn small" type="button">Refresh</button></div>
       <div id="feedItems" aria-live="polite"><p class="hint">Loading Stream Feeds…</p></div>
@@ -266,12 +302,12 @@
     <a href="/books.html">NBL Books <span aria-hidden="true">↗</span></a>
   </section>
   <section class="pulse-rail-card pulse-rail-messenger"><h2>Stay connected</h2>
-    <p>Private messages and calls have their own NBL Messenger screen.</p>
+    <p>Send and receive member DMs right here in Pulse. NBL Messenger remains available for calls and extra messaging features.</p>
     <a class="pulse-messenger-cta" href="/messenger/">Open NBL Messenger <span aria-hidden="true">↗</span></a>
   </section>
 </aside></div>
   </section>
 </main>
-<div class="pulse-features" aria-label="NBL Pulse features"><div class="pulse-feature-brand"><span aria-hidden="true">⌁</span><strong>NBL Pulse™</strong><small>The social feed for New Beansland</small></div><div class="pulse-feature"><strong>▧ Post &amp; Share</strong><small>Text, photos, videos &amp; links</small></div><div class="pulse-feature"><strong>◯ Stories</strong><small>Coming soon</small></div><div class="pulse-feature"><strong>◉ Live</strong><small>Free 20-minute monthly pilot</small></div><div class="pulse-feature"><strong>♧ Follow &amp; Discover</strong><small>People and real NBL posts</small></div><div class="pulse-feature"><strong>♢ Notifications</strong><small>Activity from your account</small></div><div class="pulse-feature"><strong>↗ NBL Messenger</strong><small>Separate private messages &amp; calls</small></div></div>
+<div class="pulse-features" aria-label="NBL Pulse features"><div class="pulse-feature-brand"><span aria-hidden="true">⌁</span><strong>NBL Pulse™</strong><small>The social feed for New Beansland</small></div><div class="pulse-feature"><strong>▧ Post &amp; Share</strong><small>Text, photos, videos &amp; links</small></div><div class="pulse-feature"><strong>◯ Stories</strong><small>Coming soon</small></div><div class="pulse-feature"><strong>◉ Live</strong><small>Free 20-minute monthly pilot</small></div><div class="pulse-feature"><strong>♧ Follow &amp; Discover</strong><small>People and real NBL posts</small></div><div class="pulse-feature"><strong>♢ Notifications</strong><small>Activity from your account</small></div><div class="pulse-feature"><strong>✉ Messages</strong><small>Private member DMs inside Pulse; Messenger for calls</small></div></div>
 <footer>NBL Pulse™ · <a href="/pulse/guide.html">How Pulse Works &amp; Privacy</a> · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms</a> · <a href="/account-deletion.html">Data Deletion</a> · <a href="/university-campus.html#nbl-social">Protected University</a></footer>
 </body></html>
