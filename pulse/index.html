@@ -88,7 +88,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
 <link rel="stylesheet" href="/pulse/pulse-founder-ui.css?v=20261118-live-visibility">
 <link rel="stylesheet" href="/pulse/pulse-mobile-app.css?v=20261121-pulse-connect-v1" media="(max-width: 760px)">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
-<script type="module" src="/pulse/live.mjs?v=20261120-standalone-live"></script>
+<script type="module" src="/pulse/live.mjs?v=20261121-live-destinations-v1"></script>
 <link rel="stylesheet" href="/pulse/pulse-story-highlights.css?v=20261121-existing-video">
 <script type="module" src="/pulse/pulse-story-highlights.mjs?v=20261121-existing-video"></script>
 <link rel="stylesheet" href="/pulse/pulse-meta-business.css?v=20261121-live-meta-business-v1">
@@ -188,11 +188,20 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
   <p class="pulse-live-title" id="pulseLiveTitle" hidden></p>
   <div id="pulseLiveSetup" hidden>
     <p class="pulse-live-meta">NBL members · 20 free Live minutes each UTC calendar month, no rollover · maximum 5 minutes per broadcast · up to 25 viewers. Two starts per resident per 24 hours. The shared pilot reserve permits up to 120 total starts monthly, subject to budget availability. Founder operations have separate allowances.</p>
+    <div id="pulseLiveDestinationOption" hidden>
+      <label for="pulseLiveDestination">Broadcast destination</label>
+      <select id="pulseLiveDestination" aria-describedby="pulseLiveDestinationStatus">
+        <option value="pulse" selected>Pulse only</option>
+        <option value="facebook" disabled>Pulse + Facebook</option>
+        <option value="google" disabled>Pulse + Google relay</option>
+      </select>
+      <p id="pulseLiveDestinationStatus" class="pulse-live-meta" role="status">Checking optional destinations. Pulse only is the default.</p>
+    </div>
     <label for="pulseLiveTitleInput">Broadcast title</label>
     <input id="pulseLiveTitleInput" type="text" maxlength="140" value="NBL Pulse Live" autocomplete="off">
      <label class="pulse-live-check" hidden><input id="pulseLiveRecord" type="checkbox" disabled> Save recording (later)</label>
     <label class="pulse-live-check" for="pulseLiveScreenOnly"><input id="pulseLiveScreenOnly" type="checkbox" checked> Screen only (desktop) — camera and microphone OFF</label>
-    <p class="pulse-live-meta">After Start Live, press Go Live. Edge will ask which window or tab to show. Do not share passwords, chats or private windows.</p>
+    <p class="pulse-live-meta">After Start Live, preview your camera or selected screen, then press Go Live. Screen sharing is desktop-only. Do not share private information.</p>
     <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
      <button id="pulseLiveFindRecording" type="button">Find latest saved livestream</button>
      <p class="pulse-live-meta" id="pulseLiveSavedResult" aria-live="polite"></p>

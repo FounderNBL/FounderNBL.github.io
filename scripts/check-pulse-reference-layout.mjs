@@ -91,3 +91,12 @@ assert.match(founderCss,/@media\(max-width:760px\)/);
 assert.doesNotMatch(html+founderCss,/Shia|Montana|24\.7K|12\.4K|1\.2K\s*likes|\bwatching\b/i,
  "No invented members, engagement counts, or fake livestreams");
 console.log("PASS NBL Pulse: real website layout, live feed hooks, independent Messenger, mobile navigation; no fabricated or excluded content.");
+
+assert.match(html,/id="pulseLiveDestination"/);
+assert.match(html,/<option value="pulse" selected>Pulse only/);
+assert.match(html,/<option value="facebook" disabled>/);
+assert.match(html,/<option value="google" disabled>/);
+assert.match(liveClient,/data\.facebook\?\.canStart === true/);
+assert.match(liveClient,/facebook_enabled: destination === "facebook", google_enabled: destination === "google"/);
+assert.match(liveClient,/typeof navigator\.mediaDevices\?\.getDisplayMedia !== "function"/);
+assert.match(liveClient,/if \(!state\.busy\) void refreshStatus\(true\)/);
