@@ -42,5 +42,5 @@ for(const c of cases){
 test("Pulse icon is used without replacing the New Beansland company identity",()=>{
  const pulse=readFileSync(new URL("../pulse/index.html",import.meta.url),"utf8");
  assert.match(pulse,/NBL%20Pulse_Icon\.png/);
- assert.match(pulse,/class="pulse-company-logo"[^>]*>[\s\S]*?nbl-official-mark\.png/);
+ assert.match(pulse,/class="pulse-brand"[^>]*>[\s\S]*?\/assets\/brand\/nbl-official-mark\.png/);
 });

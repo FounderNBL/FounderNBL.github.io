@@ -750,3 +750,75 @@ html[data-theme="auto"] body.pulse-body {
   --pulse-muted:#cdbddd!important;
  }
 }
+
+
+/* Pulse Live discovery + narrow-touch layout (Founder mobile report, Nov 22).
+   A mobile browser using Desktop site may report a 980px+ layout viewport.
+   Preserve the same five existing destinations on narrow touch devices instead
+   of making a three-column desktop dashboard unreadable. No new media calls. */
+.pulse-live-feed-alert {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 14px; margin-bottom: 14px;
+  border: 2px solid var(--pulse-accent); border-radius: 14px;
+  background: var(--pulse-surface-2); color: var(--pulse-text);
+}
+.pulse-live-feed-alert[hidden] { display: none !important; }
+.pulse-live-feed-dot {
+  display: inline-block; flex: 0 0 12px; width: 12px; height: 12px;
+  background: #dc2626; border-radius: 50%;
+}
+.pulse-live-feed-copy { display: grid; gap: 3px; flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.pulse-live-feed-copy strong { color: var(--pulse-text); font-size: .9rem; letter-spacing: .06em; }
+.pulse-live-feed-copy span { color: var(--pulse-text); }
+.pulse-live-feed-alert .btn { min-height: 44px; white-space: normal; }
+
+@media (max-width: 760px), (pointer: coarse) and (max-width: 1280px) {
+  html, body.pulse-body { max-width: 100%; overflow-x: clip; }
+  body.pulse-body { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+  body.pulse-body .pulse-topbar {
+    display: grid !important; grid-template-columns: minmax(0,1fr) auto auto !important;
+    gap: 8px !important; align-items: center; padding: 8px 12px !important;
+  }
+  body.pulse-body .pulse-topbar > a.pulse-brand { min-width: 0; font-size: 1rem; }
+  body.pulse-body .pulse-topbar .pulse-brand img { width: 38px; height: 38px; }
+  body.pulse-body .pulse-topbar .pulse-tabs,
+  body.pulse-body .pulse-topbar .pulse-create-btn,
+  body.pulse-body .pulse-topbar .pulse-search { display: none !important; }
+  body.pulse-body .pulse-topbar #pulseSearchToggle,
+  body.pulse-body .pulse-topbar #pulseMenuTop { display: grid !important; place-items: center; min-width: 44px; min-height: 44px; }
+  body.pulse-body .pulse-topbar.pulse-search-open .pulse-search {
+    display: block !important; grid-column: 1 / -1; grid-row: 2; min-width: 0;
+  }
+  body.pulse-body .pulse-top-actions { display: flex; align-items: center; gap: 0; }
+  body.pulse-body .pulse-shell { width: 100%; max-width: 720px; margin: 0 auto; padding: 8px 10px 110px !important; }
+  body.pulse-body .social-intro { flex-wrap: wrap !important; justify-content: flex-start !important; gap: 8px !important; }
+  body.pulse-body #socialApp .pulse-grid { display: block !important; grid-template-columns: none !important; width: 100%; min-width: 0; }
+  body.pulse-body #socialApp .pulse-sidebar,
+  body.pulse-body #socialApp .pulse-rail { display: none !important; }
+  body.pulse-body #socialApp .pulse-main { display: grid !important; width: 100%; min-width: 0; gap: 12px; }
+  body.pulse-body #socialApp .pulse-main > * { min-width: 0; max-width: 100%; }
+  body.pulse-body #feedItems .social-card { max-width: 100%; overflow-wrap: anywhere; }
+  body.pulse-body #pulseLiveView .pulse-live { max-width: 100%; }
+  body.pulse-body .pulse-live-feed-alert { padding: 12px; }
+  body.pulse-body .pulse-live-feed-alert .btn { flex: 1 1 120px; }
+  body.pulse-body .pulse-bottombar {
+    display: grid !important; grid-template-columns: repeat(5,minmax(0,1fr)) !important;
+    position: fixed; inset: auto 0 0; z-index: 100;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom,0px));
+    background: var(--pulse-topbar-bg); border-top: 1px solid var(--pulse-border);
+    box-shadow: 0 -2px 16px #0002;
+  }
+  body.pulse-body .pulse-bottombar button {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 0; min-height: 54px; gap: 3px; padding: 5px 2px;
+    border: 0; background: transparent; color: var(--pulse-muted);
+    font: inherit; font-weight: 750; font-size: .75rem;
+  }
+  body.pulse-body .pulse-bottombar button[aria-current="page"] { color: var(--pulse-accent); }
+  body.pulse-body #pulseCreateBottom {
+    justify-self: center; width: 52px; height: 52px; margin-top: -18px;
+    border-radius: 50%; background: var(--pulse-accent); color: #fff;
+    font-size: 1.6rem; box-shadow: var(--pulse-shadow-2);
+  }
+  body.pulse-body #pulseComposerSheet { max-width: calc(100vw - 24px); }
+}
