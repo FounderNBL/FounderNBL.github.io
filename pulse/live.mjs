@@ -602,15 +602,12 @@ async function onFindRecording() {
 // exact control (never clone it) into the scrollable Pulse feed so all buttons
 // remain tappable, while restoring its original desktop sidebar placement.
 function placeLivePanel() {
+  // Muse redesign: move the ONE existing, current Pulse Live panel into its view.
+  // This does not recreate or change any Stream, Meta, Google, or device controls.
   const root = $("#pulseLive");
-  const sidebar = document.querySelector("#socialApp .pulse-sidebar");
-  const main = document.querySelector("#socialApp .pulse-main");
-  if (!root || !sidebar || !main) return;
-  if (window.matchMedia("(max-width: 760px)").matches) {
-    if (root.parentElement !== main) main.insertBefore(root, main.querySelector("#feedPanel"));
-  } else if (root.parentElement !== sidebar) {
-    sidebar.insertBefore(root, sidebar.querySelector(".pulse-create-shortcut"));
-  }
+  const slot = $("#pulseLiveView");
+  if (!root || !slot) return;
+  if (root.parentElement !== slot) slot.append(root);
 }
 
 export function initPulseLive() {
