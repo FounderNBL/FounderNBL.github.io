@@ -141,3 +141,24 @@ assert.match(liveClient,/window\.confirm\("Permanently delete this saved Pulse L
 assert.match(liveClient,/if \(deleted\?\.deleted !== true\)/);
 assert.match(liveClient,/row\.remove\(\)/);
 console.log("PASS Pulse delete recording requires confirmation and provider success.");
+
+
+// The actual Pulse audience must discover a broadcast, not a saved video or an
+// enabled-only Live switch. Desktop-site viewports on touch phones stay usable.
+assert.match(html,/id="pulseLiveFeedAlert" class="pulse-live-feed-alert" role="status" hidden/);
+assert.match(html,/id="pulseLiveFeedAlertTitle"/);
+assert.match(html,/data-view="live" class="btn primary">Watch live/);
+assert.match(liveClient,/function updateLiveDiscovery\(data\)/);
+assert.match(liveClient,/data\?\.enabled === true && data\?\.status === "live"/);
+assert.match(liveClient,/if \(\$\("#pulseLiveView"\)\?\.hidden !== false\) return;/);
+assert.match(liveClient,/document\.addEventListener\("pulse:view-change"/);
+assert.match(liveClient,/if \(wasViewer\) state\.callId = null/);
+assert.match(liveClient,/video\.autoplay = true; video\.muted = true/);
+assert.match(redesignUi,/new CustomEvent\("pulse:view-change"/);
+assert.match(redesignCss,/@media \(max-width: 760px\), \(pointer: coarse\) and \(max-width: 1280px\)/);
+assert.match(redesignCss,/body\.pulse-body #socialApp \.pulse-sidebar,/);
+assert.match(redesignCss,/body\.pulse-body #pulseLiveFeedAlert/);
+assert.match(redesignCss,/body\.pulse-body \.pulse-bottombar/);
+assert.match(redesignCss,/body\.pulse-body \.pulse-topbar #pulseMenuTop/);
+assert.match(redesignCss,/\.pulse-live-feed-alert\[hidden\] \{ display: none !important/);
+console.log("PASS Pulse confirmed Live discovery, explicit viewer join, responsive touch feed + Connect navigation.");
