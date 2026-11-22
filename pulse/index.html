@@ -96,7 +96,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
 <link rel="stylesheet" href="/pulse/pulse-redesign.css?v=20261122-live-reconcile">
 <script type="module" src="/pulse/redesign.mjs?v=20261122-live-reconcile"></script></head><body class="pulse-body">
 <header class="pulse-topbar">
-  <a class="pulse-brand" href="/"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland" width="40" height="40"> <span>NBL <strong>Pulse</strong></span></a>
+  <a class="pulse-brand" href="/"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland" width="40" height="40"> <span class="pulse-company-wordmark">NBL<small>New Beansland™</small></span><strong>Pulse</strong></a>
   <div class="pulse-search" role="search">
     <label class="pulse-visually-hidden" for="pulseSearch">Search Beats in your feed</label>
     <input id="pulseSearch" type="search" placeholder="Search Beats in your feed" autocomplete="off" aria-label="Search Beats in your feed">
@@ -110,8 +110,9 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
     <button data-feed="notification" type="button" aria-pressed="false" aria-current="false" data-view="notifications" aria-current="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Notifications</span></button>
   </nav>
   <div class="pulse-top-actions">
+    <button type="button" class="pulse-explore-top" data-feed="friends" aria-label="Explore NBL members" data-view="friends" title="Find members">⌕</button>
     <button id="pulseCreateTop" type="button" class="pulse-create-btn"><span aria-hidden="true">+</span> Create</button>
-    <button id="pulseBellTop" data-feed="notification" data-view="notifications" type="button" aria-label="Notifications" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="pulse-badge" id="pulseNotifBadge" hidden></span></button>
+    <button id="pulseBellTop" data-feed="notification" data-view="notifications" type="button" aria-label="View Pulse notifications" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="pulse-badge" id="pulseNotifBadge" hidden></span></button>
     <button id="pulseMessagesTop" data-view="messages" type="button" aria-label="Messages" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="pulse-badge" id="pulseMessageBadge" hidden></span></button>
     <button id="pulseMenuTop" data-view="menu" type="button" aria-label="Menu" aria-current="false"><img src="/messenger/icon.svg" width="34" height="34" alt=""></button>
   </div>
