@@ -48,6 +48,8 @@ function switchView(view, opts = {}) {
     const target = document.getElementById(opts.section);
     if (target) target.scrollIntoView({ block: "start" });
   }
+  // The Live client joins an audience call only after this explicit view switch.
+  document.dispatchEvent(new CustomEvent("pulse:view-change", { detail: { view } }));
 }
 
 document.addEventListener("click", (event) => {
