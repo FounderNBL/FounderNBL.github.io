@@ -88,13 +88,13 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
 <link rel="stylesheet" href="/pulse/pulse-founder-ui.css?v=20261118-live-visibility">
 <link rel="stylesheet" href="/pulse/pulse-mobile-app.css?v=20261121-pulse-connect-v1" media="(max-width: 760px)">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
-<script type="module" src="/pulse/live.mjs?v=20261122-delete-recording-v1"></script>
+<script type="module" src="/pulse/live.mjs?v=20261122-live-discovery-v1"></script>
 <link rel="stylesheet" href="/pulse/pulse-story-highlights.css?v=20261121-existing-video">
 <script type="module" src="/pulse/pulse-story-highlights.mjs?v=20261121-existing-video"></script>
 <link rel="stylesheet" href="/pulse/pulse-meta-business.css?v=20261121-live-meta-business-v1">
 <script type="module" src="/pulse/business-assets.mjs?v=20261121-live-meta-business-v1"></script><script>try{document.documentElement.dataset.theme=localStorage.getItem("pulse-appearance")||"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
-<link rel="stylesheet" href="/pulse/pulse-redesign.css?v=20261122-live-ui-v3">
-<script type="module" src="/pulse/redesign.mjs?v=20261122-live-ui-v3"></script></head><body class="pulse-body">
+<link rel="stylesheet" href="/pulse/pulse-redesign.css?v=20261122-mobile-live-v1">
+<script type="module" src="/pulse/redesign.mjs?v=20261122-live-discovery-v1"></script></head><body class="pulse-body">
 <header class="pulse-topbar">
   <a class="pulse-brand" href="/"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland" width="40" height="40"> <span class="pulse-company-wordmark">NBL<small>New Beansland™</small></span><strong>Pulse</strong></a>
   <div class="pulse-search" role="search">
@@ -390,6 +390,11 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
       <button type="button" id="pulseBusinessOpen">Manage Meta Business assets</button></section>
     </section>
     <section class="social-list" id="feedPanel" aria-labelledby="feedTitle">
+      <div id="pulseLiveFeedAlert" class="pulse-live-feed-alert" role="status" hidden>
+        <span class="pulse-live-feed-dot" aria-hidden="true"></span>
+        <div class="pulse-live-feed-copy"><strong>LIVE NOW</strong><span id="pulseLiveFeedAlertTitle">NBL Pulse Live</span></div>
+        <button type="button" data-view="live" class="btn primary">Watch live</button>
+      </div>
       <div class="social-list-head"><h2 id="feedTitle">For You</h2><button id="refreshFeed" class="btn small" type="button">Refresh</button></div>
       <div id="feedItems" aria-live="polite"><p class="hint">Loading Stream Feeds…</p></div>
     </section>
