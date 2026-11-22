@@ -30,7 +30,7 @@ test("One Messages navigation entry retains old authenticated inbox transports",
   assert.ok(page.includes('data-pulse-inbox="'+provider+'"'),provider);
  assert.match(page,/pulse-legacy-message-tab\{display:none!important\}/);
  assert.match(client,/mountUnifiedInbox\(\{/);
- assert.match(client,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\)\)/);
+ assert.match(client,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\),/);
  assert.match(client,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
  assert.match(hub,/host\.append\(member, ig\)/);
 });
@@ -73,4 +73,4 @@ test("Meta opaque conversation IDs survive the unified inbox without path inject
  assert.equal(threads[0].id,"t_abc123_-XYZ=");
 });
 
- test("Pulse Connect opens native inbox first and preserves separate full communication service",()=>{assert.match(hub,/let current = "pulse"/);assert.match(hub,/function open\(name = "pulse"/);assert.match(page,/id="pulseUnifiedInboxHeading">Pulse Connect/);assert.match(page,/href="\/messenger\/">Open the full Pulse Connect app/);assert.match(client,/user:"My Beats"/);assert.match(hub,/instagram-inbox\.mjs\?v=20261121-pulse-connect-v1/);assert.match(client,/instagram-inbox\.mjs\?v=20261121-pulse-connect-v1/);});
+ test("Pulse Connect opens native inbox first and preserves separate full communication service",()=>{assert.match(hub,/let current = "pulse"/);assert.match(hub,/function open\(name = "pulse"/);assert.match(page,/id="pulseUnifiedInboxHeading">Pulse Connect/);assert.match(page,/href="\/messenger\/">Open the full Pulse Connect app/);assert.match(client,/user:"My Beats"/);assert.match(hub,/instagram-inbox\.mjs\?v=20261121-pulse-delete-v1/);assert.match(client,/instagram-inbox\.mjs\?v=20261121-pulse-delete-v1/);});
