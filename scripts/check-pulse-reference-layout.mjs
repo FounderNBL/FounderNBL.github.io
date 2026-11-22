@@ -157,7 +157,7 @@ assert.match(liveClient,/video\.autoplay = true; video\.muted = true/);
 assert.match(redesignUi,/new CustomEvent\("pulse:view-change"/);
 assert.match(redesignCss,/@media \(max-width: 760px\), \(pointer: coarse\) and \(max-width: 1280px\)/);
 assert.match(redesignCss,/body\.pulse-body #socialApp \.pulse-sidebar,/);
-assert.match(redesignCss,/body\.pulse-body #pulseLiveFeedAlert/);
+assert.match(redesignCss,/\.pulse-live-feed-alert \{/);
 assert.match(redesignCss,/body\.pulse-body \.pulse-bottombar/);
 assert.match(redesignCss,/body\.pulse-body \.pulse-topbar #pulseMenuTop/);
 assert.match(redesignCss,/\.pulse-live-feed-alert\[hidden\] \{ display: none !important/);
