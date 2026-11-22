@@ -709,3 +709,44 @@ body.pulse-body .social-intro #identityHandle {color:var(--pulse-text)!important
 body.pulse-body #socialApp .pulse-sidebar .social-tabs button:not([aria-pressed="true"]) {
  color:var(--pulse-text)!important;
 }
+
+/* Important: legacy pulse-reference-ui.css declares theme variables on
+   .pulse-body itself, which outranks values inherited from :root.
+   Set them on the SAME element for both appearances. */
+html[data-theme="light"] body.pulse-body,
+html:not([data-theme]) body.pulse-body {
+ --pulse-bg:#f7f4ff!important;
+ --pulse-surface:#ffffff!important;
+ --pulse-surface-2:#f0e9ff!important;
+ --pulse-text:#24163d!important;
+ --pulse-muted:#645575!important;
+ --pulse-border:#ded3f1!important;
+ --pulse-topbar-bg:#ffffff!important;
+ --pulse-input-bg:#f2edff!important;
+}
+html[data-theme="dark"] body.pulse-body {
+ --pulse-bg:#241338!important;
+ --pulse-surface:#302048!important;
+ --pulse-surface-2:#412956!important;
+ --pulse-text:#f6ecff!important;
+ --pulse-muted:#cdbddd!important;
+ --pulse-border:#705488!important;
+ --pulse-topbar-bg:#2b1a40!important;
+ --pulse-input-bg:#412956!important;
+}
+html[data-theme="auto"] body.pulse-body {
+ --pulse-bg:#f7f4ff!important;
+ --pulse-surface:#ffffff!important;
+ --pulse-text:#24163d!important;
+ --pulse-border:#ded3f1!important;
+ --pulse-muted:#645575!important;
+}
+@media (prefers-color-scheme: dark) {
+ html[data-theme="auto"] body.pulse-body {
+  --pulse-bg:#241338!important;
+  --pulse-surface:#302048!important;
+  --pulse-text:#f6ecff!important;
+  --pulse-border:#705488!important;
+  --pulse-muted:#cdbddd!important;
+ }
+}
