@@ -182,13 +182,13 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
   <section id="socialApp" hidden aria-label="NBL Pulse activity feeds"><div class="pulse-grid"><aside class="pulse-sidebar" tabindex="0" aria-label="Pulse navigation column">
   <h2><img class="pulse-mark" src="/NBL%20Pulse_Icon.png" width="32" height="32" alt=""> NBL Pulse<span aria-hidden="true">™</span></h2>
   <nav class="social-tabs" aria-label="Choose an activity feed">
-    <button data-feed="foryou" type="button" aria-pressed="true"><span class="pulse-nav-glyph" aria-hidden="true">⌂</span><span>Home <small>(For You)</small></span></button>
+    <button data-feed="foryou" type="button" aria-pressed="true" data-view="home" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">⌂</span><span>Home <small>(For You)</small></span></button>
     <button data-feed="timeline" type="button" aria-pressed="false" data-view="following" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">◎</span><span>Following</span></button>
     <button data-feed="user" type="button" aria-pressed="false" data-view="myposts" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">▤</span><span>My Beats</span></button>
     <button data-feed="friends" type="button" aria-pressed="false" data-view="friends" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">⌕</span><span>Pulse Explore <small>(People)</small></span></button>
     <a class="pulse-nav-stories" href="#pulseStories"><span class="pulse-nav-glyph" aria-hidden="true">◯</span><span>Stories <small>Video highlights</small></span></a>
     <a class="pulse-nav-live" href="#pulseLive"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live <small id="pulseLiveNavStatus">Checking…</small></span></a>
-    <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
+    <button data-feed="notification" type="button" aria-pressed="false" data-view="notifications" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
     <button id="pulseUnifiedInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open Pulse Connect private messaging" data-view="messages" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Connect</span></button>
     <button id="pulseMemberInboxNav" type="button" class="pulse-message-tab pulse-legacy-message-tab" hidden aria-label="Open private NBL member messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Connect</span></button>
     <button id="pulseInstagramInboxNav" type="button" class="pulse-message-tab pulse-legacy-message-tab" hidden aria-label="Open Instagram Direct messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Instagram DMs</span></button>
@@ -375,7 +375,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
       <section><h3>NBL destinations</h3><nav class="pulse-site-nav" aria-label="NBL destinations">
     <a href="/chat.html">Beans</a><a href="/pulse/" class="pulse-site-current" aria-current="page"><img class="pulse-mark" src="/NBL%20Pulse_Icon.png" width="32" height="32" alt=""> Pulse</a>
     <a href="/studios.html">Studios</a><a href="/studio/">Music</a><a href="/books.html">Books</a><a href="/games.html" title="NBL Games — coming soon">Games</a>
-  </nav><details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user">My Beats</button><button type="button" data-feed="friends">People</button><a href="/account.html">My account</a><a href="#pulseLive">Go Live controls</a><a href="/messenger/">Pulse Connect</a><a href="/pulse/guide.html">Help, Costs &amp; Privacy</a></div></details></section>
+  </nav><details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user" data-view="myposts">My Beats</button><button type="button" data-feed="friends" data-view="friends">People</button><a href="/account.html">My account</a><a href="#pulseLive">Go Live controls</a><a href="/messenger/">Pulse Connect</a><a href="/pulse/guide.html">Help, Costs &amp; Privacy</a></div></details></section>
       <section id="pulseSavedSection"><h3>Saved</h3><p>Saving Beats is not available yet. No saved posts are being represented here.</p></section>
       <section id="pulseAppearance"><h3>Appearance</h3><div role="radiogroup" aria-label="Appearance" class="pulse-appearance-group">
         <button type="button" data-appearance="auto" role="radio" aria-checked="false">Auto</button>
