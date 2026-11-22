@@ -36,7 +36,7 @@ const state = {
   clerk: null, client: null, call: null, sub: null,
   callId: null, userId: null, mode: "idle", // idle | backstage | live | viewing
   hls: null, tracks: new Map(), previewBound: null,
-  liveSince: null, timerId: null, pollId: null, busy: false,
+  liveSince: null, timerId: null, pollId: null, busy: false, viewerConnecting: false,
   recordingRequested: false, liveEnabled: false,
   isAdmin: false, screenOnly: false, screenReady: false,
   destination: "pulse", facebookReady: false, googleReady: false,
@@ -219,6 +219,7 @@ async function teardownStream() {
   state.mediaSubs = [];
   show("#pulseLiveMediaControls", false);
   clearTracks(); destroyHls();
+  show("#pulseLiveViewer", false); // An ended viewer call must not leave a stale player.
   try { await state.call?.leave(); } catch {}
   try { await state.client?.disconnectUser(); } catch {}
   state.call = null; state.client = null; state.mode = "idle";
@@ -335,16 +336,33 @@ async function toggleHostMedia(kind) {
 
 // --- WebRTC viewer fallback (needs sign-in: Stream needs a user id) ---
 async function joinAsWebRtcViewer(callId) {
-  const data = await liveApi("join-viewer", { callId }, "required");
-  if (!data.key || !data.token || data.callId !== callId || data.callType !== CALL_TYPE)
-    throw Error("Viewer session identity verification failed.");
-  const VideoClient = await videoClientConstructor();
-  state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
-  state.call = state.client.call(CALL_TYPE, callId);
-  await joinWithoutCapture(state.call); // viewers never request camera or microphone
-  state.mode = "viewing";
-  show("#pulseLiveVideo", false);
-  state.sub = state.call.state.participants$.subscribe(renderViewerParticipants);
+  // Joining must be a deliberate Live-view action, even when the feed shows
+  // LIVE NOW. Two status polls may overlap; never join the same call twice.
+  if (state.viewerConnecting || state.mode !== "idle" || $("#pulseLiveView")?.hidden !== false) return;
+  state.viewerConnecting = true;
+  try {
+    const data = await liveApi("join-viewer", { callId }, "required");
+    if (!data.key || !data.token || data.callId !== callId || data.callType !== CALL_TYPE)
+      throw Error("Viewer session identity verification failed.");
+    if ($("#pulseLiveView")?.hidden !== false) return; // Viewer navigated away during token request.
+    const VideoClient = await videoClientConstructor();
+    state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
+    state.call = state.client.call(CALL_TYPE, callId);
+    await joinWithoutCapture(state.call); // viewers never request camera or microphone
+    if ($("#pulseLiveView")?.hidden !== false) {
+      await teardownStream(); // Leave this viewer only. Never stop the host broadcast.
+      return;
+    }
+    state.mode = "viewing";
+    show("#pulseLiveVideo", false); // HLS is disabled; Stream participants own the actual picture.
+    show("#pulseLiveViewer", true); // Otherwise all WebRTC tracks are in a hidden parent.
+    state.sub = state.call.state.participants$.subscribe(renderViewerParticipants);
+  } catch (error) {
+    await teardownStream(); // Clean up failed joins instead of holding an invisible paid slot.
+    throw error;
+  } finally {
+    state.viewerConnecting = false;
+  }
 }
 
 // --- Status / viewer flow ---
