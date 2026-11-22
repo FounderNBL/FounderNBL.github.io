@@ -9,7 +9,7 @@ const service=read("supabase/functions/nbl-social/index.ts");
 test("Pulse native member messages reuse existing NBL authenticated service",()=>{
  for(const action of ['list_threads','list_messages','direct','send'])
   assert.match(service,new RegExp('action==="'+action+'"'));
- assert.match(app,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\)\)/);
+ assert.match(app,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\),/);
  assert.match(panel,/invoke\(body\)/);
  assert.match(panel,/action:"list_threads"/);
  assert.match(panel,/action:"list_messages"/);
