@@ -1,7 +1,7 @@
 // Owner-only post operations using the signed-in member's Stream client.
 export function ownPost(activity,actor){
  return !!actor&&/^user_[A-Za-z0-9_-]+$/.test(actor)&&activity?.type==="post"&&
-  typeof activity.id==="string"&&/^[A-Za-z0-9._:-]{1,160}$/.test(activity.id)&&
+  !activity.deleted_at&&typeof activity.id==="string"&&/^[A-Za-z0-9._:-]{1,160}$/.test(activity.id)&&
   String(activity.user?.id||activity.user_id||"")===actor;
 }
 export function mediaCaption(attachments=[],external=false){

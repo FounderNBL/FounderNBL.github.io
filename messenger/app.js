@@ -635,10 +635,10 @@ function renderMessages(messages){
   const atBottom=area.scrollHeight-area.scrollTop-area.clientHeight<120;
   area.replaceChildren();
   if(!messages.length){area.append(node("p","hint","Nothing here yet. Say hello!"));return;}
-  const me=String(state.me?.handle||"").toLowerCase();
+  const actor=state.clerk?.user?.id,threadId=state.selectedId;
   for(const message of messages){
     const from=message.sender?.handle||((message.officialRole==="grey")?"greyhart":"NBL member");
-    const mine=from.toLowerCase()===me;
+    const mine=Boolean(actor&&message.sender?.userId===actor);
     const displayFrom=!mine&&state.selected?.contactNickname&&from.toLowerCase()===String(state.selected.peer?.handle||"").toLowerCase()
       ?state.selected.contactNickname+" (@"+from+")":"@"+from;
     const bubble=node("div","message"+(mine?" mine":""));
@@ -646,9 +646,10 @@ function renderMessages(messages){
     const photo=safeAvatar(message.sender?.avatarUrl);
     if(photo){const image=node("img","chat-avatar");image.src=photo;image.alt=displayFrom+" profile picture";image.loading="lazy";bubble.append(image);}
     bubble.append(node("div","byline",displayFrom+(verified?" · Verified":"")+(message.createdAt?" · "+new Date(message.createdAt).toLocaleString():"")));
-    bubble.append(node("p",null,message.body||""));
+    const deleted=message.deleted||removedOwnMessages.has(actor+":"+message.id);
+    bubble.append(node("p",null,deleted?"[Message removed]":message.body||""));
     const invite=VIDEO_INVITE_RE.exec(String(message.body||""));
-    if(invite&&!message.deleted&&IS_CALL_ID.test(invite[1])){
+    if(invite&&!deleted&&IS_CALL_ID.test(invite[1])){
       const sentAt=Date.parse(message.createdAt||"");
       if(Number.isFinite(sentAt)&&Date.now()-sentAt>600000){
         bubble.append(node("small","hint","Video call invitation expired."));
@@ -659,7 +660,14 @@ function renderMessages(messages){
         bubble.append(link);
       }
     }
-    if(!mine&&!message.deleted&&message.id){
+    if(mine&&!deleted&&IS_CALL_ID.test(String(message.id||""))){
+      const actions=node("div","msg-actions");
+      const button=node("button",null,"Delete message");button.type="button";
+      button.disabled=deletingOwnMessages.has(message.id);
+      button.addEventListener("click",()=>{void deleteOwnMessage(message,actor,threadId,button,bubble);});
+      actions.append(button);bubble.append(actions);
+    }
+    if(!mine&&!deleted&&message.id){
       const actions=node("div","msg-actions");
       const button=node("button",null,"Report message");
       button.type="button";
@@ -919,6 +927,27 @@ async function unblockPeer(){
     await refresh();
   }catch(error){status(error.message||"Unable to unblock this member.");}
 }
+const deletingOwnMessages=new Set(),removedOwnMessages=new Set();
+async function deleteOwnMessage(message,actor,threadId,button,bubble){
+  const generation=authSyncGeneration;
+  const same=()=>state.clerk?.user?.id===actor&&authSyncGeneration===generation&&state.selectedId===threadId;
+  if(!actor||!same()||message.sender?.userId!==actor||message.deleted||deletingOwnMessages.has(message.id)||removedOwnMessages.has(actor+":"+message.id))return;
+  if(!window.confirm("Remove this message for everyone in the conversation?"))return;
+  deletingOwnMessages.add(message.id);button.disabled=true;
+  try{
+    const result=await social({action:"delete_message",messageId:message.id,threadId});
+    if(result.deleted!==true)throw Error("Deletion was not confirmed.");
+    if(state.clerk?.user?.id!==actor||authSyncGeneration!==generation)return;
+    removedOwnMessages.add(actor+":"+message.id);
+    if(same()){
+      bubble.querySelector("p").textContent="[Message removed]";
+      bubble.querySelectorAll("a,.msg-actions").forEach(el=>el.remove());
+      const refreshed=await social({action:"list_messages",threadId}).catch(()=>null);
+      if(same()){if(refreshed)renderMessages(refreshed.messages||[]);status("Message removed for everyone.");}
+    }
+  }catch(error){if(same())status(error.message||"Message could not be removed.");}
+  finally{deletingOwnMessages.delete(message.id);button.disabled=false;}
+}
 async function reportMessage(messageId){
   const reason=prompt("Why are you reporting this message? Do not include passwords or private information.");
   if(!reason||!reason.trim())return;
@@ -937,7 +966,7 @@ async function syncClerkSession(){
   state.realtimeStop=null;state.inboxStop=null;state.realtimeThread=null;
   state.selectedId=null;state.selected=null;state.threads=[];state.me=null;state.busy=false;
   $("[data-chat-app]").classList.remove("chat-open");
-  lastSeenMessages.clear();incomingCallsSeen.clear();hideIncomingCall();
+  lastSeenMessages.clear();incomingCallsSeen.clear();removedOwnMessages.clear();deletingOwnMessages.clear();hideIncomingCall();
   $("[data-chat-userbar]").hidden=true;
   $("[data-chat-account-settings]").hidden=true;
   $("[data-chat-account-toggle]").setAttribute("aria-expanded","false");
