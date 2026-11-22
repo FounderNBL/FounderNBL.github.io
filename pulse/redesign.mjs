@@ -14,7 +14,7 @@ const $$ = (s) => Array.from(document.querySelectorAll(s));
 // are their own center-column sections; their panels are hidden by
 // social-v1's selectTab when a feed tab is chosen, and hidden here when
 // the user leaves a feed view.
-const FEED_VIEWS = new Set(["home", "following", "myposts", "watch", "notifications", "friends", "messages"]);
+const FEED_VIEWS = new Set(["home", "following", "myposts", "watch", "stories", "notifications", "friends", "messages"]);
 let currentView = "home";
 let feedClickFromWatch = false;
 
@@ -24,7 +24,7 @@ function switchView(view, opts = {}) {
   currentView = view;
   const app = $("#socialApp");
   $$("[data-view]").forEach((b) => b.setAttribute("aria-current", b.dataset.view === view ? "page" : "false"));
-  show($("#pulseStories"), view === "home" || view === "following" || view === "myposts" || view === "watch");
+  show($("#pulseStories"), view === "stories");
   show($("#pulseComposerTrigger"), view === "home" || view === "following" || view === "myposts" || view === "watch");
   show($("#pulseWatchNote"), view === "watch");
   show($("#pulseLiveView"), view === "live");
@@ -37,7 +37,7 @@ function switchView(view, opts = {}) {
     show($("#pulseInstagramInbox"), false);
   }
   if (app) app.classList.toggle("pulse-watch-filter", view === "watch");
-  if (view === "live" || view === "menu" || view === "messages") {
+  if (view === "live" || view === "menu" || view === "messages" || view === "stories") {
     // Keep the center column to one view: social-v1 re-shows the right
     // panel on the next feed click (selectTab owns those three).
     show($("#feedPanel"), false);
@@ -53,6 +53,8 @@ function switchView(view, opts = {}) {
 document.addEventListener("click", (event) => {
   const postLink = event.target.closest('a[href="#postForm"],a[href="#composeTitle"]');
   if (postLink) { event.preventDefault(); openComposer(); return; }
+  const storyLink = event.target.closest('a.pulse-nav-stories[href="#pulseStories"]');
+  if (storyLink) { event.preventDefault(); switchView("stories"); return; }
   const liveLink = event.target.closest('a[href="#pulseLive"]');
   if (liveLink) { event.preventDefault(); switchView("live"); return; }
   const button = event.target.closest("[data-view]");
@@ -234,9 +236,15 @@ if (businessPanel) {
 // --- Initial view from the URL (social-v1 owns the feed itself). ---
 const params = new URLSearchParams(location.search);
 if (params.get("messages") === "1") switchView("messages");
-else if (params.get("meta_business") === "connected" || params.get("meta_business") === "error") switchView("menu");
+else if (params.has("facebook_connect") || params.get("meta_business") === "connected" || params.get("meta_business") === "error") switchView("menu");
 else switchView("home");
 
 // Current site keeps Meta business authorization outside the feed views.
 $("#pulseBusinessOpen")?.addEventListener("click", () => {$("#manageBusinessAssets")?.click();$("#metaBusinessPanel")?.scrollIntoView({block:"start"});});
 document.addEventListener("pulse:member-inbox-open", () => switchView("messages"));
+
+// Keep the real optional Google Insights panel, but make it a Menu setting,
+ // not a second dashboard next to the member feed.
+const insightsPanel = document.querySelector(".pulse-rail-insights");
+const menu = $("#pulseMenuView");
+if (insightsPanel && menu && insightsPanel.parentElement !== menu) menu.append(insightsPanel);

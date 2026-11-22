@@ -218,11 +218,13 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
     </div>
     <label for="pulseLiveTitleInput">Broadcast title</label>
     <input id="pulseLiveTitleInput" type="text" maxlength="140" value="NBL Pulse Live" autocomplete="off">
-     <label class="pulse-live-check" hidden><input id="pulseLiveRecord" type="checkbox" disabled> Save recording (later)</label>
-    <label class="pulse-live-check" for="pulseLiveScreenOnly"><input id="pulseLiveScreenOnly" type="checkbox"> Screen only (desktop) — camera and microphone OFF</label>
+     <label id="pulseLiveRecordOption" class="pulse-live-check" hidden><input id="pulseLiveRecord" type="checkbox"> Save this Live video (optional)</label>
+    <p id="pulseLiveRecordNote" class="pulse-live-meta" hidden>Founder only. Recording starts after Go Live, may incur Stream recording/storage charges, and can take time to process. Leave unchecked for a live-only broadcast. Earlier broadcasts cannot be saved retroactively.</p>
+    <label class="pulse-live-check" for="pulseLiveScreenOnly"><input id="pulseLiveScreenOnly" type="checkbox"> Share screen (desktop) — camera OFF</label>
+    <label id="pulseLiveScreenMicOption" class="pulse-live-check" for="pulseLiveScreenMic" hidden><input id="pulseLiveScreenMic" type="checkbox"> Include my microphone with screen sharing</label>
     <p class="pulse-live-meta">Camera and microphone are the normal mode. Start Live asks for needed browser permissions and opens a private backstage preview. You control each device before pressing Go Live. Screen sharing is optional on supported desktops.</p>
     <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
-     <button id="pulseLiveFindRecording" type="button">Find latest saved livestream</button>
+     <button id="pulseLiveFindRecording" type="button">My saved Live videos</button>
      <p class="pulse-live-meta" id="pulseLiveSavedResult" aria-live="polite"></p>
   </div>
   <div id="pulseLiveHost" hidden>
@@ -241,7 +243,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
   <p class="pulse-live-error" id="pulseLiveError" role="alert" hidden></p>
 </div>
   <a class="pulse-create-shortcut" href="#composeTitle" aria-label="Jump to create a Beat"><span aria-hidden="true">＋</span> Create Beat</a>
-</aside><div class="pulse-main" tabindex="0" role="region" aria-label="Pulse feed and composer"><section id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels">
+</aside><div class="pulse-main" tabindex="0" role="region" aria-label="Pulse feed and composer"><section id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels" hidden>
       <div class="pulse-highlights" aria-label="Pulse videos, official sources and NBL destinations">
         <div id="pulseStoryFeedVideos" class="pulse-story-feed-videos" hidden></div>
         <a class="pulse-highlight pulse-story-source" href="https://www.youtube.com/@NBL_Music_Official" target="_blank" rel="noopener noreferrer" aria-label="Visit New Beansland official YouTube channel"><span class="pulse-highlight-circle pulse-highlight-text" aria-hidden="true">▶</span><span>YouTube</span></a>

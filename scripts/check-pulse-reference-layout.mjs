@@ -111,3 +111,26 @@ assert.match(liveClient,/if \(!screenOnly\) \{\s*try \{ await state\.call\.camer
 assert.match(liveClient,/await manager\.toggle\(\)/);
 assert.match(liveClient,/state\.call\?\.camera\.state\.status !== "enabled" && state\.call\?\.microphone\.state\.status !== "enabled"/);
 assert.match(liveClient,/state\.mediaSubs = \[\]/);
+
+// Founder November 22: no duplicated dashboard navigation or recording ambiguity.
+const redesignCss=read("pulse/pulse-redesign.css");
+const redesignUi=read("pulse/redesign.mjs");
+const metaCommunity=read("pulse/meta-community.mjs");
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
+assert.equal(ids.length,new Set(ids).size,"Pulse DOM IDs are unique");
+assert.match(redesignCss,/\.pulse-topbar \.pulse-tabs \{display:none!important/);
+assert.match(redesignCss,/\.pulse-rail \.pulse-rail-activity/);
+assert.match(html,/id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels" hidden/);
+assert.match(redesignUi,/show\(\$\("#pulseStories"\), view === "stories"\)/);
+assert.match(metaCommunity,/querySelector\("#pulseMenuView"\)/);
+assert.match(metaCommunity,/root\.append\(panel\)/);
+assert.match(html,/id="pulseLiveRecord" type="checkbox"/);
+assert.doesNotMatch(html,/id="pulseLiveRecord"[^>]*\bchecked\b/);
+assert.match(html,/id="pulseLiveScreenMic" type="checkbox"/);
+assert.match(liveClient,/screenMic = screenOnly &&/);
+assert.match(liveClient,/else if \(screenMic\)/);
+assert.match(liveClient,/No video was saved because Save this Live video was OFF/);
+assert.match(redesignCss,/#pulseLiveMediaControls button/);
+assert.match(redesignCss,/html\[data-theme="light"\] body\.pulse-body/);
+assert.match(redesignCss,/--pulse-bg:#f7f4ff!important/);
+console.log("PASS Pulse single-navigation layout, Founder recording choice, explicit screen microphone, replay feedback.");

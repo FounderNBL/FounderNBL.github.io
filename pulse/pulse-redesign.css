@@ -631,3 +631,122 @@ body.pulse-body #pulseLiveView .pulse-live button{cursor:pointer}
 
 /* Show Muse's one-tap Create entry; keep the SAME real composer form hidden in the feed until it moves into the dialog. */
 body.pulse-body #socialApp .pulse-main > .social-compose {display:none!important;}
+
+/* Founder November 22 cleanup: one navigation, one feed, light-purple surfaces. */
+:root,html[data-theme="light"] { --pulse-bg:#f7f4ff; --pulse-surface:#ffffff;
+ --pulse-surface-2:#f0e9ff; --pulse-text:#24163d; --pulse-muted:#645575;
+ --pulse-border:#ded3f1; --pulse-topbar-bg:#ffffff; --pulse-input-bg:#f2edff; }
+html[data-theme="dark"] { --pulse-bg:#241338; --pulse-surface:#302048;
+ --pulse-surface-2:#412956; --pulse-border:#705488; --pulse-topbar-bg:#2b1a40;
+ --pulse-input-bg:#412956; }
+body.pulse-body .pulse-topbar .pulse-tabs {display:none!important;}
+body.pulse-body .pulse-topbar .pulse-explore-top,
+body.pulse-body .pulse-topbar #pulseBellTop,
+body.pulse-body .pulse-topbar #pulseMessagesTop,
+body.pulse-body .pulse-topbar #pulseMenuTop {display:none!important;}
+body.pulse-body .pulse-topbar {grid-template-columns:auto minmax(180px,460px) auto!important;
+ justify-content:space-between;gap:18px;}
+body.pulse-body #socialApp .pulse-sidebar button[data-view="live"] {display:none!important;}
+body.pulse-body #socialApp .pulse-sidebar {box-shadow:none!important;}
+body.pulse-body #socialApp .pulse-rail .pulse-rail-activity,
+body.pulse-body #socialApp .pulse-rail .pulse-rail-discover,
+body.pulse-body #socialApp .pulse-rail .pulse-rail-messenger {display:none!important;}
+body.pulse-body #socialApp .pulse-grid {gap:14px!important;}
+body.pulse-body #socialApp .pulse-main {gap:14px!important;}
+body.pulse-body #socialApp .pulse-main .pulse-stories,
+body.pulse-body #socialApp .pulse-main .social-list,
+body.pulse-body #socialApp .pulse-main .pulse-composer-trigger,
+body.pulse-body #socialApp .pulse-rail section {box-shadow:none!important;border-radius:16px;}
+body.pulse-body .social-intro {background:var(--pulse-surface)!important;
+ border-color:var(--pulse-border)!important;color:var(--pulse-text)!important;}
+body.pulse-body #socialApp .pulse-main .pulse-stories {background:var(--pulse-surface)!important;}
+body.pulse-body .pulse-features {display:none!important;}
+body.pulse-body #pulseLiveView #pulseLiveMediaControls button {
+ background:var(--pulse-surface-2)!important;color:var(--pulse-text)!important;
+ border:2px solid var(--pulse-border)!important;font-weight:800!important;
+ min-height:52px!important;text-align:center!important;opacity:1!important;
+ -webkit-text-fill-color:var(--pulse-text)!important;
+}
+body.pulse-body #pulseLiveView #pulseLiveMediaControls button:focus-visible {outline:3px solid var(--pulse-accent)!important;}
+body.pulse-body #pulseLiveView #pulseLiveRecordOption,
+body.pulse-body #pulseLiveView #pulseLiveScreenMicOption {color:var(--pulse-text)!important;}
+body.pulse-body #pulseLiveView #pulseLiveRecordOption input,
+body.pulse-body #pulseLiveView #pulseLiveScreenMicOption input {width:20px;height:20px;accent-color:var(--pulse-accent);}
+@media(max-width:760px) {
+ body.pulse-body .pulse-topbar {grid-template-columns:auto 1fr auto!important;}
+ body.pulse-body .pulse-bottombar {display:grid!important;}
+}
+
+/* One brand and one navigation: the real account tools stay accessible. */
+body.pulse-body .preview-bar,
+body.pulse-body .social-intro .pulse-intro-title {display:none!important;}
+body.pulse-body .social-intro {margin:8px auto 12px!important;min-height:0!important;
+ display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:wrap!important;gap:8px!important;
+ background:var(--pulse-surface)!important;padding:9px 14px!important;}
+body.pulse-body #socialApp .pulse-rail .pulse-rail-insights {display:none!important;}
+body.pulse-body #socialApp .pulse-sidebar .pulse-nav-stories,
+body.pulse-body #socialApp .pulse-sidebar .pulse-nav-live {color:var(--pulse-text)!important;}
+body.pulse-body #socialApp .pulse-sidebar .social-tabs .pulse-nav-stories:hover,
+body.pulse-body #socialApp .pulse-sidebar .social-tabs .pulse-nav-live:hover {background:var(--pulse-surface-2)!important;}
+
+/* Older story styles force display:block even on hidden elements; honor the
+   selected Stories view instead of showing duplicated circles on Home. */
+body.pulse-body #socialApp #pulseStories[hidden] {display:none!important;}
+body.pulse-body #socialApp #pulseStories:not([hidden]) {display:block!important;}
+/* Legacy purple-on-black rules must not make the selected light theme illegible. */
+body.pulse-body #socialApp .pulse-main .social-list,
+body.pulse-body #socialApp .pulse-main .pulse-composer-trigger,
+body.pulse-body #socialApp .pulse-rail section,
+body.pulse-body #socialApp #pulseMenuView,
+body.pulse-body #socialApp #pulseLiveView {
+ background:var(--pulse-surface)!important;color:var(--pulse-text)!important;
+ border-color:var(--pulse-border)!important;
+}
+body.pulse-body #socialApp .pulse-main .social-list h2,
+body.pulse-body #socialApp #pulseMenuView h2,
+body.pulse-body #socialApp #pulseLiveView h2 {color:var(--pulse-text)!important;}
+body.pulse-body .social-intro #identityHandle {color:var(--pulse-text)!important;}
+body.pulse-body #socialApp .pulse-sidebar .social-tabs button:not([aria-pressed="true"]) {
+ color:var(--pulse-text)!important;
+}
+
+/* Important: legacy pulse-reference-ui.css declares theme variables on
+   .pulse-body itself, which outranks values inherited from :root.
+   Set them on the SAME element for both appearances. */
+html[data-theme="light"] body.pulse-body,
+html:not([data-theme]) body.pulse-body {
+ --pulse-bg:#f7f4ff!important;
+ --pulse-surface:#ffffff!important;
+ --pulse-surface-2:#f0e9ff!important;
+ --pulse-text:#24163d!important;
+ --pulse-muted:#645575!important;
+ --pulse-border:#ded3f1!important;
+ --pulse-topbar-bg:#ffffff!important;
+ --pulse-input-bg:#f2edff!important;
+}
+html[data-theme="dark"] body.pulse-body {
+ --pulse-bg:#241338!important;
+ --pulse-surface:#302048!important;
+ --pulse-surface-2:#412956!important;
+ --pulse-text:#f6ecff!important;
+ --pulse-muted:#cdbddd!important;
+ --pulse-border:#705488!important;
+ --pulse-topbar-bg:#2b1a40!important;
+ --pulse-input-bg:#412956!important;
+}
+html[data-theme="auto"] body.pulse-body {
+ --pulse-bg:#f7f4ff!important;
+ --pulse-surface:#ffffff!important;
+ --pulse-text:#24163d!important;
+ --pulse-border:#ded3f1!important;
+ --pulse-muted:#645575!important;
+}
+@media (prefers-color-scheme: dark) {
+ html[data-theme="auto"] body.pulse-body {
+  --pulse-bg:#241338!important;
+  --pulse-surface:#302048!important;
+  --pulse-text:#f6ecff!important;
+  --pulse-border:#705488!important;
+  --pulse-muted:#cdbddd!important;
+ }
+}
