@@ -83,6 +83,8 @@ jobs:
         run: |
           deno check supabase/functions/nbl-social/index.ts
           deno check supabase/functions/nbl-stream/index.ts
+          deno check server/supabase/functions/nbl-tiktok-connect/index.ts
+          node --test scripts/check-pulse-tiktok.test.mjs
 
       - name: Probe live Stream connectivity and reject unauthenticated Pulse access
         run: |

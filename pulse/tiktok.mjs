@@ -11,8 +11,9 @@ const say=s=>$("status").textContent=s;
 const postSay=s=>$("postingStatus").textContent=s;
 async function call(action,fields={},form=null){
  if(!clerk?.session||clerk.user?.id!==member)throw Error("NBL account changed. Reload.");
+ const activeMode=mode();
  const token=await clerk.session.getToken();
- if(!token||clerk.user?.id!==member)throw Error("Sign in to NBL first.");
+ if(!token||clerk.user?.id!==member||activeMode!==mode())throw Error("Sign in to NBL first.");
  const payload=form||{action,mode:mode(),...fields};
  if(form){form.set("action",action);form.set("mode",mode());}
  const r=await fetch(api,{method:"POST",headers:{authorization:"Bearer "+token,...(form?{}:{"content-type":"application/json"})},body:form||JSON.stringify(payload)});
@@ -50,7 +51,7 @@ async function connection(){
  try{
   const b=await call("connection");if(n!==gen||m!==mode())return;
   if(!b.connected){say("Connect your TikTok account to begin.");return;}
-  account=b.label;scopes=b.scopes;$("identity").textContent="Connected TikTok account: "+account;
+  account=b.account_ref;scopes=b.scopes;$("identity").textContent="Connected TikTok account: "+b.label;
   $("disconnect").hidden=false;$("list").hidden=!scopes.includes("video.list");
   $("kind").options[0].disabled=!scopes.includes("video.upload");$("kind").options[1].disabled=!scopes.includes("video.publish");
   $("kind").value=scopes.includes("video.upload")?"draft":"direct";
@@ -80,13 +81,13 @@ async function init(){
 }
 $("environment").addEventListener("change",()=>{void connection();});
 $("connect").addEventListener("click",async()=>{
- $("connect").disabled=true;try{
+ $("connect").disabled=true;$("environment").disabled=true;try{
   const b=await call("begin",{display:$("display").checked});
   const u=new URL(b.url);if(u.origin!=="https://www.tiktok.com"||u.pathname!=="/v2/auth/authorize/")throw Error("Invalid TikTok authorization URL");
   sessionStorage.setItem("nbl-tiktok-oauth",JSON.stringify({state:u.searchParams.get("state"),mode:mode(),member}));location.assign(u.href);
- }catch(e){say(e.message);$("connect").disabled=false;}
+ }catch(e){say(e.message);$("connect").disabled=false;$("environment").disabled=false;}
 });
-$("disconnect").addEventListener("click",async()=>{if(!confirm("Disconnect this TikTok account from Pulse?"))return;$("disconnect").disabled=true;try{await call("disconnect");await connection();}catch(e){say(e.message);}finally{$("disconnect").disabled=false;}});
+$("disconnect").addEventListener("click",async()=>{if(!confirm("Disconnect this TikTok account from Pulse?"))return;$("disconnect").disabled=true;$("environment").disabled=true;$("connect").disabled=true;try{await call("disconnect");await connection();}catch(e){say(e.message);}finally{$("disconnect").disabled=false;$("environment").disabled=false;$("connect").disabled=false;}});
 $("list").addEventListener("click",async()=>{const n=gen;try{const b=await call("videos");if(n!==gen)return;const list=$("videos");list.replaceChildren();for(const v of b.videos){const url=new URL(v.share_url);if(url.protocol!=="https:"||!(url.hostname==="www.tiktok.com"||url.hostname==="tiktok.com"))continue;const li=document.createElement("li"),a=document.createElement("a");a.href=url.href;a.target="_blank";a.rel="noopener noreferrer";a.textContent=v.title||"TikTok video";li.append(a);list.append(li);}if(!list.children.length)say("No public videos returned.");}catch(e){say(e.message);}});
 $("kind").addEventListener("change",()=>{if($("kind").value==="direct")void loadCreator();else{creator=null;update();}});
 $("file").addEventListener("change",()=>{
@@ -104,9 +105,10 @@ $("post").addEventListener("submit",async ev=>{
   const f=new FormData();f.set("file",$("file").files[0]);f.set("account",account);f.set("kind",$("kind").value);f.set("duration",String(duration));f.set("title",$("title").value);f.set("privacy",$("privacy").value);
   for(const id of ["comment","duet","stitch","commercial","own_brand","paid_brand","consent"])f.set(id,$(id).checked?"yes":"no");
   f.set("branded_consent",$("consent").checked&&$("paid_brand").checked?"yes":"no");
-  const b=await call("upload",{},f);if(n!==gen)return;job=b.publish_id;$("check").hidden=false;postSay("TikTok confirmed file upload. Processing is not yet complete.");$("consent").checked=false;
+  const b=await call("upload",{},f);if(n!==gen)return;job=b.publish_id;$("check").hidden=false;postSay("TikTok confirmed file upload. Processing is not yet complete.");$("consent").checked=false;poll(job,n,0);
  }catch(e){if(n===gen){if(e.publish_id){job=e.publish_id;$("check").hidden=false;}postSay(e.message);}}
  finally{busy=false;$("environment").disabled=false;$("connect").disabled=false;$("disconnect").disabled=false;update();}
 });
+function poll(id,n,i){if(i>=15||n!==gen||job!==id)return;setTimeout(async()=>{if(n!==gen||job!==id)return;try{const b=await call("status",{publish_id:id});if(n!==gen||job!==id)return;const messages={PROCESSING_UPLOAD:"TikTok is processing the upload.",PROCESSING_DOWNLOAD:"TikTok is fetching the video.",SEND_TO_USER_INBOX:"Draft ready: open your TikTok inbox notification to finish posting.",PUBLISH_COMPLETE:"TikTok confirms the post is published.",FAILED:"TikTok reports the post failed."};postSay((messages[b.status]||b.status)+(b.reason?" · "+b.reason:""));if(!["SEND_TO_USER_INBOX","PUBLISH_COMPLETE","FAILED"].includes(b.status))poll(id,n,i+1);}catch(e){if(n===gen)postSay("Automatic status check unavailable. Use Check posting status.");}},12000);}
 $("check").addEventListener("click",async()=>{if(!job)return;const n=gen;$("check").disabled=true;try{const b=await call("status",{publish_id:job});if(n!==gen)return;const messages={PROCESSING_UPLOAD:"TikTok is processing the upload.",PROCESSING_DOWNLOAD:"TikTok is fetching the video.",SEND_TO_USER_INBOX:"Draft ready: open your TikTok inbox notification to finish posting.",PUBLISH_COMPLETE:"TikTok confirms the post is published.",FAILED:"TikTok reports the post failed."};postSay((messages[b.status]||b.status)+(b.reason?" · "+b.reason:""));}catch(e){postSay(e.message);}finally{$("check").disabled=false;}});
 void init();

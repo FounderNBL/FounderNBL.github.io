@@ -64,6 +64,7 @@ const until=(n:number)=>new Date(Date.now()+n*1000).toISOString();
 async function fields(v:any,id:string,mode:Mode){
  return {open_id:v.open_id,scopes:grantScope(v),access_cipher:await seal(v.access_token,id,mode,"access"),refresh_cipher:await seal(v.refresh_token,id,mode,"refresh"),access_until:until(Number(v.expires_in)),refresh_until:until(Number(v.refresh_expires_in))};
 }
+const accountRef=(g:any,id:string,mode:Mode)=>hash(id+"|"+mode+"|"+g.open_id+"|"+g.connected_at);
 const grantQuery=(id:string,mode:Mode)=>db.from("nbl_tiktok_grants").select("*").eq("member_id",id).eq("environment",mode);
 async function grant(id:string,mode:Mode){
  const r=await grantQuery(id,mode).maybeSingle();if(r.error)fail("connection_store_unavailable",503);return r.data;
@@ -88,19 +89,22 @@ async function access(id:string,mode:Mode,scope?:string){
  }finally{await db.from("nbl_tiktok_grants").update({refresh_lock:null}).eq("member_id",id).eq("environment",mode).eq("refresh_lock",lease);}
 }
 async function revoke(id:string,mode:Mode){
- const a=await access(id,mode);const c=config(mode);
- const r=await fetch(api+"oauth/revoke/",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({client_key:c.key,client_secret:c.secret,token:a.token}),redirect:"error",signal:AbortSignal.timeout(15000)});
- if(!r.ok)fail("revoke_not_confirmed",422);
- const d=await db.from("nbl_tiktok_grants").delete().eq("member_id",id).eq("environment",mode).eq("open_id",a.g.open_id);
+ const g=await grant(id,mode);if(!g)return;
+ let a;try{a=await access(id,mode);}catch(e){if(!(e instanceof Failure)||e.reason!=="reconnect_tiktok")throw e;}
+ const c=config(mode);
+ const r=a?await fetch(api+"oauth/revoke/",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({client_key:c.key,client_secret:c.secret,token:a.token}),redirect:"error",signal:AbortSignal.timeout(15000)}):null;
+ if(r&&!r.ok)fail("revoke_not_confirmed",422);
+ const d=await db.from("nbl_tiktok_grants").delete().eq("member_id",id).eq("environment",mode).eq("open_id",g.open_id).eq("connected_at",g.connected_at);
  if(d.error)fail("connection_store_unavailable",503);
- await db.from("nbl_tiktok_posts").delete().eq("member_id",id).eq("environment",mode).eq("open_id",a.g.open_id);
+ await db.from("nbl_tiktok_posts").delete().eq("member_id",id).eq("environment",mode).eq("open_id",g.open_id);
+ await db.from("nbl_tiktok_states").delete().eq("member_id",id).eq("environment",mode);
 }
 async function webhook(req:Request){
  const raw=await req.text();if(raw.length>65536)return json(req,{ok:false},413);
  const sig=Object.fromEntries((req.headers.get("TikTok-Signature")||"").split(",").map(v=>v.trim().split("=")));
  if(!/^\d{10}$/.test(sig.t||"")||! /^[0-9a-f]{64}$/i.test(sig.s||"")||Math.abs(Date.now()/1000-Number(sig.t))>300)return json(req,{ok:false},401);
  let body:any;try{body=JSON.parse(raw);}catch{return json(req,{ok:false},400);}
- const mode=modes.find(m=>config(m).key&&config(m).key===body.client_key);if(!mode)return json(req,{ok:false},401);
+ const mode=modes.find(m=>config(m).key&&config(m).secret&&config(m).key===body.client_key);if(!mode)return json(req,{ok:false},401);
  const key=await crypto.subtle.importKey("raw",enc.encode(config(mode).secret),{name:"HMAC",hash:"SHA-256"},false,["verify"]);
  const bytes=Uint8Array.from(sig.s.match(/../g)!,v=>parseInt(v,16));
  if(!await crypto.subtle.verify("HMAC",key,bytes,enc.encode(sig.t+"."+raw)))return json(req,{ok:false},401);
@@ -115,6 +119,7 @@ Deno.serve(async req=>{
  const path=new URL(req.url).pathname.split("/").pop();
  if(req.method==="OPTIONS")return json(req,{ok:true});
  try{
+  if(path==="health"&&req.method==="GET"){const checks=await Promise.all(["nbl_tiktok_grants","nbl_tiktok_states","nbl_tiktok_posts"].map(t=>db.from(t).select("member_id",{head:true,count:"exact"}).limit(0)));const ok=checks.every(x=>!x.error);return json(req,{ok},ok?200:503);}
   if(path==="webhook"&&req.method==="POST")return await webhook(req);
   if(req.method!=="POST")return json(req,{ok:false},405);
   if(!origins.has(req.headers.get("origin")||""))return fail("origin_not_allowed",403);
@@ -151,7 +156,7 @@ Deno.serve(async req=>{
    return json(req,{ok:true});
   }
   if(action==="connection"){
-   const g=await grant(id,mode);return json(req,{ok:true,connected:!!g,label:g?.label||"",scopes:g?.scopes||[]});
+   const g=await grant(id,mode);return json(req,{ok:true,connected:!!g,label:g?.label||"",account_ref:g?await accountRef(g,id,mode):null,scopes:g?.scopes||[]});
   }
   if(action==="disconnect"){await revoke(id,mode);return json(req,{ok:true});}
   if(action==="creator"){
@@ -176,7 +181,7 @@ Deno.serve(async req=>{
    const file=body.file as File,direct=body.kind==="direct";
    if(!direct&&body.kind!=="draft")fail("invalid_post_type");
    const a=await access(id,mode,direct?"video.publish":"video.upload");
-   if(body.account!==a.g.open_id && body.account!==a.g.label)fail("account_changed",409);
+   if(body.account!==await accountRef(a.g,id,mode))fail("account_changed",409);
    const payload:any={source_info:{source:"FILE_UPLOAD",video_size:file.size,chunk_size:file.size,total_chunk_count:1}};
    if(direct){
     const c=await provider("post/publish/creator_info/query/",a.token,{});
