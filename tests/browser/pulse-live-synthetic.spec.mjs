@@ -3,7 +3,33 @@ import { test, expect } from "@playwright/test";
 // Automated rehearsal of the REAL Pulse page. All auth, Stream media and API
 // responses are fixtures. Not a substitute for signed-in provider media proof.
 const LIVE = "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-live";
-const VIDEO_SDK = "export class StreamVideoClient { constructor(c){this.user=c.user;} call(){ const id=this.user.id; return { camera:{enable:async()=>{window.__pulseCameraEnabled=true;}}, microphone:{enable:async()=>{window.__pulseMicrophoneEnabled=true;}}, screenShare:{enable:async()=>{window.__pulseScreenRequests=(window.__pulseScreenRequests||0)+1;if(window.__pulseDenyScreen)throw Error('picker cancelled');}}, state:{participantCount:2,participants$:{subscribe(f){f([{sessionId:'local-'+id,isLocalParticipant:true},{sessionId:'remote-host',name:'Synthetic host',isLocalParticipant:false}]);return {unsubscribe(){}};}}},join:async()=>{},leave:async()=>{},bindVideoElement:()=>()=>{},bindAudioElement:()=>()=>{} };} async disconnectUser(){} }";
+const VIDEO_SDK = `
+function device(kind) {
+ const flag = kind === "camera" ? "__pulseCameraEnabled" : "__pulseMicrophoneEnabled";
+ const denied = kind === "camera" ? "__pulseDenyCamera" : "__pulseDenyMicrophone";
+ const requested = kind === "camera" ? "__pulseCameraRequests" : "__pulseMicrophoneRequests";
+ const listeners = new Set();
+ const state = {status:"disabled", status$:{subscribe(fn){listeners.add(fn);fn(state.status);return {unsubscribe(){listeners.delete(fn);}};}}};
+ function set(status){state.status=status;window[flag]=status==="enabled";for(const fn of listeners)fn(status);}
+ const manager={state,async enable(){window[requested]=(window[requested]||0)+1;if(window[denied])throw Error("Permission denied");set("enabled");},async disable(){set("disabled");},async toggle(){if(state.status==="enabled")await manager.disable();else await manager.enable();}};
+ return manager;
+}
+export class StreamVideoClient {
+ constructor(c){this.user=c.user;}
+ call(){
+  const id=this.user.id,camera=device("camera"),microphone=device("microphone");
+  return {
+   camera,microphone,
+   screenShare:{enable:async()=>{window.__pulseScreenRequests=(window.__pulseScreenRequests||0)+1;if(window.__pulseDenyScreen)throw Error("picker cancelled");}},
+   state:{participantCount:2,participants$:{subscribe(f){f([{sessionId:"local-"+id,isLocalParticipant:true},{sessionId:"remote-host",name:"Synthetic host",isLocalParticipant:false}]);return {unsubscribe(){}};}}},
+   join:async()=>{window.__pulseJoinCapture={camera:camera.state.status,microphone:microphone.state.status};},
+   leave:async()=>{await camera.disable();await microphone.disable();},
+   bindVideoElement:()=>()=>{},bindAudioElement:()=>()=>{}
+  };
+ }
+ async disconnectUser(){}
+}
+`;
 const response=(body,status=200)=>({
  status,contentType:"application/json",headers:{"access-control-allow-origin":"*","access-control-allow-headers":"authorization, content-type","access-control-allow-methods":"POST, OPTIONS"},
  body:JSON.stringify(body)
@@ -50,6 +76,8 @@ function syntheticBackend(){
 }
 async function setup(page,user,api){
  await page.addInitScript(({user})=>{
+  // Browser capability is a deterministic fixture; no actual screen is captured.
+  if (navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia !== "function") Object.defineProperty(navigator.mediaDevices,"getDisplayMedia",{configurable:true,value:async()=>{throw Error("Synthetic screen picker must use SDK fixture");}});
   window.Clerk={load:async()=>{},get isSignedIn(){return user!=="signed-out";},get user(){return user==="signed-out"?null:{id:user};},get session(){return user==="signed-out"?null:{getToken:async()=>"fixture."+user+".token"};}};
  },{user});
  // Only the Pulse Live module is under test, not the social Feed SDK.
@@ -72,6 +100,8 @@ test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({
  await setup(host,"host",api);await setup(viewer,"viewer",api);
  await open(host);
  await expect(host.locator("#pulseLiveStart")).toBeVisible();
+ await expect(host.locator("#pulseLiveScreenOnly")).not.toBeChecked();
+ await host.locator("#pulseLiveScreenOnly").check();
  await host.locator("#pulseLiveStart").click();
  await expect(host.locator("#pulseLiveStatus")).toContainText("Backstage");
  await open(viewer);
@@ -91,6 +121,8 @@ test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({
  await open(viewer);
  await expect(viewer.locator("#pulseLiveViewers")).toContainText("viewers");
  expect(api.s.actions.some(x=>x.user==="viewer"&&x.action==="join-viewer")).toBe(true);
+ expect(await viewer.evaluate(()=>[window.__pulseCameraRequests||0,window.__pulseMicrophoneRequests||0])).toEqual([0,0]);
+ expect(await viewer.evaluate(()=>window.__pulseJoinCapture)).toEqual({camera:"disabled",microphone:"disabled"});
  host.on("dialog",dialog=>dialog.accept());
  await host.locator("#pulseLiveEnd").click();
  await expect(host.locator("#pulseLiveStatus")).toContainText("Stream ended");
@@ -120,6 +152,7 @@ test("cancel screen picker does not go LIVE, and retry uses the same Go Live but
  test.skip((page.viewportSize()?.width??1024)<=760,"Screen picker is desktop-only");
  const api=syntheticBackend();
  await setup(page,"host",api);await open(page);
+ await page.locator("#pulseLiveScreenOnly").check();
  await page.locator("#pulseLiveStart").click();
  await expect(page.locator("#pulseLiveStatus")).toContainText("Backstage");
  await page.evaluate(()=>{window.__pulseDenyScreen=true;});
@@ -137,15 +170,33 @@ test("cancel screen picker does not go LIVE, and retry uses the same Go Live but
  expect(await page.evaluate(()=>window.__pulseScreenRequests)).toBe(2);
 });
 
-test("Pulse Live starts independently with no Facebook Live control or relay request",async({page})=>{
+test("Pulse Live defaults to native camera and microphone without requesting optional relays",async({page})=>{
  const api=syntheticBackend();
  await setup(page,"host",api);await open(page);
- await expect(page.locator("#pulseLiveFacebook")).toHaveCount(0);
+ await expect(page.locator("#pulseLiveDestination")).toHaveValue("pulse");
+ await expect(page.locator('#pulseLiveDestination option[value="facebook"]')).toBeDisabled();
+ await expect(page.locator('#pulseLiveDestination option[value="google"]')).toBeDisabled();
+ await expect(page.locator("#pulseLiveScreenOnly")).not.toBeChecked();
  await expect(page.locator("#pulseLiveStart")).toBeVisible();
  await page.locator("#pulseLiveStart").click();
  await expect(page.locator("#pulseLiveStatus")).toContainText("Backstage");
  expect(api.s.actions.find(x=>x.action==="start")?.body?.facebook_enabled).toBe(false);
  expect(api.s.facebook_enabled).toBe(false);
+ expect(api.s.actions.find(x=>x.action==="start")?.body?.google_enabled).toBe(false);
+ expect(await page.evaluate(()=>window.__pulseJoinCapture)).toEqual({camera:"disabled",microphone:"disabled"});
+ expect(await page.evaluate(()=>[window.__pulseCameraRequests,window.__pulseMicrophoneRequests])).toEqual([1,1]);
+ await expect(page.locator("#pulseLiveMediaStatus")).toHaveText("Camera on · Microphone on");
+ expect(api.s.phase).toBe("backstage");
+ await page.locator("#pulseLiveCameraToggle").click();
+ await expect(page.locator("#pulseLiveMediaStatus")).toHaveText("Camera off · Microphone on");
+ await page.locator("#pulseLiveMicToggle").click();
+ await expect(page.locator("#pulseLiveMediaStatus")).toHaveText("Camera off · Microphone off");
+ await page.locator("#pulseLiveGoLive").click();
+ expect(api.s.actions.filter(x=>x.action==="go-live")).toHaveLength(0);
+ await page.locator("#pulseLiveMicToggle").click();
+ await page.locator("#pulseLiveGoLive").click();
+ await expect(page.locator("#pulseLiveStatus")).toContainText("You are LIVE");
+ expect(api.s.phase).toBe("live");
 });
 test("mobile normal Live camera path is unchanged and needs no screen picker",async({page})=>{
  await page.setViewportSize({width:390,height:740});
@@ -160,3 +211,17 @@ test("mobile normal Live camera path is unchanged and needs no screen picker",as
  expect(await page.evaluate(()=>window.__pulseCameraEnabled===true&&window.__pulseMicrophoneEnabled===true)).toBe(true);
  expect(await page.evaluate(()=>window.__pulseScreenRequests||0)).toBe(0);
 });
+
+ test("Denied camera permission leaves microphone available and permits explicit retry",async({page})=>{
+ const api=syntheticBackend();
+ await setup(page,"host",api);await open(page);
+ await page.evaluate(()=>{window.__pulseDenyCamera=true;});
+ await page.locator("#pulseLiveStart").click();
+ await expect(page.locator("#pulseLiveStatus")).toContainText("Backstage");
+ await expect(page.locator("#pulseLiveMediaStatus")).toHaveText("Camera off · Microphone on");
+ expect(api.s.phase).toBe("backstage");
+ await page.evaluate(()=>{window.__pulseDenyCamera=false;});
+ await page.locator("#pulseLiveCameraToggle").click();
+ await expect(page.locator("#pulseLiveMediaStatus")).toHaveText("Camera on · Microphone on");
+ expect(api.s.actions.filter(x=>x.action==="go-live")).toHaveLength(0);
+ });

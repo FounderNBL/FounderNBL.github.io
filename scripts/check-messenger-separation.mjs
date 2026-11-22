@@ -82,7 +82,7 @@ assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.match(js, /navigator\.contacts\?\.select/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261109-live-ringing/);
+assert.match(sw, /nbl-messenger-shell-20261121-message-delete/);
 assert.match(sw,/messenger\/messenger-skin.css/);
 
 
