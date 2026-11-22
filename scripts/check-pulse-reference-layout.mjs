@@ -91,3 +91,23 @@ assert.match(founderCss,/@media\(max-width:760px\)/);
 assert.doesNotMatch(html+founderCss,/Shia|Montana|24\.7K|12\.4K|1\.2K\s*likes|\bwatching\b/i,
  "No invented members, engagement counts, or fake livestreams");
 console.log("PASS NBL Pulse: real website layout, live feed hooks, independent Messenger, mobile navigation; no fabricated or excluded content.");
+
+assert.match(html,/id="pulseLiveDestination"/);
+assert.match(html,/<option value="pulse" selected>Pulse only/);
+assert.match(html,/<option value="facebook" disabled>/);
+assert.match(html,/<option value="google" disabled>/);
+assert.match(liveClient,/data\.facebook\?\.canStart === true/);
+assert.match(liveClient,/facebook_enabled: destination === "facebook", google_enabled: destination === "google"/);
+assert.match(liveClient,/typeof navigator\.mediaDevices\?\.getDisplayMedia !== "function"/);
+assert.match(liveClient,/if \(!state\.busy\) void refreshStatus\(true\)/);
+
+assert.match(html,/id="pulseLiveScreenOnly" type="checkbox">/,"Camera and microphone default on both supported device sizes");
+assert.doesNotMatch(html,/id="pulseLiveScreenOnly"[^>]*\bchecked\b/);
+assert.match(html,/id="pulseLiveMediaControls" hidden/);
+for (const id of ["pulseLiveCameraToggle","pulseLiveMicToggle","pulseLiveMediaStatus"]) assert.ok(html.includes('id="'+id+'"'));
+assert.match(liveClient,/async function joinWithoutCapture\(call\) \{\s*await call\.camera\.disable\(\);[\s\S]*?await call\.microphone\.disable\(\);\s*await call\.join\(\{ create: false \}\);/);
+assert.match(liveClient,/await joinWithoutCapture\(state\.call\); \/\/ viewers never request camera or microphone/);
+assert.match(liveClient,/if \(!screenOnly\) \{\s*try \{ await state\.call\.camera\.enable\(\); \} catch \{\}\s*try \{ await state\.call\.microphone\.enable\(\); \} catch \{\}/);
+assert.match(liveClient,/await manager\.toggle\(\)/);
+assert.match(liveClient,/state\.call\?\.camera\.state\.status !== "enabled" && state\.call\?\.microphone\.state\.status !== "enabled"/);
+assert.match(liveClient,/state\.mediaSubs = \[\]/);

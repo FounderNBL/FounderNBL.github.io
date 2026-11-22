@@ -39,6 +39,8 @@ const state = {
   liveSince: null, timerId: null, pollId: null, busy: false,
   recordingRequested: false, liveEnabled: false,
   isAdmin: false, screenOnly: false, screenReady: false,
+  destination: "pulse", facebookReady: false, googleReady: false,
+  mediaSubs: [],
 };
 
 function setStatus(text) { const el = $("#pulseLiveStatus"); if (el) el.textContent = text; }
@@ -50,7 +52,7 @@ function showError(text) {
 function show(id, on) { const el = $(id); if (el) el.hidden = !on; }
 function setBusy(on) {
   state.busy = on;
-  for (const id of ["#pulseLiveStart", "#pulseLiveGoLive", "#pulseLiveEnd", "#pulseLiveToggle"]) {
+  for (const id of ["#pulseLiveStart", "#pulseLiveGoLive", "#pulseLiveEnd", "#pulseLiveToggle", "#pulseLiveCameraToggle", "#pulseLiveMicToggle"]) {
     const el = $(id); if (el) el.disabled = on;
   }
 }
@@ -74,6 +76,17 @@ const REASON_TEXT = {
   live_stop_unconfirmed: "Broadcast shutdown was not confirmed. Press End Live again.",
   stream_cleanup_pending: "A previous broadcast still needs cleanup. Do not start another one.",
   sign_in_required: "Sign in to watch Pulse Live.",
+  facebook_not_configured: "Facebook Live is not enabled for the connected Page. Choose Pulse only.",
+  facebook_auth_required: "Meta rejected the saved Page authorization.",
+  facebook_live_permission_denied: "Meta rejected the Live Video permission.",
+  facebook_live_restricted: "Meta reports a Page livestream restriction.",
+  facebook_failed: "Meta could not create the Facebook broadcast.",
+  facebook_rtmp_failed: "Stream could not connect to Facebook RTMP.",
+  facebook_ingest_unavailable: "Meta did not return a usable RTMPS destination.",
+  facebook_cleanup_pending: "Facebook shutdown is not confirmed. Use End Live before retrying.",
+  google_not_configured: "Google relay is not enabled or configured. Choose Pulse only.",
+  google_start_failed: "Google relay failed. End this session before choosing Pulse only.",
+  live_destination_conflict: "Choose one optional destination.",
   recording_not_available: "Recording is disabled in Stream settings. Uncheck Save recording or enable it before going live.",
 };
 function plainError(error, fallback) {
@@ -172,7 +185,7 @@ function startTimer() {
 function stopTimer() { if (state.timerId) clearInterval(state.timerId); state.timerId = null; }
 function startPoll() {
   stopPoll();
-  state.pollId = setInterval(() => { void refreshStatus(true); }, POLL_MS);
+  state.pollId = setInterval(() => { if (!state.busy) void refreshStatus(true); }, POLL_MS);
 }
 function stopPoll() { if (state.pollId) clearInterval(state.pollId); state.pollId = null; }
 
@@ -192,6 +205,9 @@ function destroyHls() {
 async function teardownStream() {
   stopTimer();
   state.sub?.unsubscribe(); state.sub = null;
+  for (const subscription of state.mediaSubs) subscription.unsubscribe();
+  state.mediaSubs = [];
+  show("#pulseLiveMediaControls", false);
   clearTracks(); destroyHls();
   try { await state.call?.leave(); } catch {}
   try { await state.client?.disconnectUser(); } catch {}
@@ -274,6 +290,33 @@ function renderHostPreview(participants) {
   } catch { /* preview stays hidden; audio/camera still live */ }
 }
 
+// Explicitly override provider defaults before joining: no automatic capture.
+async function joinWithoutCapture(call) {
+  await call.camera.disable();
+  await call.microphone.disableSpeakingWhileMutedNotification?.();
+  await call.microphone.disable();
+  await call.join({ create: false });
+}
+function syncHostMedia() {
+  const camera = $("#pulseLiveCameraToggle"), mic = $("#pulseLiveMicToggle");
+  const cameraOn = state.call?.camera.state.status === "enabled";
+  const micOn = state.call?.microphone.state.status === "enabled";
+  if (camera) camera.textContent = cameraOn ? "Turn camera off" : "Turn camera on";
+  if (mic) mic.textContent = micOn ? "Mute microphone" : "Unmute microphone";
+  const notice = $("#pulseLiveMediaStatus");
+  if (notice) notice.textContent = "Camera " + (cameraOn ? "on" : "off") + " · Microphone " + (micOn ? "on" : "off");
+}
+async function toggleHostMedia(kind) {
+  if (state.busy || state.screenOnly || !state.call || !["backstage","live"].includes(state.mode)) return;
+  setBusy(true); showError("");
+  try {
+    const manager = kind === "camera" ? state.call.camera : state.call.microphone;
+    await manager.toggle();
+  } catch {
+    showError("Could not change " + (kind === "camera" ? "camera" : "microphone") + ". Check your browser permissions and try the control again.");
+  } finally { syncHostMedia(); setBusy(false); }
+}
+
 // --- WebRTC viewer fallback (needs sign-in: Stream needs a user id) ---
 async function joinAsWebRtcViewer(callId) {
   const data = await liveApi("join-viewer", { callId }, "required");
@@ -282,7 +325,7 @@ async function joinAsWebRtcViewer(callId) {
   const VideoClient = await videoClientConstructor();
   state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
   state.call = state.client.call(CALL_TYPE, callId);
-  await state.call.join({ create: false }); // no camera/mic for viewers
+  await joinWithoutCapture(state.call); // viewers never request camera or microphone
   state.mode = "viewing";
   show("#pulseLiveVideo", false);
   state.sub = state.call.state.participants$.subscribe(renderViewerParticipants);
@@ -318,8 +361,22 @@ async function refreshStatus(silent = false) {
   if (data.isHost === true) { show("#pulseLiveSetup", data.enabled === true && state.mode === "idle"); show("#pulseLiveHost", state.mode !== "idle"); }
   else if (data.isHost === false) { show("#pulseLiveSetup", false); show("#pulseLiveHost", false); }
   else if (state.mode === "idle") { show("#pulseLiveSetup", data.enabled === true); show("#pulseLiveHost", false); }
-  // Facebook Live simulcast is disabled; ordinary Facebook/Instagram posting stays separate.
+  // Capabilities come from the authenticated server, not browser guesses.
+  if (state.mode === "idle" && data.status === "idle" && !state.busy) {
+    state.facebookReady = state.isAdmin && data.facebook?.canStart === true;
+    state.googleReady = state.isAdmin && data.google?.configured === true && data.google?.routingEnabled === true;
+    const destination = $("#pulseLiveDestination");
+    show("#pulseLiveDestinationOption", state.isAdmin);
+    if (destination) {
+      destination.querySelector('option[value="facebook"]').disabled = !state.facebookReady;
+      destination.querySelector('option[value="google"]').disabled = !state.googleReady;
+      if ((destination.value === "facebook" && !state.facebookReady) || (destination.value === "google" && !state.googleReady)) destination.value = "pulse";
+    }
+    const note = $("#pulseLiveDestinationStatus");
+    if (note) note.textContent = "Pulse only is independent of external relays. Facebook: " + (state.facebookReady ? "configured; account eligibility still applies" : "not enabled/configured") + ". Google: " + (state.googleReady ? "configured; relay readiness checked on start" : "not enabled/configured") + ".";
+  }
   const status = data.status;
+  if (state.mode === "live" && data.facebook?.status === "live") setStatus("You are LIVE on Pulse and Facebook");
   if (status === "ended" || status === "failed") {
     if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
       await teardownStream();
@@ -396,25 +453,31 @@ async function onStart() {
   if (state.busy) return;
   const title = ($("#pulseLiveTitleInput")?.value || "").trim().slice(0, 140) || DEFAULT_TITLE;
   const recordRequested = $("#pulseLiveRecord")?.checked === true;
+  const destination = $("#pulseLiveDestination")?.value || "pulse";
+  if ((destination === "facebook" && !state.facebookReady) || (destination === "google" && !state.googleReady)) { showError("The selected relay is not available. Choose Pulse only."); return; }
+  if (!["pulse","facebook","google"].includes(destination)) return;
   const screenOnly = $("#pulseLiveScreenOnly")?.checked === true;
   setBusy(true); showError(""); setStatus("Starting your backstage…");
   try {
     // Founder Start explicitly prepares the existing call-member screenshare grant.
     if (screenOnly && state.isAdmin) await liveApi("admin-switch", { enabled: true }, "required");
-    const data = await liveApi("start", { title, facebook_enabled: false, record_requested: recordRequested }, "required");
+    const data = await liveApi("start", { title, facebook_enabled: destination === "facebook", google_enabled: destination === "google", record_requested: recordRequested }, "required");
     if (!data.key || !data.token || !data.callId || data.callType !== CALL_TYPE)
       throw Error("Live session identity verification failed.");
     state.callId = data.callId;
+    state.destination = destination;
+    if (Boolean(data.facebook?.enabled) !== (destination === "facebook") || Boolean(data.google?.requested) !== (destination === "google")) throw Error("live_destination_conflict");
     state.recordingRequested = recordRequested;
     const VideoClient = await videoClientConstructor();
   state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
     state.call = state.client.call(CALL_TYPE, data.callId);
-    await state.call.join({ create: false });
+    await joinWithoutCapture(state.call);
     state.screenOnly = screenOnly; state.screenReady = !screenOnly;
-    // Camera and mic are never enabled when sharing a desktop screen only.
+    // Start Live is the explicit user action that requests device access.
+    // Permission denial leaves that device off and permits a backstage retry.
     if (!screenOnly) {
-      await state.call.camera.enable();
-      await state.call.microphone.enable();
+      try { await state.call.camera.enable(); } catch {}
+      try { await state.call.microphone.enable(); } catch {}
     }
     state.mode = "backstage";
     state.liveSince = null;
@@ -422,6 +485,12 @@ async function onStart() {
     show("#pulseLiveSetup", false); show("#pulseLiveHost", true);
     show("#pulseLiveGoLive", true); show("#pulseLiveEnd", true);
     show("#pulseLivePreview", !screenOnly);
+    show("#pulseLiveMediaControls", !screenOnly);
+    if (!screenOnly) {
+      state.mediaSubs = [state.call.camera.state.status$.subscribe(syncHostMedia), state.call.microphone.state.status$.subscribe(syncHostMedia)];
+      syncHostMedia();
+      if (state.call.camera.state.status !== "enabled" || state.call.microphone.state.status !== "enabled") showError("Camera or microphone is off. Check access permissions or use the controls. You can continue with one enabled device.");
+    }
     setStatus(screenOnly
       ? "Backstage — camera and microphone OFF. Click Go Live to choose a screen and broadcast."
       : "Backstage — only you can see this. Press Go Live when ready.");
@@ -445,6 +514,7 @@ async function onStart() {
 // picker is still mandatory. No camera/mic is enabled in Screen Only mode.
 async function onGoLive() {
   if (state.busy || !state.callId || state.mode !== "backstage") return;
+  if (!state.screenOnly && state.call?.camera.state.status !== "enabled" && state.call?.microphone.state.status !== "enabled") { showError("Turn on at least one device before broadcasting, or end and choose screen sharing."); return; }
   setBusy(true); showError("");
   let choosingScreen = false;
   try {
@@ -466,7 +536,7 @@ async function onGoLive() {
     show("#pulseLiveBadge", true);
     const b = $("#pulseLiveBadge");
     if (b) b.textContent = "LIVE";
-    setStatus("You are LIVE on Pulse");
+    setStatus("You are LIVE on Pulse" + (data.facebook?.status === "live" ? " and Facebook" : data.facebook?.status === "connecting" ? " · Facebook connecting" : data.google?.requested ? " · Google relay requested" : ""));
     startTimer();
   } catch (e) {
     if (choosingScreen) {
@@ -553,14 +623,17 @@ export function initPulseLive() {
   const mobile = window.matchMedia("(max-width: 760px)");
   const syncScreenOption = () => {
     if (!option) return;
-    option.disabled = mobile.matches;
-    if (mobile.matches) option.checked = false;
+    const unsupported = mobile.matches || typeof navigator.mediaDevices?.getDisplayMedia !== "function";
+    option.disabled = unsupported;
+    if (unsupported) option.checked = false;
     const label = option.closest("label");
-    if (label) label.hidden = mobile.matches;
+    if (label) label.hidden = unsupported;
   };
   syncScreenOption();
   mobile.addEventListener("change", () => { placeLivePanel(); syncScreenOption(); });
   $("#pulseLiveStart")?.addEventListener("click", () => { void onStart(); });
+  $("#pulseLiveCameraToggle")?.addEventListener("click", () => { void toggleHostMedia("camera"); });
+  $("#pulseLiveMicToggle")?.addEventListener("click", () => { void toggleHostMedia("microphone"); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
   $("#pulseLiveEnd")?.addEventListener("click", () => { void onEnd(); });
