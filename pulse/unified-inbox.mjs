@@ -1,7 +1,7 @@
 // NBL Pulse unified message center: one private view for supported inboxes.
 // Direct messages stay at their existing NBL/Meta providers. No DM content,
 // access tokens, or message identifiers are copied to analytics or storage.
-import {showPulseMemberThread} from "./member-inbox.mjs?v=20261121-pulse-connect-v1";
+import {showPulseMemberThread} from "./member-inbox.mjs?v=20261122-sender-delete-v1";
 import {showPulseInstagramThread} from "./instagram-inbox.mjs?v=20261121-pulse-connect-v1";
 
 const $ = selector => document.querySelector(selector);
