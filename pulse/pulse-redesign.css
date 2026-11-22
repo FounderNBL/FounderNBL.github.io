@@ -676,3 +676,15 @@ body.pulse-body #pulseLiveView #pulseLiveScreenMicOption input {width:20px;heigh
  body.pulse-body .pulse-topbar {grid-template-columns:auto 1fr auto!important;}
  body.pulse-body .pulse-bottombar {display:grid!important;}
 }
+
+/* One brand and one navigation: the real account tools stay accessible. */
+body.pulse-body .preview-bar,
+body.pulse-body .social-intro .pulse-intro-title {display:none!important;}
+body.pulse-body .social-intro {margin:8px auto 12px!important;min-height:0!important;
+ display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:wrap!important;gap:8px!important;
+ background:var(--pulse-surface)!important;padding:9px 14px!important;}
+body.pulse-body #socialApp .pulse-rail .pulse-rail-insights {display:none!important;}
+body.pulse-body #socialApp .pulse-sidebar .pulse-nav-stories,
+body.pulse-body #socialApp .pulse-sidebar .pulse-nav-live {color:var(--pulse-text)!important;}
+body.pulse-body #socialApp .pulse-sidebar .social-tabs .pulse-nav-stories:hover,
+body.pulse-body #socialApp .pulse-sidebar .social-tabs .pulse-nav-live:hover {background:var(--pulse-surface-2)!important;}
