@@ -131,4 +131,6 @@ assert.match(liveClient,/screenMic = screenOnly &&/);
 assert.match(liveClient,/else if \(screenMic\)/);
 assert.match(liveClient,/No video was saved because Save this Live video was OFF/);
 assert.match(redesignCss,/#pulseLiveMediaControls button/);
+assert.match(redesignCss,/html\[data-theme="light"\] body\.pulse-body/);
+assert.match(redesignCss,/--pulse-bg:#f7f4ff!important/);
 console.log("PASS Pulse single-navigation layout, Founder recording choice, explicit screen microphone, replay feedback.");
