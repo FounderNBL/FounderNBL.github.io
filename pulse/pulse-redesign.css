@@ -628,3 +628,6 @@ body.pulse-body #pulseLiveView .pulse-live button{cursor:pointer}
  body.pulse-body .pulse-bottombar {display:flex!important;}
  body.pulse-body #pulseLiveView .pulse-live {display:block!important;}
 }
+
+/* Show Muse's one-tap Create entry; keep the SAME real composer form hidden in the feed until it moves into the dialog. */
+body.pulse-body #socialApp .pulse-main > .social-compose {display:none!important;}
