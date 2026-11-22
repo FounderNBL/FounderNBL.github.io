@@ -88,7 +88,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
 <link rel="stylesheet" href="/pulse/pulse-founder-ui.css?v=20261118-live-visibility">
 <link rel="stylesheet" href="/pulse/pulse-mobile-app.css?v=20261121-pulse-connect-v1" media="(max-width: 760px)">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
-<script type="module" src="/pulse/live.mjs?v=20261122-live-ui-v3"></script>
+<script type="module" src="/pulse/live.mjs?v=20261122-delete-recording-v1"></script>
 <link rel="stylesheet" href="/pulse/pulse-story-highlights.css?v=20261121-existing-video">
 <script type="module" src="/pulse/pulse-story-highlights.mjs?v=20261121-existing-video"></script>
 <link rel="stylesheet" href="/pulse/pulse-meta-business.css?v=20261121-live-meta-business-v1">
@@ -225,7 +225,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
     <p class="pulse-live-meta">Camera and microphone are the normal mode. Start Live asks for needed browser permissions and opens a private backstage preview. You control each device before pressing Go Live. Screen sharing is optional on supported desktops.</p>
     <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
      <button id="pulseLiveFindRecording" type="button">My saved Live videos</button>
-     <p class="pulse-live-meta" id="pulseLiveSavedResult" aria-live="polite"></p>
+     <div class="pulse-live-meta" id="pulseLiveSavedResult" role="status" aria-live="polite"></div>
   </div>
   <div id="pulseLiveHost" hidden>
     <div id="pulseLiveMediaControls" hidden>

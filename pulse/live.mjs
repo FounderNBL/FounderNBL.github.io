@@ -604,12 +604,40 @@ async function onFindRecording() {
     result.replaceChildren();
     for (const item of data.recordings) {
       if (typeof item.url !== "string" || !item.url.startsWith("https://")) continue;
+      const row = document.createElement("div");
+      row.className = "pulse-recording-row";
       const link = document.createElement("a");
       link.href = item.url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      link.textContent = "Open saved video: " + (item.filename || "Pulse Live");
-      result.append(link, document.createElement("br"));
+      link.textContent = "Watch or download: " + (item.filename || "Pulse Live");
+      row.append(link);
+      if (typeof data.callId === "string" && typeof item.sessionId === "string" && item.sessionId && item.filename) {
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "btn small";
+        remove.textContent = "Delete recording";
+        remove.setAttribute("aria-label", "Delete saved Pulse Live recording " + item.filename);
+        remove.addEventListener("click", async () => {
+          if (!window.confirm("Permanently delete this saved Pulse Live recording from Stream? It cannot be undone. This does not remove copies already shared elsewhere.")) return;
+          remove.disabled = true;
+          try {
+            const deleted = await liveApi("delete-recording", {
+              callId: data.callId, sessionId: item.sessionId, filename: item.filename, confirm: "delete"
+            }, "required");
+            if (deleted?.deleted !== true) throw Error("Recording deletion was not confirmed.");
+            // Show removal only after provider confirms deletion.
+            row.remove();
+            if (!result.querySelector(".pulse-recording-row"))
+              result.replaceChildren("Recording deleted from Stream. Copies shared elsewhere are not removed.");
+          } catch (error) {
+            remove.disabled = false;
+            showError(plainError(error, "Could not delete the recording. It has not been marked deleted."));
+          }
+        });
+        row.append(remove);
+      }
+      result.append(row);
     }
   } catch (error) {
     if (error?.reason === "recording_not_found")
