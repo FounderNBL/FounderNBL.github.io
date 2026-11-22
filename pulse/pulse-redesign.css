@@ -688,3 +688,24 @@ body.pulse-body #socialApp .pulse-sidebar .pulse-nav-stories,
 body.pulse-body #socialApp .pulse-sidebar .pulse-nav-live {color:var(--pulse-text)!important;}
 body.pulse-body #socialApp .pulse-sidebar .social-tabs .pulse-nav-stories:hover,
 body.pulse-body #socialApp .pulse-sidebar .social-tabs .pulse-nav-live:hover {background:var(--pulse-surface-2)!important;}
+
+/* Older story styles force display:block even on hidden elements; honor the
+   selected Stories view instead of showing duplicated circles on Home. */
+body.pulse-body #socialApp #pulseStories[hidden] {display:none!important;}
+body.pulse-body #socialApp #pulseStories:not([hidden]) {display:block!important;}
+/* Legacy purple-on-black rules must not make the selected light theme illegible. */
+body.pulse-body #socialApp .pulse-main .social-list,
+body.pulse-body #socialApp .pulse-main .pulse-composer-trigger,
+body.pulse-body #socialApp .pulse-rail section,
+body.pulse-body #socialApp #pulseMenuView,
+body.pulse-body #socialApp #pulseLiveView {
+ background:var(--pulse-surface)!important;color:var(--pulse-text)!important;
+ border-color:var(--pulse-border)!important;
+}
+body.pulse-body #socialApp .pulse-main .social-list h2,
+body.pulse-body #socialApp #pulseMenuView h2,
+body.pulse-body #socialApp #pulseLiveView h2 {color:var(--pulse-text)!important;}
+body.pulse-body .social-intro #identityHandle {color:var(--pulse-text)!important;}
+body.pulse-body #socialApp .pulse-sidebar .social-tabs button:not([aria-pressed="true"]) {
+ color:var(--pulse-text)!important;
+}
