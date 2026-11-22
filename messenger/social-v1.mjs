@@ -322,9 +322,9 @@ function renderActivity(activity){
         }
         menu.open=false;
         // Refresh the actual provider state, including a shared-post deep link.
-        await loadFeed();
-        if(linkedPostId===activity.id)await loadLinkedPost();
-        status(action==="delete"?"Post deleted from Pulse. Facebook and Instagram copies were not changed.":"Post updated.");
+        await loadFeed().catch(()=>{});
+        if(linkedPostId===activity.id)await loadLinkedPost().catch(()=>{});
+        if(!accountChanged)status(action==="delete"?"Post deleted from Pulse. Facebook and Instagram copies were not changed.":"Post updated.");
       }catch(error){
         if(!accountChanged){notice.textContent=safeError(error);status("Post not "+(action==="delete"?"deleted":"updated")+": "+safeError(error));}
       }finally{postMutations.delete(activity.id);edit.disabled=remove.disabled=false;}
