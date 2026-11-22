@@ -2,8 +2,15 @@
 
 **Prepared for the NBL Messenger + Social launch:** November 1, 2026. Canonical privacy, terms, and deletion URLs remain unchanged; these full-coverage documents are staged on the legal review branch.
 
-## Meta App Basic fields
-- Display name: New Beansland (existing app).
+## November 22, 2026 — current Meta app for Clerk Facebook sign-in
+
+- **NBL Pulse Live** (Meta App ID `1167499339147411`) is the current intended Meta Developer app for both Pulse's Meta integrations and Clerk Facebook sign-in. The original **New Beansland** Meta Developer app is the former separate login app; do not confuse either app name with the **New Beansland** company or its official Facebook Page.
+- The Founder reports replacing Clerk's Facebook App ID and matching App Secret with the NBL Pulse Live credentials. **This is a reported dashboard change, not an independently verified login or provider-state check.**
+- Existing Clerk sign-in and Google connection, Pulse connections, and provider endpoints are **not changed by this documentation update**. No permission grant, OAuth callback, existing user binding, live deployment, or old-app deletion is established by this note.
+- The November 1 setup details below are kept as a historical record. They **do not instruct anyone to switch back to the old Meta app.** If further Meta form wording is updated, use **NBL Pulse Live** for the Developer app and retain **New Beansland** for company/Page identity.
+
+## Meta App Basic fields (historical, November 1)
+- Former app display name: New Beansland (old developer app; superseded for Clerk Facebook sign-in by NBL Pulse Live).
 - App domain: `newbeansland.org` (no protocol).
 - Privacy Policy URL: `https://newbeansland.org/privacy.html`
 - Terms of Service URL: `https://newbeansland.org/terms.html`
