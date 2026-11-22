@@ -106,7 +106,7 @@ async function webhook(req:Request){
  let body:any;try{body=JSON.parse(raw);}catch{return json(req,{ok:false},400);}
  const mode=modes.find(m=>config(m).key&&config(m).secret&&config(m).key===body.client_key);if(!mode)return json(req,{ok:false},401);
  const key=await crypto.subtle.importKey("raw",enc.encode(config(mode).secret),{name:"HMAC",hash:"SHA-256"},false,["verify"]);
- const bytes=Uint8Array.from(sig.s.match(/../g)!,v=>parseInt(v,16));
+ const bytes=Uint8Array.from(String(sig.s).match(/../g)!,v=>parseInt(v,16));
  if(!await crypto.subtle.verify("HMAC",key,bytes,enc.encode(sig.t+"."+raw)))return json(req,{ok:false},401);
  if(body.event==="authorization.removed"&&typeof body.user_openid==="string"&&Number.isFinite(body.create_time)){
   const d=await db.from("nbl_tiktok_grants").delete().eq("environment",mode).eq("open_id",body.user_openid).lte("connected_at",new Date(body.create_time*1000).toISOString());
@@ -172,7 +172,7 @@ Deno.serve(async req=>{
   if(action==="status"){
    const g=await grant(id,mode);if(!g)fail("connect_tiktok_first",409);
    const r=await db.from("nbl_tiktok_posts").select("publish_id").eq("member_id",id).eq("environment",mode).eq("open_id",g.open_id).eq("publish_id",String(body.publish_id||"")).maybeSingle();
-   if(r.error||!r.data)fail("post_not_found",404);
+   if(r.error||!r.data)return fail("post_not_found",404);
    const a=await access(id,mode);const data=await provider("post/publish/status/fetch/",a.token,{publish_id:r.data.publish_id});
    return json(req,{ok:true,status:safeCode(data.status),reason:data.fail_reason?safeCode(data.fail_reason):null});
   }
