@@ -63,7 +63,7 @@ test("Pulse exposes its owner menu, explicit delete confirmation, and all-view r
  assert.match(js,/Edit Post/);
  assert.match(js,/Delete Post/);
  assert.match(js,/deletedPostIds\.add\(activity\.id\)/);
- assert.match(js,/rows\.filter\(row=>!deletedPostIds\.has\(row\.id\)\)/);
+ assert.match(js,/rows\.filter\(row=>!deletedPostIds\.has\(row\.id\)&&!row\.deleted_at\)/);
  assert.match(js,/if\(linkedPostId===activity\.id\)await loadLinkedPost\(\)/);
  assert.match(page,/pulse-post-menu-options/);
 });
