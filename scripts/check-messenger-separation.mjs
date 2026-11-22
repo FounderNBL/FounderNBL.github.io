@@ -64,7 +64,7 @@ assert.match(app, /data-chat-download-messages/);
 assert.ok(!js.includes("openUserProfile("), "The broken embedded Clerk profile action must not be used");
 assert.ok(js.includes('location.assign(ACCOUNT_PORTAL+"/user?redirect_url="+encodeURIComponent(returnUrl));'),
   "Manage connections must navigate to the hosted Clerk profile and back to Messenger");
-assert.ok(app.includes('/messenger/app.js?v=20261121-pulse-connect-v1'),
+assert.ok(app.includes('/messenger/app.js?v=20261121-pulse-delete-v1'),
   "Pulse Messenger must load the current account and call handler");
 assert.match(js, /accountRequest\("profile"/);
 assert.match(js, /filter\(row=>row\.thread_type==="direct"\)/);
@@ -82,7 +82,7 @@ assert.match(js, /navigator\.clipboard\?\.writeText/);
 assert.ok(js.includes('$("[data-chat-invite]").hidden=true;'), "Account switch must hide prior account welcome");
 assert.match(js, /navigator\.contacts\?\.select/);
 assert.doesNotMatch(app, /type="file"/);
-assert.match(sw, /nbl-messenger-shell-20261109-live-ringing/);
+assert.match(sw, /nbl-messenger-shell-20261121-message-delete/);
 assert.match(sw,/messenger\/messenger-skin.css/);
 
 
@@ -180,7 +180,7 @@ assert.match(js,/function needsIphoneHomeScreen\(\)/);
 assert.match(js,/navigator\.standalone===true/);
 assert.match(js,/Add to Home Screen/);
 assert.match(app,/apple-touch-icon/);
-assert.match(app,/app\.js\?v=20261121-pulse-connect-v1/);
+assert.match(app,/app\.js\?v=20261121-pulse-delete-v1/);
 assert.match(callPage,/id="callSound"/);
 assert.match(callJs,/async function enableRemoteSound\(\)/);
 assert.match(callJs,/await audio\.play\(\)/);
