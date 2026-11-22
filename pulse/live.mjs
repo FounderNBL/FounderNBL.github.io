@@ -44,6 +44,15 @@ const state = {
 };
 
 function setStatus(text) { const el = $("#pulseLiveStatus"); if (el) el.textContent = text; }
+// The feed advertises only a confirmed LIVE status, never ON or backstage.
+function updateLiveDiscovery(data) {
+  const alert = $("#pulseLiveFeedAlert");
+  if (!alert) return;
+  const live = data?.enabled === true && data?.status === "live" && typeof data?.callId === "string";
+  alert.hidden = !live;
+  const title = $("#pulseLiveFeedAlertTitle");
+  if (live && title) title.textContent = String(data.title || DEFAULT_TITLE).slice(0, 140);
+}
 function showError(text) {
   const el = $("#pulseLiveError");
   if (!el) return;
@@ -203,6 +212,7 @@ function destroyHls() {
   const v = $("#pulseLiveVideo"); if (v) { try { v.pause(); } catch {} v.removeAttribute("src"); v.load(); }
 }
 async function teardownStream() {
+  const wasViewer = state.mode === "viewing";
   stopTimer();
   state.sub?.unsubscribe(); state.sub = null;
   for (const subscription of state.mediaSubs) subscription.unsubscribe();
@@ -212,6 +222,7 @@ async function teardownStream() {
   try { await state.call?.leave(); } catch {}
   try { await state.client?.disconnectUser(); } catch {}
   state.call = null; state.client = null; state.mode = "idle";
+  if (wasViewer) state.callId = null; // Never pin discovery to an ended viewer call.
   state.screenOnly = false; state.screenReady = false; state.liveSince = null;
   show("#pulseLiveElapsed", false); show("#pulseLiveBadge", false);
 }
@@ -257,13 +268,14 @@ function renderViewerParticipants(participants) {
     const wrapper = document.createElement("div");
     wrapper.className = "pulse-live-remote";
     const video = document.createElement("video");
-    video.autoplay = true; video.playsInline = true; video.className = "pulse-live-video";
+    video.autoplay = true; video.muted = true; video.playsInline = true; video.className = "pulse-live-video";
     const label = document.createElement("p");
     label.className = "pulse-live-meta"; label.textContent = p.name || "NBL Pulse Live";
     wrapper.append(video, label);
     const kind = p.isScreenSharing || p.screenShareStream ? "screenShareTrack" : "videoTrack";
     const cleanup = [state.call.bindVideoElement(video, p.sessionId, kind)];
-    const audio = document.createElement("audio"); audio.autoplay = true;
+    const audio = document.createElement("audio"); audio.autoplay = true; audio.controls = true;
+    audio.setAttribute("aria-label", "Livestream sound; tap play if your browser blocks audio autoplay");
     wrapper.append(audio);
     cleanup.push(state.call.bindAudioElement(audio, p.sessionId, "audioTrack"));
     state.tracks.set(p.sessionId, { wrapper, cleanup });
@@ -341,6 +353,7 @@ async function refreshStatus(silent = false) {
   try {
     data = await liveApi("status", state.callId ? { callId: state.callId } : {}, "required");
   } catch (e) {
+    updateLiveDiscovery(null);
     if (e.reason === "sign_in_required" && !silent) {
       setStatus("Sign in to watch Pulse Live.");
       $("#pulseLiveStatus")?.append(" ", signInLink());
@@ -350,7 +363,8 @@ async function refreshStatus(silent = false) {
     if (!silent) { setStatus("Could not verify Pulse Live status."); showError(plainError(e)); }
     return;
   }
-  if (!data || typeof data !== "object") return;
+  if (!data || typeof data !== "object") { updateLiveDiscovery(null); return; }
+  updateLiveDiscovery(data);
   state.liveEnabled = data.enabled === true;
   state.isAdmin = data.isAdmin === true;
   const navStatus = $("#pulseLiveNavStatus");
@@ -387,6 +401,7 @@ async function refreshStatus(silent = false) {
   if (status === "ended" || status === "failed") {
     if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
       await teardownStream();
+      state.callId = null; // Do not keep polling an ended call instead of new Live sessions.
       setStatus("Stream ended."); showError("");
       show("#pulseLiveBadge", false); show("#pulseLiveViewer", false); show("#pulseLivePreview", false);
       show("#pulseLiveSetup", data.enabled === true && data.isHost !== false);
@@ -418,6 +433,9 @@ async function refreshStatus(silent = false) {
   if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
     return;
   } // already watching/hosting
+  // Discover LIVE in the feed without silently consuming a viewer slot.
+  // Watching requires the member to select the visible Live view.
+  if ($("#pulseLiveView")?.hidden !== false) return;
   if (data.startedAt) state.liveSince = new Date(data.startedAt).getTime();
   show("#pulseLiveBadge", status === "live");
   if (status !== "live") show("#pulseLiveElapsed", false);
@@ -691,6 +709,14 @@ export function initPulseLive() {
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
   $("#pulseLiveEnd")?.addEventListener("click", () => { void onEnd(); });
   $("#pulseLiveFindRecording")?.addEventListener("click", () => { void onFindRecording(); });
+  document.addEventListener("pulse:view-change", (event) => {
+    if (event.detail?.view === "live") {
+      if (!state.busy) void refreshStatus(false);
+    } else if (state.mode === "viewing") {
+      // Leave the viewer call only; NEVER stop the host broadcast.
+      void teardownStream();
+    }
+  });
   window.addEventListener("pagehide", () => {
     stopPoll(); stopTimer();
     // Leave only — never POST end on unload (a refresh must not kill the stream).
