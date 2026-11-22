@@ -134,3 +134,10 @@ assert.match(redesignCss,/#pulseLiveMediaControls button/);
 assert.match(redesignCss,/html\[data-theme="light"\] body\.pulse-body/);
 assert.match(redesignCss,/--pulse-bg:#f7f4ff!important/);
 console.log("PASS Pulse single-navigation layout, Founder recording choice, explicit screen microphone, replay feedback.");
+
+assert.match(html,/id="pulseLiveSavedResult" role="status"/);
+assert.match(liveClient,/liveApi\("delete-recording"/);
+assert.match(liveClient,/window\.confirm\("Permanently delete this saved Pulse Live recording/);
+assert.match(liveClient,/if \(deleted\?\.deleted !== true\)/);
+assert.match(liveClient,/row\.remove\(\)/);
+console.log("PASS Pulse delete recording requires confirmation and provider success.");
