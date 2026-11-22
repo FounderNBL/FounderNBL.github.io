@@ -301,13 +301,17 @@ function syncHostMedia() {
   const camera = $("#pulseLiveCameraToggle"), mic = $("#pulseLiveMicToggle");
   const cameraOn = state.call?.camera.state.status === "enabled";
   const micOn = state.call?.microphone.state.status === "enabled";
-  if (camera) camera.textContent = cameraOn ? "Turn camera off" : "Turn camera on";
+  if (camera) {
+    camera.textContent = cameraOn ? "Turn camera off" : "Turn camera on";
+    // Screen sharing never exposes camera controls. Audio may be added separately.
+    camera.hidden = state.screenOnly;
+  }
   if (mic) mic.textContent = micOn ? "Mute microphone" : "Unmute microphone";
   const notice = $("#pulseLiveMediaStatus");
   if (notice) notice.textContent = "Camera " + (cameraOn ? "on" : "off") + " · Microphone " + (micOn ? "on" : "off");
 }
 async function toggleHostMedia(kind) {
-  if (state.busy || state.screenOnly || !state.call || !["backstage","live"].includes(state.mode)) return;
+  if (state.busy || (state.screenOnly && kind === "camera") || !state.call || !["backstage","live"].includes(state.mode)) return;
   setBusy(true); showError("");
   try {
     const manager = kind === "camera" ? state.call.camera : state.call.microphone;
@@ -353,6 +357,9 @@ async function refreshStatus(silent = false) {
   if (navStatus) navStatus.textContent = data.status === "live" ? "LIVE" :
     data.status === "backstage" ? "Preparing" : (state.liveEnabled ? "ON" : "OFF");
   show("#pulseLiveAdmin", data.isAdmin === true);
+  // Recording incurs provider work only after the authorized Founder opts in.
+  show("#pulseLiveRecordOption", data.isAdmin === true);
+  show("#pulseLiveRecordNote", data.isAdmin === true);
   const toggle = $("#pulseLiveToggle");
   if (toggle) toggle.textContent = state.liveEnabled ? "Turn Pulse Live OFF" : "Turn Pulse Live ON";
   // Host visibility: the server's isHost flag wins. If absent, the Start
@@ -457,6 +464,7 @@ async function onStart() {
   if ((destination === "facebook" && !state.facebookReady) || (destination === "google" && !state.googleReady)) { showError("The selected relay is not available. Choose Pulse only."); return; }
   if (!["pulse","facebook","google"].includes(destination)) return;
   const screenOnly = $("#pulseLiveScreenOnly")?.checked === true;
+  const screenMic = screenOnly && $("#pulseLiveScreenMic")?.checked === true;
   setBusy(true); showError(""); setStatus("Starting your backstage…");
   try {
     // Founder Start explicitly prepares the existing call-member screenshare grant.
@@ -478,6 +486,9 @@ async function onStart() {
     if (!screenOnly) {
       try { await state.call.camera.enable(); } catch {}
       try { await state.call.microphone.enable(); } catch {}
+    } else if (screenMic) {
+      // Explicit user choice: camera remains OFF; mic is optional in screen mode.
+      try { await state.call.microphone.enable(); } catch {}
     }
     state.mode = "backstage";
     state.liveSince = null;
@@ -485,14 +496,18 @@ async function onStart() {
     show("#pulseLiveSetup", false); show("#pulseLiveHost", true);
     show("#pulseLiveGoLive", true); show("#pulseLiveEnd", true);
     show("#pulseLivePreview", !screenOnly);
-    show("#pulseLiveMediaControls", !screenOnly);
-    if (!screenOnly) {
+    show("#pulseLiveMediaControls", !screenOnly || screenMic);
+    if (!screenOnly || screenMic) {
       state.mediaSubs = [state.call.camera.state.status$.subscribe(syncHostMedia), state.call.microphone.state.status$.subscribe(syncHostMedia)];
       syncHostMedia();
-      if (state.call.camera.state.status !== "enabled" || state.call.microphone.state.status !== "enabled") showError("Camera or microphone is off. Check access permissions or use the controls. You can continue with one enabled device.");
+      if (!screenOnly && state.call.camera.state.status !== "enabled" && state.call.microphone.state.status !== "enabled")
+        showError("Both camera and microphone are off. Turn on at least one device to broadcast.");
+      if (screenMic && state.call.microphone.state.status !== "enabled")
+        showError("Microphone is off. Use Unmute microphone before going live if you want viewers to hear you.");
     }
     setStatus(screenOnly
-      ? "Backstage — camera and microphone OFF. Click Go Live to choose a screen and broadcast."
+      ? (screenMic ? "Backstage — camera OFF, screen sharing selected. Check microphone status, then press Go Live to choose a screen."
+        : "Backstage — camera and microphone OFF. Click Go Live to choose a screen and broadcast.")
       : "Backstage — only you can see this. Press Go Live when ready.");
     state.sub = state.call.state.participants$.subscribe(renderHostPreview);
     startPoll();
@@ -520,7 +535,7 @@ async function onGoLive() {
   try {
     if (state.screenOnly && !state.screenReady) {
       choosingScreen = true;
-      setStatus("Choose a window or screen to broadcast. Camera and microphone stay OFF.");
+      setStatus("Choose a window or screen to broadcast. Camera stays OFF; microphone follows your setting.");
       await state.call.screenShare.enable();
       choosingScreen = false;
       state.screenReady = true;
@@ -568,7 +583,10 @@ async function onEnd() {
   show("#pulseLivePreview", false); show("#pulseLiveViewer", false);
   show("#pulseLiveGoLive", false); show("#pulseLiveEnd", false);
   show("#pulseLiveSetup", true); show("#pulseLiveHost", false);
-  setStatus(wasLive ? (state.recordingRequested ? "Live ended. Your recording may take a few minutes to process; use Find latest saved livestream." : "Stream ended. Thanks for going live on Pulse.") : "Stream ended.");
+  setStatus(wasLive ? (state.recordingRequested
+    ? "Live ended. Your saved video may take a few minutes to process; select My saved Live videos to find it."
+    : "Live ended successfully. No video was saved because Save this Live video was OFF.")
+    : "Backstage ended. No broadcast or recording was made.");
 }
 
 async function onFindRecording() {
@@ -594,7 +612,9 @@ async function onFindRecording() {
       result.append(link, document.createElement("br"));
     }
   } catch (error) {
-    result.replaceChildren(plainError(error, "Could not retrieve the recording yet."));
+    if (error?.reason === "recording_not_found")
+      result.replaceChildren("No saved Live video exists yet. To save your next broadcast, select Save this Live video before Start Live.");
+    else result.replaceChildren(plainError(error, "Could not retrieve the recording yet."));
   } finally { button.disabled = false; }
 }
 
@@ -617,16 +637,24 @@ export function initPulseLive() {
   // Desktop-only screen capture must not replace the normal camera/mic path
   // on phones where window/tab selection is generally unavailable.
   const option = $("#pulseLiveScreenOnly");
+  const screenMicOption = $("#pulseLiveScreenMicOption");
+  const screenMic = $("#pulseLiveScreenMic");
+  const recordChoice = $("#pulseLiveRecord");
+  // Never restore a previously checked recording preference by accident.
+  if (recordChoice) recordChoice.checked = false;
   const mobile = window.matchMedia("(max-width: 760px)");
   const syncScreenOption = () => {
     if (!option) return;
     const unsupported = mobile.matches || typeof navigator.mediaDevices?.getDisplayMedia !== "function";
     option.disabled = unsupported;
     if (unsupported) option.checked = false;
+    if (screenMic && unsupported) screenMic.checked = false;
+    if (screenMicOption) screenMicOption.hidden = unsupported || !option.checked;
     const label = option.closest("label");
     if (label) label.hidden = unsupported;
   };
   syncScreenOption();
+  option?.addEventListener("change", syncScreenOption);
   mobile.addEventListener("change", () => { placeLivePanel(); syncScreenOption(); });
   $("#pulseLiveStart")?.addEventListener("click", () => { void onStart(); });
   $("#pulseLiveCameraToggle")?.addEventListener("click", () => { void toggleHostMedia("camera"); });
