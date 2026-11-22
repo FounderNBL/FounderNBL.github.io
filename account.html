@@ -133,7 +133,7 @@
 
       <section class="card" id="nblConnectCard">
         <h2>Beans · Connected apps</h2>
-        <p class="status">Connect only accounts you choose.</p><details class="account-fine-print"><summary>How connected accounts and permissions work</summary><p class="status">Connect accounts you own. Google sign-in and optional Gmail inbox access are two different permissions. Gmail reading requires your separate consent, and Beans will never send or delete your mail from this read-only connection. GitHub supports repository inspection. Canva linking and design creation are temporarily paused.</p></details>
+        <p class="status">Connect only accounts you choose.</p><details class="account-fine-print"><summary>How connected accounts and permissions work</summary><p class="status">Connect accounts you own. Google sign-in and optional Gmail inbox access are two different permissions. Gmail reading requires your separate consent, and Beans will never send or delete your mail from this read-only connection. GitHub supports repository inspection. Canva uses a separate authorization for each person's own account; design creation remains permission-gated.</p></details>
         <p id="nblConnectStatus" class="status">Checking connected apps…</p>
         <div id="nblConnectApps" class="fulfillment-list"></div>
         <div id="nblConnectRepos" class="fulfillment-list"></div>
@@ -500,14 +500,14 @@
         }
         nblConnectApps.append(gmailCard);
 
-        // Canva pause: preserve self-service revocation for existing OAuth grants.
-        // No new Canva sign-in, design listing or design creation is offered here.
+        // Canva authorization is managed inside Beans. Retain account-level revocation.
+        // The account page does not initiate provider OAuth or create a design.
         const canvaConnected=(data.connections||[]).find(x=>x.provider==="canva");
         if(canvaConnected){
           const canvaCard=document.createElement("article");canvaCard.className="fulfillment-item";
-          const canvaTitle=document.createElement("h3");canvaTitle.textContent="Canva connection · paused";
+          const canvaTitle=document.createElement("h3");canvaTitle.textContent="Canva · Connected";
           const canvaDetails=document.createElement("p");canvaDetails.className="fulfillment-meta";
-          canvaDetails.textContent="Canva is paused in Beans. Disconnect your existing authorization here if you wish; Beans image creation remains available separately.";
+          canvaDetails.textContent="Open Beans and select + → Canva designs to use your own authorized account. Disconnect authorization here whenever you wish; Beans image creation remains separate.";
           const disconnect=document.createElement("button");disconnect.type="button";disconnect.className="danger";disconnect.textContent="Disconnect Canva";
           disconnect.onclick=async()=>{
             if(!confirm("Disconnect your Canva account from NBL?"))return;
@@ -523,9 +523,9 @@
           :connectParam==="gmail_failed"||connectParam==="gmail_expired"||connectParam==="gmail_cancelled"
             ?"Gmail authorization did not finish. No inbox permission was granted."
           :connectParam==="canva_connected"
-          ?"Canva integration is paused; existing connections can be disconnected below."
+          ?"Canva connected to your NBL account. Open Beans → + → Canva designs."
           :connectParam==="canva_failed"||connectParam==="canva_expired"
-            ?"Canva authorization did not finish. Canva linking is paused; use Beans image tools instead."
+            ?"Canva authorization did not finish. Retry from the Canva tool in Beans if your NBL account is eligible."
           :connectParam==="github_connected"
           ?"Your GitHub connection was saved. You may inspect the repositories you approved."
           :connectParam==="github_failed"||connectParam==="github_expired"
