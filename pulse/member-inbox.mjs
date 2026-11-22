@@ -16,7 +16,7 @@ export function showPulseMemberInbox(handle=""){
 export function showPulseMemberThread(id){
  if(openMemberThread&&/^[0-9a-f-]{36}$/i.test(String(id)))void openMemberThread(String(id));
 }
-export function mountMemberInbox(invoke){
+export function mountMemberInbox(invoke,getActor=()=>null){
  const panel=document.querySelector("#pulseMemberInbox");
  const nav=document.querySelector("#pulseMemberInboxNav");
  if(!panel||!nav||panel.dataset.mounted==="true")return;
@@ -30,21 +30,48 @@ export function mountMemberInbox(invoke){
  const input=panel.querySelector("#pulseMemberReplyText");
  const send=compose.querySelector("button[type=submit]");
  const reload=panel.querySelector("#pulseMemberRefresh");
- let current=null,threads=[],loading=false,sending=false;
+ let current=null,threads=[],loading=false,sending=false,readVersion=0;
+ const deleting=new Set(),removed=new Set();
  const say=text=>{status.textContent=String(text);};
  const service=body=>invoke(body);
  async function readThread(id){
   if(!/^[0-9a-f-]{36}$/i.test(id))return;
-  const active=current=id;
+  const active=current=id,actor=getActor(),version=++readVersion;
   const data=await service({action:"list_messages",threadId:id,limit:100});
-  if(current!==active||panel.hidden)return;
+  if(current!==active||panel.hidden||getActor()!==actor||version!==readVersion)return;
   transcript.replaceChildren();
   if(!Array.isArray(data.messages)||!data.messages.length)transcript.append(node("p","social-meta","No messages yet."));
   for(const m of data.messages||[]){
    const label=m.sender?.handle?"@"+m.sender.handle:"NBL member";
    const box=node("article","pulse-ig-message");
    const time=m.createdAt&&Number.isFinite(Date.parse(m.createdAt))?new Date(m.createdAt).toLocaleString():"";
-   box.append(node("strong",null,label),node("small","social-meta",time),node("p",null,m.deleted?"[Message removed]":String(m.body||"")));
+   const deleted=m.deleted||removed.has(actor+":"+m.id);
+   box.append(node("strong",null,label),node("small","social-meta",time),node("p",null,deleted?"[Message removed]":String(m.body||"")));
+   // Only expose a delete action for the signed-in message sender; server
+   // independently verifies the caller and never trusts this browser check.
+   if(actor&&m.sender?.userId===actor&&!deleted&&/^[0-9a-f-]{36}$/i.test(String(m.id||""))){
+    const button=node("button","btn small","Delete message");
+    button.type="button";button.disabled=deleting.has(m.id);
+    button.addEventListener("click",async()=>{
+     if(getActor()!==actor||current!==active||deleting.has(m.id)||removed.has(actor+":"+m.id))return;
+     if(!window.confirm("Remove this message for everyone in the conversation?"))return;
+     deleting.add(m.id);button.disabled=true;
+     try{
+      const result=await service({action:"delete_message",messageId:m.id,threadId:active});
+      if(result.deleted!==true)throw Error("Deletion was not confirmed.");
+      if(getActor()!==actor)return;
+      removed.add(actor+":"+m.id);
+      if(current===active&&!panel.hidden){
+       box.querySelector("p").textContent="[Message removed]";
+       button.remove();
+       await readThread(active).catch(()=>{});say("Message removed for everyone.");
+      }
+     }catch(e){
+      if(getActor()===actor&&current===active)say("Message not removed: "+String(e.message||"Unavailable").slice(0,120));
+     }finally{deleting.delete(m.id);button.disabled=false;}
+    });
+    box.append(button);
+   }
    transcript.append(box);
   }
   compose.hidden=false;heading.textContent="Pulse Connect · Private conversation";
