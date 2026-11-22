@@ -660,6 +660,7 @@
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
                 <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
                 <button type="button" data-nbl-tool="still-camera"><strong>Beans · Camera</strong><span>Take a picture to show Beans · device permission on demand</span></button>
+                 <button type="button" data-nbl-tool="still-canva"><strong>Beans · Canva designs</strong><span>Use designs from your own authorized Canva account · no shared NBL seat</span></button>
                 <button type="button" data-nbl-tool="attach"><strong>Beans · Photo / file</strong><span>Choose a picture, PDF or document to share with Beans</span></button>
                 <button type="button" data-nbl-tool="knowledge-upload"><strong>Save knowledge file</strong><span>Keep a supported file searchable across chats · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="knowledge"><strong>Search saved knowledge</strong><span>Ask Beans about files saved to your NBL account · eligible membership required</span></button>
@@ -2301,6 +2302,11 @@
     if(tool==="still-camera"){
       setBeansToolMenu(false);
       stillCameraInput.click();
+      return;
+    }
+    if(tool==="still-canva"){
+      setBeansToolMenu(false);
+      setStillVisualTools(true); // The existing server checks NBL identity, provider access and consent.
       return;
     }
     if(tool==="attach"){
