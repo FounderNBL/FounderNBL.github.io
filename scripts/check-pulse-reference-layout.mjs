@@ -59,7 +59,7 @@ assert.match(liveUi,/input\.focus\(\{preventScroll:true\}\)/);
 assert.doesNotMatch(html+liveCss,/\b(?:followers|watching|12\.4K|24\.7K)\b/i,"No invented popularity metrics");
 // Founder-supplied reference: full desktop Pulse product, not a fake image/post.
 assert.ok(html.includes('/pulse/pulse-founder-ui.css?v=20261118-live-visibility'));
-assert.ok(html.includes('/pulse/pulse-mobile-app.css?v=20261121-pulse-connect-v1'));
+assert.ok(html.includes('/pulse/pulse-mobile-app.css?v=20261121-pulse-delete-v1'));
 assert.ok(html.indexOf('/pulse/pulse-mobile-app.css')>html.indexOf('/pulse/pulse-founder-ui.css'), 'Mobile CSS must load after desktop styles');
 assert.ok(html.includes('media="(max-width: 760px)"'), 'Mobile styles must be phone-only');
 assert.ok(mobileCss.includes('grid-template-columns:repeat(5,minmax(0,1fr))'), 'Exactly five phone tabs');
