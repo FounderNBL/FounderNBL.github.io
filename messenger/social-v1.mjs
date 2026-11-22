@@ -8,8 +8,8 @@ import {recentHomeBeats} from "./pulse-home-recent.mjs";
 import {ownPost,mediaCaption,displayedCaption,mutateOwnPost} from "./pulse-post-controls.mjs?v=20261120-own-post";
 import {initMetaCommunity,founderFacebookShareButton} from "../pulse/meta-community.mjs?v=20261122-live-ui-v3";
 import {mountInstagramInbox} from "../pulse/instagram-inbox.mjs?v=20261121-pulse-connect-v1";
-import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261121-pulse-connect-v1";
-import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261121-pulse-connect-v1";
+import {mountMemberInbox,showPulseMemberInbox} from "../pulse/member-inbox.mjs?v=20261122-sender-delete-v1";
+import {mountUnifiedInbox} from "../pulse/unified-inbox.mjs?v=20261122-sender-delete-v1";
 
 const STREAM_BRIDGE="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-stream";
 const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
@@ -775,7 +775,7 @@ async function requestFriend(event){
 }
 
 function renderFeed(rows){
-  rows=rows.filter(row=>!deletedPostIds.has(row.id));
+  rows=rows.filter(row=>!deletedPostIds.has(row.id)&&!row.deleted_at);
   const out=$("#feedItems");out.replaceChildren();
   if(!rows.length){
     const message=state.selected==="foryou"?"The For You feed is quiet. It needs real community activity to get started.":
@@ -1007,7 +1007,7 @@ async function boot(){
     assertCurrentAccount(initialNBLUserId);
     $("#guest").hidden=true;$("#identity").hidden=false;$("#socialApp").hidden=false;
     selectTab();
-    if(location.pathname.startsWith("/pulse"))mountMemberInbox(payload=>secured(SOCIAL_API,payload));
+    if(location.pathname.startsWith("/pulse"))mountMemberInbox(payload=>secured(SOCIAL_API,payload),()=>accountChanged?null:state.clerk?.user?.id);
     if(state.me?.role==="founder"&&location.pathname.startsWith("/pulse")){
       initMetaCommunity((path,payload)=>secured(META_COMMUNITY_API+path,payload));
       mountInstagramInbox((path,payload)=>secured(INSTAGRAM_API+path,payload));
