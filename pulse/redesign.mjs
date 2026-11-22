@@ -56,7 +56,11 @@ document.addEventListener("click", (event) => {
   const liveLink = event.target.closest('a[href="#pulseLive"]');
   if (liveLink) { event.preventDefault(); switchView("live"); return; }
   const button = event.target.closest("[data-view]");
-  if (!button) return;
+  if (!button) {
+    const oldShortcut=event.target.closest("#pulseMenuView .pulse-mobile-more [data-feed]");
+    if(oldShortcut)switchView(oldShortcut.dataset.feed==="friends"?"friends":"myposts");
+    return;
+  }
   if (feedClickFromWatch) { feedClickFromWatch = false; return; }
   const view = button.dataset.view;
   if (view === "messages" && button.id !== "pulseUnifiedInboxNav") {
