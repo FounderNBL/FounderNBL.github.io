@@ -162,3 +162,22 @@ assert.match(redesignCss,/body\.pulse-body \.pulse-bottombar/);
 assert.match(redesignCss,/body\.pulse-body \.pulse-topbar #pulseMenuTop/);
 assert.match(redesignCss,/\.pulse-live-feed-alert\[hidden\] \{ display: none !important/);
 console.log("PASS Pulse confirmed Live discovery, explicit viewer join, responsive touch feed + Connect navigation.");
+
+
+// Regression for a real bug: previously Stream WebRTC participants joined
+// successfully while #pulseLiveViewer remained hidden (HLS is disabled).
+// Source gates intentionally do not fabricate a real provider media receipt.
+const viewerJoin = liveClient.split("async function joinAsWebRtcViewer(callId) {")[1]
+  ?.split("// --- Status / viewer flow ---")[0] || "";
+assert.ok(viewerJoin, "The authenticated WebRTC viewer action must exist");
+assert.match(viewerJoin,/state\.viewerConnecting \|\| state\.mode !== "idle"/);
+assert.match(viewerJoin,/await joinWithoutCapture\(state\.call\)/);
+assert.match(viewerJoin,/show\("#pulseLiveViewer", true\)/,
+  "A joined Stream video cannot be displayed while its parent stays hidden");
+assert.ok(viewerJoin.indexOf('show("#pulseLiveViewer", true)') >
+  viewerJoin.indexOf('await joinWithoutCapture(state.call)'),
+  "Only reveal the player after Stream confirms the viewer joined");
+assert.match(viewerJoin,/if \(\$\("#pulseLiveView"\)\?\.hidden !== false\) return/);
+assert.match(liveClient,/show\("#pulseLiveViewer", false\); \/\/ An ended viewer call/);
+assert.match(html,/live\.mjs\?v=20261122-webrtc-viewer-v2/);
+console.log("PASS Pulse WebRTC viewer video is actually visible on the Live page.");
