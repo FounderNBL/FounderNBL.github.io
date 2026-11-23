@@ -108,7 +108,7 @@ async function open(page){
  // The Feed's own Clerk gate is stubbed; Live still verifies Clerk itself.
  await page.evaluate(()=>{document.querySelector("#socialApp").hidden=false;});
  // Pulse now has a dedicated Live view; tests must open it before checking host/viewer controls.
- await page.locator('button[data-view="live"]:visible').first().click();
+ await page.locator('a.pulse-nav-live:visible, button[data-view="live"]:visible').first().click();
  await expect(page.locator("#pulseLiveView")).toBeVisible();
 }
 test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({page,context})=>{
