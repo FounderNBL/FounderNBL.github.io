@@ -1,11 +1,9 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {runInNewContext} from "node:vm";
-const read=name=>readFileSync(new URL("../"+name,import.meta.url),"utf8");
-const source=read("pulse/ai-image-intake.mjs");
-const html=read("pulse/index.html");
-const social=read("messenger/social-v1.mjs");
+const source=readFileSync(new URL("../pulse/ai-image-intake.mjs",import.meta.url),"utf8");
+const html=readFileSync(new URL("../pulse/index.html",import.meta.url),"utf8");
+const social=readFileSync(new URL("../messenger/social-v1.mjs",import.meta.url),"utf8");
 test("AI image staging uses the real Pulse post form and preserves the Stream upload",()=>{
   for(const id of ["pulsePasteAiImage","pulseAiImagePreview","pulseAiImageHelp","pulseAiRemoveMedia","pulseAiDropTarget"])
     assert.ok(html.includes('id="'+id+'"'),"Missing "+id);
@@ -42,7 +40,7 @@ test("pasting one valid clipboard PNG attaches a local file and previews without
     constructor(){this._files=[];this.items={add:f=>this._files.push(f)};}
     get files(){return this._files;}
   }
-  const context={
+  const mockGlobals={
     document:{
       querySelector:s=>nodes.get(s)||null,
       createElement:s=>Object.assign(mock(s),{tagName:s.toUpperCase()})
@@ -53,7 +51,10 @@ test("pasting one valid clipboard PNG attaches a local file and previews without
     Event:class{constructor(type){this.type=type;}},
     window:{addEventListener:()=>{}},Date
   };
-  runInNewContext(source,context,{timeout:1000});
+  for(const [name,value] of Object.entries(mockGlobals)){
+    Object.defineProperty(globalThis,name,{configurable:true,writable:true,value});
+  }
+  await import("../pulse/ai-image-intake.mjs"); // known local module, never evaluated from untrusted text
   const input=nodes.get("#postMedia"),preview=nodes.get("#pulseAiImagePreview");
   nodes.get("#pulsePasteAiImage").handlers.get("click")();
   await new Promise(resolve=>setImmediate(resolve));
