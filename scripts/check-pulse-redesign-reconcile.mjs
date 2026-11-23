@@ -4,10 +4,13 @@ const r=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
 const html=r("pulse/index.html"),ui=r("pulse/redesign.mjs"),css=r("pulse/pulse-redesign.css"),live=r("pulse/live.mjs");
 const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
 assert.equal(ids.length,new Set(ids).size,"duplicate DOM IDs");
-for(const id of ["pulseUnifiedInbox","pulseMemberInbox","pulseInstagramInbox","pulseLive","pulseLiveScreenOnly","pulseLiveCameraToggle","pulseLiveDestination","pulseComposerSheet","postForm","pulseBottomBar","pulseMenuView","pulseLiveView","pulseSearch","pulseLiveNow"]){assert.equal(ids.filter(x=>x===id).length,1,"missing/duplicate "+id)}
+for(const id of ["pulseUnifiedInbox","pulseMemberInbox","pulseInstagramInbox","pulseLive","pulseLiveScreenOnly","pulseLiveCameraToggle","pulseLiveDestination","pulseGoogleCheck","pulseComposerSheet","postForm","pulseBottomBar","pulseMenuView","pulseLiveView","pulseSearch","pulseLiveNow"]){assert.equal(ids.filter(x=>x===id).length,1,"missing/duplicate "+id)}
 assert.match(html,/pulse\/tiktok-callback\.html/);
 assert.doesNotMatch(html,/<iframe|pulseMessengerFrame/);
 assert.match(live,/const slot = \$\("#pulseLiveView"\)/);
+assert.match(live,/liveApi\("google-check", \{\}, "required"\)/);
+assert.match(live,/readiness\.ready === true/);
+assert.match(html,/Check Google relay setup \(no stream\)/);
 assert.match(ui,/pulseUnifiedInboxNav/);
 assert.match(ui,/pulse-appearance/);
 assert.doesNotMatch(ui,/fetch\s*\(/);

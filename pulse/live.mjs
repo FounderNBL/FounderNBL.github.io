@@ -440,6 +440,8 @@ async function refreshStatus(silent = false) {
   show("#pulseLiveRecordNote", data.isAdmin === true);
   const toggle = $("#pulseLiveToggle");
   if (toggle) toggle.textContent = state.liveEnabled ? "Turn Pulse Live OFF" : "Turn Pulse Live ON";
+  // A read-only private Google check is available only to the Founder.
+  show("#pulseGoogleCheck", state.isAdmin);
   // Host visibility: the server's isHost flag wins. If absent, the Start
   // button stays visible and full host controls appear only after a
   // successful start.
@@ -520,6 +522,35 @@ async function refreshStatus(silent = false) {
 }
 
 // --- Host flow ---
+async function onGoogleCheck() {
+  const button = $("#pulseGoogleCheck"), note = $("#pulseLiveDestinationStatus");
+  if (!state.isAdmin || !button || !note || state.busy) return;
+  button.disabled = true;
+  note.textContent = "Checking the Google relay without starting a broadcast…";
+  try {
+    const data = await liveApi("google-check", {}, "required");
+    const readiness = data.google || {};
+    const reasons = {
+      server_bridge_missing: "private Google controller URL or identity is missing",
+      google_route_disabled: "Google routing is OFF in Pulse server configuration",
+      google_input_missing: "Google RTMP input is not provisioned",
+      google_channel_missing: "Google channel is not provisioned",
+      google_input_not_attached: "Google input is not attached to its channel",
+      google_output_not_configured: "private Google HLS output is not configured",
+      google_watchdog_or_start_disabled: "Google independent auto-stop or channel start is not enabled",
+      google_channel_not_stopped: "Google channel is not safely stopped",
+      google_controller_unreachable: "Pulse cannot reach the protected Google controller"
+    };
+    note.textContent = readiness.ready === true
+      ? "Google relay READY. Choose Pulse + Google relay to run a controlled paid test; Stream still supplies the camera."
+      : "Google relay NOT READY: " + (reasons[readiness.reason] || "check the Google setup") + ". No broadcast started.";
+    state.googleReady = state.isAdmin && readiness.ready === true;
+    const option = $("#pulseLiveDestination")?.querySelector('option[value="google"]');
+    if (option) option.disabled = !state.googleReady;
+  } catch (error) {
+    note.textContent = "Google readiness check failed: " + plainError(error, "check Pulse backend status") + ". No broadcast started.";
+  } finally { button.disabled = false; }
+}
 async function onToggleLive() {
   if (state.busy) return;
   const enabled = !state.liveEnabled;
@@ -770,6 +801,7 @@ export function initPulseLive() {
   $("#pulseLiveCameraToggle")?.addEventListener("click", () => { void toggleHostMedia("camera"); });
   $("#pulseLiveMicToggle")?.addEventListener("click", () => { void toggleHostMedia("microphone"); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
+  $("#pulseGoogleCheck")?.addEventListener("click", () => { void onGoogleCheck(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
   $("#pulseLiveEnd")?.addEventListener("click", () => { void onEnd(); });
   $("#pulseLiveFindRecording")?.addEventListener("click", () => { void onFindRecording(); });
