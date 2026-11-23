@@ -24,6 +24,7 @@ async function videoClientConstructor() {
 }
 
 const ENDPOINT = "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-live";
+import {setupLiveBeats} from "./studios-live.mjs";
 const CALL_TYPE = "livestream";
 const CLERK_KEY = "pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT = "https://accounts.newbeansland.org";
@@ -41,7 +42,7 @@ const state = {
   isAdmin: false, screenOnly: false, screenReady: false,
   destination: "pulse", facebookReady: false, googleReady: false,
   googleCheckMessage: "",
-  mediaSubs: [],
+  mediaSubs: [], liveBeatsCleanup: null,
   soundId: null, soundButton: null,
 };
 
@@ -214,6 +215,9 @@ function destroyHls() {
   const v = $("#pulseLiveVideo"); if (v) { try { v.pause(); } catch {} v.removeAttribute("src"); v.load(); }
 }
 async function teardownStream() {
+  // End optional Studio effects before releasing the existing Stream call.
+  try { state.liveBeatsCleanup?.(); } catch {}
+  state.liveBeatsCleanup = null;
   const wasViewer = state.mode === "viewing";
   stopTimer(); stopSoundWatch();
   state.sub?.unsubscribe(); state.sub = null;
@@ -622,6 +626,12 @@ async function onStart() {
   state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
     state.call = state.client.call(CALL_TYPE, data.callId);
     await joinWithoutCapture(state.call);
+    // Browser-side LiveBeats attaches only to this existing Stream call.
+    // Failure must never block ordinary camera/microphone broadcasting.
+    if (!screenOnly) {
+      try { state.liveBeatsCleanup = await setupLiveBeats(state.call); }
+      catch { state.liveBeatsCleanup = null; }
+    }
     state.screenOnly = screenOnly; state.screenReady = !screenOnly;
     // Start Live is the explicit user action that requests device access.
     // Permission denial leaves that device off and permits a backstage retry.

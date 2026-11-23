@@ -1,0 +1,42 @@
+/* Pulse Studios: free, private on-device BEATS tools. Scopes stay inside ps-. */
+.ps-dialog{color:#f6edff;background:#160d28;border:1px solid #875bb4;border-radius:18px;padding:0;width:min(950px,calc(100vw - 24px));max-width:950px;max-height:92dvh;box-shadow:0 24px 100px #000a}
+.ps-dialog::backdrop{background:rgba(5,3,13,.78)}
+.ps-shell{overflow:auto;max-height:92dvh;padding:clamp(14px,3vw,28px)}
+.ps-dialog *{box-sizing:border-box}
+.ps-header{display:flex;align-items:start;justify-content:space-between;gap:14px;border-bottom:1px solid #63497d;padding-bottom:10px}
+.ps-header h2{font-size:clamp(1.35rem,3vw,2rem);margin:2px 0 8px;color:#fff}
+.ps-header h2 span{font-size:.7em;color:#dea4ff}
+.ps-kicker{font-weight:800;letter-spacing:.12em;color:#d8afff;font-size:.73rem;margin:0}
+#psClose{font-size:1.4rem;min-width:44px;min-height:44px}
+.ps-dialog button{border:1px solid #9163be;background:#39214f;color:#fff;padding:10px 13px;border-radius:10px;cursor:pointer;font:inherit}
+.ps-dialog button:hover{background:#65338a}
+.ps-dialog button:focus-visible,.ps-dialog input:focus-visible,.ps-dialog select:focus-visible{outline:3px solid #dbc4ff;outline-offset:2px}
+.ps-dialog button:disabled{opacity:.55;cursor:wait}
+.ps-privacy{line-height:1.45;color:#dacbe7;margin:12px 0;font-size:.85rem}
+.ps-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 18px}
+.ps-tabs button{flex:1 1 150px}
+.ps-tabs button[aria-selected="true"]{background:#8345c8;border-color:#d3b4fa;font-weight:800}
+.ps-dialog [data-ps-panel]{display:grid;gap:10px}
+.ps-dialog [hidden]{display:none!important}
+.ps-dialog label{color:#f5e8ff;font-weight:650;display:grid;gap:6px;font-size:.9rem}
+.ps-dialog input,.ps-dialog select{min-width:0;max-width:100%;padding:10px;border-radius:8px;color:#f7edff;background:#291b40;border:1px solid #7e5c9d;font:inherit}
+.ps-dialog input[type="file"]{width:100%}
+.ps-dialog input[type="range"]{padding:4px 0;accent-color:#a875ea}
+#psPhotoCanvas{width:100%;max-width:620px;max-height:52dvh;object-fit:contain;background:#0b0718;border:1px solid #70508f;border-radius:12px;justify-self:center}
+#psVideoPlayer{width:100%;max-height:48dvh;border-radius:12px;background:#000}
+#psMusicPlayer{width:100%}
+.ps-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;padding:12px;border-radius:12px;background:#231536;border:1px solid #5a397b}
+.ps-actions{display:flex;gap:8px;flex-wrap:wrap}
+.ps-actions button{flex:1 1 160px}
+.ps-status{background:#28173e;border-left:3px solid #bc83f0;padding:12px;border-radius:5px;color:#f2dcff;overflow-wrap:anywhere}
+.ps-face{border:1px solid #5e4279;border-radius:12px;padding:13px;display:grid;gap:8px}
+.ps-face h3{margin:0}
+.ps-face p,.ps-dialog section>p{color:#d9c5e6;font-size:.85rem;margin:4px 0}
+.ps-menu-entry{margin:12px 0;padding:12px;border:1px solid #8a5cb6;border-radius:12px}
+.ps-menu-entry p{margin:6px 0}
+.ps-live-beats{padding:12px;border:1px solid #8656ac;border-radius:10px;margin:10px 0}
+.ps-live-beats summary{cursor:pointer;font-weight:800;color:#edcfff}
+.ps-live-beats select,.ps-live-beats input[type=file]{width:100%;max-width:100%;background:#271839;color:#fff;border:1px solid #835aad;padding:10px;border-radius:8px}
+.ps-live-beats input[type=range]{width:100%;accent-color:#bc85fa}
+.pulse-body .ps-live-beats label.pulse-live-check{display:flex;align-items:center}
+@media(max-width:600px){.ps-dialog{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;border-radius:0}.ps-shell{max-height:100dvh;padding:16px}.ps-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.ps-tabs button{flex:1 1 90px;padding:10px 6px;font-size:.82rem}.ps-actions{flex-direction:column}.ps-actions button{flex:0 0 auto}#psPhotoCanvas{max-height:35dvh}}
