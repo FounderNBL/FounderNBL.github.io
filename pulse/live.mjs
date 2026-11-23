@@ -41,6 +41,7 @@ const state = {
   isAdmin: false, screenOnly: false, screenReady: false,
   destination: "pulse", facebookReady: false, googleReady: false,
   mediaSubs: [],
+  soundId: null, soundButton: null,
 };
 
 function setStatus(text) { const el = $("#pulseLiveStatus"); if (el) el.textContent = text; }
@@ -213,7 +214,7 @@ function destroyHls() {
 }
 async function teardownStream() {
   const wasViewer = state.mode === "viewing";
-  stopTimer();
+  stopTimer(); stopSoundWatch();
   state.sub?.unsubscribe(); state.sub = null;
   for (const subscription of state.mediaSubs) subscription.unsubscribe();
   state.mediaSubs = [];
@@ -255,32 +256,52 @@ async function attachHls(url) {
 }
 
 // --- Participants rendering (pattern copied from call.mjs) ---
-function renderViewerParticipants(participants) {
-  const area = $("#pulseLiveViewer");
-  if (!area) return;
-  const current = new Set(participants.map((p) => p.sessionId));
-  for (const [id, parts] of state.tracks) {
-    if (current.has(id)) continue;
-    for (const unbind of parts.cleanup) { try { unbind(); } catch {} }
-    parts.wrapper.remove(); state.tracks.delete(id);
-  }
-  for (const p of participants) {
-    if (p.isLocalParticipant || state.tracks.has(p.sessionId)) continue;
-    const wrapper = document.createElement("div");
-    wrapper.className = "pulse-live-remote";
+// Stream TrackType values carried in participant.publishedTracks.
+const TRACK_VIDEO = 2, TRACK_SCREEN = 3;
+// The wrapper must already be in the visible DOM when a video element is
+// bound: Stream sizes its track subscription from the element's rendered
+// size and treats 0x0 (hidden or detached) as "do not subscribe".
+function buildRemoteEntry(p, area, sig) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "pulse-live-remote";
+  const label = document.createElement("p");
+  label.className = "pulse-live-meta"; label.textContent = p.name || "NBL Pulse Live";
+  wrapper.append(label);
+  area.append(wrapper);
+  const cleanup = [];
+  const bind = (fn) => { const unbind = fn(); if (typeof unbind === "function") cleanup.push(unbind); };
+  for (const [kind, wanted] of [["videoTrack", sig.includes("v")], ["screenShareTrack", sig.includes("s")]]) {
+    if (!wanted) continue;
     const video = document.createElement("video");
     video.autoplay = true; video.muted = true; video.playsInline = true; video.className = "pulse-live-video";
-    const label = document.createElement("p");
-    label.className = "pulse-live-meta"; label.textContent = p.name || "NBL Pulse Live";
-    wrapper.append(video, label);
-    const kind = p.isScreenSharing || p.screenShareStream ? "screenShareTrack" : "videoTrack";
-    const cleanup = [state.call.bindVideoElement(video, p.sessionId, kind)];
+    wrapper.append(video);
+    bind(() => state.call.bindVideoElement(video, p.sessionId, kind));
+  }
+  for (const kind of sig.includes("s") ? ["audioTrack", "screenShareAudioTrack"] : ["audioTrack"]) {
     const audio = document.createElement("audio"); audio.autoplay = true; audio.controls = true;
     audio.setAttribute("aria-label", "Livestream sound; tap play if your browser blocks audio autoplay");
     wrapper.append(audio);
-    cleanup.push(state.call.bindAudioElement(audio, p.sessionId, "audioTrack"));
-    state.tracks.set(p.sessionId, { wrapper, cleanup });
-    area.append(wrapper);
+    bind(() => state.call.bindAudioElement(audio, p.sessionId, kind));
+  }
+  return { wrapper, cleanup, sig };
+}
+function renderViewerParticipants(participants) {
+  const area = $("#pulseLiveViewer");
+  if (!area || !state.call) return;
+  // Other viewers publish nothing; only render people who are broadcasting.
+  const sources = participants.filter((p) => !p.isLocalParticipant && p.publishedTracks?.length);
+  const current = new Set(sources.map((p) => p.sessionId));
+  const drop = (id, parts) => {
+    for (const unbind of parts.cleanup) { try { unbind(); } catch {} }
+    parts.wrapper.remove(); state.tracks.delete(id);
+  };
+  for (const [id, parts] of state.tracks) if (!current.has(id)) drop(id, parts);
+  for (const p of sources) {
+    const sig = (p.publishedTracks.includes(TRACK_VIDEO) ? "v" : "") + (p.publishedTracks.includes(TRACK_SCREEN) ? "s" : "");
+    const existing = state.tracks.get(p.sessionId);
+    if (existing?.sig === sig) continue;
+    if (existing) drop(p.sessionId, existing);
+    state.tracks.set(p.sessionId, buildRemoteEntry(p, area, sig));
   }
   // Viewer count: participantCount is unverified in video-client 1.27.0 —
   // fall back to the remote participant count if it is not a number.
@@ -289,6 +310,30 @@ function renderViewerParticipants(participants) {
     : participants.filter((p) => !p.isLocalParticipant).length;
   const vc = $("#pulseLiveViewers");
   if (vc) { vc.hidden = false; vc.textContent = count + (count === 1 ? " viewer" : " viewers"); }
+}
+// Browsers refuse to start audio before a user gesture. Offer a tap target
+// whenever a bound audio stream is attached but not playing.
+function startSoundWatch() {
+  stopSoundWatch();
+  const area = $("#pulseLiveViewer");
+  if (!area) return;
+  const button = document.createElement("button");
+  button.type = "button"; button.hidden = true; button.className = "pulse-live-primary";
+  button.textContent = "Tap to turn on sound";
+  button.addEventListener("click", () => {
+    area.querySelectorAll("audio").forEach((a) => { a.muted = false; void a.play().catch(() => {}); });
+    button.hidden = true;
+  });
+  area.prepend(button);
+  state.soundButton = button;
+  state.soundId = setInterval(() => {
+    button.hidden = ![...area.querySelectorAll("audio")].some((a) => a.srcObject && a.paused);
+  }, 1000);
+}
+function stopSoundWatch() {
+  if (state.soundId) clearInterval(state.soundId);
+  state.soundId = null;
+  state.soundButton?.remove(); state.soundButton = null;
 }
 function renderHostPreview(participants) {
   const local = participants.find((p) => p.isLocalParticipant);
@@ -356,6 +401,7 @@ async function joinAsWebRtcViewer(callId) {
     state.mode = "viewing";
     show("#pulseLiveVideo", false); // HLS is disabled; Stream participants own the actual picture.
     show("#pulseLiveViewer", true); // Otherwise all WebRTC tracks are in a hidden parent.
+    startSoundWatch();
     state.sub = state.call.state.participants$.subscribe(renderViewerParticipants);
   } catch (error) {
     await teardownStream(); // Clean up failed joins instead of holding an invisible paid slot.
