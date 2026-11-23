@@ -1,7 +1,7 @@
 // No provider tokens are stored in the browser; Clerk authenticates each member action.
 const byId=id=>document.getElementById(id);
 const api="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-tiktok-connect";
-const key="pk_live_Y2xlcmsubmVhbnNsYW5kLm9yZyQ";
+const key="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const args=new URL(location.href).searchParams;
 const incoming={code:args.get("code"),state:args.get("state"),error:args.get("error")};
 if(location.search)history.replaceState(null,"",location.pathname);
