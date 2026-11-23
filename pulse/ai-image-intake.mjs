@@ -11,30 +11,42 @@ const removeButton=document.querySelector("#pulseAiRemoveMedia");
 const extra=document.querySelector("#pulseComposerExtra");
 const ALLOWED=new Set(["image/png","image/jpeg","image/webp"]);
 const MAX_IMAGES=4,MAX_BYTES=8*1024*1024;
-let objectUrls=[];
+let previewRevision=0;
 function setHelp(message){if(help)help.textContent=message;}
-function releasePreviews(){
-  for(const url of objectUrls)URL.revokeObjectURL(url);
-  objectUrls=[];
-}
-function renderPreviews(){
+async function renderPreviews(){
   if(!preview||!input)return;
-  releasePreviews();
+  const revision=++previewRevision;
   preview.replaceChildren();
   const photos=Array.from(input.files||[]).filter(f=>ALLOWED.has(f.type));
-  for(const file of photos){
-    const url=URL.createObjectURL(file);
-    objectUrls.push(url);
-    const figure=document.createElement("figure");
-    const image=document.createElement("img");
-    image.src=url;image.alt="Selected image awaiting approval for a Pulse Beat";
-    image.loading="lazy";image.decoding="async";
-    const caption=document.createElement("figcaption");
-    caption.textContent=file.name;
-    figure.append(image,caption);preview.append(figure);
-  }
   preview.hidden=!photos.length;
   if(removeButton)removeButton.hidden=!(input.files?.length);
+  // Decode into a canvas instead of assigning user-provided file data to a
+  // DOM image URL. No arbitrary document, SVG or HTML resource is loaded.
+  for(const file of photos){
+    const figure=document.createElement("figure");
+    const canvas=document.createElement("canvas");
+    canvas.width=320;canvas.height=320;
+    canvas.setAttribute("role","img");
+    canvas.setAttribute("aria-label","Image awaiting approval for a Pulse Beat");
+    const caption=document.createElement("figcaption");
+    caption.textContent=file.name;
+    figure.append(canvas,caption);
+    preview.append(figure);
+    try{
+      const bitmap=await createImageBitmap(file);
+      if(revision!==previewRevision){bitmap.close?.();return;}
+      const ctx=canvas.getContext("2d");
+      if(ctx&&bitmap.width>0&&bitmap.height>0){
+        const scale=Math.min(canvas.width/bitmap.width,canvas.height/bitmap.height);
+        const width=Math.max(1,Math.round(bitmap.width*scale));
+        const height=Math.max(1,Math.round(bitmap.height*scale));
+        ctx.drawImage(bitmap,Math.floor((canvas.width-width)/2),Math.floor((canvas.height-height)/2),width,height);
+      }
+      bitmap.close?.();
+    }catch{
+      caption.textContent=file.name+" (preview unavailable; file still attached)";
+    }
+  }
 }
 function addImages(files){
   if(!input||!form||!extra)return false;
@@ -90,7 +102,7 @@ async function pasteFromClipboard(){
 }
 if(form&&input&&pasteButton&&preview&&help){
   pasteButton.addEventListener("click",()=>{void pasteFromClipboard();});
-  input.addEventListener("change",renderPreviews);
+  input.addEventListener("change",()=>{void renderPreviews();});
   form.addEventListener("paste",event=>{
     const data=event.clipboardData;
     if(!data)return;
@@ -118,6 +130,5 @@ if(form&&input&&pasteButton&&preview&&help){
     input.dispatchEvent(new Event("change",{bubbles:true}));
     setHelp("Images removed from this draft. Nothing was posted.");
   });
-  window.addEventListener("pagehide",releasePreviews);
-  renderPreviews();
+  void renderPreviews();
 }
