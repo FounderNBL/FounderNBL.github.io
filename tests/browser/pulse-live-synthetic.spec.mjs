@@ -3,7 +3,45 @@ import { test, expect } from "@playwright/test";
 // Automated rehearsal of the REAL Pulse page. All auth, Stream media and API
 // responses are fixtures. Not a substitute for signed-in provider media proof.
 const LIVE = "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-live";
-const VIDEO_SDK = "export class StreamVideoClient { constructor(c){this.user=c.user;} call(){ const id=this.user.id; return { camera:{enable:async()=>{window.__pulseCameraEnabled=true;}}, microphone:{enable:async()=>{window.__pulseMicrophoneEnabled=true;}}, screenShare:{enable:async()=>{window.__pulseScreenRequests=(window.__pulseScreenRequests||0)+1;if(window.__pulseDenyScreen)throw Error('picker cancelled');}}, state:{participantCount:2,participants$:{subscribe(f){f([{sessionId:'local-'+id,isLocalParticipant:true},{sessionId:'remote-host',name:'Synthetic host',isLocalParticipant:false}]);return {unsubscribe(){}};}}},join:async()=>{},leave:async()=>{},bindVideoElement:()=>()=>{},bindAudioElement:()=>()=>{} };} async disconnectUser(){} }";
+const VIDEO_SDK = `
+export class StreamVideoClient {
+  constructor(config) { this.user = config.user; }
+  call() {
+    const id = this.user.id;
+    const status$ = { subscribe(callback) { callback(); return { unsubscribe() {} }; } };
+    const camera = {
+      state: { status: "disabled", status$ },
+      async enable() { camera.state.status = "enabled"; window.__pulseCameraEnabled = true; },
+      async disable() { camera.state.status = "disabled"; },
+      async toggle() { camera.state.status = camera.state.status === "enabled" ? "disabled" : "enabled"; }
+    };
+    const microphone = {
+      state: { status: "disabled", status$ },
+      async enable() { microphone.state.status = "enabled"; window.__pulseMicrophoneEnabled = true; },
+      async disable() { microphone.state.status = "disabled"; },
+      async disableSpeakingWhileMutedNotification() {},
+      async toggle() { microphone.state.status = microphone.state.status === "enabled" ? "disabled" : "enabled"; }
+    };
+    return {
+      camera, microphone,
+      screenShare: { async enable() {
+        window.__pulseScreenRequests = (window.__pulseScreenRequests || 0) + 1;
+        if (window.__pulseDenyScreen) throw Error("picker cancelled");
+      } },
+      state: { participantCount: 2, participants$: { subscribe(callback) {
+        callback([
+          { sessionId: "local-" + id, isLocalParticipant: true, publishedTracks: [1, 2] },
+          { sessionId: "remote-host", name: "Synthetic host", isLocalParticipant: false, publishedTracks: [1, 2] }
+        ]);
+        return { unsubscribe() {} };
+      } } },
+      async join() {}, async leave() {},
+      bindVideoElement() { return () => {}; },
+      bindAudioElement() { return () => {}; }
+    };
+  }
+  async disconnectUser() {}
+}`;
 const response=(body,status=200)=>({
  status,contentType:"application/json",headers:{"access-control-allow-origin":"*","access-control-allow-headers":"authorization, content-type","access-control-allow-methods":"POST, OPTIONS"},
  body:JSON.stringify(body)
@@ -51,6 +89,10 @@ function syntheticBackend(){
 async function setup(page,user,api){
  await page.addInitScript(({user})=>{
   window.Clerk={load:async()=>{},get isSignedIn(){return user!=="signed-out";},get user(){return user==="signed-out"?null:{id:user};},get session(){return user==="signed-out"?null:{getToken:async()=>"fixture."+user+".token"};}};
+  // The real UI enables desktop screen sharing only when the browser exposes getDisplayMedia.
+  // Provide that capability in the synthetic runner; the fake Stream client owns the picker behavior.
+  if (!navigator.mediaDevices) Object.defineProperty(navigator, "mediaDevices", { configurable: true, value: {} });
+  if (!navigator.mediaDevices.getDisplayMedia) Object.defineProperty(navigator.mediaDevices, "getDisplayMedia", { configurable: true, value: async () => ({}) });
  },{user});
  // Only the Pulse Live module is under test, not the social Feed SDK.
  await page.route("**/messenger/social-v1.mjs**",r=>r.fulfill({status:200,contentType:"text/javascript",body:""}));
@@ -65,6 +107,9 @@ async function open(page){
  await page.goto("/pulse/",{waitUntil:"domcontentloaded"});
  // The Feed's own Clerk gate is stubbed; Live still verifies Clerk itself.
  await page.evaluate(()=>{document.querySelector("#socialApp").hidden=false;});
+ // Pulse now has a dedicated Live view; tests must open it before checking host/viewer controls.
+ await page.locator('button[data-view="live"]:visible').first().click();
+ await expect(page.locator("#pulseLiveView")).toBeVisible();
 }
 test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({page,context})=>{
  test.skip((page.viewportSize()?.width??1024)<=760,"Desktop screen-share flow; mobile has its own camera test");
@@ -72,6 +117,7 @@ test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({
  await setup(host,"host",api);await setup(viewer,"viewer",api);
  await open(host);
  await expect(host.locator("#pulseLiveStart")).toBeVisible();
+ await host.locator("#pulseLiveScreenOnly").check(); // screen-share rehearsal is an explicit desktop choice
  await host.locator("#pulseLiveStart").click();
  await expect(host.locator("#pulseLiveStatus")).toContainText("Backstage");
  await open(viewer);
@@ -120,6 +166,7 @@ test("cancel screen picker does not go LIVE, and retry uses the same Go Live but
  test.skip((page.viewportSize()?.width??1024)<=760,"Screen picker is desktop-only");
  const api=syntheticBackend();
  await setup(page,"host",api);await open(page);
+ await page.locator("#pulseLiveScreenOnly").check();
  await page.locator("#pulseLiveStart").click();
  await expect(page.locator("#pulseLiveStatus")).toContainText("Backstage");
  await page.evaluate(()=>{window.__pulseDenyScreen=true;});
