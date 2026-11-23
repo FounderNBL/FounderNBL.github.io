@@ -230,7 +230,16 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
     <label class="pulse-live-check" for="pulseLiveScreenOnly"><input id="pulseLiveScreenOnly" type="checkbox"> Share screen (desktop) — camera OFF</label>
     <label id="pulseLiveScreenMicOption" class="pulse-live-check" for="pulseLiveScreenMic" hidden><input id="pulseLiveScreenMic" type="checkbox"> Include my microphone with screen sharing</label>
     <p class="pulse-live-meta">Camera and microphone are the normal mode. Start Live asks for needed browser permissions and opens a private backstage preview. You control each device before pressing Go Live. Screen sharing is optional on supported desktops.</p>
-    <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
+<details id="pulseLiveBeatsControls" class="ps-live-beats"><summary>LiveBeats · camera effects and my music (optional)</summary>
+      <label for="pulseLiveBeatsEffect">Live camera effect</label>
+      <select id="pulseLiveBeatsEffect"><option value="none" selected>None · original camera</option><option value="glow">Glow lighting</option><option value="noir">Noir · black and white</option><option value="face">FaceBeats · blush and lip tint (MediaPipe)</option></select>
+      <label for="pulseLiveBeatsMusic">Background music from my device (audio file)</label>
+      <input type="file" id="pulseLiveBeatsMusic" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4">
+      <label for="pulseLiveBeatsMusicVolume">Music volume</label><input type="range" id="pulseLiveBeatsMusicVolume" min="0" max="80" value="20">
+      <label class="pulse-live-check"><input type="checkbox" id="pulseLiveBeatsRights"> I own this recording or have permission to broadcast it</label>
+      <p id="pulseLiveBeatsStatus" class="pulse-live-meta" role="status">Choose effects before Start Live. If unavailable, normal Stream camera and microphone stay usable. Background music requires your microphone to be on.</p>
+      </details>
+        <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
      <button id="pulseLiveFindRecording" type="button">My saved Live videos</button>
      <div class="pulse-live-meta" id="pulseLiveSavedResult" role="status" aria-live="polite"></div>
   </div>
@@ -240,15 +249,6 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
       <button id="pulseLiveCameraToggle" type="button">Turn camera on</button>
       <button id="pulseLiveMicToggle" type="button">Unmute microphone</button>
     </div>
-    <details id="pulseLiveBeatsControls" class="ps-live-beats"><summary>LiveBeats · camera effects and my music (optional)</summary>
-      <label for="pulseLiveBeatsEffect">Live camera effect</label>
-      <select id="pulseLiveBeatsEffect"><option value="none" selected>None · original camera</option><option value="glow">Glow lighting</option><option value="noir">Noir · black and white</option><option value="face">FaceBeats · blush and lip tint (MediaPipe)</option></select>
-      <label for="pulseLiveBeatsMusic">Background music from my device (audio file)</label>
-      <input type="file" id="pulseLiveBeatsMusic" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4">
-      <label for="pulseLiveBeatsMusicVolume">Music volume</label><input type="range" id="pulseLiveBeatsMusicVolume" min="0" max="80" value="20">
-      <label class="pulse-live-check"><input type="checkbox" id="pulseLiveBeatsRights"> I own this recording or have permission to broadcast it</label>
-      <p id="pulseLiveBeatsStatus" class="pulse-live-meta" role="status">Choose effects before Start Live. If unavailable, normal Stream camera and microphone stay usable. Background music requires your microphone to be on.</p>
-      </details>
     <button id="pulseLiveGoLive" type="button" class="pulse-live-primary">Go Live</button>
     <button id="pulseLiveEnd" type="button" class="pulse-live-danger">End Live</button>
   </div>
