@@ -73,12 +73,18 @@ async function loadPhoto(file){
 }
 export async function prepareBeatImage(target="download"){
   if(!bitmap)throw Error("Choose a picture first.");
-  const opts=settings(),mime=target==="profile"?"image/jpeg":($("#psPhotoFormat")?.value||"image/jpeg");
+  const opts=settings();
+  if(target==="profile")opts.ratio="square"; // Profile avatars are always square before circular UI masking.
+  const mime=target==="profile"?"image/jpeg":($("#psPhotoFormat")?.value||"image/jpeg");
   const cap=target==="profile"?STUDIO_LIMITS.profileBytes:target==="post"?STUDIO_LIMITS.postImageBytes:24*1024*1024;
   const size=target==="profile"?512:Math.min(2048,Math.max(256,number("#psPhotoSize",1080)));
   const ext=mime==="image/png"?"png":mime==="image/webp"?"webp":"jpg";
   for(const pixels of [size,Math.min(size,1280),Math.min(size,1080),720,512,360]){
-    const output=document.createElement("canvas");paintCanvas(output,pixels);
+    const output=document.createElement("canvas");
+    if(target==="profile"){
+      output.width=pixels;output.height=pixels;
+      renderBeatImage(output.getContext("2d"),bitmap,opts,pixels,pixels,facePoints);
+    }else paintCanvas(output,pixels);
     for(const quality of [0.92,0.82,0.7]){
       const blob=await new Promise(resolve=>output.toBlob(resolve,mime,quality));
       if(blob&&blob.size>0&&blob.size<=cap)
