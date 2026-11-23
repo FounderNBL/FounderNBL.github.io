@@ -47,6 +47,13 @@ function paintCanvas(canvas,size){
   if(!ctx)throw Error("Canvas is not supported by your browser.");
   renderBeatImage(ctx,bitmap,opts,target.width,target.height,facePoints);
 }
+function resetEdits(){
+  rotation=0;flip=false;facePoints=null;
+  for(const [id,v] of [["#psPhotoZoom","100"],["#psPhotoPanX","0"],["#psPhotoPanY","0"],["#psPhotoBrightness","100"],["#psPhotoContrast","100"],["#psPhotoSaturation","100"]])if($(id))$(id).value=v;
+  if($("#psFacePreset"))$("#psFacePreset").value="none";
+  if($("#psPhotoText"))$("#psPhotoText").value="";
+  render();message("Adjustments reset. The original picture is still loaded.");
+}
 function render(){
   if(!bitmap||!photo)return;
   if(frameId)cancelAnimationFrame(frameId);
@@ -90,7 +97,7 @@ async function faceBeats(){
   const button=$("#psFaceDetect");button.disabled=true;message("Loading FaceBeats locally. No Google API key or paid generation required…");
   try{
     if(!faceDetector){
-      const {FaceLandmarker,FilesetResolver}=await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm");
+      const {FaceLandmarker,FilesetResolver}=await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.mjs");
       const vision=await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm");
       faceDetector=await FaceLandmarker.createFromOptions(vision,{baseOptions:{modelAssetPath:"https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",delegate:"CPU"},runningMode:"IMAGE",numFaces:1});
     }
@@ -139,6 +146,7 @@ function init(){
   for(const id of ["#psPhotoAspect","#psPhotoZoom","#psPhotoPanX","#psPhotoPanY","#psPhotoBrightness","#psPhotoContrast","#psPhotoSaturation","#psPhotoText","#psFacePreset"])$(id)?.addEventListener("input",render);
   $("#psPhotoRotate")?.addEventListener("click",()=>{rotation=(rotation+90)%360;render();});
   $("#psPhotoFlip")?.addEventListener("click",()=>{flip=!flip;render();});
+  $("#psPhotoReset")?.addEventListener("click",resetEdits);
   $("#psFaceDetect")?.addEventListener("click",()=>void faceBeats());
   $("#psUsePost")?.addEventListener("click",()=>void usePhoto("post"));
   $("#psUseProfile")?.addEventListener("click",()=>void usePhoto("profile"));
