@@ -232,7 +232,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
     <p class="pulse-live-meta">Camera and microphone are the normal mode. Start Live asks for needed browser permissions and opens a private backstage preview. You control each device before pressing Go Live. Screen sharing is optional on supported desktops.</p>
 <details id="pulseLiveBeatsControls" class="ps-live-beats"><summary>LiveBeats · camera effects and my music (optional)</summary>
       <label for="pulseLiveBeatsEffect">Live camera effect</label>
-      <select id="pulseLiveBeatsEffect"><option value="none" selected>None · original camera</option><option value="glow">Glow lighting</option><option value="noir">Noir · black and white</option><option value="face">FaceBeats · blush and lip tint (MediaPipe)</option></select>
+      <select id="pulseLiveBeatsEffect"><option value="none" selected>None · original camera</option><option value="glow">Glow lighting</option><option value="noir">Noir · black and white</option><option value="face">FaceBeats · blush and lip tint (MediaPipe, on-device)</option></select>
       <label for="pulseLiveBeatsMusic">Background music from my device (audio file)</label>
       <input type="file" id="pulseLiveBeatsMusic" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4">
       <label for="pulseLiveBeatsMusicVolume">Music volume</label><input type="range" id="pulseLiveBeatsMusicVolume" min="0" max="80" value="20">
@@ -484,9 +484,9 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
         <label>Contrast <input id="psPhotoContrast" type="range" min="30" max="170" value="100"></label>
         <label>Color <input id="psPhotoSaturation" type="range" min="0" max="200" value="100"></label>
       </div>
-      <div class="ps-actions"><button type="button" id="psPhotoRotate">↻ Rotate 90°</button><button type="button" id="psPhotoFlip">↔ Flip</button></div>
+      <div class="ps-actions"><button type="button" id="psPhotoRotate">↻ Rotate 90°</button><button type="button" id="psPhotoFlip">↔ Flip</button><button type="button" id="psPhotoReset">Reset adjustments</button></div>
       <label for="psPhotoText">Text on photo</label><input id="psPhotoText" maxlength="100" placeholder="Add words to your picture">
-      <div class="ps-face"><h3>FaceBeats</h3><p>Google MediaPipe tracks face features on-device; nothing is sent to OpenAI or Google Cloud for processing. Requires an internet download of the free model.</p>
+      <div class="ps-face"><h3>FaceBeats</h3><p>Google MediaPipe tracks face features on-device; nothing is sent to OpenAI or Google Cloud for processing. Requires an internet download of the free model. MediaPipe may send technical usage/performance metrics to Google; your image is processed locally.</p>
         <button type="button" id="psFaceDetect">Detect my face (optional)</button>
         <label for="psFacePreset">Effect</label><select id="psFacePreset"><option value="none">None</option><option value="glow">Glow + tint</option><option value="blush">Blush</option><option value="lips">Lip tint</option></select>
       </div>
@@ -502,6 +502,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
         <label>Caption <input id="psVideoCaption" maxlength="90" placeholder="Optional text on video"></label>
         <label>Background music (optional, your own or licensed) <input id="psVideoMusicFile" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4"></label>
         <label>Music volume <input id="psVideoMusicVolume" type="range" min="0" max="100" value="25"></label>
+        <label class="ps-rights"><input type="checkbox" id="psVideoMusicRights"> I own or have permission to use this video background music</label>
       </div>
       <p>Local recording uses your browser's WebM encoder. Up to 60 seconds per export. Confirm you have rights to any music you add.</p>
       <div class="ps-actions"><button type="button" id="psVideoExport">Download edited video</button><button type="button" id="psVideoStage">Attach to Beat draft</button></div>
@@ -514,7 +515,8 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
         <label>End (seconds) <input id="psMusicEnd" type="number" min=".1" step=".1" value="30"></label>
         <label>Main track volume <input id="psMusicVolume" type="range" min="0" max="200" value="100"></label>
         <label>Mix another owned audio track (optional) <input id="psMusicBeatFile" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4"></label>
-        <label>Second track volume <input id="psBeatVolume" type="range" min="0" max="100" value="30"></label></div>
+        <label>Second track volume <input id="psBeatVolume" type="range" min="0" max="100" value="30"></label>
+        <label class="ps-rights"><input type="checkbox" id="psMusicBeatRights"> I own or have permission to mix this second audio recording</label></div>
       <p>Mix locally and download a WAV. Up to five minutes per export. Only use recordings you have rights to.</p>
       <button type="button" id="psMusicExport">Download MusicBeat WAV</button>
       <p class="ps-status" id="psMusicStatus" role="status">Choose audio to start. Nothing is uploaded.</p>
