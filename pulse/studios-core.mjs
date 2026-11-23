@@ -9,7 +9,7 @@ export function aspectFor(preset,width,height){
   return FORMATS[preset]||FORMATS.square;
 }
 export function outputSize(ratio,limit=1080){
-  const [a,b]=ratio, scale=Math.min(1,limit/Math.max(a,b)), w=Math.max(1,Math.round(a*scale)), h=Math.max(1,Math.round(b*scale));
+  const [a,b]=ratio, scale=limit/Math.max(a,b), w=Math.max(1,Math.round(a*scale)), h=Math.max(1,Math.round(b*scale));
   return {width:w,height:h};
 }
 export function coverGeometry(srcWidth,srcHeight,destWidth,destHeight,{rotation=0,zoom=1,panX=0,panY=0}={}){
