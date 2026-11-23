@@ -139,7 +139,7 @@ test("host -> backstage -> private viewer gate -> LIVE -> viewer -> End",async({
  expect(api.s.actions.some(x=>x.user==="viewer"&&x.action==="join-viewer")).toBe(true);
  host.on("dialog",dialog=>dialog.accept());
  await host.locator("#pulseLiveEnd").click();
- await expect(host.locator("#pulseLiveStatus")).toContainText("Stream ended");
+ await expect(host.locator("#pulseLiveStatus")).toContainText("Live ended successfully");
  await open(viewer);
  await expect(viewer.locator("#pulseLiveStatus")).toContainText("Ready to start your Pulse Live broadcast");
  await expect(viewer.locator("#pulseLiveBadge")).toBeHidden();
