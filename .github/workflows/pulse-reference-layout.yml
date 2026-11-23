@@ -8,6 +8,12 @@ on:
       - pulse/pulse-founder-ui.css
       - pulse/pulse-mobile-app.css
       - pulse/live.mjs
+      - pulse/pulse-studios.mjs
+      - pulse/studios-core.mjs
+      - pulse/studios-media.mjs
+      - pulse/studios-live.mjs
+      - pulse/pulse-studios.css
+      - scripts/check-pulse-studios.test.mjs
       - pulse/pulse-live-design.mjs
       - scripts/check-pulse-reference-layout.mjs
       - .github/workflows/pulse-reference-layout.yml
@@ -23,4 +29,5 @@ jobs:
         with:
           node-version: '20'
       - run: node scripts/check-pulse-reference-layout.mjs
+      - run: node --test scripts/check-pulse-studios.test.mjs
       - run: node scripts/check-nbl-social-v1.mjs
