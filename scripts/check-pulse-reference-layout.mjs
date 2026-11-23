@@ -179,5 +179,16 @@ assert.ok(viewerJoin.indexOf('show("#pulseLiveViewer", true)') >
   "Only reveal the player after Stream confirms the viewer joined");
 assert.match(viewerJoin,/if \(\$\("#pulseLiveView"\)\?\.hidden !== false\) return/);
 assert.match(liveClient,/show\("#pulseLiveViewer", false\); \/\/ An ended viewer call/);
-assert.match(html,/live\.mjs\?v=20261122-webrtc-viewer-v2/);
-console.log("PASS Pulse WebRTC viewer video is actually visible on the Live page.");
+assert.match(html,/live\.mjs\?v=20261123-visible-tracks-v3/);
+// Subscriber regression: Stream must never bind remote tracks while detached.
+const remoteEntry=liveClient.split("function buildRemoteEntry(p, area, sig) {")[1]
+  ?.split("function renderViewerParticipants(")[0] || "";
+assert.ok(remoteEntry, "Published remote tracks must get a rendered entry");
+assert.ok(remoteEntry.indexOf("area.append(wrapper)") < remoteEntry.indexOf("state.call.bindVideoElement("),
+  "Attach the remote wrapper before subscribing to the Stream track");
+assert.ok(remoteEntry.indexOf("wrapper.append(video)") < remoteEntry.indexOf("state.call.bindVideoElement("),
+  "Attach the remote video before Stream subscribes");
+assert.match(liveClient, /p\.publishedTracks\?\.length/, "Ignore passive viewers with no published media");
+assert.match(liveClient, /Tap to turn on sound/, "Provide a tap-to-unmute fallback");
+assert.match(liveClient, /stopSoundWatch\(\)/, "Clean up sound prompt on teardown");
+console.log("PASS Pulse WebRTC viewer is visible before track subscription; sound and cleanup are wired.");
