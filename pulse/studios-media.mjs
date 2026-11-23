@@ -110,7 +110,9 @@ async function exportVideo(){
     await audioContext.resume();
     await video.play();
     notice("#psVideoStatus","Exporting video locally…");
+    const deadline=Date.now()+Math.min(90,span*3+15)*1000;
     while(video.currentTime<end && !video.ended && recorder.state==="recording"){
+      if(Date.now()>deadline)throw Error("Video rendering stalled. Try a shorter clip.");
       await new Promise(resolve=>setTimeout(resolve,180));
       if(chunks.reduce((n,b)=>n+b.size,0)>STUDIO_LIMITS.postVideoBytes){throw Error("Video exceeded Pulse's 40 MB upload limit. Trim a shorter segment.");}
     }
