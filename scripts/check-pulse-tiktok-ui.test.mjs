@@ -22,7 +22,7 @@ test("Video goes directly to TikTok only with explicit consent and creator priva
  assert.match(ui,/for\(const id of \["comment","duet","stitch","commercial","own_brand","paid_brand","consent"\]\)/);
  assert.match(ui,/await call\("upload",\{\},f\)/);
  assert.match(ui,/call\("status",\{publish_id:/);
- assert.match(ui,/types\.has\(f\.type\)/);
+ assert.match(ui,/new Blob\(\[f\],\{type:safeType\}\)/);
  assert.match(page,/id="preview" controls playsinline/);
  assert.match(page,/id="privacy"/);
  assert.match(page,/id="consent" required/);
