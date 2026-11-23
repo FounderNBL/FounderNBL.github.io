@@ -23,7 +23,7 @@ function clear(){
  gen++;account="";scopes=[];creator=null;job=null;duration=0;
  byId("post").hidden=true;byId("disconnect").hidden=true;byId("list").hidden=true;byId("videos").replaceChildren();byId("identity").textContent="";byId("check").hidden=true;postSay("");
  byId("post").reset();byId("direct").hidden=true;byId("brand").hidden=true;byId("brandedConsent").hidden=true;byId("privacy").replaceChildren(new Option("Choose privacy",""));
- if(previewURL)URL.revokeObjectURL(previewURL);previewURL="";byId("preview").removeAttribute("src");byId("preview").load();byId("preview").hidden=true;
+ if(previewURL)URL.revokeObjectURL(previewURL);previewURL="";byId("preview").removeAttribute("src");byId("preview").replaceChildren();byId("preview").load();byId("preview").hidden=true;
 }
 function update(){
  const direct=byId("kind").value==="direct";byId("direct").hidden=!direct;
@@ -95,7 +95,11 @@ byId("file").addEventListener("change",()=>{
  const f=byId("file").files[0];
  const types=new Set(["video/mp4","video/quicktime","video/webm"]);
  if(!f||!types.has(f.type)||f.size===0||f.size>20*1024*1024){byId("preview").hidden=true;postSay("Select an MP4, MOV or WebM video up to 20 MB.");update();return;}
- previewURL=URL.createObjectURL(f);byId("preview").src=previewURL;byId("preview").hidden=false;postSay("");update();
+ const player=byId("preview");
+ player.removeAttribute("src");player.replaceChildren();
+ const media=document.createElement("source");media.type=f.type;
+ previewURL=URL.createObjectURL(f);media.src=previewURL;
+ player.append(media);player.load();player.hidden=false;postSay("");update();
 });
 byId("preview").addEventListener("loadedmetadata",()=>{duration=Number.isFinite(byId("preview").duration)?byId("preview").duration:0;update();if(creator&&duration>creator.max_video_post_duration_sec)postSay("This video exceeds the creator's maximum duration.");});
 for(const id of ["privacy","comment","duet","stitch","commercial","own_brand","paid_brand","consent","title"])byId(id).addEventListener("change",update);
