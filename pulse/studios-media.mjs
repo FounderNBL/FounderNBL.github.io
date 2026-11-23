@@ -25,6 +25,7 @@ async function exportAudio(){
   const volume=ctx.createGain();volume.gain.value=Math.max(0,Math.min(2,num("#psMusicVolume",100)/100));
   source.connect(volume).connect(ctx.destination);source.start(0,begin,duration);
   if(state.beatBuffer){
+    if(!$("#psMusicBeatRights")?.checked)throw Error("Confirm you own or have permission to mix the second audio track.");
     const b=ctx.createBufferSource();b.buffer=state.beatBuffer;b.loop=true;
     const mix=ctx.createGain();mix.gain.value=Math.max(0,Math.min(1,num("#psBeatVolume",30)/100));
     b.connect(mix).connect(ctx.destination);b.start(0);
@@ -94,6 +95,7 @@ async function exportVideo(){
     source.connect(dest);source.connect(audioContext.destination);
     const musicFile=$("#psVideoMusicFile")?.files?.[0];
     if(musicFile){
+      if(!$("#psVideoMusicRights")?.checked)throw Error("Confirm you own or have permission to use this background music.");
       validateLocalFile(musicFile,AUDIO_TYPES,STUDIO_LIMITS.audioBytes);
       const buffer=await audioContext.decodeAudioData(await musicFile.arrayBuffer());
       musicSource=audioContext.createBufferSource();musicSource.buffer=buffer;musicSource.loop=true;
