@@ -442,7 +442,7 @@ async function refreshStatus(silent = false) {
   const toggle = $("#pulseLiveToggle");
   if (toggle) toggle.textContent = state.liveEnabled ? "Turn Pulse Live OFF" : "Turn Pulse Live ON";
   // A read-only private Google check is available only to the Founder.
-  show("#pulseGoogleCheck", state.isAdmin);
+  show("#pulseGoogleCheck", false); // Founder Stream-only pilot: no Google relay action.
   // Host visibility: the server's isHost flag wins. If absent, the Start
   // button stays visible and full host controls appear only after a
   // successful start.
@@ -458,7 +458,7 @@ async function refreshStatus(silent = false) {
     state.googleReady = state.googleReady && googleConfigured;
     if (!googleConfigured) state.googleCheckMessage = "";
     const destination = $("#pulseLiveDestination");
-    show("#pulseLiveDestinationOption", state.isAdmin);
+    show("#pulseLiveDestinationOption", false); // Stream Video is the only active destination.
     if (destination) {
       destination.querySelector('option[value="facebook"]').disabled = !state.facebookReady;
       destination.querySelector('option[value="google"]').disabled = !state.googleReady;
@@ -593,7 +593,8 @@ async function onStart() {
   if (state.busy) return;
   const title = ($("#pulseLiveTitleInput")?.value || "").trim().slice(0, 140) || DEFAULT_TITLE;
   const recordRequested = $("#pulseLiveRecord")?.checked === true;
-  const destination = $("#pulseLiveDestination")?.value || "pulse";
+  // Use existing Stream Video only. No optional Meta/Google relays in this pilot.
+  const destination = "pulse";
   // Never silently start another destination when Google was chosen; move
   // the picker to working Pulse-only mode and require a fresh Start click.
   if (destination === "google" && !state.googleReady) {
