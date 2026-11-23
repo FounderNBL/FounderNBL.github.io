@@ -21,7 +21,8 @@
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261119-meta-community-v1">
 <link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261119-independent-columns-v1">
-<script type="module" src="/messenger/social-v1.mjs?v=20261122-connect-delete-v1"></script>
+<script type="module" src="/messenger/social-v1.mjs?v=20261123-ai-draft-clear-v1"></script>
+<script type="module" src="/pulse/ai-image-intake.mjs?v=20261123-image-clipboard-v1"></script>
 <script type="module" src="/pulse/pulse-google-insights.mjs?v=20261118-consent-v1"></script>
 <style>
 .pulse-post-menu{margin-left:auto;position:relative;flex-shrink:0;color:var(--cream)}.pulse-post-menu summary{list-style:none;cursor:pointer;min-width:44px;min-height:44px;display:grid;place-items:center;font-size:1.6rem;line-height:1;border:1px solid var(--line);border-radius:10px;background:#211536;color:#f5ebff}.pulse-post-menu summary::-webkit-details-marker{display:none}.pulse-post-menu-options{position:absolute;right:0;top:100%;min-width:150px;max-width:260px;z-index:8;display:grid;gap:5px;padding:8px;background:#221634;border:1px solid #744e98;border-radius:10px;box-shadow:0 8px 24px #0008}.pulse-post-menu-options button{text-align:left;padding:10px;cursor:pointer;border:0;border-radius:7px;background:#3b2857;color:#f6ecff;font:inherit;white-space:nowrap}.pulse-post-menu-options .pulse-post-delete{color:#ffb6c2}.pulse-post-menu-options button:disabled{opacity:.5}.pulse-post-menu-options .social-feedback:empty{display:none}.pulse-post-menu-options .social-feedback{overflow-wrap:anywhere}
@@ -272,6 +273,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
         <textarea id="postText" rows="2" maxlength="1500" placeholder="What’s on your mind?"></textarea>
         <div class="pulse-compose-actions">
           <button type="button" class="pulse-compose-tool" data-pulse-compose="photo"><span aria-hidden="true">▧</span> Photo</button>
+          <button type="button" class="pulse-compose-tool" id="pulsePasteAiImage" title="Paste an image you copied from ChatGPT or another image tool"><span aria-hidden="true">✦</span> Paste AI image</button>
           <button type="button" class="pulse-compose-tool" data-pulse-compose="video"><span aria-hidden="true">▣</span> Video</button>
           <button type="button" class="pulse-compose-tool" data-pulse-compose="link"><span aria-hidden="true">↗</span> Public link</button>
           <a class="pulse-compose-tool" href="/pulse/tiktok-callback.html" title="Send original videos directly to TikTok without publishing a Pulse Beat">Share to TikTok</a>
@@ -282,6 +284,10 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
           <label for="postMedia">Add photos or a video from your device</label>
           <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" multiple>
           <p class="social-feedback" id="mediaSelection" role="status">Up to 4 photos (8 MB each) or 1 MP4/WebM video (40 MB).</p>
+          <p class="social-feedback" id="pulseAiImageHelp" role="status">Copy a generated picture, then choose Paste AI image. You can also paste or drop a picture into this draft. Nothing posts automatically.</p>
+          <div id="pulseAiDropTarget" class="pulse-ai-drop-target">Drop a copied or saved picture into this composer to attach it.</div>
+          <div id="pulseAiImagePreview" class="pulse-ai-image-preview" aria-label="Unpublished photo previews" hidden></div>
+          <button type="button" class="pulse-ai-remove" id="pulseAiRemoveMedia" hidden>Remove staged media</button>
           <div id="videoLinkArea">
             <label for="videoLink">Or share a public YouTube, Facebook, Instagram or Threads post/video</label>
             <input id="videoLink" type="url" inputmode="url" placeholder="Paste a public post or video link" autocomplete="off">
