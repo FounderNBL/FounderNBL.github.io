@@ -822,3 +822,13 @@ html[data-theme="auto"] body.pulse-body {
   }
   body.pulse-body #pulseComposerSheet { max-width: calc(100vw - 24px); }
 }
+
+/* Copied AI pictures enter the normal Pulse media composer, never a GitHub asset. */
+#pulseAiDropTarget{margin:10px 0;padding:15px;border:2px dashed var(--pulse-border);border-radius:12px;background:var(--pulse-surface-2);color:var(--pulse-text);font-size:.87rem;text-align:center}
+#pulseAiImageHelp{font-size:.9rem;line-height:1.5;overflow-wrap:anywhere}
+#pulseAiImagePreview{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:12px;margin:12px 0}
+#pulseAiImagePreview[hidden]{display:none!important}
+#pulseAiImagePreview figure{margin:0;padding:8px;border:1px solid var(--pulse-border);border-radius:12px;background:var(--pulse-surface-2);min-width:0}
+#pulseAiImagePreview img{display:block;max-width:100%;width:100%;aspect-ratio:1;object-fit:contain;border-radius:7px;background:var(--pulse-input-bg)}
+#pulseAiImagePreview figcaption{font-size:.75rem;margin-top:7px;overflow-wrap:anywhere;color:var(--pulse-text)}
+#pulseAiRemoveMedia{background:transparent;border:1px solid var(--pulse-border);border-radius:9px;padding:9px 13px;font:inherit;color:var(--pulse-text);cursor:pointer}
