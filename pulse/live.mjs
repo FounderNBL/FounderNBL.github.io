@@ -40,6 +40,7 @@ const state = {
   recordingRequested: false, liveEnabled: false,
   isAdmin: false, screenOnly: false, screenReady: false,
   destination: "pulse", facebookReady: false, googleReady: false,
+  googleCheckMessage: "",
   mediaSubs: [],
   soundId: null, soundButton: null,
 };
@@ -451,7 +452,11 @@ async function refreshStatus(silent = false) {
   // Capabilities come from the authenticated server, not browser guesses.
   if (state.mode === "idle" && data.status === "idle" && !state.busy) {
     state.facebookReady = state.isAdmin && data.facebook?.canStart === true;
-    state.googleReady = state.isAdmin && data.google?.configured === true && data.google?.routingEnabled === true;
+    const googleConfigured = state.isAdmin && data.google?.configured === true && data.google?.routingEnabled === true;
+    // A configured Google relay is NOT necessarily reachable; never re-enable
+    // it after a failed check just because a routine status poll succeeded.
+    state.googleReady = state.googleReady && googleConfigured;
+    if (!googleConfigured) state.googleCheckMessage = "";
     const destination = $("#pulseLiveDestination");
     show("#pulseLiveDestinationOption", state.isAdmin);
     if (destination) {
@@ -460,7 +465,9 @@ async function refreshStatus(silent = false) {
       if ((destination.value === "facebook" && !state.facebookReady) || (destination.value === "google" && !state.googleReady)) destination.value = "pulse";
     }
     const note = $("#pulseLiveDestinationStatus");
-    if (note) note.textContent = "Pulse only is independent of external relays. Facebook: " + (state.facebookReady ? "configured; account eligibility still applies" : "not enabled/configured") + ". Google: " + (state.googleReady ? "configured; relay readiness checked on start" : "not enabled/configured") + ".";
+    if (note) note.textContent = state.googleCheckMessage ||
+      ("Pulse only is independent of external relays. Facebook: " + (state.facebookReady ? "configured; account eligibility still applies" : "not enabled/configured") +
+      ". Google: " + (state.googleReady ? "READY" : googleConfigured ? "configured; check Google relay setup before selection" : "not enabled/configured") + ".");
   }
   const status = data.status;
   if (state.mode === "live" && data.facebook?.status === "live") setStatus("You are LIVE on Pulse and Facebook");
@@ -547,12 +554,21 @@ async function onGoogleCheck() {
     };
     note.textContent = readiness.ready === true
       ? "Google relay READY. Choose Pulse + Google relay to run a controlled paid test; Stream still supplies the camera."
-      : "Google relay NOT READY: " + (reasons[readiness.reason] || "check the Google setup") + ". No broadcast started.";
+      : "Google relay NOT READY: " + (reasons[readiness.reason] || "check the Google setup") + ". No broadcast started. Pulse only works independently of Google.";
     state.googleReady = state.isAdmin && readiness.ready === true;
-    const option = $("#pulseLiveDestination")?.querySelector('option[value="google"]');
+    state.googleCheckMessage = note.textContent;
+    const destination = $("#pulseLiveDestination");
+    const option = destination?.querySelector('option[value="google"]');
     if (option) option.disabled = !state.googleReady;
+    if (!state.googleReady && destination?.value === "google") destination.value = "pulse";
   } catch (error) {
-    note.textContent = "Google readiness check failed: " + plainError(error, "check Pulse backend status") + ". No broadcast started.";
+    state.googleReady = false;
+    const destination = $("#pulseLiveDestination");
+    const option = destination?.querySelector('option[value="google"]');
+    if (option) option.disabled = true;
+    if (destination?.value === "google") destination.value = "pulse";
+    note.textContent = "Google readiness check failed: " + plainError(error, "check Pulse backend status") + ". No broadcast started. Pulse only works independently of Google.";
+    state.googleCheckMessage = note.textContent;
   } finally { button.disabled = false; }
 }
 async function onToggleLive() {
@@ -578,7 +594,15 @@ async function onStart() {
   const title = ($("#pulseLiveTitleInput")?.value || "").trim().slice(0, 140) || DEFAULT_TITLE;
   const recordRequested = $("#pulseLiveRecord")?.checked === true;
   const destination = $("#pulseLiveDestination")?.value || "pulse";
-  if ((destination === "facebook" && !state.facebookReady) || (destination === "google" && !state.googleReady)) { showError("The selected relay is not available. Choose Pulse only."); return; }
+  // Never silently start another destination when Google was chosen; move
+  // the picker to working Pulse-only mode and require a fresh Start click.
+  if (destination === "google" && !state.googleReady) {
+    const picker = $("#pulseLiveDestination");
+    if (picker) picker.value = "pulse";
+    showError("Google relay is not ready. Switched to Pulse only; press Start Live again to use Stream without Google.");
+    return;
+  }
+  if (destination === "facebook" && !state.facebookReady) { showError("Facebook relay is not ready. Choose Pulse only."); return; }
   if (!["pulse","facebook","google"].includes(destination)) return;
   const screenOnly = $("#pulseLiveScreenOnly")?.checked === true;
   const screenMic = screenOnly && $("#pulseLiveScreenMic")?.checked === true;
