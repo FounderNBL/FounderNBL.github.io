@@ -93,12 +93,15 @@ byId("kind").addEventListener("change",()=>{if(byId("kind").value==="direct")voi
 byId("file").addEventListener("change",()=>{
  duration=0;byId("consent").checked=false;if(previewURL)URL.revokeObjectURL(previewURL);previewURL="";
  const f=byId("file").files[0];
- const types=new Set(["video/mp4","video/quicktime","video/webm"]);
- if(!f||!types.has(f.type)||f.size===0||f.size>20*1024*1024){byId("preview").hidden=true;postSay("Select an MP4, MOV or WebM video up to 20 MB.");update();return;}
+ const types=Object.freeze({"video/mp4":"video/mp4","video/quicktime":"video/quicktime","video/webm":"video/webm"});
+ const safeType=Object.hasOwn(types,f?.type)?types[f.type]:null;
+ if(!f||!safeType||f.size===0||f.size>20*1024*1024){byId("preview").hidden=true;postSay("Select an MP4, MOV or WebM video up to 20 MB.");update();return;}
  const player=byId("preview");
  player.removeAttribute("src");player.replaceChildren();
- const media=document.createElement("source");media.type=f.type;
- previewURL=URL.createObjectURL(f);media.src=previewURL;
+ const media=document.createElement("source");media.type=safeType;
+ // A new MIME-locked media blob is used only by an HTMLMediaElement, never as markup.
+ const safeVideo=new Blob([f],{type:safeType});
+ previewURL=URL.createObjectURL(safeVideo);media.src=previewURL;
  player.append(media);player.load();player.hidden=false;postSay("");update();
 });
 byId("preview").addEventListener("loadedmetadata",()=>{duration=Number.isFinite(byId("preview").duration)?byId("preview").duration:0;update();if(creator&&duration>creator.max_video_post_duration_sec)postSay("This video exceeds the creator's maximum duration.");});
