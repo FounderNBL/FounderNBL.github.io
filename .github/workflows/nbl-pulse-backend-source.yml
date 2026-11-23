@@ -36,7 +36,9 @@ jobs:
       - name: NBL Pulse existing source checks
         run: |
           node --check messenger/social-v1.mjs
+          node --check pulse/ai-image-intake.mjs
           node scripts/check-nbl-social-v1.mjs
+          node --test scripts/check-pulse-ai-image-intake.test.mjs
       - name: Verify public Pulse guide, pricing, legal links and Meta status
         run: node --test scripts/check-pulse-guide.test.mjs
       - name: Verify direct TikTok export UI and member consent
