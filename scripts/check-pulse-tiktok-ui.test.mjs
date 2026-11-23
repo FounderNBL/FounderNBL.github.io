@@ -35,3 +35,13 @@ test("TikTok privacy and deletion disclosures remain accessible",()=>{
  assert.match(read("account-deletion.html"),/TikTok-connected data/);
  assert.match(page,/account-deletion\.html/);
 });
+
+test("TikTok integration uses the canonical NBL Clerk domain",()=>{
+ const original=read("pulse/tiktok-connect.mjs");
+ const currentKey=ui.match(/\bpk_live_[A-Za-z0-9_-]+/)?.[0];
+ const originalKey=original.match(/\bpk_live_[A-Za-z0-9_-]+/)?.[0];
+ assert.ok(originalKey,"Existing NBL Clerk key must be present.");
+ assert.equal(currentKey,originalKey,"TikTok must reuse the existing live NBL Clerk key.");
+ const suffix=currentKey.split("_")[2];
+ assert.equal(Buffer.from(suffix,"base64url").toString("utf8"),"clerk.newbeansland.org$");
+});
