@@ -17,11 +17,12 @@ test("Existing TikTok backend and member-bound OAuth stay connected",()=>{
 });
 test("Video goes directly to TikTok only with explicit consent and creator privacy",()=>{
  assert.match(home,/href="\/pulse\/tiktok-callback\.html"[^>]*>Share to TikTok/);
- assert.match(ui,/f\.set\("file",\$\("file"\)\.files\[0\]\)/);
- assert.match(ui,/f\.set\("kind",\$\("kind"\)\.value\)/);
+ assert.match(ui,/f\.set\("file",byId\("file"\)\.files\[0\]\)/);
+ assert.match(ui,/f\.set\("kind",byId\("kind"\)\.value\)/);
  assert.match(ui,/for\(const id of \["comment","duet","stitch","commercial","own_brand","paid_brand","consent"\]\)/);
  assert.match(ui,/await call\("upload",\{\},f\)/);
  assert.match(ui,/call\("status",\{publish_id:/);
+ assert.match(ui,/types\.has\(f\.type\)/);
  assert.match(page,/id="preview" controls playsinline/);
  assert.match(page,/id="privacy"/);
  assert.match(page,/id="consent" required/);
