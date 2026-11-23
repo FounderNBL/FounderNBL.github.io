@@ -38,7 +38,7 @@ export async function setupLiveBeats(call){
   const cleanups=[];
   // Each optional filter must fail open: regular camera/mic still work.
   if(effect!=="none"){
-    if(typeof call?.camera?.registerFilter!=="function")status("This Stream SDK does not support LiveBeats camera effects. Normal Live still works.");
+    if(typeof call?.camera?.registerFilter!=="function" || typeof HTMLCanvasElement.prototype.captureStream!=="function")status("This browser/Stream SDK does not support LiveBeats camera effects. Normal Live still works.");
     else{
       let detector=null;
       if(effect==="face")try{status("Loading FaceBeats on-device…");detector=await faceLandmarker();}
