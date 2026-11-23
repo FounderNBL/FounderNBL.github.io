@@ -179,7 +179,7 @@ assert.ok(viewerJoin.indexOf('show("#pulseLiveViewer", true)') >
   "Only reveal the player after Stream confirms the viewer joined");
 assert.match(viewerJoin,/if \(\$\("#pulseLiveView"\)\?\.hidden !== false\) return/);
 assert.match(liveClient,/show\("#pulseLiveViewer", false\); \/\/ An ended viewer call/);
-assert.match(html,/live\.mjs\?v=20261123-google-preflight-v1/);
+assert.match(html,/live\.mjs\?v=20261123-pulse-stream-first-v2/);
 // Subscriber regression: Stream must never bind remote tracks while detached.
 const remoteEntry=liveClient.split("function buildRemoteEntry(p, area, sig) {")[1]
   ?.split("function renderViewerParticipants(")[0] || "";
@@ -192,3 +192,20 @@ assert.match(liveClient, /p\.publishedTracks\?\.length/, "Ignore passive viewers
 assert.match(liveClient, /Tap to turn on sound/, "Provide a tap-to-unmute fallback");
 assert.match(liveClient, /stopSoundWatch\(\)/, "Clean up sound prompt on teardown");
 console.log("PASS Pulse WebRTC viewer is visible before track subscription; sound and cleanup are wired.");
+
+
+// Google has an optional, independently authenticated RTMP destination.
+// A local configuration flag never proves the remote relay is reachable.
+// Failed preflight must leave normal Stream WebRTC available, without silently
+// starting any broadcast, spending money, or hiding the Google failure reason.
+assert.match(liveClient,/state\.googleReady = state\.googleReady && googleConfigured/,
+  "Google cannot be re-enabled by polling until its remote readiness passes");
+assert.match(liveClient,/state\.googleCheckMessage = note\.textContent/,
+  "Preserve the actionable Google error through subsequent status polling");
+assert.match(liveClient,/if \(!state\.googleReady && destination\?\.value === "google"\) destination\.value = "pulse"/,
+  "Failed Google readiness must reset the picker to the independent Pulse Stream destination");
+assert.match(liveClient,/if \(destination\?\.value === "google"\) destination\.value = "pulse"/,
+  "Network errors during Google preflight must restore Stream-only choice");
+assert.match(liveClient,/Google relay is not ready\. Switched to Pulse only; press Start Live again/,
+  "Never silently start an alternative destination on a failed Google start");
+console.log("PASS Stream-only is not gated by optional Google; safe fallback requires a fresh Start click.");
