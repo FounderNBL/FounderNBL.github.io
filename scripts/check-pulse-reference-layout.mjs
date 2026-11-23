@@ -179,7 +179,7 @@ assert.ok(viewerJoin.indexOf('show("#pulseLiveViewer", true)') >
   "Only reveal the player after Stream confirms the viewer joined");
 assert.match(viewerJoin,/if \(\$\("#pulseLiveView"\)\?\.hidden !== false\) return/);
 assert.match(liveClient,/show\("#pulseLiveViewer", false\); \/\/ An ended viewer call/);
-assert.match(html,/live\.mjs\?v=20261123-pulse-stream-first-v2/);
+assert.match(html,/live\.mjs\?v=20261123-stream-only-pilot-v1/);
 // Subscriber regression: Stream must never bind remote tracks while detached.
 const remoteEntry=liveClient.split("function buildRemoteEntry(p, area, sig) {")[1]
   ?.split("function renderViewerParticipants(")[0] || "";
