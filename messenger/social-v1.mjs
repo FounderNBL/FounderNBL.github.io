@@ -944,7 +944,7 @@ async function publishPost(event){
       throw error;
     }
     $("#postText").value="";$("#postCount").textContent="0 / 1500";
-    $("#postMedia").value="";$("#videoLink").value="";$("#videoShareRights").checked=false;
+    $("#postMedia").value="";$("#postMedia").dispatchEvent(new Event("change",{bubbles:true}));$("#videoLink").value="";$("#videoShareRights").checked=false;
     $("#mediaSelection").textContent="Up to 4 photos (8 MB each) or 1 video (40 MB).";
     const modAction=String(result?.activity?.moderation?.action||result?.moderation?.action||"").toLowerCase();
     status(["remove","shadow","shadow_block","bounce"].includes(modAction)
