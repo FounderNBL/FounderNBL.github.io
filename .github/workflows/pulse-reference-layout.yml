@@ -30,4 +30,8 @@ jobs:
           node-version: '20'
       - run: node scripts/check-pulse-reference-layout.mjs
       - run: node --test scripts/check-pulse-studios.test.mjs
+      - run: node --check pulse/pulse-studios.mjs
+      - run: node --check pulse/studios-media.mjs
+      - run: node --check pulse/studios-live.mjs
+      - run: node --check pulse/live.mjs
       - run: node scripts/check-nbl-social-v1.mjs
