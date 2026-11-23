@@ -44,7 +44,7 @@ test("Studio user interface is in the REAL Pulse profile, composer and live; uni
   }
   assert.match(html,/pulse-studios\.mjs\?v=20261123-free-beats-v1/);
   assert.match(html,/studios-media\.mjs\?v=20261123-free-beats-v1/);
-  assert.match(html,/pulse-studios\.css\?v=20261123-free-beats-v1/);
+  assert.match(html,/pulse-studios\.css\?v=20261123-free-beats-v2/);
   assert.match(css,/\.ps-dialog/);
   assert.ok(html.indexOf('id="pulseLiveBeatsControls"')<html.indexOf('id="pulseLiveStart"'),"Set live effects BEFORE starting Stream");
 });
