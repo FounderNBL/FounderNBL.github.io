@@ -10,6 +10,10 @@ test("AI image staging uses the real Pulse post form and preserves the Stream up
   assert.match(html,/src="\/pulse\/ai-image-intake\.mjs\?v=20261123-image-clipboard-v1"/);
   assert.match(source,/input\.files=transfer\.files/);
   assert.match(source,/input\.dispatchEvent\(new Event\("change"/);
+  assert.match(source,/createImageBitmap\(file\)/);
+  assert.match(source,/ctx\.drawImage\(bitmap/);
+  assert.doesNotMatch(source,/createObjectURL\(|image\.src\s*=/,
+    "User-provided files must not be reinterpreted as document or image URLs");
   assert.match(social,/state\.client\.uploadImage\(\{file\}\)/);
   assert.match(social,/feed\.addActivity\(\{type:"post"/);
   assert.doesNotMatch(source,/\.addActivity\(|\.uploadImage\(|fetch\(|requestSubmit\(|\.submit\(/,
@@ -24,6 +28,7 @@ test("pasting one valid clipboard PNG attaches a local file and previews without
       addEventListener(kind,handler){handlers.set(kind,handler);},
       dispatchEvent(event){handlers.get(event.type)?.(event);},
       replaceChildren(...items){this.children=items;},
+      setAttribute(){},getContext(){return {drawImage(){}};},
       append(...items){this.children.push(...items);}
     };
   }
@@ -48,6 +53,7 @@ test("pasting one valid clipboard PNG attaches a local file and previews without
     navigator:{clipboard:{read:async()=>[{types:["image/png"],getType:async()=>({size:120})}]}},
     URL:{createObjectURL:()=>{const u="blob:test-"+objUrls.length;objUrls.push(u);return u;},revokeObjectURL:()=>{}},
     DataTransfer:FakeTransfer,File:FakeFile,
+    createImageBitmap:async()=>({width:40,height:40,close(){}}),
     Event:class{constructor(type){this.type=type;}},
     window:{addEventListener:()=>{}},Date
   };
