@@ -532,6 +532,10 @@ async function onGoogleCheck() {
     const readiness = data.google || {};
     const reasons = {
       server_bridge_missing: "private Google controller URL or identity is missing",
+      google_identity_missing: "the protected Google invoker identity is missing in Supabase. The Cloud Run URL has been recovered automatically; an API key cannot authorize private Cloud Run.",
+      google_identity_invalid: "the existing Google invoker identity in Supabase is invalid. Correct the protected service-account setting; do not paste it in chat.",
+      google_controller_url_invalid: "the configured Google Cloud Run address is invalid. The standard nbl-pulse-live URL is recovered automatically only when it is absent.",
+      google_channel_id_invalid: "the private Google channel identifier is invalid. The known NBL channel name is nbl-pulse-channel.",
       google_route_disabled: "Google routing is OFF in Pulse server configuration",
       google_input_missing: "Google RTMP input is not provisioned",
       google_channel_missing: "Google channel is not provisioned",
