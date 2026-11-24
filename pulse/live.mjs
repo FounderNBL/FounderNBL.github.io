@@ -395,9 +395,11 @@ async function joinAsWebRtcViewer(callId) {
     if (!data.key || !data.token || data.callId !== callId || data.callType !== CALL_TYPE)
       throw Error("Viewer session identity verification failed.");
     if ($("#pulseLiveView")?.hidden !== false) return; // Viewer navigated away during token request.
+    stage="loading the Stream Video client";
     const VideoClient = await videoClientConstructor();
     state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
     state.call = state.client.call(CALL_TYPE, callId);
+    stage="joining the real Stream backstage";
     await joinWithoutCapture(state.call); // viewers never request camera or microphone
     if ($("#pulseLiveView")?.hidden !== false) {
       await teardownStream(); // Leave this viewer only. Never stop the host broadcast.
@@ -680,6 +682,7 @@ async function onStart() {
   const screenOnly = $("#pulseLiveScreenOnly")?.checked === true;
   const screenMic = screenOnly && $("#pulseLiveScreenMic")?.checked === true;
   setBusy(true); showError(""); setStatus("Starting your backstage…");
+  let stage="requesting a verified NBL backstage session";
   try {
     // Founder Start explicitly prepares the existing call-member screenshare grant.
     if (screenOnly && state.isAdmin) await liveApi("admin-switch", { enabled: true }, "required");
@@ -701,6 +704,7 @@ async function onStart() {
       catch { state.liveBeatsCleanup = null; }
     }
     state.screenOnly = screenOnly; state.screenReady = !screenOnly;
+    stage="asking this browser for camera and microphone access";
     // Start Live is the explicit user action that requests device access.
     // Permission denial leaves that device off and permits a backstage retry.
     if (!screenOnly) {
@@ -741,7 +745,7 @@ async function onStart() {
     }
     await teardownStream();
     showError(originalError);
-    setStatus("Could not start Pulse Live.");
+    setStatus("Could not start Pulse Live at: "+stage+".");
   } finally { setBusy(false); }
 }
 // Request screen capture directly from the Go Live click; browser user
