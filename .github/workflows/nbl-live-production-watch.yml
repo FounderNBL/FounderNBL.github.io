@@ -52,6 +52,7 @@ on:
       - ".github/workflows/nbl-maintenance-independent-triage.yml"
       - "scripts/nbl-repair-incident-bridge.mjs"
       - "scripts/nbl-repair-incident-bridge.test.mjs"
+      - "scripts/nbl-controlled-repair-loop.test.mjs"
 
 permissions:
   contents: read
@@ -429,7 +430,7 @@ jobs:
         run: |
           node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-green-history.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
             scripts/check-official-social-world-cards.test.mjs scripts/nbl-foundation-repair-events.test.mjs scripts/nbl-repair-cross-domain.test.mjs scripts/nbl-website-repair-experiment.test.mjs scripts/nbl-website-repair-integration.test.mjs
-          node --test scripts/nbl-repair-incident-bridge.test.mjs scripts/nbl-shared-repair-handoff.test.mjs
+          node --test scripts/nbl-repair-incident-bridge.test.mjs scripts/nbl-shared-repair-handoff.test.mjs scripts/nbl-controlled-repair-loop.test.mjs
           node scripts/nbl-website-green.mjs source
       - name: Source-only approved browser regression, excluding NBLU and games
         run: npx playwright test tests/browser/nbl-green-visual.spec.mjs tests/browser/beans-presence.spec.mjs tests/browser/messenger-clerk-isolation.spec.mjs --project=chromium --project=mobile-chromium
