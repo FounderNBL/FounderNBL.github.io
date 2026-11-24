@@ -27,6 +27,8 @@ test("Pulse and Messenger have exact approved artwork, separate links, and uncro
    // Use direct descendant query because filter(has) on same element does not match itself.
    const node=page.locator('.pulse-world-door .social-door-grid a.world-card[href="'+href+'"]');
    await expect(node).toHaveCount(1);
+   // Lazy-loaded media must enter the viewport after the longer homepage gains sections.
+   await node.scrollIntoViewIfNeeded();
    const img=node.locator(".media img");
    await expect(img).toHaveAttribute("src",src);
    await expect(img).toHaveCSS("object-fit","contain");

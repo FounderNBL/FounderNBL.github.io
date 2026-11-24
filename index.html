@@ -200,6 +200,40 @@
   <link rel="stylesheet" href="/nbl-world-header.css?v=20261118-beans-services">
   <script defer src="/nbl-product-plans.js?v=20261109-live-memberships"></script>
   <script defer src="/nbl-world-header.js?v=20261118-beans-services"></script>
+
+<style id="nbl-build-a-block-home-styles">
+/* Real-world NBL Communities feature; intentionally outside the protected six-card grid. */
+.build-block-feature{padding:46px 18px 74px;background:radial-gradient(ellipse at 7% 25%,rgba(27,81,138,.24),transparent 48%),linear-gradient(180deg,#02060b,#071421 48%,#02060b);color:#f7e9d3}
+.build-block-frame{width:min(1390px,100%);margin:0 auto;border:1px solid rgba(230,182,91,.55);border-radius:20px;overflow:hidden;background:linear-gradient(145deg,#101f31 0%,#040b13 72%);box-shadow:0 25px 70px rgba(0,0,0,.5);display:grid;grid-template-columns:minmax(0,.93fr) minmax(0,1.07fr)}
+.build-block-visual{position:relative;min-height:680px;overflow:hidden;background:#13243b;display:flex;align-items:stretch}
+.build-block-visual svg{width:100%;height:100%;min-height:680px;display:block;object-fit:cover}
+.build-block-visual::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 57%,rgba(1,9,20,.88) 100%);pointer-events:none}
+.build-block-art-note{position:absolute;bottom:22px;left:26px;right:26px;z-index:1;display:flex;align-items:center;gap:13px;color:#fff;font-size:.71rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.build-block-art-note::before{content:"";width:38px;height:2px;background:#f0c56f;flex:none}
+.build-block-copy{padding:clamp(24px,4.4vw,64px) clamp(22px,3.6vw,52px);display:flex;flex-direction:column;justify-content:center;gap:0}
+.build-block-prelude{margin:0 0 14px;color:#f0cf8f;font-size:.78rem;font-weight:900;line-height:1.5;letter-spacing:.16em;text-transform:uppercase}
+.build-block-kicker{margin:0 0 6px;color:#afc9e7;font-size:.75rem;letter-spacing:.1em;font-weight:800;text-transform:uppercase}
+.build-block-copy h2{margin:0;color:#fff;font:900 clamp(2rem,4.7vw,4.2rem)/.98 Arial,Helvetica,sans-serif;letter-spacing:-.025em;text-transform:uppercase;text-wrap:balance}
+.build-block-copy h2 span{display:block;color:#f0c56f}
+.build-block-slogan{margin:17px 0 12px;font:italic 700 clamp(1.2rem,2.3vw,1.85rem)/1.3 Georgia,serif;color:#f5db9b}
+.build-block-lead{max-width:58ch;margin:6px 0 20px;font-size:clamp(.99rem,1.25vw,1.08rem);line-height:1.7;color:#e4e6e8}
+.build-block-pillars{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 22px;padding:0}
+.build-block-pillars li{display:flex;align-items:center;min-height:53px;padding:11px 13px;border:1px solid rgba(240,197,111,.25);background:#12273c;color:#f6e9d4;border-radius:9px;font-size:.87rem;font-weight:750;line-height:1.35}
+.build-block-people{padding:16px 0;border-top:1px solid rgba(240,197,111,.28);border-bottom:1px solid rgba(240,197,111,.28);display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.build-block-people strong{display:block;font-size:.91rem;color:#f2ca79}
+.build-block-people span{display:block;color:#d3dae4;font-size:.77rem;line-height:1.5;margin-top:4px}
+.build-block-status{font-size:.82rem;line-height:1.55;color:#c9d5e4;margin:17px 0}
+.build-block-actions{display:flex;gap:11px;flex-wrap:wrap}
+.build-block-actions a{display:inline-flex;justify-content:center;align-items:center;min-height:46px;padding:12px 19px;border-radius:9px;background:#e9be6e;color:#111b28;font-size:.81rem;font-weight:900;text-decoration:none}
+.build-block-actions a:last-child{background:transparent;color:#fae6bd;border:1px solid rgba(239,198,111,.65)}
+.build-block-actions a:hover,.build-block-actions a:focus-visible{filter:brightness(1.13);outline-offset:3px}
+.build-block-how{margin:19px 0 0;padding:16px 18px;background:rgba(1,8,18,.58);border-radius:10px;border:1px solid rgba(240,197,111,.21);scroll-margin-top:95px}
+.build-block-how h3{margin:0 0 10px;font:700 1rem Georgia,serif;color:#f0cf8f}
+.build-block-how ol{margin:0;padding-left:19px;color:#d7dfeb;font-size:.84rem;line-height:1.75}
+@media(max-width:1020px){.build-block-frame{grid-template-columns:1fr}.build-block-visual{min-height:320px;max-height:420px}.build-block-visual svg{min-height:0;height:auto;min-width:100%}.build-block-copy{padding:30px clamp(18px,5vw,45px) 38px}}
+@media(max-width:580px){.build-block-feature{padding:28px 12px 50px}.build-block-frame{border-radius:14px}.build-block-visual{min-height:240px;max-height:300px}.build-block-copy h2{font-size:clamp(1.83rem,9vw,2.6rem)}.build-block-people{grid-template-columns:1fr}.build-block-pillars{gap:8px}.build-block-pillars li{padding:10px;font-size:.77rem}.build-block-actions a{width:100%}.build-block-prelude{letter-spacing:.095em}}
+@media(prefers-reduced-motion:reduce){.build-block-actions a{transition:none}}
+</style>
 </head>
 <body id="home">
   <header class="site-header"><div class="header-inner"><a class="brand-banner" href="/" aria-label="New Beansland home"><div><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland NBL mark" width="72" height="72"><span>New Beansland</span></div></a><nav class="nav" aria-label="Main navigation"><a href="/" aria-current="page">Home</a><a href="books.html">Books</a><a href="stories.html">TV &amp; Film</a><a href="https://nblschool.com/">University</a><a href="/pulse/" class="nav-pulse-launch" aria-label="Open NBL Pulse social">Pulse</a><a href="/messenger/" class="nav-messenger-launch" aria-label="Open NBL Messenger"><img src="/messenger/icon.svg" alt="" width="28" height="28" loading="lazy">Messenger</a><a href="studio/">NBL Music Productions</a><a href="studios.html">NBL Studios</a><a href="vault.html#pricing">Vault &amp; Pricing</a><a href="founder-office.html">Founder’s Office</a><a href="about.html">About NBL</a><a href="coming-soon.html?room=news">News</a><a href="mailto:founder@newbeansland.org">Contact</a></nav></div></header>
@@ -207,6 +241,61 @@
     <section class="hero" aria-labelledby="hero-title" id="hero"><img class="hero-media" id="heroMedia" src="assets/site/homepage/nbl-night-campus-2026.png" alt="New Beansland's blue-and-gold night plaza with NBL Books, NBL Studios, the Institute of Unreasonable Doubt, NBL Music Studios, engraved pavement maxims and a welcome monument" width="1672" height="941" fetchpriority="high" decoding="async"><div class="hero-content" id="heroContent"><h1 class="hero-title" id="hero-title">NEW BEANSLAND</h1><p class="hero-tag">Questions today. A better tomorrow.</p><p class="hero-quote">Test the claim. Trust the truth. Build with both hands.</p><p class="hero-signature">— Jamel Hawkins</p></div></section>
     <section class="explore" id="explore" aria-labelledby="explore-title"><div class="section-head reveal"><p class="kicker">Explore the world of New Beansland</p><h2 id="explore-title">Books. Television. Film. Music. Ideas. Connected by purpose.</h2><p>Every open door goes somewhere real. Rooms still being built are clearly marked Coming Soon.</p></div><div class="world-grid"><a class="world-card official-art reveal" href="clothing.html" style="--nbl-world-card-art:url('NBL_Clothing_Co.png?v=f06b568f')"><div class="media"><img src="NBL_Clothing_Co.png?v=f06b568f" alt="NBL Clothing Co. official world card" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Catalog Open</span><h3>NBL Clothing Co.</h3><p>Apparel and clothing collections inside New Beansland.</p><span class="enter">Enter Clothing →</span></div></a><a class="world-card official-art reveal" href="books.html" style="--nbl-world-card-art:url('NBL_Books.png?v=e7397f38')"><div class="media"><img src="NBL_Books.png?v=e7397f38" alt="NBL Books official imprint" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Open</span><h3>NBL Books</h3><p>Books, living covers, frameworks, and stories built to move beyond the page.</p><span class="enter">Enter Books →</span></div></a><a class="world-card official-art reveal" href="games.html" style="--nbl-world-card-art:url('NBL_Games.png?v=1ff58013')"><div class="media"><img src="NBL_Games.png?v=1ff58013" alt="NBL Games official world card artwork" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Coming Soon</span><h3>NBL Games</h3><p>All NBL Games experiences, including Founder’s Office and Block Boss, are coming soon.</p><span class="enter">View Games →</span></div></a><a class="world-card official-art reveal" href="studio/" style="--nbl-world-card-art:url('NBL_Music_Productions%20(1).png?v=32e2b3ba')"><div class="media"><img src="NBL_Music_Productions%20(1).png?v=32e2b3ba" alt="NBL Music Productions official world card" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Music Catalog Open</span><h3>NBL Music Productions</h3><p>Hear official NBL music, releases and playlists. No music purchases or paid production services.</p><span class="enter">Enter Music →</span></div></a><a class="world-card official-art reveal" href="studios.html" style="--nbl-world-card-art:url('NBL_Studios.png?v=c342a8ee')"><div class="media"><img src="NBL_Studios.png?v=c342a8ee" alt="NBL Studios official creative media world card" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Media Showcase Open</span><h3>NBL Studios</h3><p>Watch NBL trailers and commercials, then explore our separate paid visual-creation desk. Checkout is held.</p><span class="enter">Enter Studio →</span></div></a><a class="world-card official-art reveal" href="https://nblschool.com/" style="--nbl-world-card-art:url('NBL_University.png?v=5fa210ae')"><div class="media"><img src="NBL_University.png?v=5fa210ae" alt="New Beansland University exterior" loading="lazy" decoding="async" width="400" height="300"></div><div class="card-body"><span class="status">Free Tours Open · Classes Closed</span><h3>New Beansland University</h3><p>Explore the real NBL University campus at nblschool.com. Visit six World Cards and learn about the school. No tuition, enrollment or classes.</p><span class="enter">Tour the Real School →</span></div></a></div></section>
     <p style="text-align:center;padding:22px 15px;margin:0"><a href="pricing.html" style="color:#f0c56f;font-weight:800;font-size:1.1rem">View all NBL services and approved prices →</a></p>
+
+    <section class="build-block-feature" id="operation-build-a-block" aria-labelledby="build-block-title">
+      <div class="build-block-frame">
+        <div class="build-block-visual"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 850" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+<defs><linearGradient id="bab-sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#3b709e"/><stop offset=".62" stop-color="#93bfd2"/><stop offset="1" stop-color="#e5d3a4"/></linearGradient><linearGradient id="bab-ground" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#849ba4"/><stop offset="1" stop-color="#293f46"/></linearGradient><pattern id="bab-bricks" width="38" height="20" patternUnits="userSpaceOnUse"><path d="M0 0H38M19 0V10M0 10H38M0 10V20M38 10V20" stroke="#27394e" stroke-opacity=".2" stroke-width="1"/></pattern></defs>
+<rect width="700" height="850" fill="url(#bab-sky)"/>
+<circle cx="540" cy="140" r="80" fill="#ffe4a1" opacity=".5"/>
+<path d="M0 380L90 337 208 378 320 335 451 382 571 327 700 361V530H0Z" fill="#567b75" opacity=".5"/>
+<g stroke="#27374b" stroke-width="4"><rect x="15" y="230" width="158" height="344" fill="#b47e61"/><rect x="175" y="166" width="171" height="409" fill="#c9ac80"/><rect x="346" y="248" width="155" height="331" fill="#b7705e"/><rect x="503" y="202" width="185" height="382" fill="#d3aa7b"/></g>
+<path d="M15 230H173V574H15ZM175 166H346V575H175ZM346 248H501V579H346ZM503 202H688V584H503Z" fill="url(#bab-bricks)"/>
+<g fill="#203a56" stroke="#dfcaa7" stroke-width="7">
+<rect x="42" y="266" width="42" height="68"/><rect x="102" y="266" width="42" height="68"/><rect x="42" y="363" width="42" height="68"/><rect x="102" y="363" width="42" height="68"/><rect x="221" y="210" width="45" height="68"/><rect x="286" y="210" width="38" height="68"/><rect x="220" y="316" width="45" height="68"/><rect x="285" y="316" width="39" height="68"/><rect x="371" y="284" width="46" height="68"/><rect x="438" y="284" width="42" height="68"/><rect x="371" y="386" width="46" height="68"/><rect x="438" y="386" width="42" height="68"/><rect x="534" y="244" width="50" height="72"/><rect x="608" y="244" width="47" height="72"/><rect x="534" y="355" width="50" height="72"/><rect x="608" y="355" width="47" height="72"/>
+</g>
+<g fill="#243e59"><rect x="89" y="465" width="40" height="109"/><rect x="260" y="440" width="52" height="134"/><rect x="409" y="478" width="44" height="101"/><rect x="577" y="473" width="48" height="111"/></g>
+<path d="M0 562H700V850H0Z" fill="url(#bab-ground)"/><path d="M0 637H700" stroke="#c0c7b7" stroke-width="12"/><path d="M0 656H700" stroke="#fff1d1" stroke-width="6" opacity=".55"/>
+<path d="M8 570V680M59 570V680M111 570V680M164 570V680M216 570V680M268 570V680M320 570V680M372 570V680M424 570V680M476 570V680M528 570V680M580 570V680M632 570V680M686 570V680" stroke="#10283a" stroke-width="9"/><path d="M0 573H700M0 633H700" stroke="#10283a" stroke-width="10"/>
+<g><path d="M8 618Q-20 498 60 439Q94 468 90 534Q160 446 193 535Q226 610 193 649H0Z" fill="#2b6a4f"/><path d="M515 611Q478 517 542 467Q594 478 594 536Q647 467 692 518V649H508Z" fill="#346c4b"/><circle cx="39" cy="515" r="15" fill="#e9a75c"/><circle cx="110" cy="530" r="14" fill="#f0cb6d"/><circle cx="156" cy="581" r="15" fill="#e9bad1"/><circle cx="560" cy="523" r="15" fill="#e9bad1"/><circle cx="637" cy="546" r="16" fill="#f2c75c"/></g>
+<g stroke-linecap="round" stroke-linejoin="round">
+<!-- Community members planting and cleaning as concept illustration -->
+<circle cx="215" cy="616" r="23" fill="#4b2e2c"/><path d="M202 639Q179 662 174 724H247Q239 667 222 639Z" fill="#185b98"/><path d="M198 666L151 708M225 671L257 717" stroke="#6e4b36" stroke-width="14"/><path d="M202 722L188 776M225 722L240 776" stroke="#182b42" stroke-width="18"/>
+<circle cx="363" cy="614" r="22" fill="#865c42"/><path d="M345 638Q323 655 318 728H402Q400 658 380 638Z" fill="#101c2e"/><path d="M339 670L292 712M383 661L420 691" stroke="#946b4b" stroke-width="13"/><path d="M345 721L331 782M380 723L396 782" stroke="#111a22" stroke-width="19"/>
+<path d="M425 678L452 795" stroke="#ead3a0" stroke-width="8"/><path d="M439 758L465 756L457 780L441 780Z" fill="#c49a4c"/>
+<circle cx="510" cy="622" r="21" fill="#4b302c"/><path d="M491 644Q468 672 463 727H545Q541 667 522 644Z" fill="#175e9d"/><path d="M480 678L452 714M532 683L568 714" stroke="#714e3c" stroke-width="13"/><path d="M486 726L470 784M523 726L540 784" stroke="#142e4b" stroke-width="18"/>
+</g>
+<path d="M107 754Q159 725 208 754T313 755T428 750T564 753T694 746" fill="none" stroke="#e9d49c" stroke-width="5" stroke-dasharray="10 18" opacity=".72"/>
+<rect x="22" y="24" rx="17" width="230" height="50" fill="#071729" fill-opacity=".85" stroke="#e2bf79" stroke-width="3"/><text x="137" y="57" font-family="Arial,sans-serif" font-size="23" font-weight="900" letter-spacing="2" fill="#f9e8c3" text-anchor="middle">NBL COMMUNITIES</text>
+</svg><span class="build-block-art-note">Concept illustration · A better block begins together</span></div>
+        <div class="build-block-copy">
+          <p class="build-block-prelude">Freddie Pickens and New Beansland bring you…</p>
+          <p class="build-block-kicker">NBL Communities · Community initiative</p>
+          <h2 id="build-block-title">Operation <span>Build-A-Block</span></h2>
+          <p class="build-block-slogan">Start With a Block. Build a Community.</p>
+          <p class="build-block-lead">A real-world neighborhood initiative inspired by Freddie Pickens and developed through New Beansland. We are bringing neighbors together to care for their blocks, create positive opportunities for young people, support elders and make lasting local improvements.</p>
+          <ul class="build-block-pillars" aria-label="Program goals">
+            <li>Neighborhood cleanup &amp; beautification</li>
+            <li>Youth participation &amp; opportunity</li>
+            <li>Support for older neighbors</li>
+            <li>Families, volunteers &amp; community pride</li>
+          </ul>
+          <div class="build-block-people">
+            <div><strong>Freddie Pickens</strong><span>Program originator and community lead</span></div>
+            <div><strong>New Beansland</strong><span>Organizational, technology and creative support</span></div>
+          </div>
+          <p class="build-block-status"><strong>Planning our first block.</strong> We are developing the pilot and welcome conversations with neighbors, volunteers and potential community supporters. No event date is announced yet.</p>
+          <div class="build-block-actions">
+            <a href="mailto:founder@newbeansland.org?subject=Operation%20Build-A-Block%20Community%20Interest">Get involved or ask a question</a>
+            <a href="build-a-block.html">Mission &amp; first project</a>
+          </div>
+          <div class="build-block-how" id="build-block-how-it-works">
+            <h3>One block. One real project. Then the next.</h3>
+            <ol><li>Listen to residents and choose the first block.</li><li>Arrange permissions, safety, supplies and volunteers.</li><li>Complete a manageable neighborhood improvement.</li><li>Share verified results and plan the next project.</li></ol>
+          </div>
+        </div>
+      </div>
+    </section>
     <section class="pulse-world-door" id="nbl-pulse-door" aria-labelledby="pulse-world-title"><div class="social-door-grid">
       <a class="world-card reveal" href="/pulse/" aria-label="Open NBL Pulse social media"><div class="media"><img src="/NBL_Pulse_Worldcard.png" alt="Official uploaded NBL Pulse World-card artwork" loading="lazy" decoding="async"></div><div class="card-body"><span class="status">NBL Social</span><h3 id="pulse-world-title">NBL Pulse™</h3><p>Your people. Your world. Your feed.</p><span class="enter">Enter NBL Pulse →</span></div></a>
       <a class="world-card messenger-world-card reveal" href="/messenger/" aria-label="Open NBL Messenger private messages and calls"><div class="media"><img src="/NBL_Messenger_Worldcard.png" alt="NBL Messenger — brought to you by NBL Pulse; messaging and calling" loading="lazy" decoding="async" width="1672" height="941"></div><div class="card-body"><span class="status">NBL Private Messages</span><h3>NBL Messenger™</h3><p>Brought to you by NBL Pulse</p><span class="enter">Open Messenger →</span></div></a>
