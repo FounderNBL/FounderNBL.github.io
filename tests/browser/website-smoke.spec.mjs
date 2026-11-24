@@ -145,17 +145,19 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(dialog.locator("[data-count]")).toContainText("Page 2 / 369");
   });
 
-  test("Canva is paused while Beans image, camera and files remain available",async({page})=>{
+  test("Beans Canva tool opens its existing server-gated panel",async({page})=>{
     await open("/",page);
     await page.getByRole("button",{name:"Open Beans"}).click();
     const beans=page.locator("#nbl-beans-panel");
     await page.getByRole("button",{name:"Open Beans tools"}).click();
-    await expect(page.locator('[data-nbl-tool="still-canva"]')).toHaveCount(0);
+    await expect(page.locator('[data-nbl-tool="still-canva"]')).toBeVisible();
     await expect(page.locator('[data-nbl-tool="image"]')).toBeVisible();
     await expect(page.locator('[data-nbl-tool="still-camera"]')).toBeVisible();
     await expect(page.locator('[data-nbl-tool="attach"]')).toBeVisible();
     await expect(beans.locator("#nbl-beans-input")).toBeVisible();
     await expect(beans.locator("#nbl-beans-title")).toContainText("Beans");
+    await page.locator('[data-nbl-tool="still-canva"]').click();
+    await expect(beans.locator("[data-nbl-still-tools]")).toBeVisible();
   });
 
   test("signed-in NBL account also appears signed in to desktop Beans, using the shared Clerk singleton", async ({ page }) => {

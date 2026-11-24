@@ -23,9 +23,9 @@ test("No credential or extra public token handling embedded in HTML",()=>{
  assert.match(account,/Authorization:"Bearer "\+t/);
 });
 
-test("Canva linking is paused but customers can revoke existing authorizations",()=>{
- assert.match(account,/Canva linking and design creation are temporarily paused/);
- assert.match(account,/Canva connection · paused/);
+test("Canva stays opt-in, user-owned, backend-gated and revocable",()=>{
+  assert.match(account,/Canva uses a separate authorization for each person/);
+  assert.match(account,/Canva · Connected/);
  assert.match(account,/operation:"canva_disconnect"/);
  assert.doesNotMatch(account,/operation:"canva_begin"|operation:"canva_create_design"|operation:"canva_designs"/);
  assert.doesNotMatch(account,/Connect my Canva|Reconnect Canva for design permission/);
@@ -38,7 +38,7 @@ test("Beans tools use included membership allowances; no public per-image checko
  assert.doesNotMatch(account,/Beans · Extra Image · \\$2 one time/);
  assert.doesNotMatch(account,/Extra image · \\$2/);
 });
-test("Beans image, camera and attachments remain; Canva UI is no longer reachable",()=>{
+test("Beans visual tools include Canva behind existing provider authorization",()=>{
  const header=fs.readFileSync(new URL("../nbl-world-header.js",import.meta.url),"utf8");
  assert.match(header,/data-nbl-tool="still-camera"/);
  assert.match(header,/data-nbl-tool="attach"/);
@@ -47,8 +47,13 @@ test("Beans image, camera and attachments remain; Canva UI is no longer reachabl
  assert.match(header,/capture="environment"/);
  assert.match(header,/if\(tool==="still-camera"\)/);
  assert.match(header,/stillCameraInput.click\(\)/);
- assert.doesNotMatch(header,/data-nbl-tool="still-canva"/);
- assert.doesNotMatch(header,/setStillVisualTools\(true\)/);
+  assert.match(header,/data-nbl-tool="still-canva"/);
+  assert.match(header,/if\(tool==="still-canva"\)/);
+  assert.match(header,/setStillVisualTools\(true\)/);
+  assert.match(header,/if\(!configured\)/);
+  assert.match(header,/if\(!connected\)/);
+ assert.match(header,/Reconnect Canva for design permission/);
+ assert.match(account,/result\.providerRevoked===true/);
  assert.match(header,/mode:"beans"/);
  assert.doesNotMatch(header,/\/agent-platform\/|\/agents\/still\/chat|NBL_STILL_GOOGLE_AGENT_KEY/);
 });
