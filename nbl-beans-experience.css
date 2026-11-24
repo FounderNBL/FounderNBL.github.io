@@ -339,3 +339,13 @@
    height:38px;min-height:38px;z-index:10;
  }
 }
+
+/* One canvas for the conversation and composer, with no second white sheet. */
+.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-log{min-height:0;background:transparent;min-width:0;overflow-x:hidden}
+.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-form{background:transparent;backdrop-filter:none;border:0;padding:8px 14px 10px;min-width:0}
+.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-composer{border:1px solid #d2b393;border-radius:18px;padding:5px;box-sizing:border-box;background:transparent}
+.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-composer textarea{background:transparent;border:0;box-shadow:none;resize:none}
+.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-composer textarea:focus-visible{outline:2px solid #b88b44;outline-offset:1px}
+.nbl-beans-panel .nbl-chat-drawer-scroll{overflow-x:hidden}
+@media(min-width:1200px){.nbl-beans-panel .nbl-chat-drawer-head{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-form{padding:5px 7px}.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-composer{padding:4px}}

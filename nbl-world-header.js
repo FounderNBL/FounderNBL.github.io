@@ -544,7 +544,6 @@
       <div class="nbl-chat-drawer-shade" data-nbl-chat-drawer-shade hidden></div>
       <aside class="nbl-chat-drawer" id="nbl-chat-drawer" data-nbl-chat-drawer aria-label="Beans menu" tabindex="-1" hidden>
         <div class="nbl-chat-drawer-head">
-          <img src="/Beans_Hi_Basic.png" alt="Beans" class="nbl-chat-drawer-logo">
           <div>
             <p>New Beansland™</p>
             <strong>Beans</strong>
@@ -639,6 +638,13 @@
         <div class="nbl-beans-log" data-nbl-beans-log aria-live="polite">
           <div class="nbl-beans-message is-beans"><strong>Beans</strong><p>I'm Beans. What's up?</p></div>
         </div>
+          <section class="nbl-still-tools" data-nbl-still-tools hidden tabindex="-1" role="region" aria-label="Still visual tools within Beans">
+            <div class="nbl-still-tools-head"><strong>Beans · Still visual tools</strong><button type="button" data-nbl-still-close aria-label="Close Still visual tools">×</button></div>
+            <p class="nbl-still-note">Same Beans conversation. Use your own Canva account for designs; NBL image generation is a separate, metered tool.</p>
+            <p class="nbl-still-status" data-nbl-still-status role="status" aria-live="polite">Loading Canva connection…</p>
+            <div class="nbl-still-controls" data-nbl-still-controls></div>
+            <div class="nbl-still-designs" data-nbl-still-designs hidden></div>
+          </section>
         <form class="nbl-beans-form" data-nbl-beans-form>
           <label for="nbl-beans-input">Message Beans</label>
           <div class="nbl-beans-tool-state" data-nbl-tool-state hidden>
@@ -647,13 +653,6 @@
           </div>
           <div class="nbl-beans-attachments" data-nbl-beans-attachments hidden></div>
           <div class="nbl-beans-knowledge" data-nbl-beans-knowledge hidden></div>
-          <section class="nbl-still-tools" data-nbl-still-tools hidden aria-label="Still visual tools within Beans">
-            <div class="nbl-still-tools-head"><strong>Beans · Still visual tools</strong><button type="button" data-nbl-still-close aria-label="Close Still visual tools">×</button></div>
-            <p class="nbl-still-note">Same Beans conversation. Use your own Canva account for designs; NBL image generation is a separate, metered tool.</p>
-            <p class="nbl-still-status" data-nbl-still-status role="status" aria-live="polite">Loading Canva connection…</p>
-            <div class="nbl-still-controls" data-nbl-still-controls></div>
-            <div class="nbl-still-designs" data-nbl-still-designs hidden></div>
-          </section>
           <div class="nbl-beans-composer">
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
@@ -1452,10 +1451,11 @@
   };
   const setStillVisualTools=open=>{
     stillTools.hidden=!open;
-    if(open)void loadStillVisualTools();
+    if(open){stillTools.scrollTop=0;stillTools.focus({preventScroll:true});void loadStillVisualTools();}
     else{stillRequestVersion++;stillControls.replaceChildren();stillDesigns.replaceChildren();stillDesigns.hidden=true;}
   };
-  stillClose.addEventListener("click",()=>setStillVisualTools(false));
+  stillClose.addEventListener("click",()=>{setStillVisualTools(false);beansInput.focus({preventScroll:true});});
+  stillTools.addEventListener("keydown",event=>{if(event.key==="Escape"){event.preventDefault();event.stopPropagation();setStillVisualTools(false);beansInput.focus({preventScroll:true});}});
 
   const renderBeansKnowledge=state=>{
     beansKnowledgeState=state&&typeof state==="object"?state:null;
@@ -2885,7 +2885,7 @@
   // Independent presentation layer around the existing real Beans chat.
   // No screenshot-as-a-background, no generated wardrobe, no change to the AI runtime.
   const beansExperienceScript=document.createElement("script");
-  beansExperienceScript.src="/nbl-beans-experience.js?v=20261113-beans-current-main";
+  beansExperienceScript.src="/nbl-beans-experience.js?v=20261124-still-fit";
   beansExperienceScript.src += "&bag=20261118";
   beansExperienceScript.async=true;
   document.body.appendChild(beansExperienceScript);
