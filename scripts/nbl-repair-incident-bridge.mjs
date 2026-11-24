@@ -129,11 +129,21 @@ export async function recordIndependentIncident(reproduction,{fetcher=fetch,toke
       if(!response?.ok)throw Error("github_issue_request_failed");
       return response.json();
     };
-    const old=await request("GET",base+"/issues?state=all&per_page=100");
-    if(!Array.isArray(old))return result("HOLD","issue_history_unavailable");
-    const existing=old.find(x=>!x.pull_request&&x.title===title);
+    // Full, fail-closed issue-history pagination: Github's issues listing
+    // includes PRs and returns only 100 records per page. Never create a
+    // duplicate merely because an older incident fell outside page one.
+    // Limit total reads to prevent runaway Actions usage; on cap/error HOLD.
+    let existing=null,historyComplete=false;
+    for(let page=1;page<=50;page++){
+      const items=await request("GET",base+"/issues?state=all&per_page=100&page="+page);
+      if(!Array.isArray(items))return result("HOLD","issue_history_unavailable");
+      existing=items.find(x=>!x.pull_request&&x.title===title)||null;
+      if(existing)break;
+      if(items.length<100){historyComplete=true;break;}
+    }
     if(existing)return result("EXISTING_INCIDENT","same_commit_already_recorded",{
       repository:reproduction.repository,issueUrl:existing.html_url||null});
+    if(!historyComplete)return result("HOLD","issue_history_pagination_limit");
     const created=await request("POST",base+"/issues",{title,body});
     if(!id(created?.number)||created.title!==title)
       return result("HOLD","issue_creation_unverified");
