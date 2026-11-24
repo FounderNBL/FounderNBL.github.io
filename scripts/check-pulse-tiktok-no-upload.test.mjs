@@ -55,8 +55,14 @@ async function setup({creatorFail=false}={}){
    console:{log(){},warn(){}},
  };
  vm.runInNewContext(source,context,{filename:"pulse/tiktok.mjs",timeout:4000});
- // Let the normal page initialization finish its mocked connection/history.
- for(let i=0;i<18;i++)await Promise.resolve();
+ // A full event-loop tick is needed because the controller initializes
+ // through multiple awaited browser and API promises.
+ for(let i=0;i<35;i++){
+  await new Promise(resolve=>setImmediate(resolve));
+  if(calls.includes("recent")&&$("preflight").disabled===false)break;
+ }
+ assert.equal($("preflight").disabled,false,
+   "Connection should finish: "+$("status").textContent+"; calls="+calls.join(","));
  return {ids,$,calls};
 }
 test("the existing controller checks connection, expands preparation, and NEVER uploads without a file",async()=>{
