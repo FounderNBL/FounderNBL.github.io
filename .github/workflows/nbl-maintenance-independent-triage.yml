@@ -101,6 +101,11 @@ jobs:
     name: Record one internal repair incident (no Fixer dispatch)
     needs: independent-source-retest
     if: ${{ needs.independent-source-retest.outputs.confirmed == 'true' }}
+    # Serialize reports for this exact repo/commit; never race duplicate writes.
+    # Waiting runs are allowed to complete. Never cancel an active incident check.
+    concurrency:
+      group: nbl-source-incident-${{ github.repository }}-${{ github.event.workflow_run.head_sha }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
