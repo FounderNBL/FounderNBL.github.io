@@ -21,7 +21,7 @@ async function call(action,fields={},form=null){
 }
 function clear(){
  gen++;account="";scopes=[];creator=null;job=null;duration=0;
- byId("post").hidden=true;byId("disconnect").hidden=true;byId("list").hidden=true;byId("videos").replaceChildren();byId("identity").textContent="";byId("check").hidden=true;postSay("");
+ byId("post").hidden=true;byId("disconnect").hidden=true;byId("list").hidden=true;byId("videos").replaceChildren();byId("identity").textContent="";byId("check").hidden=true;byId("recent").hidden=true;byId("recentList").replaceChildren();postSay("");
  byId("post").reset();byId("direct").hidden=true;byId("brand").hidden=true;byId("brandedConsent").hidden=true;byId("privacy").replaceChildren(new Option("Choose privacy",""));
  if(previewURL)URL.revokeObjectURL(previewURL);previewURL="";byId("preview").removeAttribute("src");byId("preview").replaceChildren();byId("preview").load();byId("preview").hidden=true;
 }
@@ -46,6 +46,35 @@ async function loadCreator(){
   for(const name of ["comment","duet","stitch"]){byId(name).checked=false;byId(name).disabled=!!creator[name+"_disabled"];}
  }catch(e){postSay(e.message);}finally{update();}
 }
+async function loadRecent(){
+ const n=gen,m=mode(),a=account;
+ const section=byId("recent"),list=byId("recentList");
+ section.hidden=true;list.replaceChildren();
+ if(!a)return;
+ try{
+  const b=await call("recent");
+  if(n!==gen||m!==mode()||a!==account)return;
+  for(const entry of b.posts||[]){
+   if(typeof entry.publish_id!=="string"||!entry.publish_id)continue;
+   const li=document.createElement("li"),button=document.createElement("button");
+   button.type="button";
+   const submitted=new Date(entry.created_at);
+   button.textContent="Check status · "+(Number.isFinite(submitted.getTime())?submitted.toLocaleString():"Previous TikTok submission");
+   button.addEventListener("click",()=>{
+    if(n!==gen||m!==mode()||a!==account)return;
+    job=entry.publish_id;byId("check").hidden=false;byId("check").click();
+   });
+   li.append(button);list.append(li);
+  }
+  section.hidden=!list.children.length;
+  if(!job&&b.posts?.[0]?.publish_id){job=b.posts[0].publish_id;byId("check").hidden=false;}
+ }catch(e){
+  if(n===gen&&m===mode()&&a===account){
+   section.hidden=false;
+   const li=document.createElement("li");li.textContent="Previous TikTok submissions are temporarily unavailable.";list.append(li);
+  }
+ }
+}
 async function connection(){
  clear();const n=gen,m=mode();
  try{
@@ -56,7 +85,8 @@ async function connection(){
   byId("kind").options[0].disabled=!scopes.includes("video.upload");byId("kind").options[1].disabled=!scopes.includes("video.publish");
   byId("kind").value=scopes.includes("video.upload")?"draft":"direct";
   byId("post").hidden=!scopes.includes("video.upload")&&!scopes.includes("video.publish");
-  say("TikTok authorization received. Only granted permissions are enabled.");
+  say(m==="sandbox"?"TikTok sandbox connected: test uploads cannot be public. Public posting requires approved production access.":"TikTok production connected. Public visibility depends on TikTok approval and the available privacy choices.");
+  await loadRecent();
   if(byId("kind").value==="direct"&&!byId("post").hidden)await loadCreator();
  }catch(e){say(e.message);}finally{update();}
 }
@@ -68,7 +98,7 @@ async function init(){
   const c=await call("configuration");byId("settings").hidden=false;
   for(const o of byId("environment").options)o.disabled=!c[o.value];
   if(!c.sandbox&&!c.production){byId("connect").disabled=true;say("TikTok is not enabled for this environment. Sandbox credentials are required before review.");return;}
-  byId("environment").value=c.sandbox?"sandbox":"production";
+  byId("environment").value=c.production?"production":"sandbox";
   if(incoming.code||incoming.error){
    const pending=JSON.parse(sessionStorage.getItem("nbl-tiktok-oauth")||"null");sessionStorage.removeItem("nbl-tiktok-oauth");
    if(!pending||pending.member!==member||incoming.state!==pending.state||!c[pending.mode]){say("Authorization state expired. Connect again.");return;}
@@ -114,10 +144,10 @@ byId("post").addEventListener("submit",async ev=>{
   const f=new FormData();f.set("file",byId("file").files[0]);f.set("account",account);f.set("kind",byId("kind").value);f.set("duration",String(duration));f.set("title",byId("title").value);f.set("privacy",byId("privacy").value);
   for(const id of ["comment","duet","stitch","commercial","own_brand","paid_brand","consent"])f.set(id,byId(id).checked?"yes":"no");
   f.set("branded_consent",byId("consent").checked&&byId("paid_brand").checked?"yes":"no");
-  const b=await call("upload",{},f);if(n!==gen)return;job=b.publish_id;byId("check").hidden=false;postSay("TikTok confirmed file upload. Processing is not yet complete.");byId("consent").checked=false;poll(job,n,0);
- }catch(e){if(n===gen){if(e.publish_id){job=e.publish_id;byId("check").hidden=false;}postSay(e.message);}}
+  const b=await call("upload",{},f);if(n!==gen)return;job=b.publish_id;byId("check").hidden=false;postSay("TikTok confirmed file upload. Processing is not yet complete.");void loadRecent();byId("consent").checked=false;poll(job,n,0);
+ }catch(e){if(n===gen){if(e.publish_id){job=e.publish_id;byId("check").hidden=false;void loadRecent();}postSay(e.message);}}
  finally{busy=false;byId("environment").disabled=false;byId("connect").disabled=false;byId("disconnect").disabled=false;update();}
 });
-function poll(id,n,i){if(i>=15||n!==gen||job!==id)return;setTimeout(async()=>{if(n!==gen||job!==id)return;try{const b=await call("status",{publish_id:id});if(n!==gen||job!==id)return;const messages={PROCESSING_UPLOAD:"TikTok is processing the upload.",PROCESSING_DOWNLOAD:"TikTok is fetching the video.",SEND_TO_USER_INBOX:"Draft ready: open your TikTok inbox notification to finish posting.",PUBLISH_COMPLETE:"TikTok confirms the post is published.",FAILED:"TikTok reports the post failed."};postSay((messages[b.status]||b.status)+(b.reason?" · "+b.reason:""));if(!["SEND_TO_USER_INBOX","PUBLISH_COMPLETE","FAILED"].includes(b.status))poll(id,n,i+1);}catch(e){if(n===gen)postSay("Automatic status check unavailable. Use Check posting status.");}},12000);}
-byId("check").addEventListener("click",async()=>{if(!job)return;const n=gen;byId("check").disabled=true;try{const b=await call("status",{publish_id:job});if(n!==gen)return;const messages={PROCESSING_UPLOAD:"TikTok is processing the upload.",PROCESSING_DOWNLOAD:"TikTok is fetching the video.",SEND_TO_USER_INBOX:"Draft ready: open your TikTok inbox notification to finish posting.",PUBLISH_COMPLETE:"TikTok confirms the post is published.",FAILED:"TikTok reports the post failed."};postSay((messages[b.status]||b.status)+(b.reason?" · "+b.reason:""));}catch(e){postSay(e.message);}finally{byId("check").disabled=false;}});
+function poll(id,n,i){if(i>=15||n!==gen||job!==id)return;setTimeout(async()=>{if(n!==gen||job!==id)return;try{const b=await call("status",{publish_id:id});if(n!==gen||job!==id)return;const messages={PROCESSING_UPLOAD:"TikTok is processing the upload.",PROCESSING_DOWNLOAD:"TikTok is fetching the video.",SEND_TO_USER_INBOX:"TikTok delivered the video to your inbox; it is NOT publicly posted. Finish it in TikTok. If the notification does not open, publishing remains incomplete.",PUBLISH_COMPLETE:"TikTok confirms the post is published.",FAILED:"TikTok reports the post failed."};postSay((messages[b.status]||b.status)+(b.reason?" · "+b.reason:""));if(!["SEND_TO_USER_INBOX","PUBLISH_COMPLETE","FAILED"].includes(b.status))poll(id,n,i+1);}catch(e){if(n===gen)postSay("Automatic status check unavailable. Use Check posting status.");}},12000);}
+byId("check").addEventListener("click",async()=>{if(!job)return;const n=gen,requestedJob=job;byId("check").disabled=true;try{const b=await call("status",{publish_id:requestedJob});if(n!==gen||job!==requestedJob)return;const messages={PROCESSING_UPLOAD:"TikTok is processing the upload.",PROCESSING_DOWNLOAD:"TikTok is fetching the video.",SEND_TO_USER_INBOX:"TikTok delivered the video to your inbox; it is NOT publicly posted. Finish it in TikTok. If the notification does not open, publishing remains incomplete.",PUBLISH_COMPLETE:"TikTok confirms the post is published.",FAILED:"TikTok reports the post failed."};postSay((messages[b.status]||b.status)+(b.reason?" · "+b.reason:""));}catch(e){postSay(e.message);}finally{byId("check").disabled=false;}});
 void init();

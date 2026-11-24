@@ -45,3 +45,16 @@ test("TikTok integration uses the canonical NBL Clerk domain",()=>{
  const suffix=currentKey.split("_")[2];
  assert.equal(Buffer.from(suffix,"base64url").toString("utf8"),"clerk.newbeansland.org$");
 });
+
+test("Every NBL member can recover their own TikTok submissions, without invented publication claims",()=>{
+ assert.match(ui,/await call\("recent"\)/);
+ assert.match(ui,/async function loadRecent\(/);
+ assert.match(ui,/byId\("recentList"\)/);
+ assert.match(ui,/job=entry\.publish_id/);
+ assert.match(ui,/c\.production\?"production":"sandbox"/);
+ assert.match(page,/id="recent" hidden/);
+ assert.match(page,/id="recentList"/);
+ assert.match(page,/tiktok\.mjs\?v=20261124-recent-status-v1/);
+ assert.match(ui,/SEND_TO_USER_INBOX:"TikTok delivered the video to your inbox; it is NOT publicly posted/);
+ assert.doesNotMatch(ui,/founderOnly|isFounderOnly|FOUNDER_ONLY/);
+});
