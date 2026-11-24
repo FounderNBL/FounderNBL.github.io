@@ -143,7 +143,7 @@ async function join({audioOnly=false}={}){
   // joining the call. Keep the call available and offer controls to retry.
   let cameraReady=!audioOnly,microphoneReady=true;
   // Audio-only mode never requests camera access or publishes video.
-  if(audioOnly){try{await call.camera.disable();}catch{}}
+  if(audioOnly){try{await call.camera.disable();}catch{throw Error("Could not confirm camera is off. Call not joined.");}}
   else{try{await call.camera.enable();}catch{cameraReady=false;}}
   try{await call.microphone.enable();}catch{microphoneReady=false;}
   mediaWarning=(!microphoneReady||(!audioOnly&&!cameraReady))
