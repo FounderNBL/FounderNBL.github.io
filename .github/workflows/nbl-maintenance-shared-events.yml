@@ -1,6 +1,6 @@
 name: NBL Maintenance Department — shared event source inspection
 
-# One central, versioned tool for Beans, Pulse and Messenger.
+# One central, versioned tool for active Beans/Pulse and legacy Messenger compatibility.
 # The caller repository supplies only an enum; NO secrets, paid model, data
 # access, deployment or write permission is available to this workflow.
 on:
@@ -84,6 +84,7 @@ jobs:
           NBL_REPO: ${{ github.repository }}
           NBL_SHA: ${{ github.sha }}
           NBL_EVENT: ${{ github.event_name }}
+          NBL_REF: ${{ github.ref }}
           NBL_RUN: ${{ github.run_id }}
         shell: bash
         run: |
@@ -104,6 +105,33 @@ jobs:
           };
           mkdirSync(".nbl-maintenance",{recursive:true});
           writeFileSync(".nbl-maintenance/event-report.json",JSON.stringify(report,null,2)+"\n");
+          // A failed source gate on current main gets a separate read-only
+          // Foundation/Fixer handoff. It does NOT establish the root cause or
+          // authorize an agent, patch, model charge, merge or deployment.
+          const handoffEligible=status==="FAIL"&&process.env.NBL_EVENT==="push"&&
+            process.env.NBL_REF==="refs/heads/main"&&
+            ["beans","pulse"].includes(process.env.NBL_COMPONENT);
+          if(handoffEligible){
+            const handoff={
+              schema:"nbl.maintenance.repair-handoff.v1",
+              repository:process.env.NBL_REPO,
+              component:process.env.NBL_COMPONENT,
+              sourceSha:process.env.NBL_SHA,
+              inspectorRun:"https://github.com/"+process.env.NBL_REPO+"/actions/runs/"+process.env.NBL_RUN,
+              inspectedAt:report.checkedAt,
+              observed:"failed_offline_source_check_on_main",
+              next:"independently_reproduce_then_evaluate_existing_repairs",
+              sourceCheckFailed:true,
+              rootCauseConfirmed:false,
+              solutionSelected:false,
+              retestPassed:false,
+              fixerDispatched:false,
+              modelCalls:0,
+              allowedOutcome:"scoped_draft_repair_pr_after_independent_tests_and_founder_review",
+              autoMerge:false,autoDeploy:false,autoSpend:false
+            };
+            writeFileSync(".nbl-maintenance/repair-handoff.json",JSON.stringify(handoff,null,2)+"\n");
+          }
           if(process.env.GITHUB_STEP_SUMMARY)appendFileSync(process.env.GITHUB_STEP_SUMMARY,
             "## NBL Maintenance Department — "+status+"\n\n"+
             "Component: "+report.component+" · Trigger: "+report.event+
@@ -118,6 +146,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nbl-maintenance-${{ inputs.component }}-${{ github.run_id }}
-          path: .nbl-maintenance/event-report.json
+          path: .nbl-maintenance/*.json
           if-no-files-found: warn
           retention-days: 14
