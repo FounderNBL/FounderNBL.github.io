@@ -38,6 +38,9 @@ test("Stream check calls the real deployed read-only health route, not broadcast
  assert.match(health,/method:"GET",cache:"no-store"/);
  assert.match(health,/h\.callTypeReady!==true/);
  assert.match(health,/h\.livestreamEnabled!==true/);
+ assert.match(health,/await liveApi\("status",\{\},"required"\)/);
+ assert.match(health,/member\.isHost!==true/);
+ assert.match(health,/member\.allowance\?\.remainingSeconds/);
  assert.match(health,/h\.permissionsRepairable===true/);
  assert.doesNotMatch(health,/liveApi\("start"|liveApi\("go-live"|admin-switch|startRTMPBroadcasts/);
  assert.match(page,/id="pulseLiveCheck"/);
