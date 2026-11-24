@@ -618,7 +618,25 @@ async function onLiveReadiness() {
    note.textContent="Stream Video is ready, but the protected NBL Pulse Live switch is OFF. No broadcast started.";
    return;
   }
-  note.textContent="Real Stream provider check PASSED: livestream permissions verified and Pulse Live switch ON. This does not test a camera or actual broadcast. Press Start Live only when you choose to go live.";
+  // Provider readiness does not imply this signed-in account can host.
+  // Use the EXISTING authenticated status action, which does not create media.
+  let member;
+  try{member=await liveApi("status",{},"required");}
+  catch(error){
+   note.textContent="Stream provider PASSED, but your NBL account is NOT verified for Live: "+
+    plainError(error,"sign in to NBL Pulse")+". No broadcast started.";
+   return;
+  }
+  if(member.isHost!==true){
+   note.textContent="Stream provider PASSED, but this NBL account has no verified Pulse member profile. Sign in to the right account and finish your Pulse profile before starting Live. No broadcast started.";
+   return;
+  }
+  const seconds=Number(member.allowance?.remainingSeconds);
+  if(member.isAdmin!==true&&Number.isFinite(seconds)&&seconds<=0){
+   note.textContent="Stream provider PASSED, but your 20 free monthly Live minutes are used. No broadcast started.";
+   return;
+  }
+  note.textContent="Real Stream provider and this signed-in Pulse member PASSED: permissions safe, Live ON, hosting access verified. This does not test a camera or actual broadcast. Press Start Live when you choose.";
  }catch(error){
   note.textContent="Could not verify the live provider: "+
    (error?.name==="AbortError"?"health request timed out":"network or connection failure")+
