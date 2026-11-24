@@ -35,3 +35,13 @@ test("registration is an honest email-preparation flow, not a backend claim",()=
   assert.ok(!page.includes('fetch('));
   assert.match(page,/For youth participation, a parent or guardian should make the first inquiry/);
 });
+
+test("Founder-uploaded illustration is used and its clickable image is not cropped",()=>{
+ const asset="/file_00000000474481f5986763efd34915a7.png";
+ assert.match(home,/class="build-block-visual" href="build-a-block\.html#programs"/);
+ assert.ok(block.includes('src="'+asset+'"'));
+ assert.ok(page.includes('src="'+asset+'"'));
+ assert.match(home,/\.build-block-visual img\{width:100%;height:auto;display:block;object-fit:contain\}/);
+ assert.ok(!block.includes('<svg '));
+ assert.match(page,/Concept illustration of the community vision/);
+});
