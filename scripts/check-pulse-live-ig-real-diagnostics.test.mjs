@@ -25,7 +25,7 @@ test("actual Meta inbox check is Founder-only, read-only and returns bounded rea
  }
  assert.match(igBackend,/pathname\.endsWith\(\"\/inbox\/check\"\)\)return checkInstagramInboxAccess\(req\)/);
  assert.match(igBackend,/!ORIGINS\.has\(origin\)\)return response\(req,\{ok:false,reason:\"origin_not_allowed\"\},403/);
- assert.match(page,/id="pulseIgCheck"[^>]*Check real Instagram access/);
+ assert.match(page,/id="pulseIgCheck"[^>]*>Check real Instagram access/);
  assert.match(ig,/call\("check",\{action:"check"\}\)/);
  assert.match(ig,/No message sent/);
 });
