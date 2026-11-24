@@ -17,6 +17,7 @@ test("audio-only path does not request or publish camera access",()=>{
   assert.ok(start>=0&&end>start);
   const code=script.slice(start,end);
   assert.match(code,/if\(audioOnly\)\{try\{await call\.camera\.disable\(\)/);
+  assert.match(code,/catch\{throw Error\("Could not confirm camera is off\. Call not joined\."\);\}/);
   assert.match(code,/else\{try\{await call\.camera\.enable\(\)/);
   assert.match(code,/await call\.microphone\.enable\(\)/);
   assert.match(script,/mediaWarning=\(!microphoneReady\|\|\(!audioOnly&&!cameraReady\)\)/);
