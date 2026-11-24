@@ -54,6 +54,7 @@ test("Every NBL member can recover their own TikTok submissions, without invente
  assert.match(ui,/c\.production\?"production":"sandbox"/);
  assert.match(page,/id="recent" hidden/);
  assert.match(page,/id="recentList"/);
+ assert.match(page,/tiktok\.mjs\?v=20261124-recent-status-v1/);
  assert.match(ui,/SEND_TO_USER_INBOX:"TikTok delivered the video to your inbox; it is NOT publicly posted/);
  assert.doesNotMatch(ui,/founderOnly|isFounderOnly|FOUNDER_ONLY/);
 });
