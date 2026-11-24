@@ -50,7 +50,7 @@ function fixtureApi({mainSha=SHA,nonSource=false,allowIssues=true,issues=[]}={})
         steps:[{name:"INSPECT / run real tests specific to the affected repository",
           conclusion:"failure"}]
       }]});
-    if(method==="GET"&&path===prefix+"/issues?state=all&per_page=100")
+    if(method==="GET"&&path===prefix+"/issues?state=all&per_page=100&page=1")
       return response(stored);
     if(method==="POST"&&path===prefix+"/issues"&&allowIssues){
       const payload=JSON.parse(options.body);
