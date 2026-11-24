@@ -45,6 +45,11 @@ test("Stream check calls the real deployed read-only health route, not broadcast
  assert.doesNotMatch(health,/liveApi\("start"|liveApi\("go-live"|admin-switch|startRTMPBroadcasts/);
  assert.match(page,/id="pulseLiveCheck"/);
  assert.match(page,/id="pulseLiveCheckStatus"/);
+ const host=live.slice(live.indexOf("async function onStart()"),live.indexOf("async function onGoLive()"));
+ const viewer=live.slice(live.indexOf("async function joinAsWebRtcViewer"),live.indexOf("async function onStart()"));
+ assert.match(host,/stage="joining the real Stream backstage"/);
+ assert.match(host,/Could not start Pulse Live at:/);
+ assert.doesNotMatch(viewer,/stage="joining the real Stream backstage"/);
  assert.match(live,/addEventListener\("click", \(\) => \{ void onLiveReadiness\(\); \}\)/);
 });
 test("No fake receipts or automatic replies are substituted for provider evidence",()=>{
