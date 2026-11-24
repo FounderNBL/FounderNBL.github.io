@@ -80,7 +80,10 @@ test("only reproduced source incident writes one item, never triggers code or sp
   let posts=0;
   const mock=async(url,opts)=>{
     assert.match(url,/^https:\/\/api\.github\.com\/repos\/FounderNBL\/Beans\/issues/);
-    if(opts.method==="GET")return response([]);
+    if(opts.method==="GET"){
+      assert.ok(url.endsWith("/issues?state=all&per_page=100&page=1"));
+      return response([]);
+    }
     if(opts.method==="POST"){
       posts++;
       const payload=JSON.parse(opts.body);
@@ -104,6 +107,43 @@ test("only reproduced source incident writes one item, never triggers code or sp
   const seen=await recordIndependentIncident(reproduced,{fetcher:duplicate,token:"fake-token"});
   assert.equal(seen.state,"EXISTING_INCIDENT");
   assert.equal((await recordIndependentIncident({state:"HOLD"},{fetcher:mock,token:"fake-token"})).state,"HOLD");
+});
+test("older incidents remain discoverable after the first 100 GitHub issues",async()=>{
+  const verified=await verifyMaintenanceFailure(event(),"beans",repo,{fetcher,token:"fake-token"});
+  const reproduced=classifyIndependentRetest(verified,"failure");
+  const requests=[];
+  const mocked=async(url,options)=>{
+    requests.push({url,method:options.method});
+    if(options.method!=="GET")throw Error("Duplicate must not create an issue");
+    if(url.endsWith("&page=1"))return response(
+      Array.from({length:100},(_,i)=>({number:i+1,pull_request:{url:"https://github.com/pull/"+i},
+        title:"Another existing PR"})));
+    if(url.endsWith("&page=2"))return response([{
+      number:999,title:"[NBL SOURCE INSPECTOR] beans "+sha.slice(0,12),
+      html_url:"https://github.com/FounderNBL/Beans/issues/999"
+    }]);
+    throw Error("Unexpected page");
+  };
+  const found=await recordIndependentIncident(reproduced,{fetcher:mocked,token:"fake-token"});
+  assert.equal(found.state,"EXISTING_INCIDENT");
+  assert.equal(found.issueUrl,"https://github.com/FounderNBL/Beans/issues/999");
+  assert.equal(requests.length,2);
+  assert.ok(requests.every(r=>r.method==="GET"));
+});
+test("an incomplete large issue history fails closed without creating a duplicate",async()=>{
+  const verified=await verifyMaintenanceFailure(event(),"beans",repo,{fetcher,token:"fake-token"});
+  const reproduced=classifyIndependentRetest(verified,"failure");
+  const requests=[];
+  const mocked=async(url,options)=>{
+    requests.push({url,method:options.method});
+    if(options.method!=="GET")throw Error("Do not create an issue without full history");
+    return response(Array.from({length:100},(_,i)=>({number:i+1,title:"Other issue"})));
+  };
+  const held=await recordIndependentIncident(reproduced,{fetcher:mocked,token:"fake-token"});
+  assert.equal(held.state,"HOLD");
+  assert.equal(held.reason,"issue_history_pagination_limit");
+  assert.equal(requests.length,50);
+  assert.ok(requests.every(x=>x.method==="GET"));
 });
 test("workflow never grants write access to a source test and never runs paid Fixer",()=>{
   const workflow=readFileSync(".github/workflows/nbl-maintenance-independent-triage.yml","utf8");
