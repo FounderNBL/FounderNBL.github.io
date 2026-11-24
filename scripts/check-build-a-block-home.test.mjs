@@ -29,3 +29,16 @@ test("Freddie's approved introduction, scope and cautious pilot status remain cl
   assert.doesNotMatch(start,/OMAH|OMOH|501\(c\)\(3\)|tax-deductible|Donate Now|Donate today/i);
   assert.doesNotMatch(start,/class="world-card"/);
 });
+
+test("Funding proposal totals $15,000 and does not invent payment processing",()=>{
+ const detail=readFileSync(new URL("../build-a-block.html",import.meta.url),"utf8");
+ assert.match(html,/href="build-a-block\.html">Mission, pilot &amp; funding plan/);
+ assert.match(detail,/Freddie Pickens and New Beansland bring you/);
+ const budget=detail.slice(detail.indexOf('<section class="alt" id="funding">'),detail.indexOf('<section id="execution">'));
+ const amounts=[...budget.matchAll(/<td>\$([\d,]+)<\/td>/g)].map(x=>Number(x[1].replaceAll(",","")));
+ assert.deepEqual(amounts.slice(-1),[15000]);
+ assert.equal(amounts.slice(0,-1).reduce((a,b)=>a+b,0),15000);
+ assert.match(detail,/No payment link is active for this program yet/);
+ assert.match(detail,/not represented here as a 501\(c\)\(3\)/);
+ assert.doesNotMatch(detail,/OMAH|OMOH|checkout\.stripe\.com|buy\.stripe\.com/i);
+});
