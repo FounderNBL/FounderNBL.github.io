@@ -424,7 +424,7 @@ async function founderPublish(req:Request,kind:"prepare"|"confirm"|"status"){
    // Founder in the caption without changing or spoofing external identities.
    const credit="Originally on NBL Pulse · @NBLFounderOfficial";
    const stamped=caption.trim().slice(0,2100-credit.length-2)+"\n\n"+credit;
-   const media=isReel
+   const media:Record<string,string>=isReel
     ?{media_type:"REELS",video_url:String(body.video_url),caption:stamped}
     :{image_url:String(body.image_url),caption:stamped};
    const created=await metaPost(ig.id+"/media",media,ig.host,ig.token);
