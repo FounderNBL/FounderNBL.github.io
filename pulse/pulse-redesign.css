@@ -1,0 +1,834 @@
+/* NBL Pulse — Meta-style redesign (2026-11-22).
+   Light-first theme. Dark keeps the existing dark-purple palette.
+   Appearance is chosen in Menu (Auto / Light / Dark) and stored as
+   `pulse-appearance` in localStorage; the <html data-theme> attribute
+   is set by a tiny inline script in <head> before first paint.
+   This file only restyles; it never changes behaviour. All feature
+   wiring lives in social-v1.mjs, live.mjs and business-assets.mjs. */
+
+:root,
+html[data-theme="light"] {
+  --pulse-bg: #f0f2f5;
+  --pulse-surface: #ffffff;
+  --pulse-surface-2: #f5f3f7;
+  --pulse-text: #1c1e21;
+  --pulse-muted: #65676b;
+  --pulse-border: #ddd6e4;
+  --pulse-accent: #7b24d9;
+  --pulse-accent-2: #982fe7;
+  --pulse-accent-text: #ffffff;
+  --pulse-topbar-bg: #ffffff;
+  --pulse-input-bg: #f0f2f5;
+  --pulse-input-text: #1c1e21;
+  --pulse-shadow: 0 1px 2px rgba(0, 0, 0, .12);
+  --pulse-shadow-2: 0 12px 32px rgba(0, 0, 0, .22);
+  --pulse-danger: #d92d20;
+  --pulse-focus: #7b24d9;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  --pulse-bg: #090713;
+  --pulse-surface: #140e21;
+  --pulse-surface-2: #20142f;
+  --pulse-text: #f6ecff;
+  --pulse-muted: #baa9cc;
+  --pulse-border: #45295d;
+  --pulse-accent: #ae63fa;
+  --pulse-accent-2: #982fe7;
+  --pulse-accent-text: #ffffff;
+  --pulse-topbar-bg: #0d0919;
+  --pulse-input-bg: #20142f;
+  --pulse-input-text: #ffffff;
+  --pulse-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+  --pulse-shadow-2: 0 12px 44px rgba(0, 0, 0, .6);
+  --pulse-danger: #ff617c;
+  --pulse-focus: #deb4ff;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="auto"] {
+    --pulse-bg: #090713;
+    --pulse-surface: #140e21;
+    --pulse-surface-2: #20142f;
+    --pulse-text: #f6ecff;
+    --pulse-muted: #baa9cc;
+    --pulse-border: #45295d;
+    --pulse-accent: #ae63fa;
+    --pulse-accent-2: #982fe7;
+    --pulse-accent-text: #ffffff;
+    --pulse-topbar-bg: #0d0919;
+    --pulse-input-bg: #20142f;
+    --pulse-input-text: #ffffff;
+    --pulse-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+    --pulse-shadow-2: 0 12px 44px rgba(0, 0, 0, .6);
+    --pulse-danger: #ff617c;
+    --pulse-focus: #deb4ff;
+    color-scheme: dark;
+  }
+}
+
+/* --- Base: light-first surfaces over the existing dark inline rules --- */
+html[data-theme="light"] .pulse-body,
+html[data-theme="auto"] .pulse-body {
+  background: var(--pulse-bg);
+  color: var(--pulse-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+html[data-theme="dark"] .pulse-body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+.pulse-body :is(button, a, textarea, input):focus-visible {
+  outline: 3px solid var(--pulse-focus);
+  outline-offset: 2px;
+}
+.pulse-visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip: rect(0 0 0 0); clip-path: inset(50%);
+  overflow: hidden; white-space: nowrap;
+}
+
+/* --- Top bar --- */
+.pulse-topbar {
+  display: grid;
+  grid-template-columns: auto minmax(140px, 320px) auto auto;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px max(16px, calc((100vw - 1280px) / 2));
+  background: var(--pulse-topbar-bg);
+  border-bottom: 1px solid var(--pulse-border);
+  box-shadow: var(--pulse-shadow);
+}
+.pulse-topbar > a.pulse-brand {
+  font-size: 1.25rem;
+  color: var(--pulse-text);
+}
+.pulse-topbar > a.pulse-brand img { border-radius: 50%; }
+.pulse-topbar > a.pulse-brand strong { color: var(--pulse-accent); }
+.pulse-search input {
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  background: var(--pulse-input-bg);
+  color: var(--pulse-input-text);
+  padding: 10px 16px;
+  font: inherit;
+  font-size: .95rem;
+}
+.pulse-search input::placeholder { color: var(--pulse-muted); }
+#pulseSearchToggle { display: none; }
+.pulse-tabs {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.pulse-tabs button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 76px;
+  padding: 8px 10px 6px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 10px 10px 0 0;
+  background: transparent;
+  color: var(--pulse-muted);
+  font: inherit;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.pulse-tabs button:hover { background: var(--pulse-surface-2); }
+.pulse-tabs button[aria-current="page"] {
+  color: var(--pulse-accent);
+  border-bottom-color: var(--pulse-accent);
+}
+.pulse-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pulse-create-btn {
+  border: 0;
+  border-radius: 999px;
+  background: var(--pulse-accent);
+  color: var(--pulse-accent-text);
+  font: inherit;
+  font-weight: 800;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+.pulse-create-btn:hover { background: var(--pulse-accent-2); }
+.pulse-top-actions > button:not(.pulse-create-btn) {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px; height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--pulse-input-bg);
+  color: var(--pulse-text);
+  cursor: pointer;
+}
+.pulse-top-actions > button:not(.pulse-create-btn):hover { background: var(--pulse-surface-2); }
+#pulseMenuTop { padding: 0; overflow: hidden; }
+#pulseMenuTop img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pulse-badge {
+  position: absolute;
+  top: -2px; right: -2px;
+  min-width: 18px; height: 18px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #e5484d;
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 900;
+  line-height: 18px;
+  text-align: center;
+}
+
+/* --- Shell + grid --- */
+.pulse-shell { max-width: 1280px; }
+.pulse-shell .preview-bar {
+  border-color: var(--pulse-border);
+  background: var(--pulse-surface);
+  color: var(--pulse-muted);
+}
+#socialStatus {
+  color: var(--pulse-muted);
+  font-size: .9rem;
+  margin: 12px 2px 0;
+}
+.pulse-grid {
+  grid-template-columns: 240px minmax(0, 1fr) 320px;
+  gap: 20px;
+}
+.pulse-sidebar,
+.pulse-rail section,
+.pulse-stories {
+  border: 1px solid var(--pulse-border);
+  background: var(--pulse-surface);
+  box-shadow: var(--pulse-shadow);
+}
+.pulse-sidebar { top: 76px; padding: 12px; }
+.pulse-sidebar h2 { color: var(--pulse-text); }
+.pulse-sidebar .social-tabs button {
+  color: var(--pulse-text);
+  font-weight: 700;
+}
+.pulse-sidebar .social-tabs button span[aria-hidden="true"] {
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+  margin-right: 6px;
+}
+.pulse-sidebar .social-tabs button:hover { background: var(--pulse-surface-2); }
+.pulse-sidebar .social-tabs button[aria-current="page"] {
+  background: var(--pulse-surface-2);
+  color: var(--pulse-accent);
+}
+.pulse-sidebar .social-tabs button[aria-pressed="true"] { color: var(--pulse-text); }
+html[data-theme="dark"] .pulse-sidebar .social-tabs button[aria-pressed="true"],
+html[data-theme="auto"] .pulse-sidebar .social-tabs button[aria-pressed="true"] { color: var(--pulse-text); }
+.pulse-main { display: grid; gap: 16px; align-content: start; }
+.pulse-main .social-compose,
+.pulse-main .social-list {
+  background: var(--pulse-surface);
+  border-color: var(--pulse-border);
+  box-shadow: var(--pulse-shadow);
+}
+.pulse-main .social-compose h2,
+.pulse-main .social-list h2 { color: var(--pulse-text); }
+.pulse-main .social-compose textarea,
+.pulse-main .social-comment-form textarea {
+  background: var(--pulse-input-bg);
+  color: var(--pulse-input-text);
+  border-color: var(--pulse-border);
+}
+.pulse-main .btn.primary { background: var(--pulse-accent); }
+.pulse-main .social-card {
+  background: var(--pulse-surface);
+  border-color: var(--pulse-border);
+}
+.pulse-main .social-author { color: var(--pulse-text); }
+.pulse-main .social-actions button,
+.pulse-main .social-actions a {
+  background: var(--pulse-surface-2);
+  border-color: var(--pulse-border);
+  color: var(--pulse-text);
+}
+.pulse-main .social-compose .btn.primary { background: var(--pulse-accent); color: var(--pulse-accent-text); }
+.pulse-stories { margin-bottom: 0; }
+.pulse-stories h2 { color: var(--pulse-text); }
+.pulse-stories p { color: var(--pulse-muted); }
+.pulse-rail h2 { color: var(--pulse-text); }
+.pulse-rail p { color: var(--pulse-muted); }
+.pulse-rail a { color: var(--pulse-accent); }
+.pulse-rail-card p:last-child { margin-bottom: 0; }
+.pulse-rail .btn {
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* Connect menu inside the right rail: keep the dropdown anchored to the card. */
+.pulse-rail .pulse-connect { display: block; }
+.pulse-rail .pulse-connect > summary {
+  width: 100%;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--pulse-accent);
+  color: var(--pulse-accent-text);
+}
+.pulse-rail .pulse-connect-menu {
+  position: static;
+  width: auto;
+  margin-top: 10px;
+  box-shadow: none;
+  background: var(--pulse-surface-2);
+  border-color: var(--pulse-border);
+}
+.pulse-rail .pulse-connect-menu > strong { color: var(--pulse-text); }
+.pulse-rail .pulse-connect-menu > a,
+.pulse-rail .pulse-connect-menu > button {
+  background: var(--pulse-surface);
+  color: var(--pulse-text);
+}
+.pulse-rail .pulse-connect-menu :is(a, button):hover { background: var(--pulse-surface-2); }
+.pulse-rail .pulse-connect-menu small { color: var(--pulse-muted); }
+.pulse-rail .pulse-connect-menu p { color: var(--pulse-muted); }
+.pulse-rail .pulse-connect-menu b { background: var(--pulse-accent); color: #fff; }
+
+/* --- Stories rail: horizontal strip; content is the honest placeholder --- */
+.pulse-stories {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  overflow-x: auto;
+  padding: 14px 16px;
+}
+.pulse-stories h2 {
+  flex: none;
+  margin: 0;
+  font-size: 1rem;
+}
+.pulse-stories p { margin: 0; }
+
+/* --- Composer trigger + sheet --- */
+.pulse-composer-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--pulse-border);
+  border-radius: 16px;
+  background: var(--pulse-surface);
+  box-shadow: var(--pulse-shadow);
+}
+.pulse-composer-trigger .pulse-avatar { width: 40px; height: 40px; }
+#pulseComposerTriggerBtn {
+  flex: 1;
+  text-align: left;
+  border: 0;
+  border-radius: 999px;
+  background: var(--pulse-input-bg);
+  color: var(--pulse-muted);
+  font: inherit;
+  padding: 11px 16px;
+  cursor: pointer;
+}
+#pulseComposerTriggerBtn:hover { background: var(--pulse-surface-2); }
+#pulseComposerSheet {
+  width: min(560px, calc(100vw - 32px));
+  border: 1px solid var(--pulse-border);
+  border-radius: 16px;
+  background: var(--pulse-surface);
+  color: var(--pulse-text);
+  padding: 16px;
+  box-shadow: var(--pulse-shadow-2);
+}
+#pulseComposerSheet::backdrop { background: rgba(0, 0, 0, .55); }
+#pulseComposerClose {
+  float: right;
+  width: 36px; height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--pulse-input-bg);
+  color: var(--pulse-text);
+  font: inherit;
+  cursor: pointer;
+}
+#pulseComposerSheet .social-compose {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+#pulseComposerSheet .social-compose textarea {
+  background: var(--pulse-input-bg);
+  color: var(--pulse-input-text);
+  border-color: var(--pulse-border);
+}
+#pulseComposerSheet #videoLink {
+  background: var(--pulse-input-bg);
+  color: var(--pulse-input-text);
+  border-color: var(--pulse-border);
+}
+#pulseComposerSheet .pulse-composer-who { color: var(--pulse-text); }
+#pulseComposerSheet .pulse-video-rights { color: var(--pulse-text); }
+.pulse-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--pulse-border);
+}
+.pulse-sheet-actions .btn.primary { background: var(--pulse-accent); color: var(--pulse-accent-text); }
+
+/* --- View headers / notes --- */
+.pulse-view-head h2,
+#pulseMenuView > h2 {
+  color: var(--pulse-text);
+  margin: 0 0 8px;
+  font-size: 1.4rem;
+}
+.pulse-view-head p { color: var(--pulse-muted); }
+.pulse-view-note {
+  padding: 12px 14px;
+  border: 1px solid var(--pulse-border);
+  border-radius: 16px;
+  background: var(--pulse-surface);
+  color: var(--pulse-muted);
+  box-shadow: var(--pulse-shadow);
+  margin: 0;
+}
+#pulseLiveView,
+#pulseMenuView {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  padding: 16px;
+  border: 1px solid var(--pulse-border);
+  border-radius: 16px;
+  background: var(--pulse-surface);
+  box-shadow: var(--pulse-shadow);
+}
+#pulseLiveView[hidden],
+#pulseMenuView[hidden] { display: none; }
+#pulseMenuView section {
+  border-top: 1px solid var(--pulse-border);
+  padding-top: 14px;
+}
+#pulseMenuView section:first-of-type { border-top: 0; padding-top: 0; }
+#pulseMenuView h3 { color: var(--pulse-text); margin: 0 0 10px; }
+#pulseMenuView p { color: var(--pulse-muted); }
+#pulseMenuView a { color: var(--pulse-accent); }
+#pulseMenuView .social-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.pulse-appearance-group {
+  display: inline-flex;
+  border: 1px solid var(--pulse-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.pulse-appearance-group button {
+  border: 0;
+  background: transparent;
+  color: var(--pulse-text);
+  font: inherit;
+  font-weight: 700;
+  padding: 9px 18px;
+  cursor: pointer;
+}
+.pulse-appearance-group button[aria-checked="true"] {
+  background: var(--pulse-accent);
+  color: var(--pulse-accent-text);
+}
+
+/* Live view: the existing #pulseLive block, restyled to the card. */
+#pulseLiveView .pulse-live {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+#pulseLiveView .pulse-live strong { color: var(--pulse-danger); }
+#pulseLiveView .pulse-live p { color: var(--pulse-muted); }
+#pulseLiveView .pulse-live-status { color: var(--pulse-text); }
+#pulseLiveView .pulse-live-title { color: var(--pulse-text); }
+#pulseLiveView .pulse-live label { color: var(--pulse-text); }
+#pulseLiveView .pulse-live input[type="text"] {
+  background: var(--pulse-input-bg);
+  color: var(--pulse-input-text);
+  border-color: var(--pulse-border);
+}
+#pulseLiveView .pulse-live button {
+  border: 1px solid var(--pulse-border);
+  background: var(--pulse-surface-2);
+  color: var(--pulse-text);
+}
+#pulseLiveView .pulse-live button.pulse-live-primary {
+  background: var(--pulse-accent);
+  border-color: var(--pulse-accent);
+  color: var(--pulse-accent-text);
+}
+#pulseLiveView .pulse-live button.pulse-live-danger {
+  background: var(--pulse-danger);
+  border-color: var(--pulse-danger);
+  color: #fff;
+}
+#pulseLiveView .pulse-live-error { color: var(--pulse-danger); }
+
+/* Watch view: show only Beats that carry a video. */
+.pulse-watch-filter #feedItems .social-card:not(:has(video, iframe, .social-video-embed)) {
+  display: none;
+}
+.pulse-watch-filter #pulseWatchNote { display: block; }
+
+/* Search filter: cards that do not match the query are hidden. */
+.pulse-search-active #feedItems .social-card.pulse-search-hide { display: none; }
+.pulse-search-empty {
+  color: var(--pulse-muted);
+  padding: 12px 4px;
+}
+
+/* Business assets panel inside Menu. */
+#metaBusinessPanel .status { color: var(--pulse-muted); }
+#metaBusinessPanel button {
+  border: 1px solid var(--pulse-border);
+  border-radius: 999px;
+  background: var(--pulse-surface-2);
+  color: var(--pulse-text);
+  font: inherit;
+  font-weight: 700;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+#metaBusinessPanel label { color: var(--pulse-text); }
+
+/* --- Bottom bar (mobile only) --- */
+.pulse-bottombar { display: none; }
+
+/* --- Responsive --- */
+@media (max-width: 1050px) {
+  .pulse-grid { grid-template-columns: 200px minmax(0, 1fr); }
+  .pulse-rail { grid-column: 2; grid-template-columns: repeat(2, 1fr); }
+  .pulse-topbar { grid-template-columns: auto minmax(120px, 220px) auto auto; }
+  .pulse-tabs button { min-width: 60px; }
+  .pulse-tabs button span { display: none; }
+  .pulse-create-btn { font-size: 0; padding: 9px 12px; }
+  .pulse-create-btn span[aria-hidden="true"] { font-size: 1.2rem; }
+}
+@media (max-width: 760px) {
+  .pulse-topbar {
+    grid-template-columns: auto 1fr auto;
+    padding: 8px 10px;
+  }
+  .pulse-search { display: none; }
+  .pulse-topbar.pulse-search-open .pulse-search {
+    display: block;
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  #pulseSearchToggle {
+    display: grid;
+    place-items: center;
+    width: 40px; height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--pulse-input-bg);
+    color: var(--pulse-text);
+    cursor: pointer;
+  }
+  .pulse-tabs { display: none; }
+  .pulse-create-btn { display: none; }
+  .pulse-grid { display: block; }
+  .pulse-sidebar { display: none; }
+  .pulse-rail { display: none; }
+  .pulse-main { padding-bottom: 76px; }
+  .pulse-bottombar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 30;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    background: var(--pulse-topbar-bg);
+    border-top: 1px solid var(--pulse-border);
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, .12);
+  }
+  .pulse-bottombar button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    border: 0;
+    background: transparent;
+    color: var(--pulse-muted);
+    font: inherit;
+    font-size: .68rem;
+    font-weight: 700;
+    padding: 6px 2px;
+    cursor: pointer;
+  }
+  .pulse-bottombar button[aria-current="page"] { color: var(--pulse-accent); }
+  #pulseCreateBottom {
+    align-self: center;
+    justify-self: center;
+    width: 52px; height: 52px;
+    margin-top: -26px;
+    border-radius: 50%;
+    background: var(--pulse-accent);
+    color: #fff;
+    font-size: 1.8rem;
+    font-weight: 400;
+    line-height: 1;
+    box-shadow: var(--pulse-shadow-2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-body * { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+/* Website integration: legacy cards and authentic live/DM sections remain. */
+body.pulse-body { background:var(--pulse-bg)!important;color:var(--pulse-text)!important; }
+body.pulse-body .pulse-topbar { display:grid;position:sticky;grid-template-columns:auto minmax(120px,250px) auto auto;background:var(--pulse-topbar-bg)!important;color:var(--pulse-text); }
+body.pulse-body #socialApp .pulse-grid { display:grid;grid-template-columns:220px minmax(0,1fr) 280px;gap:20px;align-items:start; }
+body.pulse-body #socialApp .pulse-sidebar { display:block;position:sticky;top:80px;background:var(--pulse-surface);border-color:var(--pulse-border); }
+body.pulse-body #socialApp .pulse-main { display:grid;gap:16px;min-width:0; }
+body.pulse-body #socialApp .pulse-main .social-list,
+body.pulse-body #socialApp .pulse-main .social-compose,
+body.pulse-body #socialApp .pulse-rail section {background:var(--pulse-surface);border-color:var(--pulse-border);color:var(--pulse-text);}
+body.pulse-body #socialApp .social-card { background:var(--pulse-surface);color:var(--pulse-text);border-color:var(--pulse-border); }
+body.pulse-body .social-intro {margin:12px auto;padding:12px 18px;max-width:1280px;background:var(--pulse-surface);color:var(--pulse-text);border:1px solid var(--pulse-border);border-radius:14px;}
+body.pulse-body .pulse-intro-title h1 {font-size:clamp(1.2rem,2vw,1.7rem);color:var(--pulse-text);}
+body.pulse-body .pulse-create-shortcut {display:none!important;}
+body.pulse-body #pulseUnifiedInbox:not([hidden]),body.pulse-body #pulseMemberInbox:not([hidden]),body.pulse-body #pulseInstagramInbox:not([hidden]){display:block;}
+body.pulse-body .pulse-bottom-bar-placeholder{display:none;}
+body.pulse-body #pulseMenuView .pulse-site-nav{display:flex;gap:12px;flex-wrap:wrap}
+body.pulse-body #pulseMenuView .pulse-mobile-more{display:block}
+body.pulse-body .pulse-body .social-feedback{color:var(--pulse-text)}
+body.pulse-body #pulseLiveView .pulse-live{display:block!important;position:static;border:0;background:var(--pulse-surface);max-width:100%;}
+body.pulse-body #pulseLiveView .pulse-live button{cursor:pointer}
+@media(max-width:1050px){body.pulse-body #socialApp .pulse-grid{grid-template-columns:190px minmax(0,1fr)}body.pulse-body #socialApp .pulse-rail{grid-column:2;grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+ body.pulse-body #socialApp .pulse-grid {display:block!important;}
+ body.pulse-body #socialApp .pulse-sidebar,body.pulse-body #socialApp .pulse-rail {display:none!important;}
+ body.pulse-body #socialApp .pulse-main {padding-bottom:82px;}
+ body.pulse-body .pulse-topbar {grid-template-columns:auto 1fr auto!important;}
+ body.pulse-body .pulse-bottombar {display:flex!important;}
+ body.pulse-body #pulseLiveView .pulse-live {display:block!important;}
+}
+
+/* Show Muse's one-tap Create entry; keep the SAME real composer form hidden in the feed until it moves into the dialog. */
+body.pulse-body #socialApp .pulse-main > .social-compose {display:none!important;}
+
+/* Founder November 22 cleanup: one navigation, one feed, light-purple surfaces. */
+:root,html[data-theme="light"] { --pulse-bg:#f7f4ff; --pulse-surface:#ffffff;
+ --pulse-surface-2:#f0e9ff; --pulse-text:#24163d; --pulse-muted:#645575;
+ --pulse-border:#ded3f1; --pulse-topbar-bg:#ffffff; --pulse-input-bg:#f2edff; }
+html[data-theme="dark"] { --pulse-bg:#241338; --pulse-surface:#302048;
+ --pulse-surface-2:#412956; --pulse-border:#705488; --pulse-topbar-bg:#2b1a40;
+ --pulse-input-bg:#412956; }
+body.pulse-body .pulse-topbar .pulse-tabs {display:none!important;}
+body.pulse-body .pulse-topbar .pulse-explore-top,
+body.pulse-body .pulse-topbar #pulseBellTop,
+body.pulse-body .pulse-topbar #pulseMessagesTop,
+body.pulse-body .pulse-topbar #pulseMenuTop {display:none!important;}
+body.pulse-body .pulse-topbar {grid-template-columns:auto minmax(180px,460px) auto!important;
+ justify-content:space-between;gap:18px;}
+body.pulse-body #socialApp .pulse-sidebar button[data-view="live"] {display:none!important;}
+body.pulse-body #socialApp .pulse-sidebar {box-shadow:none!important;}
+body.pulse-body #socialApp .pulse-rail .pulse-rail-activity,
+body.pulse-body #socialApp .pulse-rail .pulse-rail-discover,
+body.pulse-body #socialApp .pulse-rail .pulse-rail-messenger {display:none!important;}
+body.pulse-body #socialApp .pulse-grid {gap:14px!important;}
+body.pulse-body #socialApp .pulse-main {gap:14px!important;}
+body.pulse-body #socialApp .pulse-main .pulse-stories,
+body.pulse-body #socialApp .pulse-main .social-list,
+body.pulse-body #socialApp .pulse-main .pulse-composer-trigger,
+body.pulse-body #socialApp .pulse-rail section {box-shadow:none!important;border-radius:16px;}
+body.pulse-body .social-intro {background:var(--pulse-surface)!important;
+ border-color:var(--pulse-border)!important;color:var(--pulse-text)!important;}
+body.pulse-body #socialApp .pulse-main .pulse-stories {background:var(--pulse-surface)!important;}
+body.pulse-body .pulse-features {display:none!important;}
+body.pulse-body #pulseLiveView #pulseLiveMediaControls button {
+ background:var(--pulse-surface-2)!important;color:var(--pulse-text)!important;
+ border:2px solid var(--pulse-border)!important;font-weight:800!important;
+ min-height:52px!important;text-align:center!important;opacity:1!important;
+ -webkit-text-fill-color:var(--pulse-text)!important;
+}
+body.pulse-body #pulseLiveView #pulseLiveMediaControls button:focus-visible {outline:3px solid var(--pulse-accent)!important;}
+body.pulse-body #pulseLiveView #pulseLiveRecordOption,
+body.pulse-body #pulseLiveView #pulseLiveScreenMicOption {color:var(--pulse-text)!important;}
+body.pulse-body #pulseLiveView #pulseLiveRecordOption input,
+body.pulse-body #pulseLiveView #pulseLiveScreenMicOption input {width:20px;height:20px;accent-color:var(--pulse-accent);}
+@media(max-width:760px) {
+ body.pulse-body .pulse-topbar {grid-template-columns:auto 1fr auto!important;}
+ body.pulse-body .pulse-bottombar {display:grid!important;}
+}
+
+/* One brand and one navigation: the real account tools stay accessible. */
+body.pulse-body .preview-bar,
+body.pulse-body .social-intro .pulse-intro-title {display:none!important;}
+body.pulse-body .social-intro {margin:8px auto 12px!important;min-height:0!important;
+ display:flex!important;align-items:center!important;justify-content:flex-end!important;flex-wrap:wrap!important;gap:8px!important;
+ background:var(--pulse-surface)!important;padding:9px 14px!important;}
+body.pulse-body #socialApp .pulse-rail .pulse-rail-insights {display:none!important;}
+body.pulse-body #socialApp .pulse-sidebar .pulse-nav-stories,
+body.pulse-body #socialApp .pulse-sidebar .pulse-nav-live {color:var(--pulse-text)!important;}
+body.pulse-body #socialApp .pulse-sidebar .social-tabs .pulse-nav-stories:hover,
+body.pulse-body #socialApp .pulse-sidebar .social-tabs .pulse-nav-live:hover {background:var(--pulse-surface-2)!important;}
+
+/* Older story styles force display:block even on hidden elements; honor the
+   selected Stories view instead of showing duplicated circles on Home. */
+body.pulse-body #socialApp #pulseStories[hidden] {display:none!important;}
+body.pulse-body #socialApp #pulseStories:not([hidden]) {display:block!important;}
+/* Legacy purple-on-black rules must not make the selected light theme illegible. */
+body.pulse-body #socialApp .pulse-main .social-list,
+body.pulse-body #socialApp .pulse-main .pulse-composer-trigger,
+body.pulse-body #socialApp .pulse-rail section,
+body.pulse-body #socialApp #pulseMenuView,
+body.pulse-body #socialApp #pulseLiveView {
+ background:var(--pulse-surface)!important;color:var(--pulse-text)!important;
+ border-color:var(--pulse-border)!important;
+}
+body.pulse-body #socialApp .pulse-main .social-list h2,
+body.pulse-body #socialApp #pulseMenuView h2,
+body.pulse-body #socialApp #pulseLiveView h2 {color:var(--pulse-text)!important;}
+body.pulse-body .social-intro #identityHandle {color:var(--pulse-text)!important;}
+body.pulse-body #socialApp .pulse-sidebar .social-tabs button:not([aria-pressed="true"]) {
+ color:var(--pulse-text)!important;
+}
+
+/* Important: legacy pulse-reference-ui.css declares theme variables on
+   .pulse-body itself, which outranks values inherited from :root.
+   Set them on the SAME element for both appearances. */
+html[data-theme="light"] body.pulse-body,
+html:not([data-theme]) body.pulse-body {
+ --pulse-bg:#f7f4ff!important;
+ --pulse-surface:#ffffff!important;
+ --pulse-surface-2:#f0e9ff!important;
+ --pulse-text:#24163d!important;
+ --pulse-muted:#645575!important;
+ --pulse-border:#ded3f1!important;
+ --pulse-topbar-bg:#ffffff!important;
+ --pulse-input-bg:#f2edff!important;
+}
+html[data-theme="dark"] body.pulse-body {
+ --pulse-bg:#241338!important;
+ --pulse-surface:#302048!important;
+ --pulse-surface-2:#412956!important;
+ --pulse-text:#f6ecff!important;
+ --pulse-muted:#cdbddd!important;
+ --pulse-border:#705488!important;
+ --pulse-topbar-bg:#2b1a40!important;
+ --pulse-input-bg:#412956!important;
+}
+html[data-theme="auto"] body.pulse-body {
+ --pulse-bg:#f7f4ff!important;
+ --pulse-surface:#ffffff!important;
+ --pulse-text:#24163d!important;
+ --pulse-border:#ded3f1!important;
+ --pulse-muted:#645575!important;
+}
+@media (prefers-color-scheme: dark) {
+ html[data-theme="auto"] body.pulse-body {
+  --pulse-bg:#241338!important;
+  --pulse-surface:#302048!important;
+  --pulse-text:#f6ecff!important;
+  --pulse-border:#705488!important;
+  --pulse-muted:#cdbddd!important;
+ }
+}
+
+
+/* Pulse Live discovery + narrow-touch layout (Founder mobile report, Nov 22).
+   A mobile browser using Desktop site may report a 980px+ layout viewport.
+   Preserve the same five existing destinations on narrow touch devices instead
+   of making a three-column desktop dashboard unreadable. No new media calls. */
+.pulse-live-feed-alert {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 14px; margin-bottom: 14px;
+  border: 2px solid var(--pulse-accent); border-radius: 14px;
+  background: var(--pulse-surface-2); color: var(--pulse-text);
+}
+.pulse-live-feed-alert[hidden] { display: none !important; }
+.pulse-live-feed-dot {
+  display: inline-block; flex: 0 0 12px; width: 12px; height: 12px;
+  background: #dc2626; border-radius: 50%;
+}
+.pulse-live-feed-copy { display: grid; gap: 3px; flex: 1 1 180px; min-width: 0; overflow-wrap: anywhere; }
+.pulse-live-feed-copy strong { color: var(--pulse-text); font-size: .9rem; letter-spacing: .06em; }
+.pulse-live-feed-copy span { color: var(--pulse-text); }
+.pulse-live-feed-alert .btn { min-height: 44px; white-space: normal; }
+
+@media (max-width: 760px), (pointer: coarse) and (max-width: 1280px) {
+  html, body.pulse-body { max-width: 100%; overflow-x: clip; }
+  body.pulse-body { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+  body.pulse-body .pulse-topbar {
+    display: grid !important; grid-template-columns: minmax(0,1fr) auto auto !important;
+    gap: 8px !important; align-items: center; padding: 8px 12px !important;
+  }
+  body.pulse-body .pulse-topbar > a.pulse-brand { min-width: 0; font-size: 1rem; }
+  body.pulse-body .pulse-topbar .pulse-brand img { width: 38px; height: 38px; }
+  body.pulse-body .pulse-topbar .pulse-tabs,
+  body.pulse-body .pulse-topbar .pulse-create-btn,
+  body.pulse-body .pulse-topbar .pulse-search { display: none !important; }
+  body.pulse-body .pulse-topbar #pulseSearchToggle,
+  body.pulse-body .pulse-topbar #pulseMenuTop { display: grid !important; place-items: center; min-width: 44px; min-height: 44px; }
+  body.pulse-body .pulse-topbar.pulse-search-open .pulse-search {
+    display: block !important; grid-column: 1 / -1; grid-row: 2; min-width: 0;
+  }
+  body.pulse-body .pulse-top-actions { display: flex; align-items: center; gap: 0; }
+  body.pulse-body .pulse-shell { width: 100%; max-width: 720px; margin: 0 auto; padding: 8px 10px 110px !important; }
+  body.pulse-body .social-intro { flex-wrap: wrap !important; justify-content: flex-start !important; gap: 8px !important; }
+  body.pulse-body #socialApp .pulse-grid { display: block !important; grid-template-columns: none !important; width: 100%; min-width: 0; }
+  body.pulse-body #socialApp .pulse-sidebar,
+  body.pulse-body #socialApp .pulse-rail { display: none !important; }
+  body.pulse-body #socialApp .pulse-main { display: grid !important; width: 100%; min-width: 0; gap: 12px; }
+  body.pulse-body #socialApp .pulse-main > * { min-width: 0; max-width: 100%; }
+  body.pulse-body #feedItems .social-card { max-width: 100%; overflow-wrap: anywhere; }
+  body.pulse-body #pulseLiveView .pulse-live { max-width: 100%; }
+  body.pulse-body .pulse-live-feed-alert { padding: 12px; }
+  body.pulse-body .pulse-live-feed-alert .btn { flex: 1 1 120px; }
+  body.pulse-body .pulse-bottombar {
+    display: grid !important; grid-template-columns: repeat(5,minmax(0,1fr)) !important;
+    position: fixed; inset: auto 0 0; z-index: 100;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom,0px));
+    background: var(--pulse-topbar-bg); border-top: 1px solid var(--pulse-border);
+    box-shadow: 0 -2px 16px #0002;
+  }
+  body.pulse-body .pulse-bottombar button {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 0; min-height: 54px; gap: 3px; padding: 5px 2px;
+    border: 0; background: transparent; color: var(--pulse-muted);
+    font: inherit; font-weight: 750; font-size: .75rem;
+  }
+  body.pulse-body .pulse-bottombar button[aria-current="page"] { color: var(--pulse-accent); }
+  body.pulse-body #pulseCreateBottom {
+    justify-self: center; width: 52px; height: 52px; margin-top: -18px;
+    border-radius: 50%; background: var(--pulse-accent); color: #fff;
+    font-size: 1.6rem; box-shadow: var(--pulse-shadow-2);
+  }
+  body.pulse-body #pulseComposerSheet { max-width: calc(100vw - 24px); }
+}
+
+/* Copied AI pictures enter the normal Pulse media composer, never a GitHub asset. */
+#pulseAiDropTarget{margin:10px 0;padding:15px;border:2px dashed var(--pulse-border);border-radius:12px;background:var(--pulse-surface-2);color:var(--pulse-text);font-size:.87rem;text-align:center}
+#pulseAiImageHelp{font-size:.9rem;line-height:1.5;overflow-wrap:anywhere}
+#pulseAiImagePreview{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:12px;margin:12px 0}
+#pulseAiImagePreview[hidden]{display:none!important}
+#pulseAiImagePreview figure{margin:0;padding:8px;border:1px solid var(--pulse-border);border-radius:12px;background:var(--pulse-surface-2);min-width:0}
+#pulseAiImagePreview canvas{display:block;max-width:100%;width:100%;aspect-ratio:1;object-fit:contain;border-radius:7px;background:var(--pulse-input-bg)}
+#pulseAiImagePreview figcaption{font-size:.75rem;margin-top:7px;overflow-wrap:anywhere;color:var(--pulse-text)}
+#pulseAiRemoveMedia{background:transparent;border:1px solid var(--pulse-border);border-radius:9px;padding:9px 13px;font:inherit;color:var(--pulse-text);cursor:pointer}

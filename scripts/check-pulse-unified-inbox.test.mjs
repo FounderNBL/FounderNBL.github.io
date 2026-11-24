@@ -30,7 +30,7 @@ test("One Messages navigation entry retains old authenticated inbox transports",
   assert.ok(page.includes('data-pulse-inbox="'+provider+'"'),provider);
  assert.match(page,/pulse-legacy-message-tab\{display:none!important\}/);
  assert.match(client,/mountUnifiedInbox\(\{/);
- assert.match(client,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\)\)/);
+ assert.match(client,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\),/);
  assert.match(client,/mountInstagramInbox\(\(path,payload\)=>secured\(INSTAGRAM_API\+path,payload\)\)/);
  assert.match(hub,/host\.append\(member, ig\)/);
 });

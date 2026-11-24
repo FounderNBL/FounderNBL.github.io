@@ -5,6 +5,8 @@ on:
       - work/nbl-pulse-homeworld-stream-feeds-20261106
     paths:
       - 'pulse/**'
+      - 'scripts/check-pulse-tiktok-ui.test.mjs'
+      - 'scripts/check-pulse-tiktok-no-upload.test.mjs'
       - 'messenger/social-v1.*'
       - 'messenger/social-video-connect.mjs'
       - 'supabase/functions/nbl-social/**'
@@ -13,6 +15,8 @@ on:
   pull_request:
     paths:
       - 'pulse/**'
+      - 'scripts/check-pulse-tiktok-ui.test.mjs'
+      - 'scripts/check-pulse-tiktok-no-upload.test.mjs'
       - 'messenger/social-v1.*'
       - 'messenger/social-video-connect.mjs'
       - 'supabase/functions/nbl-social/**'
@@ -36,9 +40,13 @@ jobs:
       - name: NBL Pulse existing source checks
         run: |
           node --check messenger/social-v1.mjs
+          node --check pulse/ai-image-intake.mjs
           node scripts/check-nbl-social-v1.mjs
+          node --test scripts/check-pulse-ai-image-intake.test.mjs
       - name: Verify public Pulse guide, pricing, legal links and Meta status
         run: node --test scripts/check-pulse-guide.test.mjs
+      - name: Verify TikTok account preflight cannot upload files or reuse old job status
+        run: node --test scripts/check-pulse-tiktok-ui.test.mjs scripts/check-pulse-tiktok-no-upload.test.mjs
       - name: Verify private friend migration and Clerk backend actions
         run: |
           node --input-type=module <<'JS'

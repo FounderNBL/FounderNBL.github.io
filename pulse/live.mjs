@@ -24,6 +24,7 @@ async function videoClientConstructor() {
 }
 
 const ENDPOINT = "https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-live";
+import {setupLiveBeats} from "./studios-live.mjs";
 const CALL_TYPE = "livestream";
 const CLERK_KEY = "pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT = "https://accounts.newbeansland.org";
@@ -36,14 +37,25 @@ const state = {
   clerk: null, client: null, call: null, sub: null,
   callId: null, userId: null, mode: "idle", // idle | backstage | live | viewing
   hls: null, tracks: new Map(), previewBound: null,
-  liveSince: null, timerId: null, pollId: null, busy: false,
+  liveSince: null, timerId: null, pollId: null, busy: false, viewerConnecting: false,
   recordingRequested: false, liveEnabled: false,
   isAdmin: false, screenOnly: false, screenReady: false,
   destination: "pulse", facebookReady: false, googleReady: false,
-  mediaSubs: [],
+  googleCheckMessage: "",
+  mediaSubs: [], liveBeatsCleanup: null,
+  soundId: null, soundButton: null,
 };
 
 function setStatus(text) { const el = $("#pulseLiveStatus"); if (el) el.textContent = text; }
+// The feed advertises only a confirmed LIVE status, never ON or backstage.
+function updateLiveDiscovery(data) {
+  const alert = $("#pulseLiveFeedAlert");
+  if (!alert) return;
+  const live = data?.enabled === true && data?.status === "live" && typeof data?.callId === "string";
+  alert.hidden = !live;
+  const title = $("#pulseLiveFeedAlertTitle");
+  if (live && title) title.textContent = String(data.title || DEFAULT_TITLE).slice(0, 140);
+}
 function showError(text) {
   const el = $("#pulseLiveError");
   if (!el) return;
@@ -203,15 +215,21 @@ function destroyHls() {
   const v = $("#pulseLiveVideo"); if (v) { try { v.pause(); } catch {} v.removeAttribute("src"); v.load(); }
 }
 async function teardownStream() {
-  stopTimer();
+  // End optional Studio effects before releasing the existing Stream call.
+  try { state.liveBeatsCleanup?.(); } catch {}
+  state.liveBeatsCleanup = null;
+  const wasViewer = state.mode === "viewing";
+  stopTimer(); stopSoundWatch();
   state.sub?.unsubscribe(); state.sub = null;
   for (const subscription of state.mediaSubs) subscription.unsubscribe();
   state.mediaSubs = [];
   show("#pulseLiveMediaControls", false);
   clearTracks(); destroyHls();
+  show("#pulseLiveViewer", false); // An ended viewer call must not leave a stale player.
   try { await state.call?.leave(); } catch {}
   try { await state.client?.disconnectUser(); } catch {}
   state.call = null; state.client = null; state.mode = "idle";
+  if (wasViewer) state.callId = null; // Never pin discovery to an ended viewer call.
   state.screenOnly = false; state.screenReady = false; state.liveSince = null;
   show("#pulseLiveElapsed", false); show("#pulseLiveBadge", false);
 }
@@ -243,31 +261,52 @@ async function attachHls(url) {
 }
 
 // --- Participants rendering (pattern copied from call.mjs) ---
+// Stream TrackType values carried in participant.publishedTracks.
+const TRACK_VIDEO = 2, TRACK_SCREEN = 3;
+// The wrapper must already be in the visible DOM when a video element is
+// bound: Stream sizes its track subscription from the element's rendered
+// size and treats 0x0 (hidden or detached) as "do not subscribe".
+function buildRemoteEntry(p, area, sig) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "pulse-live-remote";
+  const label = document.createElement("p");
+  label.className = "pulse-live-meta"; label.textContent = p.name || "NBL Pulse Live";
+  wrapper.append(label);
+  area.append(wrapper);
+  const cleanup = [];
+  const bind = (fn) => { const unbind = fn(); if (typeof unbind === "function") cleanup.push(unbind); };
+  for (const [kind, wanted] of [["videoTrack", sig.includes("v")], ["screenShareTrack", sig.includes("s")]]) {
+    if (!wanted) continue;
+    const video = document.createElement("video");
+    video.autoplay = true; video.muted = true; video.playsInline = true; video.className = "pulse-live-video";
+    wrapper.append(video);
+    bind(() => state.call.bindVideoElement(video, p.sessionId, kind));
+  }
+  for (const kind of sig.includes("s") ? ["audioTrack", "screenShareAudioTrack"] : ["audioTrack"]) {
+    const audio = document.createElement("audio"); audio.autoplay = true; audio.controls = true;
+    audio.setAttribute("aria-label", "Livestream sound; tap play if your browser blocks audio autoplay");
+    wrapper.append(audio);
+    bind(() => state.call.bindAudioElement(audio, p.sessionId, kind));
+  }
+  return { wrapper, cleanup, sig };
+}
 function renderViewerParticipants(participants) {
   const area = $("#pulseLiveViewer");
-  if (!area) return;
-  const current = new Set(participants.map((p) => p.sessionId));
-  for (const [id, parts] of state.tracks) {
-    if (current.has(id)) continue;
+  if (!area || !state.call) return;
+  // Other viewers publish nothing; only render people who are broadcasting.
+  const sources = participants.filter((p) => !p.isLocalParticipant && p.publishedTracks?.length);
+  const current = new Set(sources.map((p) => p.sessionId));
+  const drop = (id, parts) => {
     for (const unbind of parts.cleanup) { try { unbind(); } catch {} }
     parts.wrapper.remove(); state.tracks.delete(id);
-  }
-  for (const p of participants) {
-    if (p.isLocalParticipant || state.tracks.has(p.sessionId)) continue;
-    const wrapper = document.createElement("div");
-    wrapper.className = "pulse-live-remote";
-    const video = document.createElement("video");
-    video.autoplay = true; video.playsInline = true; video.className = "pulse-live-video";
-    const label = document.createElement("p");
-    label.className = "pulse-live-meta"; label.textContent = p.name || "NBL Pulse Live";
-    wrapper.append(video, label);
-    const kind = p.isScreenSharing || p.screenShareStream ? "screenShareTrack" : "videoTrack";
-    const cleanup = [state.call.bindVideoElement(video, p.sessionId, kind)];
-    const audio = document.createElement("audio"); audio.autoplay = true;
-    wrapper.append(audio);
-    cleanup.push(state.call.bindAudioElement(audio, p.sessionId, "audioTrack"));
-    state.tracks.set(p.sessionId, { wrapper, cleanup });
-    area.append(wrapper);
+  };
+  for (const [id, parts] of state.tracks) if (!current.has(id)) drop(id, parts);
+  for (const p of sources) {
+    const sig = (p.publishedTracks.includes(TRACK_VIDEO) ? "v" : "") + (p.publishedTracks.includes(TRACK_SCREEN) ? "s" : "");
+    const existing = state.tracks.get(p.sessionId);
+    if (existing?.sig === sig) continue;
+    if (existing) drop(p.sessionId, existing);
+    state.tracks.set(p.sessionId, buildRemoteEntry(p, area, sig));
   }
   // Viewer count: participantCount is unverified in video-client 1.27.0 —
   // fall back to the remote participant count if it is not a number.
@@ -276,6 +315,30 @@ function renderViewerParticipants(participants) {
     : participants.filter((p) => !p.isLocalParticipant).length;
   const vc = $("#pulseLiveViewers");
   if (vc) { vc.hidden = false; vc.textContent = count + (count === 1 ? " viewer" : " viewers"); }
+}
+// Browsers refuse to start audio before a user gesture. Offer a tap target
+// whenever a bound audio stream is attached but not playing.
+function startSoundWatch() {
+  stopSoundWatch();
+  const area = $("#pulseLiveViewer");
+  if (!area) return;
+  const button = document.createElement("button");
+  button.type = "button"; button.hidden = true; button.className = "pulse-live-primary";
+  button.textContent = "Tap to turn on sound";
+  button.addEventListener("click", () => {
+    area.querySelectorAll("audio").forEach((a) => { a.muted = false; void a.play().catch(() => {}); });
+    button.hidden = true;
+  });
+  area.prepend(button);
+  state.soundButton = button;
+  state.soundId = setInterval(() => {
+    button.hidden = ![...area.querySelectorAll("audio")].some((a) => a.srcObject && a.paused);
+  }, 1000);
+}
+function stopSoundWatch() {
+  if (state.soundId) clearInterval(state.soundId);
+  state.soundId = null;
+  state.soundButton?.remove(); state.soundButton = null;
 }
 function renderHostPreview(participants) {
   const local = participants.find((p) => p.isLocalParticipant);
@@ -301,13 +364,17 @@ function syncHostMedia() {
   const camera = $("#pulseLiveCameraToggle"), mic = $("#pulseLiveMicToggle");
   const cameraOn = state.call?.camera.state.status === "enabled";
   const micOn = state.call?.microphone.state.status === "enabled";
-  if (camera) camera.textContent = cameraOn ? "Turn camera off" : "Turn camera on";
+  if (camera) {
+    camera.textContent = cameraOn ? "Turn camera off" : "Turn camera on";
+    // Screen sharing never exposes camera controls. Audio may be added separately.
+    camera.hidden = state.screenOnly;
+  }
   if (mic) mic.textContent = micOn ? "Mute microphone" : "Unmute microphone";
   const notice = $("#pulseLiveMediaStatus");
   if (notice) notice.textContent = "Camera " + (cameraOn ? "on" : "off") + " · Microphone " + (micOn ? "on" : "off");
 }
 async function toggleHostMedia(kind) {
-  if (state.busy || state.screenOnly || !state.call || !["backstage","live"].includes(state.mode)) return;
+  if (state.busy || (state.screenOnly && kind === "camera") || !state.call || !["backstage","live"].includes(state.mode)) return;
   setBusy(true); showError("");
   try {
     const manager = kind === "camera" ? state.call.camera : state.call.microphone;
@@ -319,16 +386,34 @@ async function toggleHostMedia(kind) {
 
 // --- WebRTC viewer fallback (needs sign-in: Stream needs a user id) ---
 async function joinAsWebRtcViewer(callId) {
-  const data = await liveApi("join-viewer", { callId }, "required");
-  if (!data.key || !data.token || data.callId !== callId || data.callType !== CALL_TYPE)
-    throw Error("Viewer session identity verification failed.");
-  const VideoClient = await videoClientConstructor();
-  state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
-  state.call = state.client.call(CALL_TYPE, callId);
-  await joinWithoutCapture(state.call); // viewers never request camera or microphone
-  state.mode = "viewing";
-  show("#pulseLiveVideo", false);
-  state.sub = state.call.state.participants$.subscribe(renderViewerParticipants);
+  // Joining must be a deliberate Live-view action, even when the feed shows
+  // LIVE NOW. Two status polls may overlap; never join the same call twice.
+  if (state.viewerConnecting || state.mode !== "idle" || $("#pulseLiveView")?.hidden !== false) return;
+  state.viewerConnecting = true;
+  try {
+    const data = await liveApi("join-viewer", { callId }, "required");
+    if (!data.key || !data.token || data.callId !== callId || data.callType !== CALL_TYPE)
+      throw Error("Viewer session identity verification failed.");
+    if ($("#pulseLiveView")?.hidden !== false) return; // Viewer navigated away during token request.
+    const VideoClient = await videoClientConstructor();
+    state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
+    state.call = state.client.call(CALL_TYPE, callId);
+    await joinWithoutCapture(state.call); // viewers never request camera or microphone
+    if ($("#pulseLiveView")?.hidden !== false) {
+      await teardownStream(); // Leave this viewer only. Never stop the host broadcast.
+      return;
+    }
+    state.mode = "viewing";
+    show("#pulseLiveVideo", false); // HLS is disabled; Stream participants own the actual picture.
+    show("#pulseLiveViewer", true); // Otherwise all WebRTC tracks are in a hidden parent.
+    startSoundWatch();
+    state.sub = state.call.state.participants$.subscribe(renderViewerParticipants);
+  } catch (error) {
+    await teardownStream(); // Clean up failed joins instead of holding an invisible paid slot.
+    throw error;
+  } finally {
+    state.viewerConnecting = false;
+  }
 }
 
 // --- Status / viewer flow ---
@@ -337,6 +422,7 @@ async function refreshStatus(silent = false) {
   try {
     data = await liveApi("status", state.callId ? { callId: state.callId } : {}, "required");
   } catch (e) {
+    updateLiveDiscovery(null);
     if (e.reason === "sign_in_required" && !silent) {
       setStatus("Sign in to watch Pulse Live.");
       $("#pulseLiveStatus")?.append(" ", signInLink());
@@ -346,15 +432,21 @@ async function refreshStatus(silent = false) {
     if (!silent) { setStatus("Could not verify Pulse Live status."); showError(plainError(e)); }
     return;
   }
-  if (!data || typeof data !== "object") return;
+  if (!data || typeof data !== "object") { updateLiveDiscovery(null); return; }
+  updateLiveDiscovery(data);
   state.liveEnabled = data.enabled === true;
   state.isAdmin = data.isAdmin === true;
   const navStatus = $("#pulseLiveNavStatus");
   if (navStatus) navStatus.textContent = data.status === "live" ? "LIVE" :
     data.status === "backstage" ? "Preparing" : (state.liveEnabled ? "ON" : "OFF");
   show("#pulseLiveAdmin", data.isAdmin === true);
+  // Recording incurs provider work only after the authorized Founder opts in.
+  show("#pulseLiveRecordOption", data.isAdmin === true);
+  show("#pulseLiveRecordNote", data.isAdmin === true);
   const toggle = $("#pulseLiveToggle");
   if (toggle) toggle.textContent = state.liveEnabled ? "Turn Pulse Live OFF" : "Turn Pulse Live ON";
+  // A read-only private Google check is available only to the Founder.
+  show("#pulseGoogleCheck", false); // Founder Stream-only pilot: no Google relay action.
   // Host visibility: the server's isHost flag wins. If absent, the Start
   // button stays visible and full host controls appear only after a
   // successful start.
@@ -364,22 +456,29 @@ async function refreshStatus(silent = false) {
   // Capabilities come from the authenticated server, not browser guesses.
   if (state.mode === "idle" && data.status === "idle" && !state.busy) {
     state.facebookReady = state.isAdmin && data.facebook?.canStart === true;
-    state.googleReady = state.isAdmin && data.google?.configured === true && data.google?.routingEnabled === true;
+    const googleConfigured = state.isAdmin && data.google?.configured === true && data.google?.routingEnabled === true;
+    // A configured Google relay is NOT necessarily reachable; never re-enable
+    // it after a failed check just because a routine status poll succeeded.
+    state.googleReady = state.googleReady && googleConfigured;
+    if (!googleConfigured) state.googleCheckMessage = "";
     const destination = $("#pulseLiveDestination");
-    show("#pulseLiveDestinationOption", state.isAdmin);
+    show("#pulseLiveDestinationOption", false); // Stream Video is the only active destination.
     if (destination) {
       destination.querySelector('option[value="facebook"]').disabled = !state.facebookReady;
       destination.querySelector('option[value="google"]').disabled = !state.googleReady;
       if ((destination.value === "facebook" && !state.facebookReady) || (destination.value === "google" && !state.googleReady)) destination.value = "pulse";
     }
     const note = $("#pulseLiveDestinationStatus");
-    if (note) note.textContent = "Pulse only is independent of external relays. Facebook: " + (state.facebookReady ? "configured; account eligibility still applies" : "not enabled/configured") + ". Google: " + (state.googleReady ? "configured; relay readiness checked on start" : "not enabled/configured") + ".";
+    if (note) note.textContent = state.googleCheckMessage ||
+      ("Pulse only is independent of external relays. Facebook: " + (state.facebookReady ? "configured; account eligibility still applies" : "not enabled/configured") +
+      ". Google: " + (state.googleReady ? "READY" : googleConfigured ? "configured; check Google relay setup before selection" : "not enabled/configured") + ".");
   }
   const status = data.status;
   if (state.mode === "live" && data.facebook?.status === "live") setStatus("You are LIVE on Pulse and Facebook");
   if (status === "ended" || status === "failed") {
     if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
       await teardownStream();
+      state.callId = null; // Do not keep polling an ended call instead of new Live sessions.
       setStatus("Stream ended."); showError("");
       show("#pulseLiveBadge", false); show("#pulseLiveViewer", false); show("#pulseLivePreview", false);
       show("#pulseLiveSetup", data.enabled === true && data.isHost !== false);
@@ -411,6 +510,9 @@ async function refreshStatus(silent = false) {
   if (state.mode === "viewing" || state.mode === "live" || state.mode === "backstage") {
     return;
   } // already watching/hosting
+  // Discover LIVE in the feed without silently consuming a viewer slot.
+  // Watching requires the member to select the visible Live view.
+  if ($("#pulseLiveView")?.hidden !== false) return;
   if (data.startedAt) state.liveSince = new Date(data.startedAt).getTime();
   show("#pulseLiveBadge", status === "live");
   if (status !== "live") show("#pulseLiveElapsed", false);
@@ -431,6 +533,48 @@ async function refreshStatus(silent = false) {
 }
 
 // --- Host flow ---
+async function onGoogleCheck() {
+  const button = $("#pulseGoogleCheck"), note = $("#pulseLiveDestinationStatus");
+  if (!state.isAdmin || !button || !note || state.busy) return;
+  button.disabled = true;
+  note.textContent = "Checking the Google relay without starting a broadcast…";
+  try {
+    const data = await liveApi("google-check", {}, "required");
+    const readiness = data.google || {};
+    const reasons = {
+      server_bridge_missing: "private Google controller URL or identity is missing",
+      google_identity_missing: "the protected Google invoker identity is missing in Supabase. The Cloud Run URL has been recovered automatically; an API key cannot authorize private Cloud Run.",
+      google_identity_invalid: "the existing Google invoker identity in Supabase is invalid. Correct the protected service-account setting; do not paste it in chat.",
+      google_controller_url_invalid: "the configured Google Cloud Run address is invalid. The standard nbl-pulse-live URL is recovered automatically only when it is absent.",
+      google_channel_id_invalid: "the private Google channel identifier is invalid. The known NBL channel name is nbl-pulse-channel.",
+      google_route_disabled: "Google routing is OFF in Pulse server configuration",
+      google_input_missing: "Google RTMP input is not provisioned",
+      google_channel_missing: "Google channel is not provisioned",
+      google_input_not_attached: "Google input is not attached to its channel",
+      google_output_not_configured: "private Google HLS output is not configured",
+      google_watchdog_or_start_disabled: "Google independent auto-stop or channel start is not enabled",
+      google_channel_not_stopped: "Google channel is not safely stopped",
+      google_controller_unreachable: "Pulse cannot reach the protected Google controller"
+    };
+    note.textContent = readiness.ready === true
+      ? "Google relay READY. Choose Pulse + Google relay to run a controlled paid test; Stream still supplies the camera."
+      : "Google relay NOT READY: " + (reasons[readiness.reason] || "check the Google setup") + ". No broadcast started. Pulse only works independently of Google.";
+    state.googleReady = state.isAdmin && readiness.ready === true;
+    state.googleCheckMessage = note.textContent;
+    const destination = $("#pulseLiveDestination");
+    const option = destination?.querySelector('option[value="google"]');
+    if (option) option.disabled = !state.googleReady;
+    if (!state.googleReady && destination?.value === "google") destination.value = "pulse";
+  } catch (error) {
+    state.googleReady = false;
+    const destination = $("#pulseLiveDestination");
+    const option = destination?.querySelector('option[value="google"]');
+    if (option) option.disabled = true;
+    if (destination?.value === "google") destination.value = "pulse";
+    note.textContent = "Google readiness check failed: " + plainError(error, "check Pulse backend status") + ". No broadcast started. Pulse only works independently of Google.";
+    state.googleCheckMessage = note.textContent;
+  } finally { button.disabled = false; }
+}
 async function onToggleLive() {
   if (state.busy) return;
   const enabled = !state.liveEnabled;
@@ -453,10 +597,20 @@ async function onStart() {
   if (state.busy) return;
   const title = ($("#pulseLiveTitleInput")?.value || "").trim().slice(0, 140) || DEFAULT_TITLE;
   const recordRequested = $("#pulseLiveRecord")?.checked === true;
-  const destination = $("#pulseLiveDestination")?.value || "pulse";
-  if ((destination === "facebook" && !state.facebookReady) || (destination === "google" && !state.googleReady)) { showError("The selected relay is not available. Choose Pulse only."); return; }
+  // Use existing Stream Video only. No optional Meta/Google relays in this pilot.
+  const destination = "pulse";
+  // Never silently start another destination when Google was chosen; move
+  // the picker to working Pulse-only mode and require a fresh Start click.
+  if (destination === "google" && !state.googleReady) {
+    const picker = $("#pulseLiveDestination");
+    if (picker) picker.value = "pulse";
+    showError("Google relay is not ready. Switched to Pulse only; press Start Live again to use Stream without Google.");
+    return;
+  }
+  if (destination === "facebook" && !state.facebookReady) { showError("Facebook relay is not ready. Choose Pulse only."); return; }
   if (!["pulse","facebook","google"].includes(destination)) return;
   const screenOnly = $("#pulseLiveScreenOnly")?.checked === true;
+  const screenMic = screenOnly && $("#pulseLiveScreenMic")?.checked === true;
   setBusy(true); showError(""); setStatus("Starting your backstage…");
   try {
     // Founder Start explicitly prepares the existing call-member screenshare grant.
@@ -472,11 +626,20 @@ async function onStart() {
   state.client = new VideoClient({ apiKey: data.key, user: { id: state.userId }, token: data.token });
     state.call = state.client.call(CALL_TYPE, data.callId);
     await joinWithoutCapture(state.call);
+    // Browser-side LiveBeats attaches only to this existing Stream call.
+    // Failure must never block ordinary camera/microphone broadcasting.
+    if (!screenOnly) {
+      try { state.liveBeatsCleanup = await setupLiveBeats(state.call); }
+      catch { state.liveBeatsCleanup = null; }
+    }
     state.screenOnly = screenOnly; state.screenReady = !screenOnly;
     // Start Live is the explicit user action that requests device access.
     // Permission denial leaves that device off and permits a backstage retry.
     if (!screenOnly) {
       try { await state.call.camera.enable(); } catch {}
+      try { await state.call.microphone.enable(); } catch {}
+    } else if (screenMic) {
+      // Explicit user choice: camera remains OFF; mic is optional in screen mode.
       try { await state.call.microphone.enable(); } catch {}
     }
     state.mode = "backstage";
@@ -485,14 +648,18 @@ async function onStart() {
     show("#pulseLiveSetup", false); show("#pulseLiveHost", true);
     show("#pulseLiveGoLive", true); show("#pulseLiveEnd", true);
     show("#pulseLivePreview", !screenOnly);
-    show("#pulseLiveMediaControls", !screenOnly);
-    if (!screenOnly) {
+    show("#pulseLiveMediaControls", !screenOnly || screenMic);
+    if (!screenOnly || screenMic) {
       state.mediaSubs = [state.call.camera.state.status$.subscribe(syncHostMedia), state.call.microphone.state.status$.subscribe(syncHostMedia)];
       syncHostMedia();
-      if (state.call.camera.state.status !== "enabled" || state.call.microphone.state.status !== "enabled") showError("Camera or microphone is off. Check access permissions or use the controls. You can continue with one enabled device.");
+      if (!screenOnly && state.call.camera.state.status !== "enabled" && state.call.microphone.state.status !== "enabled")
+        showError("Both camera and microphone are off. Turn on at least one device to broadcast.");
+      if (screenMic && state.call.microphone.state.status !== "enabled")
+        showError("Microphone is off. Use Unmute microphone before going live if you want viewers to hear you.");
     }
     setStatus(screenOnly
-      ? "Backstage — camera and microphone OFF. Click Go Live to choose a screen and broadcast."
+      ? (screenMic ? "Backstage — camera OFF, screen sharing selected. Check microphone status, then press Go Live to choose a screen."
+        : "Backstage — camera and microphone OFF. Click Go Live to choose a screen and broadcast.")
       : "Backstage — only you can see this. Press Go Live when ready.");
     state.sub = state.call.state.participants$.subscribe(renderHostPreview);
     startPoll();
@@ -520,7 +687,7 @@ async function onGoLive() {
   try {
     if (state.screenOnly && !state.screenReady) {
       choosingScreen = true;
-      setStatus("Choose a window or screen to broadcast. Camera and microphone stay OFF.");
+      setStatus("Choose a window or screen to broadcast. Camera stays OFF; microphone follows your setting.");
       await state.call.screenShare.enable();
       choosingScreen = false;
       state.screenReady = true;
@@ -568,7 +735,10 @@ async function onEnd() {
   show("#pulseLivePreview", false); show("#pulseLiveViewer", false);
   show("#pulseLiveGoLive", false); show("#pulseLiveEnd", false);
   show("#pulseLiveSetup", true); show("#pulseLiveHost", false);
-  setStatus(wasLive ? (state.recordingRequested ? "Live ended. Your recording may take a few minutes to process; use Find latest saved livestream." : "Stream ended. Thanks for going live on Pulse.") : "Stream ended.");
+  setStatus(wasLive ? (state.recordingRequested
+    ? "Live ended. Your saved video may take a few minutes to process; select My saved Live videos to find it."
+    : "Live ended successfully. No video was saved because Save this Live video was OFF.")
+    : "Backstage ended. No broadcast or recording was made.");
 }
 
 async function onFindRecording() {
@@ -586,15 +756,45 @@ async function onFindRecording() {
     result.replaceChildren();
     for (const item of data.recordings) {
       if (typeof item.url !== "string" || !item.url.startsWith("https://")) continue;
+      const row = document.createElement("div");
+      row.className = "pulse-recording-row";
       const link = document.createElement("a");
       link.href = item.url;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      link.textContent = "Open saved video: " + (item.filename || "Pulse Live");
-      result.append(link, document.createElement("br"));
+      link.textContent = "Watch or download: " + (item.filename || "Pulse Live");
+      row.append(link);
+      if (typeof data.callId === "string" && typeof item.sessionId === "string" && item.sessionId && item.filename) {
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "btn small";
+        remove.textContent = "Delete recording";
+        remove.setAttribute("aria-label", "Delete saved Pulse Live recording " + item.filename);
+        remove.addEventListener("click", async () => {
+          if (!window.confirm("Permanently delete this saved Pulse Live recording from Stream? It cannot be undone. This does not remove copies already shared elsewhere.")) return;
+          remove.disabled = true;
+          try {
+            const deleted = await liveApi("delete-recording", {
+              callId: data.callId, sessionId: item.sessionId, filename: item.filename, confirm: "delete"
+            }, "required");
+            if (deleted?.deleted !== true) throw Error("Recording deletion was not confirmed.");
+            // Show removal only after provider confirms deletion.
+            row.remove();
+            if (!result.querySelector(".pulse-recording-row"))
+              result.replaceChildren("Recording deleted from Stream. Copies shared elsewhere are not removed.");
+          } catch (error) {
+            remove.disabled = false;
+            showError(plainError(error, "Could not delete the recording. It has not been marked deleted."));
+          }
+        });
+        row.append(remove);
+      }
+      result.append(row);
     }
   } catch (error) {
-    result.replaceChildren(plainError(error, "Could not retrieve the recording yet."));
+    if (error?.reason === "recording_not_found")
+      result.replaceChildren("No saved Live video exists yet. To save your next broadcast, select Save this Live video before Start Live.");
+    else result.replaceChildren(plainError(error, "Could not retrieve the recording yet."));
   } finally { button.disabled = false; }
 }
 
@@ -602,15 +802,12 @@ async function onFindRecording() {
 // exact control (never clone it) into the scrollable Pulse feed so all buttons
 // remain tappable, while restoring its original desktop sidebar placement.
 function placeLivePanel() {
+  // Muse redesign: move the ONE existing, current Pulse Live panel into its view.
+  // This does not recreate or change any Stream, Meta, Google, or device controls.
   const root = $("#pulseLive");
-  const sidebar = document.querySelector("#socialApp .pulse-sidebar");
-  const main = document.querySelector("#socialApp .pulse-main");
-  if (!root || !sidebar || !main) return;
-  if (window.matchMedia("(max-width: 760px)").matches) {
-    if (root.parentElement !== main) main.insertBefore(root, main.querySelector("#feedPanel"));
-  } else if (root.parentElement !== sidebar) {
-    sidebar.insertBefore(root, sidebar.querySelector(".pulse-create-shortcut"));
-  }
+  const slot = $("#pulseLiveView");
+  if (!root || !slot) return;
+  if (root.parentElement !== slot) slot.append(root);
 }
 
 export function initPulseLive() {
@@ -620,24 +817,41 @@ export function initPulseLive() {
   // Desktop-only screen capture must not replace the normal camera/mic path
   // on phones where window/tab selection is generally unavailable.
   const option = $("#pulseLiveScreenOnly");
+  const screenMicOption = $("#pulseLiveScreenMicOption");
+  const screenMic = $("#pulseLiveScreenMic");
+  const recordChoice = $("#pulseLiveRecord");
+  // Never restore a previously checked recording preference by accident.
+  if (recordChoice) recordChoice.checked = false;
   const mobile = window.matchMedia("(max-width: 760px)");
   const syncScreenOption = () => {
     if (!option) return;
     const unsupported = mobile.matches || typeof navigator.mediaDevices?.getDisplayMedia !== "function";
     option.disabled = unsupported;
     if (unsupported) option.checked = false;
+    if (screenMic && unsupported) screenMic.checked = false;
+    if (screenMicOption) screenMicOption.hidden = unsupported || !option.checked;
     const label = option.closest("label");
     if (label) label.hidden = unsupported;
   };
   syncScreenOption();
+  option?.addEventListener("change", syncScreenOption);
   mobile.addEventListener("change", () => { placeLivePanel(); syncScreenOption(); });
   $("#pulseLiveStart")?.addEventListener("click", () => { void onStart(); });
   $("#pulseLiveCameraToggle")?.addEventListener("click", () => { void toggleHostMedia("camera"); });
   $("#pulseLiveMicToggle")?.addEventListener("click", () => { void toggleHostMedia("microphone"); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
+  $("#pulseGoogleCheck")?.addEventListener("click", () => { void onGoogleCheck(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
   $("#pulseLiveEnd")?.addEventListener("click", () => { void onEnd(); });
   $("#pulseLiveFindRecording")?.addEventListener("click", () => { void onFindRecording(); });
+  document.addEventListener("pulse:view-change", (event) => {
+    if (event.detail?.view === "live") {
+      if (!state.busy) void refreshStatus(false);
+    } else if (state.mode === "viewing") {
+      // Leave the viewer call only; NEVER stop the host broadcast.
+      void teardownStream();
+    }
+  });
   window.addEventListener("pagehide", () => {
     stopPoll(); stopTimer();
     // Leave only — never POST end on unload (a refresh must not kill the stream).

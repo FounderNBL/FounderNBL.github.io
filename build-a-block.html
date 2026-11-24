@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Operation Build-A-Block | NBL Communities</title>
+<meta name="description" content="Freddie Pickens and New Beansland present Operation Build-A-Block, a neighborhood initiative. Explore its mission, first pilot and opportunities to support the work.">
+<meta name="robots" content="index,follow"><meta name="theme-color" content="#071827">
+<link rel="canonical" href="https://newbeansland.org/build-a-block.html">
+<link rel="icon" type="image/png" href="/assets/brand/nbl-official-mark.png?v=9e7ecbb9">
+<style>
+:root{--night:#02060b;--blue:#0c2137;--gold:#e9bf70;--cream:#f6eee3;--line:#3c5269;--muted:#bfceda}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:85px}body{margin:0;color:var(--cream);background:var(--night);font:16px/1.6 Arial,Helvetica,sans-serif}a{color:inherit}a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}.container{width:min(1130px,calc(100% - 36px));margin:auto}header{background:#081a2c;border-bottom:2px solid var(--gold);padding:16px 0}header .container{display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:900;letter-spacing:.09em}.brand img{width:42px;height:42px;object-fit:contain}.back{font-size:.85rem;color:var(--gold);text-decoration:none;font-weight:800}.hero{background:radial-gradient(ellipse at 80% 10%,#1b4c74 0%,#061421 65%);padding:69px 0 72px}.eyebrow{font-size:.76rem;font-weight:900;color:var(--gold);letter-spacing:.14em;text-transform:uppercase}.hero h1{font:900 clamp(2.4rem,6.3vw,5rem)/1.03 Georgia,serif;max-width:920px;margin:14px 0 18px}.hero h1 span{display:block;color:var(--gold)}.tagline{font:700 clamp(1.2rem,3vw,1.65rem)/1.3 Georgia,serif;color:#ffe2a5}.lead{font-size:1.1rem;max-width:820px;color:#dfebf5}.status{display:inline-block;background:#1b3c57;padding:7px 14px;border:1px solid #7c8da2;border-radius:30px;color:#e3eefa;font-size:.78rem;font-weight:800}.buttons{display:flex;gap:12px;flex-wrap:wrap;margin:23px 0}.button{display:inline-flex;align-items:center;justify-content:center;background:var(--gold);color:#0a1928;padding:12px 18px;min-height:46px;border-radius:8px;text-decoration:none;font-weight:900}.button.secondary{border:1px solid var(--gold);color:var(--cream);background:transparent}section{padding:58px 0}section.alt{background:#081a2d}.sectiontitle{font:700 clamp(1.7rem,3.5vw,2.6rem)/1.16 Georgia,serif;margin:6px 0 20px;color:#fff}.intro{max-width:800px;color:var(--muted)}.grid{display:grid;gap:16px}.two{grid-template-columns:repeat(2,minmax(0,1fr))}.three{grid-template-columns:repeat(3,minmax(0,1fr))}.card{border:1px solid var(--line);border-radius:11px;background:#0e2840;padding:24px}.card h3{color:var(--gold);margin:0 0 10px;font:700 1.22rem Georgia,serif}.card p{margin:0;color:#dce5ee;font-size:.94rem}.card small{color:#a8bcd0}.quote{border-left:5px solid var(--gold);padding:18px 22px;background:#142c42;font:italic 1.2rem/1.55 Georgia,serif}.step{padding:20px 22px;border-left:4px solid var(--gold);background:#0b2238;border-radius:0 9px 9px 0}.step strong{display:block;color:#f0c579}.step span{font-size:.92rem;color:#d6e1eb}.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:13px}table{width:100%;border-collapse:collapse;min-width:600px}th,td{padding:14px 16px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#183a59;color:#ffe0a1;text-transform:uppercase;letter-spacing:.06em;font-size:.76rem}td{background:#0b2237}tr:nth-child(even) td{background:#0e2a42}td:nth-child(2){text-align:right;font-weight:800;white-space:nowrap;color:#ffe0a1}tr:last-child td{font-weight:900;border-bottom:0;color:#ffe0a1}.note{color:#c7d7e7;background:#132d41;border:1px solid var(--line);border-radius:9px;padding:17px 20px;margin:22px 0 0}.note strong{color:#fff}.steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.badge{display:inline-block;border:1px solid var(--gold);border-radius:50px;padding:4px 10px;font-size:.72rem;font-weight:800;color:var(--gold)}.small{font-size:.88rem;color:#b7c8d9}.contact{border:1px solid #d4a967;border-radius:15px;padding:28px;background:#153651}.contact h3{margin:0 0 8px;color:var(--gold);font:700 1.5rem Georgia,serif}footer{padding:28px 0;border-top:1px solid #324c61;font-size:.8rem;color:#a8bdcf}.footerflex{display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap}@media(max-width:750px){.two,.three,.steps{grid-template-columns:1fr}.hero{padding:52px 0}.hero h1{font-size:clamp(2.4rem,9vw,4rem)}.buttons .button{width:100%}section{padding:44px 0}.card{padding:20px}}
+
+/* Build-A-Block public interaction layer: no backend writes or payment collection. */
+.quick-nav{display:flex;gap:9px;flex-wrap:wrap;margin:24px 0 0}.quick-nav a{border:1px solid #6c8ca3;border-radius:24px;padding:9px 13px;font-size:.83rem;text-decoration:none;font-weight:800;background:#0b263b}.quick-nav a:hover,.quick-nav a:focus-visible{background:#214765;color:#fff}
+.program-card{position:relative;display:flex;flex-direction:column}.program-card summary{cursor:pointer;color:var(--gold);font-weight:850;min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px;list-style:none}.program-card summary::-webkit-details-marker{display:none}.program-card summary::after{content:"+";font-size:1.6rem;line-height:1}.program-card[open] summary::after{content:"−"}.program-card p{margin:4px 0 0}.program-card .action{display:inline-flex;align-items:center;margin-top:16px;color:#ffdd9b;font-weight:800;text-decoration:underline;text-underline-offset:3px}.program-card p,.program-card li{color:#dce5ee;font-size:.94rem}.program-card ul{padding-left:18px;margin-bottom:3px}
+.faq details{border:1px solid var(--line);border-radius:10px;background:#0c253d;margin-bottom:12px;padding:13px 20px}.faq summary{cursor:pointer;font-weight:800;color:#fff;min-height:35px;display:flex;align-items:center}.faq details p{color:#cddde9;max-width:75ch;margin:6px 0 9px}
+.interest-form{margin-top:21px;padding:22px;border:1px solid #7590a9;background:#0a253e;border-radius:12px}.interest-form .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.interest-form label{display:flex;flex-direction:column;gap:6px;font-size:.89rem;font-weight:800}.interest-form input,.interest-form select,.interest-form textarea{width:100%;border-radius:7px;padding:12px 13px;background:#fff;color:#101d2c;border:2px solid #a9bac9;font:inherit;min-height:46px}.interest-form textarea{min-height:100px;resize:vertical}.interest-form .full{grid-column:1/-1}.interest-form input:focus-visible,.interest-form select:focus-visible,.interest-form textarea:focus-visible,.interest-form button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}.interest-form .consent{flex-direction:row;align-items:start;gap:10px;font-weight:400}.interest-form .consent input{width:20px;min-height:20px;height:20px;flex:none;margin-top:3px}.interest-form .notice{color:#c7d9e7;font-size:.85rem}.interest-form button{border:0;cursor:pointer;font:900 .92rem Arial,Helvetica,sans-serif}.interest-form [role=status]{min-height:26px;color:#ffe2a1;font-weight:800}
+@media(max-width:700px){.interest-form .fields{grid-template-columns:1fr}.interest-form{padding:17px}.quick-nav{gap:7px}.quick-nav a{font-size:.78rem}}
+.hero-image{display:block;margin:25px 0 18px;border-radius:14px;overflow:hidden;border:1px solid #c8a45e;box-shadow:0 15px 40px #0007;background:#0b2338}.hero-image img{display:block;width:100%;height:auto}.hero-image figcaption{font-size:.76rem;padding:7px 12px;color:#cbdbea;background:#0c233a}.hero-image:hover img{filter:brightness(1.04)}
+</style></head><body>
+<header><div class="container"><a class="brand" href="/"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland official mark">NEW BEANSLAND</a><a class="back" href="/">Return to NBL World</a></div></header>
+<main>
+<section class="hero"><div class="container">
+<p class="eyebrow">Freddie Pickens and New Beansland bring you…</p>
+<h1>Operation <span>Build-A-Block</span></h1>
+<p class="tagline">Start With a Block. Build a Community.</p>
+<figure class="hero-image"><a href="#programs" aria-label="Explore the four Build-A-Block programs"><img src="/file_00000000474481f5986763efd34915a7.png" width="1648" height="1000" alt="NBL Operation Build-A-Block artwork showing people working together to improve their neighborhood, with It Takes a Village message" decoding="async" loading="eager"></a><figcaption>Concept illustration of the community vision, not photographs of an actual completed NBL project.</figcaption></figure>
+<p class="lead">A real-world community initiative developed through NBL Communities. Our starting point is one neighborhood, one achievable project and the people who want to help make it better.</p>
+<p><span class="status">First pilot in planning · Not yet launched</span></p>
+<p class="small">A vision originated by Freddie Pickens, with organizational and technology support from New Beansland.</p>
+<div class="buttons"><a class="button" href="#pilot">Explore the first project</a><a class="button secondary" href="#contact">Talk to NBL about supporting it</a></div>
+
+<nav class="quick-nav" aria-label="Explore Operation Build-A-Block">
+<a href="#mission">Our mission</a><a href="#programs">Programs</a><a href="#pilot">First block</a><a href="#questions">Questions</a><a href="#get-involved">Get involved</a><a href="#get-involved" data-interest-link="sponsor">Support the project</a>
+</nav>
+</div></section>
+<section id="mission"><div class="container">
+<p class="eyebrow">Why we exist</p><h2 class="sectiontitle">The mission</h2>
+<blockquote class="quote">Operation Build-A-Block is a New Beansland community initiative originated by Freddie Pickens. Our mission is to bring neighbors and families together to improve their communities through neighborhood beautification, youth opportunities, support for elders, and people helping one another. We start with one block, demonstrate what working together can accomplish, and build from there.</blockquote>
+<p class="intro">The long-term vision is a network of stronger neighborhood relationships, constructive opportunities for young people and repeatable community improvement projects. This is a real on-the-ground initiative, not a fictional NBL World activity.</p>
+<div class="grid two"><article class="card"><h3>Freddie Pickens</h3><p>Originator and community program lead: local relationships, resident outreach and organizing the projects.</p></article><article class="card"><h3>New Beansland</h3><p>Existing company infrastructure: website, creative production, communications, budgeting, documentation and support.</p></article></div>
+</div></section>
+<section class="alt" id="programs"><div class="container">
+<p class="eyebrow">What we are building</p><h2 class="sectiontitle">Four areas of community work</h2>
+
+<div class="grid two">
+<details class="card program-card"><summary>Neighborhood beautification</summary><p>Help make the block a better place to live with resident-led cleanups, approved planting, and care for shared spaces.</p><ul><li>Volunteer cleanup and supply teams</li><li>Community-selected projects</li><li>Before-and-after reporting only after work happens</li></ul><a href="#get-involved" class="action" data-interest-link="volunteer">I want to help</a></details>
+<details class="card program-card"><summary>Youth opportunities</summary><p>Positive ways for young people to participate in their community, learn teamwork, and explore future skills programs.</p><ul><li>Supervised projects only</li><li>Parent or guardian involvement for minors</li><li>No paid jobs or stipends advertised at this stage</li></ul><a href="#get-involved" class="action" data-interest-link="family">Ask about youth involvement</a></details>
+<details class="card program-card"><summary>Support for elders</summary><p>Neighbors showing up for older community members through safe, consent-based assistance and connections.</p><ul><li>Listen to what residents actually need</li><li>Organize appropriate local volunteer help</li><li>No medical, home repair or personal-care services promised</li></ul><a href="#get-involved" class="action" data-interest-link="neighbor">Share a neighborhood need</a></details>
+<details class="card program-card"><summary>Community collaboration</summary><p>Bring residents, businesses, supporters and volunteers together to build local pride and organize real improvement projects.</p><ul><li>Suggest a block or activity</li><li>Support with supplies or services</li><li>Ask about a business sponsorship</li></ul><a href="#get-involved" class="action" data-interest-link="partner">Explore a partnership</a></details>
+</div>
+</div></section>
+<section id="pilot"><div class="container">
+<p class="eyebrow">Proposed first pilot</p><h2 class="sectiontitle">One block. One real project. Real results.</h2>
+<p class="intro">Our first pilot is a small, organized neighborhood cleanup or beautification effort. The specific block, date, residents, equipment and permissions are still being selected. We will not claim work has happened before it does.</p>
+<div class="steps"><div class="step"><strong>01 · Listen and select</strong><span>Freddie meets neighbors and identifies a block where people welcome the work.</span></div><div class="step"><strong>02 · Plan it safely</strong><span>Confirm permissions, insurance needs, tools, volunteers and supervision.</span></div><div class="step"><strong>03 · Make the improvement</strong><span>Carry out manageable work with clear responsibilities and safe boundaries.</span></div><div class="step"><strong>04 · Report and repeat</strong><span>Document actual costs, before-and-after results and feedback; plan the next block.</span></div></div>
+</div></section>
+<section id="execution"><div class="container">
+<p class="eyebrow">First 90 days</p><h2 class="sectiontitle">How the launch would work</h2>
+<div class="grid three"><article class="card"><span class="badge">Days 1–21</span><h3>Organize</h3><p>Meet residents, confirm the first block, define the task, recruit volunteers, plan safety and estimate costs.</p></article><article class="card"><span class="badge">Days 22–45</span><h3>First project</h3><p>Secure needed permissions and supplies, assign leaders, complete the first approved neighborhood improvement.</p></article><article class="card"><span class="badge">Days 46–90</span><h3>Show the results</h3><p>Share verified project outcomes, review actual expenses, gather feedback and prepare for the next block.</p></article></div>
+<p class="note">Year-one goal: up to three completed, documented pilot projects, depending on available funding, permissions, volunteer participation and safety capacity. This is a goal, not a guarantee.</p>
+</div></section>
+
+<section class="alt" id="questions"><div class="container">
+<p class="eyebrow">Common questions</p><h2 class="sectiontitle">Learn before you join</h2>
+<div class="faq">
+<details><summary>Is Operation Build-A-Block happening now?</summary><p>The program is in planning. The first location and event date have not been announced. We are inviting interest and conversations while the first project is organized.</p></details>
+<details><summary>Who can get involved?</summary><p>Neighbors, adult volunteers, families, local businesses and community organizations may contact New Beansland. Youth participation will require suitable supervision and parent or guardian permission when applicable.</p></details>
+<details><summary>Can I suggest a block or community need?</summary><p>Yes. Choose “Suggest a neighborhood project” in the interest form and describe the location generally. Please do not include somebody else's private address or personal information.</p></details>
+<details><summary>Is this a paid job or employment program?</summary><p>No job openings, wages or stipends are currently being offered through this page. Opportunities may be developed later with appropriate funding and legal arrangements.</p></details>
+<details><summary>Can my business sponsor or support the program?</summary><p>Yes, you can request a discussion. Any sponsorship or funding arrangement must be reviewed and agreed in writing before money moves. This page is not a charitable donation checkout and does not offer tax-deductible receipts.</p></details>
+<details><summary>Will I be signed up when I press the interest button?</summary><p>The button opens a prepared email in your mail application. You must review and send it yourself. The website does not automatically save your information or enroll you in a database.</p></details>
+</div></div></section>
+<section id="contact"><div class="container" id="get-involved">
+<div class="contact"><p class="eyebrow">Make your block part of the conversation</p><h2 class="sectiontitle">Get involved with Build-A-Block</h2>
+<p>Choose how you'd like to help: volunteer, suggest a project, connect as a neighbor, or talk about business support. No event or opportunity is being promised yet.</p>
+<form id="block-interest" class="interest-form">
+<div class="fields">
+<label>Your name <input name="name" type="text" autocomplete="name" required maxlength="100"></label>
+<label>Your email <input name="email" type="email" autocomplete="email" required maxlength="160"></label>
+<label class="full">I'm interested in
+<select name="interest" required>
+<option value="">Choose how you'd like to participate</option>
+<option value="volunteer">Volunteering for a neighborhood project</option>
+<option value="family">Youth / family involvement</option>
+<option value="neighbor">Suggesting a neighborhood project</option>
+<option value="partner">Community or business partnership</option>
+<option value="sponsor">Business sponsorship conversation</option>
+<option value="general">Learning more about the initiative</option>
+</select></label>
+<label class="full">Your message (optional) <textarea name="message" maxlength="800" placeholder="Tell us how you would like to help. Please do not include sensitive personal details."></textarea></label>
+<label class="full consent"><input name="consent" type="checkbox" required><span>I understand this opens an email for me to review and send. The website will not automatically register me or save my information.</span></label>
+</div>
+<p class="notice">For youth participation, a parent or guardian should make the first inquiry. Please don't send a minor's personal information. No money is collected on this page.</p>
+<button class="button" type="submit">Prepare my message to NBL</button>
+<p id="block-interest-status" role="status" aria-live="polite"></p>
+<noscript><p>JavaScript is required to prepare your message. You can still email <a href="mailto:founder@newbeansland.org?subject=Operation%20Build-A-Block%20Interest">founder@newbeansland.org</a> directly.</p></noscript>
+</form>
+</div></div></section>
+</main>
+<footer><div class="container footerflex"><span>New Beansland · NBL Communities · © 2026</span><span>Originated by Freddie Pickens · Community involvement by arrangement</span></div></footer>
+
+<script>
+/* No data collection service, payment provider, or unsupported registration claim. */
+(()=>{"use strict";
+const form=document.getElementById("block-interest");
+const picker=form?.elements.namedItem("interest");
+const status=document.getElementById("block-interest-status");
+if(!form||!picker||!status)return;
+document.querySelectorAll("[data-interest-link]").forEach(link=>link.addEventListener("click",()=>{
+const choice=link.getAttribute("data-interest-link");
+if(Array.from(picker.options).some(option=>option.value===choice))picker.value=choice;
+}));
+form.addEventListener("submit",event=>{
+event.preventDefault();
+if(!form.reportValidity())return;
+const data=new FormData(form);
+const name=String(data.get("name")||"").trim();
+const email=String(data.get("email")||"").trim();
+const type=String(data.get("interest")||"");
+const message=String(data.get("message")||"").trim();
+if(!name||!email||!type||!data.get("consent"))return;
+const subject="Operation Build-A-Block interest: "+type;
+const body=[
+"Hello New Beansland,",
+"",
+"I would like to connect about Operation Build-A-Block.",
+"Name: "+name,
+"Email: "+email,
+"Interest: "+picker.selectedOptions[0].textContent.trim(),
+"Message: "+(message||"No additional details."),
+"",
+"Please let me know the next steps."
+].join("\n");
+const url="mailto:founder@newbeansland.org?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(body);
+status.textContent="Your email application should open with a prepared message. Review it and press Send there; this website does not submit or store your request.";
+window.location.href=url;
+});
+})();
+</script></body></html>

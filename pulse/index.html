@@ -21,7 +21,11 @@
 <link rel="stylesheet" href="/messenger/app.css?v=20261020-separation">
 <link rel="stylesheet" href="/messenger/social-v1.css?v=20261119-meta-community-v1">
 <link rel="stylesheet" href="/pulse/pulse-skin.css?v=20261119-independent-columns-v1">
-<script type="module" src="/messenger/social-v1.mjs?v=20261121-pulse-connect-v1"></script>
+<script type="module" src="/messenger/social-v1.mjs?v=20261123-ai-draft-clear-v1"></script>
+<script type="module" src="/pulse/ai-image-intake.mjs?v=20261123-image-clipboard-v1"></script>
+<link rel="stylesheet" href="/pulse/pulse-studios.css?v=20261123-free-beats-v2">
+<script type="module" src="/pulse/pulse-studios.mjs?v=20261123-free-beats-v1"></script>
+<script type="module" src="/pulse/studios-media.mjs?v=20261123-free-beats-v1"></script>
 <script type="module" src="/pulse/pulse-google-insights.mjs?v=20261118-consent-v1"></script>
 <style>
 .pulse-post-menu{margin-left:auto;position:relative;flex-shrink:0;color:var(--cream)}.pulse-post-menu summary{list-style:none;cursor:pointer;min-width:44px;min-height:44px;display:grid;place-items:center;font-size:1.6rem;line-height:1;border:1px solid var(--line);border-radius:10px;background:#211536;color:#f5ebff}.pulse-post-menu summary::-webkit-details-marker{display:none}.pulse-post-menu-options{position:absolute;right:0;top:100%;min-width:150px;max-width:260px;z-index:8;display:grid;gap:5px;padding:8px;background:#221634;border:1px solid #744e98;border-radius:10px;box-shadow:0 8px 24px #0008}.pulse-post-menu-options button{text-align:left;padding:10px;cursor:pointer;border:0;border-radius:7px;background:#3b2857;color:#f6ecff;font:inherit;white-space:nowrap}.pulse-post-menu-options .pulse-post-delete{color:#ffb6c2}.pulse-post-menu-options button:disabled{opacity:.5}.pulse-post-menu-options .social-feedback:empty{display:none}.pulse-post-menu-options .social-feedback{overflow-wrap:anywhere}
@@ -88,19 +92,34 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
 <link rel="stylesheet" href="/pulse/pulse-founder-ui.css?v=20261118-live-visibility">
 <link rel="stylesheet" href="/pulse/pulse-mobile-app.css?v=20261121-pulse-connect-v1" media="(max-width: 760px)">
 <script type="module" src="/pulse/pulse-invites.mjs?v=20261110-cross-app"></script>
-<script type="module" src="/pulse/live.mjs?v=20261121-live-media-v2"></script>
+<script type="module" src="/pulse/live.mjs?v=20261123-stream-only-pilot-v1"></script>
 <link rel="stylesheet" href="/pulse/pulse-story-highlights.css?v=20261121-existing-video">
 <script type="module" src="/pulse/pulse-story-highlights.mjs?v=20261121-existing-video"></script>
 <link rel="stylesheet" href="/pulse/pulse-meta-business.css?v=20261121-live-meta-business-v1">
-<script type="module" src="/pulse/business-assets.mjs?v=20261121-live-meta-business-v1"></script></head><body class="pulse-body">
-<header class="pulse-topbar" aria-label="NBL Pulse site navigation">
-  <a class="pulse-company-logo" href="/" aria-label="New Beansland home"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="" width="40" height="40"><span class="pulse-company-wordmark">NBL<small>New Beansland™</small></span></a>
-  <nav class="pulse-site-nav" aria-label="NBL destinations">
-    <a href="/chat.html">Beans</a><a href="/pulse/" class="pulse-site-current" aria-current="page"><img class="pulse-mark" src="/NBL%20Pulse_Icon.png" width="32" height="32" alt=""> Pulse</a>
-    <a href="/studios.html">Studios</a><a href="/studio/">Music</a><a href="/books.html">Books</a><a href="/games.html" title="NBL Games — coming soon">Games</a>
+<script type="module" src="/pulse/business-assets.mjs?v=20261121-live-meta-business-v1"></script><script>try{document.documentElement.dataset.theme=localStorage.getItem("pulse-appearance")||"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
+<link rel="stylesheet" href="/pulse/pulse-redesign.css?v=20261122-mobile-live-v1">
+<script type="module" src="/pulse/redesign.mjs?v=20261122-live-discovery-v1"></script></head><body class="pulse-body">
+<header class="pulse-topbar">
+  <a class="pulse-brand" href="/"><img src="/assets/brand/nbl-official-mark.png?v=9e7ecbb9" alt="New Beansland" width="40" height="40"> <span class="pulse-company-wordmark">NBL<small>New Beansland™</small></span><strong>Pulse</strong></a>
+  <div class="pulse-search" role="search">
+    <label class="pulse-visually-hidden" for="pulseSearch">Search Beats in your feed</label>
+    <input id="pulseSearch" type="search" placeholder="Search Beats in your feed" autocomplete="off" aria-label="Search Beats in your feed">
+  </div>
+  <button id="pulseSearchToggle" type="button" aria-label="Search Pulse" aria-expanded="false" aria-controls="pulseSearch"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  <nav class="pulse-tabs" aria-label="Pulse views">
+    <button data-feed="foryou" type="button" aria-pressed="true" aria-current="page" data-view="home" aria-current="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 11.5 12 3l9 8.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10.5V21h13V10.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Home</span></button>
+    <button data-view="watch" type="button" aria-current="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></svg><span>Watch</span></button>
+    <button data-view="live" type="button" aria-current="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>Live</span></button>
+    <button data-view="messages" type="button" aria-pressed="false" aria-current="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Messages</span></button>
+    <button data-feed="notification" type="button" aria-pressed="false" aria-current="false" data-view="notifications" aria-current="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Notifications</span></button>
   </nav>
-  <details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user">My Beats</button><button type="button" data-feed="friends">People</button><a href="/account.html">My account</a><a href="#pulseLive">Go Live controls</a><a href="/messenger/">Pulse Connect</a><a href="/pulse/guide.html">Help, Costs &amp; Privacy</a></div></details>
-  <nav class="pulse-account-nav" aria-label="Your NBL account"><button class="pulse-header-action" type="button" data-feed="friends" aria-label="Explore NBL members" title="Find members"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.7" cy="10.7" r="6.6"/><path d="m16 16 5 5"/></svg></button><button class="pulse-header-action" type="button" data-feed="notification" aria-label="View Pulse notifications" title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button><a class="pulse-message-top" href="/messenger/" aria-label="Open Pulse Connect separately"><img src="/messenger/icon.svg" width="34" height="34" alt=""></a><a class="pulse-account-link" href="/account.html">My Account</a></nav>
+  <div class="pulse-top-actions">
+    <button type="button" class="pulse-explore-top" data-feed="friends" aria-label="Explore NBL members" data-view="friends" title="Find members">⌕</button>
+    <button id="pulseCreateTop" type="button" class="pulse-create-btn"><span aria-hidden="true">+</span> Create</button>
+    <button id="pulseBellTop" data-feed="notification" aria-label="View Pulse notifications" data-view="notifications" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 9a6 6 0 1 1 12 0c0 5 2 6 2 6H4s2-1 2-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="pulse-badge" id="pulseNotifBadge" hidden></span></button>
+    <button id="pulseMessagesTop" data-view="messages" type="button" aria-label="Messages" aria-pressed="false"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span class="pulse-badge" id="pulseMessageBadge" hidden></span></button>
+    <button id="pulseMenuTop" data-view="menu" type="button" aria-label="Menu" aria-current="false"><img src="/messenger/icon.svg" width="34" height="34" alt=""></button>
+  </div>
 </header>
 <main class="social-shell pulse-shell">
   <div class="preview-bar" role="note">NBL PULSE · LIVE on New Beansland · Community posts, comments and friends</div>
@@ -113,6 +132,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
       <details class="pulse-avatar-settings"><summary class="btn small">Profile picture</summary>
         <label for="profileAvatarFile">Choose your NBL profile photo</label>
         <input id="profileAvatarFile" type="file" accept="image/jpeg,image/png,image/webp">
+        <button class="btn small" id="psOpenProfile" type="button">Edit with PhotoBeats (free)</button>
         <button class="btn small" id="saveProfileAvatar" type="button">Save picture</button>
         <p id="profileAvatarStatus" class="social-feedback" role="status"></p>
       </details>
@@ -121,6 +141,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
       <summary class="btn small">Connect account <span aria-hidden="true">▾</span></summary>
       <div class="pulse-connect-menu">
         <strong>Account connections</strong>
+        <a href="/pulse/tiktok-callback.html"><b>♪</b><span>Connect TikTok<small>Check TikTok before uploading any video</small></span></a>
         <a href="https://accounts.newbeansland.org/user?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F"><b>f</b><span>Facebook <small>Manage Facebook sign-in in your NBL account</small></span></a>
         <button id="manageBusinessAssets" type="button"><b>↔</b><span>Manage Business Assets <small>Existing Meta business, Pages and Instagram</small></span></button>
         <a href="https://accounts.newbeansland.org/user?redirect_url=https%3A%2F%2Fnewbeansland.org%2Fpulse%2F"><b>G</b><span>Google <small>Manage Google sign-in in your NBL account</small></span></a>
@@ -167,16 +188,19 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
   <section id="socialApp" hidden aria-label="NBL Pulse activity feeds"><div class="pulse-grid"><aside class="pulse-sidebar" tabindex="0" aria-label="Pulse navigation column">
   <h2><img class="pulse-mark" src="/NBL%20Pulse_Icon.png" width="32" height="32" alt=""> NBL Pulse<span aria-hidden="true">™</span></h2>
   <nav class="social-tabs" aria-label="Choose an activity feed">
-    <button data-feed="foryou" type="button" aria-pressed="true"><span class="pulse-nav-glyph" aria-hidden="true">⌂</span><span>Home <small>(For You)</small></span></button>
-    <button data-feed="timeline" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">◎</span><span>Following</span></button>
-    <button data-feed="user" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">▤</span><span>My Beats</span></button>
-    <button data-feed="friends" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">⌕</span><span>Pulse Explore <small>(People)</small></span></button>
+    <button data-feed="foryou" type="button" aria-pressed="true" data-view="home" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">⌂</span><span>Home <small>(For You)</small></span></button>
+    <button data-feed="timeline" type="button" aria-pressed="false" data-view="following" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">◎</span><span>Following</span></button>
+    <button data-feed="user" type="button" aria-pressed="false" data-view="myposts" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">▤</span><span>My Beats</span></button>
+    <button data-feed="friends" type="button" aria-pressed="false" data-view="friends" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">⌕</span><span>Pulse Explore <small>(People)</small></span></button>
     <a class="pulse-nav-stories" href="#pulseStories"><span class="pulse-nav-glyph" aria-hidden="true">◯</span><span>Stories <small>Video highlights</small></span></a>
     <a class="pulse-nav-live" href="#pulseLive"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live <small id="pulseLiveNavStatus">Checking…</small></span></a>
-    <button data-feed="notification" type="button" aria-pressed="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
-    <button id="pulseUnifiedInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open Pulse Connect private messaging"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Connect</span></button>
+    <button data-feed="notification" type="button" aria-pressed="false" data-view="notifications" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">♢</span><span>Notifications</span></button>
+    <button id="pulseUnifiedInboxNav" type="button" class="pulse-message-tab" hidden aria-label="Open Pulse Connect private messaging" data-view="messages" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Connect</span></button>
     <button id="pulseMemberInboxNav" type="button" class="pulse-message-tab pulse-legacy-message-tab" hidden aria-label="Open private NBL member messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Connect</span></button>
     <button id="pulseInstagramInboxNav" type="button" class="pulse-message-tab pulse-legacy-message-tab" hidden aria-label="Open Instagram Direct messages inside Pulse"><span class="pulse-nav-glyph" aria-hidden="true">✉</span><span>Instagram DMs</span></button>
+    <button type="button" data-view="watch" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">▶</span><span>Watch</span></button>
+    <button type="button" data-view="live" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">◉</span><span>Live</span></button>
+    <button type="button" data-view="menu" aria-current="false"><span class="pulse-nav-glyph" aria-hidden="true">☰</span><span>Menu</span></button>
     <a href="#composeTitle" class="pulse-mobile-create" aria-label="Create a Beat"><span aria-hidden="true">＋</span><span>Create</span></a>
   </nav>
   <div class="pulse-live" id="pulseLive"><strong>● Go Live</strong>
@@ -188,6 +212,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
   <p class="pulse-live-title" id="pulseLiveTitle" hidden></p>
   <div id="pulseLiveSetup" hidden>
     <p class="pulse-live-meta">NBL members · 20 free Live minutes each UTC calendar month, no rollover · maximum 5 minutes per broadcast · up to 25 viewers. Two starts per resident per 24 hours. The shared pilot reserve permits up to 120 total starts monthly, subject to budget availability. Founder operations have separate allowances.</p>
+    <p id="pulseLiveStreamOnlyNote" class="pulse-live-meta">Stream Video only. Start Live opens your private backstage preview; press Go Live when ready. Google and Facebook relays are paused for this test.</p>
     <div id="pulseLiveDestinationOption" hidden>
       <label for="pulseLiveDestination">Broadcast destination</label>
       <select id="pulseLiveDestination" aria-describedby="pulseLiveDestinationStatus">
@@ -196,15 +221,27 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
         <option value="google" disabled>Pulse + Google relay</option>
       </select>
       <p id="pulseLiveDestinationStatus" class="pulse-live-meta" role="status">Checking optional destinations. Pulse only is the default.</p>
+      <button id="pulseGoogleCheck" type="button" hidden>Check Google relay setup (no stream)</button>
     </div>
     <label for="pulseLiveTitleInput">Broadcast title</label>
     <input id="pulseLiveTitleInput" type="text" maxlength="140" value="NBL Pulse Live" autocomplete="off">
-     <label class="pulse-live-check" hidden><input id="pulseLiveRecord" type="checkbox" disabled> Save recording (later)</label>
-    <label class="pulse-live-check" for="pulseLiveScreenOnly"><input id="pulseLiveScreenOnly" type="checkbox"> Screen only (desktop) — camera and microphone OFF</label>
+     <label id="pulseLiveRecordOption" class="pulse-live-check" hidden><input id="pulseLiveRecord" type="checkbox"> Save this Live video (optional)</label>
+    <p id="pulseLiveRecordNote" class="pulse-live-meta" hidden>Founder only. Recording starts after Go Live, may incur Stream recording/storage charges, and can take time to process. Leave unchecked for a live-only broadcast. Earlier broadcasts cannot be saved retroactively.</p>
+    <label class="pulse-live-check" for="pulseLiveScreenOnly"><input id="pulseLiveScreenOnly" type="checkbox"> Share screen (desktop) — camera OFF</label>
+    <label id="pulseLiveScreenMicOption" class="pulse-live-check" for="pulseLiveScreenMic" hidden><input id="pulseLiveScreenMic" type="checkbox"> Include my microphone with screen sharing</label>
     <p class="pulse-live-meta">Camera and microphone are the normal mode. Start Live asks for needed browser permissions and opens a private backstage preview. You control each device before pressing Go Live. Screen sharing is optional on supported desktops.</p>
-    <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
-     <button id="pulseLiveFindRecording" type="button">Find latest saved livestream</button>
-     <p class="pulse-live-meta" id="pulseLiveSavedResult" aria-live="polite"></p>
+<details id="pulseLiveBeatsControls" class="ps-live-beats"><summary>LiveBeats · camera effects and my music (optional)</summary>
+      <label for="pulseLiveBeatsEffect">Live camera effect</label>
+      <select id="pulseLiveBeatsEffect"><option value="none" selected>None · original camera</option><option value="glow">Glow lighting</option><option value="noir">Noir · black and white</option><option value="face">FaceBeats · blush and lip tint (MediaPipe, on-device)</option></select>
+      <label for="pulseLiveBeatsMusic">Background music from my device (audio file)</label>
+      <input type="file" id="pulseLiveBeatsMusic" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4">
+      <label for="pulseLiveBeatsMusicVolume">Music volume</label><input type="range" id="pulseLiveBeatsMusicVolume" min="0" max="80" value="20">
+      <label class="pulse-live-check"><input type="checkbox" id="pulseLiveBeatsRights"> I own this recording or have permission to broadcast it</label>
+      <p id="pulseLiveBeatsStatus" class="pulse-live-meta" role="status">Choose effects before Start Live. If unavailable, normal Stream camera and microphone stay usable. Background music requires your microphone to be on.</p>
+      </details>
+        <button id="pulseLiveStart" type="button" class="pulse-live-primary">Start Live</button>
+     <button id="pulseLiveFindRecording" type="button">My saved Live videos</button>
+     <div class="pulse-live-meta" id="pulseLiveSavedResult" role="status" aria-live="polite"></div>
   </div>
   <div id="pulseLiveHost" hidden>
     <div id="pulseLiveMediaControls" hidden>
@@ -222,7 +259,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
   <p class="pulse-live-error" id="pulseLiveError" role="alert" hidden></p>
 </div>
   <a class="pulse-create-shortcut" href="#composeTitle" aria-label="Jump to create a Beat"><span aria-hidden="true">＋</span> Create Beat</a>
-</aside><div class="pulse-main" tabindex="0" role="region" aria-label="Pulse feed and composer"><section id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels">
+</aside><div class="pulse-main" tabindex="0" role="region" aria-label="Pulse feed and composer"><section id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels" hidden>
       <div class="pulse-highlights" aria-label="Pulse videos, official sources and NBL destinations">
         <div id="pulseStoryFeedVideos" class="pulse-story-feed-videos" hidden></div>
         <a class="pulse-highlight pulse-story-source" href="https://www.youtube.com/@NBL_Music_Official" target="_blank" rel="noopener noreferrer" aria-label="Visit New Beansland official YouTube channel"><span class="pulse-highlight-circle pulse-highlight-text" aria-hidden="true">▶</span><span>YouTube</span></a>
@@ -234,6 +271,10 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
         <a class="pulse-highlight" href="/messenger/"><span class="pulse-highlight-circle"><img src="/messenger/icon.svg" alt="" loading="lazy"></span><span>Pulse Connect</span></a>
       </div>
       <p class="pulse-story-caption">Tap a circle to explore real updates. Videos from your current Pulse feed appear here automatically.</p>
+    </section>
+    <section id="pulseComposerTrigger" class="pulse-composer-trigger" aria-label="Create a Beat">
+      <img src="/NBL%20Pulse_Icon.png" width="40" height="40" alt="" class="pulse-avatar">
+      <button type="button" id="pulseComposerTriggerBtn">What's on your mind?</button>
     </section>
     <section class="social-list" id="sharedPost" aria-labelledby="sharedPostTitle" hidden>
       <h2 id="sharedPostTitle">Shared Beat</h2>
@@ -247,8 +288,11 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
         <textarea id="postText" rows="2" maxlength="1500" placeholder="What’s on your mind?"></textarea>
         <div class="pulse-compose-actions">
           <button type="button" class="pulse-compose-tool" data-pulse-compose="photo"><span aria-hidden="true">▧</span> Photo</button>
+          <button type="button" class="pulse-compose-tool" id="pulsePasteAiImage" title="Paste an image you copied from ChatGPT or another image tool"><span aria-hidden="true">✦</span> Paste AI image</button>
+          <button type="button" id="psOpenPost" class="pulse-compose-tool">✦ PhotoBeats (free)</button>
           <button type="button" class="pulse-compose-tool" data-pulse-compose="video"><span aria-hidden="true">▣</span> Video</button>
           <button type="button" class="pulse-compose-tool" data-pulse-compose="link"><span aria-hidden="true">↗</span> Public link</button>
+          <a class="pulse-compose-tool" href="/pulse/tiktok-callback.html" title="Test your TikTok connection first; no video is sent until you explicitly choose a file and consent">Share to TikTok</a>
           <a class="pulse-compose-tool" href="/pulse/embed-preview.html" title="Preview public Facebook, Instagram and Threads posts">Public embeds</a>
           <button class="btn primary pulse-submit" type="submit">Publish Beat</button>
         </div>
@@ -256,6 +300,10 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
           <label for="postMedia">Add photos or a video from your device</label>
           <input id="postMedia" type="file" accept="image/jpeg,image/png,image/webp,video/mp4,video/webm" multiple>
           <p class="social-feedback" id="mediaSelection" role="status">Up to 4 photos (8 MB each) or 1 MP4/WebM video (40 MB).</p>
+          <p class="social-feedback" id="pulseAiImageHelp" role="status">Copy a generated picture, then choose Paste AI image. You can also paste or drop a picture into this draft. Nothing posts automatically.</p>
+          <div id="pulseAiDropTarget" class="pulse-ai-drop-target">Drop a copied or saved picture into this composer to attach it.</div>
+          <div id="pulseAiImagePreview" class="pulse-ai-image-preview" aria-label="Unpublished photo previews" hidden></div>
+          <button type="button" class="pulse-ai-remove" id="pulseAiRemoveMedia" hidden>Remove staged media</button>
           <div id="videoLinkArea">
             <label for="videoLink">Or share a public YouTube, Facebook, Instagram or Threads post/video</label>
             <input id="videoLink" type="url" inputmode="url" placeholder="Paste a public post or video link" autocomplete="off">
@@ -343,11 +391,39 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
         </section>
       </div>
     </section>
+    <section id="pulseLiveView" aria-labelledby="pulseLiveViewTitle" hidden>
+      <div class="pulse-view-head"><h2 id="pulseLiveViewTitle">Pulse Live</h2>
+        <p>Existing Pulse Go Live controls, backstage preview, and authorized destinations. Your camera and microphone stay under your control.</p>
+      </div>
+    </section>
+    <section id="pulseMenuView" aria-labelledby="pulseMenuTitle" hidden>
+      <h2 id="pulseMenuTitle">Pulse Menu</h2>
+      <section class="ps-menu-entry"><h3>Pulse Studios · BEATS</h3><p>Free photo, face, music and video editing on your own device. No AI credits required.</p><button id="psOpenMenu" type="button" class="btn primary">Open Pulse Studios</button></section>
+      <section><h3>NBL destinations</h3><nav class="pulse-site-nav" aria-label="NBL destinations">
+    <a href="/chat.html">Beans</a><a href="/pulse/" class="pulse-site-current" aria-current="page"><img class="pulse-mark" src="/NBL%20Pulse_Icon.png" width="32" height="32" alt=""> Pulse</a>
+    <a href="/studios.html">Studios</a><a href="/studio/">Music</a><a href="/books.html">Books</a><a href="/games.html" title="NBL Games — coming soon">Games</a>
+  </nav><details class="pulse-mobile-more"><summary aria-label="More Pulse options">☰</summary><div class="pulse-mobile-more-options"><button type="button" data-feed="user">My Beats</button><button type="button" data-feed="friends">People</button><a href="/account.html">My account</a><a href="#pulseLive">Go Live controls</a><a href="/messenger/">Pulse Connect</a><a href="/pulse/guide.html">Help, Costs &amp; Privacy</a></div></details></section>
+      <section id="pulseSavedSection"><h3>Saved</h3><p>Saving Beats is not available yet. No saved posts are being represented here.</p></section>
+      <section id="pulseAppearance"><h3>Appearance</h3><div role="radiogroup" aria-label="Appearance" class="pulse-appearance-group">
+        <button type="button" data-appearance="auto" role="radio" aria-checked="false">Auto</button>
+        <button type="button" data-appearance="light" role="radio" aria-checked="true">Light</button>
+        <button type="button" data-appearance="dark" role="radio" aria-checked="false">Dark</button>
+      </div><p>Auto follows your device. Dark keeps Pulse's purple-and-black look.</p></section>
+      <section><h3>Connect and privacy</h3><p><a href="/account.html">My account</a> · <a href="/messenger/">Pulse Connect calls</a> · <a href="/pulse/guide.html">How Pulse works</a></p>
+      <p>Facebook, Instagram and TikTok permissions remain separate. Existing connections are preserved.</p>
+      <button type="button" id="pulseBusinessOpen">Manage Meta Business assets</button></section>
+    </section>
     <section class="social-list" id="feedPanel" aria-labelledby="feedTitle">
+      <div id="pulseLiveFeedAlert" class="pulse-live-feed-alert" role="status" hidden>
+        <span class="pulse-live-feed-dot" aria-hidden="true"></span>
+        <div class="pulse-live-feed-copy"><strong>LIVE NOW</strong><span id="pulseLiveFeedAlertTitle">NBL Pulse Live</span></div>
+        <button type="button" data-view="live" class="btn primary">Watch live</button>
+      </div>
       <div class="social-list-head"><h2 id="feedTitle">For You</h2><button id="refreshFeed" class="btn small" type="button">Refresh</button></div>
       <div id="feedItems" aria-live="polite"><p class="hint">Loading Stream Feeds…</p></div>
     </section>
 </div><aside class="pulse-rail" tabindex="0" aria-label="Pulse community sidebar">
+  <section class="pulse-rail-card" id="pulseLiveNow" aria-labelledby="pulseLiveNowTitle"><h2 id="pulseLiveNowTitle">Live now</h2><p id="pulseLiveNowStatus" role="status">Checking Pulse Live…</p><button type="button" data-view="live" class="btn primary">Open Pulse Live</button></section>
   <section class="pulse-featured-card" aria-label="Featured NBL destination">
     <div class="pulse-rail-heading"><span>Featured on NBL</span><span class="pulse-featured-tag">NBL Studios</span></div>
     <a href="/studios.html" class="pulse-featured-media"><img src="/NBL_Studios.png" width="300" height="180" alt="NBL Studios official artwork"><span>Explore NBL Studios <span aria-hidden="true">↗</span></span></a>
@@ -378,6 +454,80 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
 </aside></div>
   </section>
 </main>
+<nav id="pulseBottomBar" class="pulse-bottombar" aria-label="Pulse views">
+  <button data-feed="foryou" data-view="home" type="button" aria-pressed="true" aria-current="page"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M3 11.5 12 3l9 8.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10.5V21h13V10.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Home</span></button>
+  <button data-view="watch" type="button" aria-current="false"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 9.5v5l4.5-2.5z" fill="currentColor"/></svg><span>Watch</span></button>
+  <button id="pulseCreateBottom" type="button" aria-label="Create a post"><span aria-hidden="true">+</span></button>
+  <button data-view="live" type="button" aria-current="false"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>Live</span></button>
+  <button data-view="messages" type="button" aria-pressed="false" aria-current="false"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Messages</span></button>
+</nav>
+<dialog id="pulseStudiosDialog" class="ps-dialog" aria-labelledby="psTitle">
+  <div class="ps-shell">
+    <header class="ps-header"><div><p class="ps-kicker">NBL Pulse · FREE LOCAL TOOLS</p><h2 id="psTitle">Pulse Studios <span>BEATS</span></h2></div><button type="button" id="psClose" aria-label="Close Pulse Studios">✕</button></header>
+    <p class="ps-privacy">Your files stay on your device unless you explicitly attach them to a Pulse post or profile. No paid AI service or new account.</p>
+    <div class="ps-tabs" role="tablist" aria-label="Pulse Studios workspaces">
+      <button type="button" data-ps-tab="photo" aria-selected="true">PhotoBeats + FaceBeats</button>
+      <button type="button" data-ps-tab="video" aria-selected="false">VideoBeats</button>
+      <button type="button" data-ps-tab="music" aria-selected="false">MusicBeats</button>
+    </div>
+    <section data-ps-panel="photo" aria-label="Photo and face editor">
+      <label for="psPhotoFile">Choose a JPG, PNG or WebP picture (up to 24 MB)</label><input type="file" id="psPhotoFile" accept="image/jpeg,image/png,image/webp">
+      <canvas id="psPhotoCanvas" role="img" aria-label="PhotoBeats edited picture preview" width="640" height="480"></canvas>
+      <div class="ps-controls">
+        <label>Crop / framing <select id="psPhotoAspect"><option value="original">Original</option><option value="square">Square · profile</option><option value="portrait">Portrait 4:5</option><option value="story">Story 9:16</option><option value="landscape">Landscape 16:9</option></select></label>
+        <label>Output size <select id="psPhotoSize"><option value="512">512 px</option><option value="1080" selected>1080 px</option><option value="1920">1920 px</option></select></label>
+        <label>Format <select id="psPhotoFormat"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></label>
+        <label>Zoom <input id="psPhotoZoom" type="range" min="100" max="300" value="100"></label>
+        <label>Move left/right <input id="psPhotoPanX" type="range" min="-100" max="100" value="0"></label>
+        <label>Move up/down <input id="psPhotoPanY" type="range" min="-100" max="100" value="0"></label>
+        <label>Brightness <input id="psPhotoBrightness" type="range" min="30" max="170" value="100"></label>
+        <label>Contrast <input id="psPhotoContrast" type="range" min="30" max="170" value="100"></label>
+        <label>Color <input id="psPhotoSaturation" type="range" min="0" max="200" value="100"></label>
+      </div>
+      <div class="ps-actions"><button type="button" id="psPhotoRotate">↻ Rotate 90°</button><button type="button" id="psPhotoFlip">↔ Flip</button><button type="button" id="psPhotoReset">Reset adjustments</button></div>
+      <label for="psPhotoText">Text on photo</label><input id="psPhotoText" maxlength="100" placeholder="Add words to your picture">
+      <div class="ps-face"><h3>FaceBeats</h3><p>Google MediaPipe tracks face features on-device; nothing is sent to OpenAI or Google Cloud for processing. Requires an internet download of the free model. MediaPipe may send technical usage/performance metrics to Google; your image is processed locally.</p>
+        <button type="button" id="psFaceDetect">Detect my face (optional)</button>
+        <label for="psFacePreset">Effect</label><select id="psFacePreset"><option value="none">None</option><option value="glow">Glow + tint</option><option value="blush">Blush</option><option value="lips">Lip tint</option></select>
+      </div>
+      <div class="ps-actions"><button type="button" id="psDownloadPhoto">Download picture</button><button type="button" id="psUsePost">Attach to my Beat draft</button><button type="button" id="psUseProfile">Use as profile picture</button></div>
+      <p class="ps-status" id="psPhotoStatus" role="status">Choose a picture to start. Using a photo for your profile still requires Save picture; a post still requires Publish Beat.</p>
+    </section>
+    <section data-ps-panel="video" aria-label="Video editor" hidden>
+      <label for="psVideoFile">Choose your MP4 or WebM video (40 MB maximum)</label><input id="psVideoFile" type="file" accept="video/mp4,video/webm">
+      <video id="psVideoPlayer" controls playsinline preload="metadata"></video>
+      <div class="ps-controls"><label>Start time (seconds) <input id="psVideoStart" type="number" min="0" step=".1" value="0"></label>
+        <label>End time (seconds) <input id="psVideoEnd" type="number" min=".1" step=".1" value="30"></label>
+        <label>Shape <select id="psVideoAspect"><option value="original">Original</option><option value="portrait">Vertical 9:16</option><option value="square">Square</option><option value="landscape">Wide 16:9</option></select></label>
+        <label>Caption <input id="psVideoCaption" maxlength="90" placeholder="Optional text on video"></label>
+        <label>Background music (optional, your own or licensed) <input id="psVideoMusicFile" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4"></label>
+        <label>Music volume <input id="psVideoMusicVolume" type="range" min="0" max="100" value="25"></label>
+        <label class="ps-rights"><input type="checkbox" id="psVideoMusicRights"> I own or have permission to use this video background music</label>
+      </div>
+      <p>Local recording uses your browser's WebM encoder. Up to 60 seconds per export. Confirm you have rights to any music you add.</p>
+      <div class="ps-actions"><button type="button" id="psVideoExport">Download edited video</button><button type="button" id="psVideoStage">Attach to Beat draft</button></div>
+      <p class="ps-status" id="psVideoStatus" role="status">Choose a video to start. No upload happens until you publish.</p>
+    </section>
+    <section data-ps-panel="music" aria-label="Audio editor" hidden>
+      <label for="psMusicFile">My audio (MP3, WAV, OGG, WebM or M4A)</label><input id="psMusicFile" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4">
+      <audio id="psMusicPlayer" controls preload="metadata"></audio>
+      <div class="ps-controls"><label>Start (seconds) <input id="psMusicStart" type="number" min="0" step=".1" value="0"></label>
+        <label>End (seconds) <input id="psMusicEnd" type="number" min=".1" step=".1" value="30"></label>
+        <label>Main track volume <input id="psMusicVolume" type="range" min="0" max="200" value="100"></label>
+        <label>Mix another owned audio track (optional) <input id="psMusicBeatFile" type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/webm,audio/mp4"></label>
+        <label>Second track volume <input id="psBeatVolume" type="range" min="0" max="100" value="30"></label>
+        <label class="ps-rights"><input type="checkbox" id="psMusicBeatRights"> I own or have permission to mix this second audio recording</label></div>
+      <p>Mix locally and download a WAV. Up to five minutes per export. Only use recordings you have rights to.</p>
+      <button type="button" id="psMusicExport">Download MusicBeat WAV</button>
+      <p class="ps-status" id="psMusicStatus" role="status">Choose audio to start. Nothing is uploaded.</p>
+    </section>
+  </div>
+</dialog>
+<dialog id="pulseComposerSheet" aria-labelledby="composeTitle">
+<button type="button" id="pulseComposerClose" aria-label="Close composer">✕</button>
+<div class="pulse-sheet-actions"><button type="button" id="pulseComposerPost" class="btn primary">Post</button>
+<button type="button" id="pulseComposerMedia" class="btn">Add photo or video</button>
+<button type="button" id="pulseComposerGoLive" class="btn">Go Live</button></div></dialog>
 <div class="pulse-features" aria-label="NBL Pulse features"><div class="pulse-feature-brand"><span aria-hidden="true">⌁</span><strong>NBL Pulse™</strong><small>The social feed for New Beansland</small></div><div class="pulse-feature"><strong>▧ Post &amp; Share</strong><small>Text, photos, videos &amp; links</small></div><div class="pulse-feature"><strong>◯ Stories</strong><small>Video highlights from Pulse posts</small></div><div class="pulse-feature"><strong>◉ Live</strong><small>Free 20-minute monthly pilot</small></div><div class="pulse-feature"><strong>♧ Follow &amp; Discover</strong><small>People and real NBL posts</small></div><div class="pulse-feature"><strong>♢ Notifications</strong><small>Activity from your account</small></div><div class="pulse-feature"><strong>✉ Messages</strong><small>Private member DMs inside Pulse; Messenger for calls</small></div></div>
 <footer>NBL Pulse™ · <a href="/pulse/guide.html">How Pulse Works &amp; Privacy</a> · <a href="/privacy.html">Privacy Policy</a> · <a href="/terms.html">Terms</a> · <a href="/account-deletion.html">Data Deletion</a> · <a href="/university-campus.html#nbl-social">Protected University</a></footer>
 </body></html>

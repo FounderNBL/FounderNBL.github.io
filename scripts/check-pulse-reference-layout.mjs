@@ -111,3 +111,101 @@ assert.match(liveClient,/if \(!screenOnly\) \{\s*try \{ await state\.call\.camer
 assert.match(liveClient,/await manager\.toggle\(\)/);
 assert.match(liveClient,/state\.call\?\.camera\.state\.status !== "enabled" && state\.call\?\.microphone\.state\.status !== "enabled"/);
 assert.match(liveClient,/state\.mediaSubs = \[\]/);
+
+// Founder November 22: no duplicated dashboard navigation or recording ambiguity.
+const redesignCss=read("pulse/pulse-redesign.css");
+const redesignUi=read("pulse/redesign.mjs");
+const metaCommunity=read("pulse/meta-community.mjs");
+const ids=[...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);
+assert.equal(ids.length,new Set(ids).size,"Pulse DOM IDs are unique");
+assert.match(redesignCss,/\.pulse-topbar \.pulse-tabs \{display:none!important/);
+assert.match(redesignCss,/\.pulse-rail \.pulse-rail-activity/);
+assert.match(html,/id="pulseStories" class="pulse-stories" aria-label="Pulse video highlights and official channels" hidden/);
+assert.match(redesignUi,/show\(\$\("#pulseStories"\), view === "stories"\)/);
+assert.match(metaCommunity,/querySelector\("#pulseMenuView"\)/);
+assert.match(metaCommunity,/root\.append\(panel\)/);
+assert.match(html,/id="pulseLiveRecord" type="checkbox"/);
+assert.doesNotMatch(html,/id="pulseLiveRecord"[^>]*\bchecked\b/);
+assert.match(html,/id="pulseLiveScreenMic" type="checkbox"/);
+assert.match(liveClient,/screenMic = screenOnly &&/);
+assert.match(liveClient,/else if \(screenMic\)/);
+assert.match(liveClient,/No video was saved because Save this Live video was OFF/);
+assert.match(redesignCss,/#pulseLiveMediaControls button/);
+assert.match(redesignCss,/html\[data-theme="light"\] body\.pulse-body/);
+assert.match(redesignCss,/--pulse-bg:#f7f4ff!important/);
+console.log("PASS Pulse single-navigation layout, Founder recording choice, explicit screen microphone, replay feedback.");
+
+assert.match(html,/id="pulseLiveSavedResult" role="status"/);
+assert.match(liveClient,/liveApi\("delete-recording"/);
+assert.match(liveClient,/window\.confirm\("Permanently delete this saved Pulse Live recording/);
+assert.match(liveClient,/if \(deleted\?\.deleted !== true\)/);
+assert.match(liveClient,/row\.remove\(\)/);
+console.log("PASS Pulse delete recording requires confirmation and provider success.");
+
+
+// The actual Pulse audience must discover a broadcast, not a saved video or an
+// enabled-only Live switch. Desktop-site viewports on touch phones stay usable.
+assert.match(html,/id="pulseLiveFeedAlert" class="pulse-live-feed-alert" role="status" hidden/);
+assert.match(html,/id="pulseLiveFeedAlertTitle"/);
+assert.match(html,/data-view="live" class="btn primary">Watch live/);
+assert.match(liveClient,/function updateLiveDiscovery\(data\)/);
+assert.match(liveClient,/data\?\.enabled === true && data\?\.status === "live"/);
+assert.match(liveClient,/if \(\$\("#pulseLiveView"\)\?\.hidden !== false\) return;/);
+assert.match(liveClient,/document\.addEventListener\("pulse:view-change"/);
+assert.match(liveClient,/if \(wasViewer\) state\.callId = null/);
+assert.match(liveClient,/video\.autoplay = true; video\.muted = true/);
+assert.match(redesignUi,/new CustomEvent\("pulse:view-change"/);
+assert.match(redesignCss,/@media \(max-width: 760px\), \(pointer: coarse\) and \(max-width: 1280px\)/);
+assert.match(redesignCss,/body\.pulse-body #socialApp \.pulse-sidebar,/);
+assert.match(redesignCss,/\.pulse-live-feed-alert \{/);
+assert.match(redesignCss,/body\.pulse-body \.pulse-bottombar/);
+assert.match(redesignCss,/body\.pulse-body \.pulse-topbar #pulseMenuTop/);
+assert.match(redesignCss,/\.pulse-live-feed-alert\[hidden\] \{ display: none !important/);
+console.log("PASS Pulse confirmed Live discovery, explicit viewer join, responsive touch feed + Connect navigation.");
+
+
+// Regression for a real bug: previously Stream WebRTC participants joined
+// successfully while #pulseLiveViewer remained hidden (HLS is disabled).
+// Source gates intentionally do not fabricate a real provider media receipt.
+const viewerJoin = liveClient.split("async function joinAsWebRtcViewer(callId) {")[1]
+  ?.split("// --- Status / viewer flow ---")[0] || "";
+assert.ok(viewerJoin, "The authenticated WebRTC viewer action must exist");
+assert.match(viewerJoin,/state\.viewerConnecting \|\| state\.mode !== "idle"/);
+assert.match(viewerJoin,/await joinWithoutCapture\(state\.call\)/);
+assert.match(viewerJoin,/show\("#pulseLiveViewer", true\)/,
+  "A joined Stream video cannot be displayed while its parent stays hidden");
+assert.ok(viewerJoin.indexOf('show("#pulseLiveViewer", true)') >
+  viewerJoin.indexOf('await joinWithoutCapture(state.call)'),
+  "Only reveal the player after Stream confirms the viewer joined");
+assert.match(viewerJoin,/if \(\$\("#pulseLiveView"\)\?\.hidden !== false\) return/);
+assert.match(liveClient,/show\("#pulseLiveViewer", false\); \/\/ An ended viewer call/);
+assert.match(html,/live\.mjs\?v=20261123-stream-only-pilot-v1/);
+// Subscriber regression: Stream must never bind remote tracks while detached.
+const remoteEntry=liveClient.split("function buildRemoteEntry(p, area, sig) {")[1]
+  ?.split("function renderViewerParticipants(")[0] || "";
+assert.ok(remoteEntry, "Published remote tracks must get a rendered entry");
+assert.ok(remoteEntry.indexOf("area.append(wrapper)") < remoteEntry.indexOf("state.call.bindVideoElement("),
+  "Attach the remote wrapper before subscribing to the Stream track");
+assert.ok(remoteEntry.indexOf("wrapper.append(video)") < remoteEntry.indexOf("state.call.bindVideoElement("),
+  "Attach the remote video before Stream subscribes");
+assert.match(liveClient, /p\.publishedTracks\?\.length/, "Ignore passive viewers with no published media");
+assert.match(liveClient, /Tap to turn on sound/, "Provide a tap-to-unmute fallback");
+assert.match(liveClient, /stopSoundWatch\(\)/, "Clean up sound prompt on teardown");
+console.log("PASS Pulse WebRTC viewer is visible before track subscription; sound and cleanup are wired.");
+
+
+// Google has an optional, independently authenticated RTMP destination.
+// A local configuration flag never proves the remote relay is reachable.
+// Failed preflight must leave normal Stream WebRTC available, without silently
+// starting any broadcast, spending money, or hiding the Google failure reason.
+assert.match(liveClient,/state\.googleReady = state\.googleReady && googleConfigured/,
+  "Google cannot be re-enabled by polling until its remote readiness passes");
+assert.match(liveClient,/state\.googleCheckMessage = note\.textContent/,
+  "Preserve the actionable Google error through subsequent status polling");
+assert.match(liveClient,/if \(!state\.googleReady && destination\?\.value === "google"\) destination\.value = "pulse"/,
+  "Failed Google readiness must reset the picker to the independent Pulse Stream destination");
+assert.match(liveClient,/if \(destination\?\.value === "google"\) destination\.value = "pulse"/,
+  "Network errors during Google preflight must restore Stream-only choice");
+assert.match(liveClient,/Google relay is not ready\. Switched to Pulse only; press Start Live again/,
+  "Never silently start an alternative destination on a failed Google start");
+console.log("PASS Stream-only is not gated by optional Google; safe fallback requires a fresh Start click.");

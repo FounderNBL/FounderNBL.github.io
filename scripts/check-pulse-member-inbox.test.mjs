@@ -9,7 +9,7 @@ const service=read("supabase/functions/nbl-social/index.ts");
 test("Pulse native member messages reuse existing NBL authenticated service",()=>{
  for(const action of ['list_threads','list_messages','direct','send'])
   assert.match(service,new RegExp('action==="'+action+'"'));
- assert.match(app,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\)\)/);
+ assert.match(app,/mountMemberInbox\(payload=>secured\(SOCIAL_API,payload\),/);
  assert.match(panel,/invoke\(body\)/);
  assert.match(panel,/action:"list_threads"/);
  assert.match(panel,/action:"list_messages"/);
@@ -35,4 +35,17 @@ test("Pulse DMs are never placed in public feed or used for Meta messaging",()=>
  assert.match(service,/thread_access_denied/);
  assert.match(service,/student_contact_restricted/);
  assert.match(service,/blocked/);
+});
+
+test("Pulse Connect message deletion is sender-only, explicitly confirmed and backend-verified",()=>{
+ assert.match(service,/action==="delete_message"/);
+ assert.match(panel,/m\.sender\?\.userId===actor/);
+ assert.match(panel,/getActor\(\)!==actor/);
+ assert.match(panel,/window\.confirm\("Remove this message for everyone/);
+ assert.match(panel,/action:"delete_message",messageId:m\.id/);
+ assert.match(panel,/result\.deleted!==true/);
+ assert.match(panel,/removed\.add\(actor\+":"\+m\.id\)/);
+ assert.match(panel,/version!==readVersion/);
+ assert.match(app,/accountChanged\?null:state\.clerk\?\.user\?\.id/);
+ assert.match(app,/rows=rows\.filter\(row=>!deletedPostIds\.has\(row\.id\)&&!row\.deleted_at\)/);
 });

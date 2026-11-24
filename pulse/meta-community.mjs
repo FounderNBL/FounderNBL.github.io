@@ -40,7 +40,8 @@ export function founderFacebookShareButton({activity,invoke,feedback}){
  return button;
 }
 export function initMetaCommunity(invoke){
- const root=document.querySelector("#feedPanel")?.parentElement;
+ // Administrative Meta controls belong in Menu, not above every Pulse feed.
+ const root=document.querySelector("#pulseMenuView");
  if(!root||document.querySelector("#pulseMetaCommunity"))return;
  const panel=el("section","social-list pulse-meta-community");
  panel.id="pulseMetaCommunity";
@@ -59,7 +60,7 @@ export function initMetaCommunity(invoke){
  reload.type=pageConnect.type=pagePosts.type=igMedia.type=review.type="button";
  controls.append(reload,pageConnect,pagePosts,igMedia,review);
  panel.append(title,info,status,controls,apiReport,content);
- root.insertBefore(panel,document.querySelector("#feedPanel"));
+ root.append(panel);
  const notice=new URL(location.href).searchParams.get("facebook_connect");
  if(notice){
   status.textContent=notice==="connected"?"NBL Facebook Page connection completed. Checking it…":
