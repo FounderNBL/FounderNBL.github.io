@@ -19,7 +19,7 @@ test("audio-only path does not request or publish camera access",()=>{
   assert.match(code,/if\(audioOnly\)\{try\{await call\.camera\.disable\(\)/);
   assert.match(code,/else\{try\{await call\.camera\.enable\(\)/);
   assert.match(code,/await call\.microphone\.enable\(\)/);
-  assert.match(code,/!microphoneReady\|\|\(!audioOnly&&!cameraReady\)/);
+  assert.match(script,/mediaWarning=\(!microphoneReady\|\|\(!audioOnly&&!cameraReady\)\)/);
 });
 test("both join actions have lifecycle and permission controls",()=>{
   assert.match(script,/joinAudio"\)\.disabled=true/);
