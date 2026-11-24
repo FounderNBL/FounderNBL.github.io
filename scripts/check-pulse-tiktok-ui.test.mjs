@@ -50,11 +50,50 @@ test("Every NBL member can recover their own TikTok submissions, without invente
  assert.match(ui,/await call\("recent"\)/);
  assert.match(ui,/async function loadRecent\(/);
  assert.match(ui,/byId\("recentList"\)/);
- assert.match(ui,/job=entry\.publish_id/);
+ assert.match(ui,/inspectHistory\(entry\.publish_id,button\.textContent\)/);
+ assert.doesNotMatch(ui,/job=entry\.publish_id|job=b\.posts\[0\]/);
  assert.match(ui,/c\.production\?"production":"sandbox"/);
  assert.match(page,/id="recent" hidden/);
  assert.match(page,/id="recentList"/);
- assert.match(page,/tiktok\.mjs\?v=20261124-recent-status-v1/);
+ assert.match(page,/tiktok\.mjs\?v=20261124-readiness-v2/);
  assert.match(ui,/SEND_TO_USER_INBOX:"TikTok delivered the video to your inbox; it is NOT publicly posted/);
  assert.doesNotMatch(ui,/founderOnly|isFounderOnly|FOUNDER_ONLY/);
+});
+
+test("TikTok readiness can be verified before any file is selected or uploaded",()=>{
+ assert.match(page,/id="preflight" type="button" disabled/);
+ assert.match(page,/id="prepare" type="button" hidden/);
+ assert.match(page,/id="readiness" role="status"/);
+ assert.match(page,/id="post" hidden/);
+ assert.match(ui,/byId\("preflight"\)\.addEventListener\("click"/);
+ assert.match(ui,/const check=await call\("creator"\)/);
+ assert.match(ui,/preflightPassed=true/);
+ assert.match(ui,/byId\("prepare"\)\.addEventListener\("click"/);
+ assert.match(ui,/byId\("post"\)\.hidden=false/);
+ const start=ui.indexOf('byId("preflight").addEventListener("click"');
+ const end=ui.indexOf('byId("prepare").addEventListener("click"',start);
+ assert.ok(end>start);
+ const preflight=ui.slice(start,end);
+ assert.doesNotMatch(preflight,/call\("upload"|new FormData|f\.set\("file"/);
+ assert.match(preflight,/No video uploaded/);
+});
+test("an older inbox notification cannot become the current job automatically",()=>{
+ assert.match(page,/id="historyShell" class="history" hidden/);
+ assert.match(page,/id="historyStatus"/);
+ assert.match(page,/id="postingStatus"/);
+ assert.match(ui,/async function inspectHistory\(/);
+ assert.match(ui,/el\.textContent=label/);
+ assert.doesNotMatch(ui,/job=entry\.publish_id|job=b\.posts\[0\]\.publish_id/);
+ assert.match(ui,/An old post is never auto-selected as the CURRENT upload/);
+ assert.match(ui,/TikTok sent an earlier draft to your inbox\. It is NOT a published video/);
+});
+test("an actual new send requires authorization, chosen file, valid duration and explicit consent",()=>{
+ assert.match(ui,/!preflightPassed\|\|!account\|\|!validFile\|\|!byId\("consent"\)\.checked/);
+ assert.match(ui,/if\(!preflightPassed\|\|byId\("send"\)\.disabled\|\|busy\|\|!byId\("consent"\)\.checked/);
+ assert.match(ui,/byId\("selectedState"\)\.textContent=/);
+ assert.match(ui,/const b=await call\("upload",\{\},f\)/);
+ assert.match(page,/No video selected · nothing sent/);
+ assert.match(page,/Sandbox testing is private/);
+ assert.match(page,/Try the TikTok <strong>mobile app<\/strong>/);
+ assert.doesNotMatch(ui,/postSay\("TikTok confirms the post is published\."\)/);
 });
