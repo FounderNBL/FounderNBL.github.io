@@ -575,6 +575,56 @@ async function onGoogleCheck() {
     state.googleCheckMessage = note.textContent;
   } finally { button.disabled = false; }
 }
+// Read Stream's ACTUAL deployed call type and NBL Live switch without
+// creating a call, requesting media, buying capacity or changing provider grants.
+async function onLiveReadiness() {
+ const button=$("#pulseLiveCheck"),note=$("#pulseLiveCheckStatus");
+ if(!button||!note||button.disabled)return;
+ button.disabled=true;
+ note.textContent="Contacting the real Stream Video provider through NBL Live health. No broadcast started.";
+ const abort=new AbortController();
+ const timeout=setTimeout(()=>abort.abort(),12000);
+ try {
+  const res=await fetch(ENDPOINT+"?action=health",{
+   method:"GET",cache:"no-store",signal:abort.signal
+  });
+  const h=await res.json().catch(()=>({}));
+  if(!res.ok||h.connected!==true){
+   note.textContent="Live NOT ready: "+String(h.code||"STREAM_UNAVAILABLE")+". This is a real provider health failure. Nothing was broadcast.";
+   return;
+  }
+  if(h.callTypePresent!==true){
+   note.textContent="Stream connected, but the approved livestream call type is missing. No broadcast started.";
+   return;
+  }
+  if(h.callTypeReady!==true){
+   const names={
+    grantsPresent:"Stream call grants missing",viewerCanJoin:"Viewer joining disabled",
+    viewerRestricted:"Viewer permissions too broad",hostCanBroadcast:"Host broadcast permission missing",
+    hostRestricted:"Host permissions unsafe",broadcastingEnabled:"Stream broadcast mode disabled",
+    hlsAvailable:"Stream HLS safety setting unavailable",hlsNotAutoOn:"HLS starts automatically",
+    rtmpAvailable:"Stream RTMP setting disabled",encryptionOff:"Incompatible Stream encryption",
+    recordingNotAutoOn:"Unapproved automatic recording"
+   };
+   const missing=Object.entries(names).filter(([key])=>h.safety?.[key]!==true)
+    .map(([,label])=>label).slice(0,5);
+   note.textContent="Stream connected, but Live is BLOCKED: "+
+    (missing.length?missing.join("; "):"call type did not pass safety verification")+
+    (h.permissionsRepairable===true?" · A scoped Founder grant repair may be available.":" · Provider settings require review.")+
+    " No broadcast started.";
+   return;
+  }
+  if(h.livestreamEnabled!==true){
+   note.textContent="Stream Video is ready, but the protected NBL Pulse Live switch is OFF. No broadcast started.";
+   return;
+  }
+  note.textContent="Real Stream provider check PASSED: livestream permissions verified and Pulse Live switch ON. This does not test a camera or actual broadcast. Press Start Live only when you choose to go live.";
+ }catch(error){
+  note.textContent="Could not verify the live provider: "+
+   (error?.name==="AbortError"?"health request timed out":"network or connection failure")+
+   ". No broadcast started.";
+ }finally{clearTimeout(timeout);button.disabled=false;}
+}
 async function onToggleLive() {
   if (state.busy) return;
   const enabled = !state.liveEnabled;
@@ -840,6 +890,7 @@ export function initPulseLive() {
   $("#pulseLiveCameraToggle")?.addEventListener("click", () => { void toggleHostMedia("camera"); });
   $("#pulseLiveMicToggle")?.addEventListener("click", () => { void toggleHostMedia("microphone"); });
   $("#pulseLiveToggle")?.addEventListener("click", () => { void onToggleLive(); });
+  $("#pulseLiveCheck")?.addEventListener("click", () => { void onLiveReadiness(); });
   $("#pulseGoogleCheck")?.addEventListener("click", () => { void onGoogleCheck(); });
   $("#pulseLiveGoLive")?.addEventListener("click", () => { void onGoLive(); });
   $("#pulseLiveEnd")?.addEventListener("click", () => { void onEnd(); });
