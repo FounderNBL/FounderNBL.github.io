@@ -75,12 +75,21 @@ function runDisposableSourceTest(pass){
       'import test from "node:test";\n'+
       'import assert from "node:assert/strict";\n'+
       'test("disposable source regression",()=>assert.equal(1,'+(pass?"1":"2")+'));\n');
+    // node:test marks its own children with NODE_TEST_CONTEXT=child-v8.
+    // Inheriting that value makes a nested --test command silently skip files
+    // and exit 0. Remove it so this is a real, independent Node test process.
+    const childEnv={...process.env};
+    delete childEnv.NODE_TEST_CONTEXT;
     const child=spawnSync(process.execPath,["--test",file],{
-      cwd:folder,encoding:"utf8",timeout:8000
+      cwd:folder,encoding:"utf8",timeout:8000,env:childEnv
     });
     assert.equal(child.error,undefined,"Isolated source runner must start");
     assert.ok(child.status===0||child.status===1,
       "Only deterministic source-test pass/failure is accepted");
+    assert.match(child.stdout,/^# tests 1$/m,
+      "The nested source test must actually run rather than be skipped");
+    assert.match(child.stdout,child.status===0?/^# pass 1$/m:/^# fail 1$/m,
+      "The nested runner must return a genuine test outcome");
     return child.status===0?"success":"failure";
   }finally{
     rmSync(folder,{recursive:true,force:true});
