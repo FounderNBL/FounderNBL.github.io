@@ -480,8 +480,10 @@ async function checkInstagramInboxAccess(req:Request){
  if(!actor)return response(req,{ok:false,reason:"founder_access_required"},403);
  if(Number(req.headers.get("content-length")||0)>1000)return response(req,{ok:false,reason:"invalid_request"},413);
  try{
-  const b=await req.json();
-  if(!b||b.action!=="check"||Array.isArray(b))return response(req,{ok:false,reason:"invalid_action"},400);
+  const raw=await req.text();
+  if(raw.length>1000)return response(req,{ok:false,reason:"invalid_request"},413);
+  const b=JSON.parse(raw);
+  if(!b||typeof b!=="object"||b.action!=="check"||Array.isArray(b))return response(req,{ok:false,reason:"invalid_action"},400);
  }catch{return response(req,{ok:false,reason:"invalid_json"},400);}
  const grant=await founderInboxToken(actor);
  if(!grant.token)return response(req,{ok:false,reason:grant.reason||"instagram_dm_connection_required"},409);
