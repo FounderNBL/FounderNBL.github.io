@@ -37,7 +37,7 @@ test("the existing active repo and precise main push are mandatory",()=>{
   ])assert.equal(validateMaintenanceEvent({...event(),workflow_run:{...event().workflow_run,...changed}},"beans",repo).state,"HOLD");
   assert.equal(validateMaintenanceEvent(event(),"beans","FounderNBL/NBL-Messenger").state,"HOLD");
   assert.equal(validateMaintenanceEvent(event(),"messenger",repo).state,"HOLD");
-  assert.equal(validateMaintenanceEvent(event(),"beans",repo).autoSpend,false);
+  assert.equal(validateMaintenanceEvent(event(),"beans",repo).providerSpendUSD,0);
 });
 test("real repository, run, main HEAD and source failure step must agree",async()=>{
   calls.length=0;
@@ -79,7 +79,7 @@ test("only reproduced source incident writes one item, never triggers code or sp
   const reproduced=classifyIndependentRetest(verified,"failure");
   let posts=0;
   const mock=async(url,opts)=>{
-    assert.match(url,/^https:\/\/api.github.com\/repos\/FounderNBL\/Beans\/issues/);
+    assert.match(url,/^https:\/\/api\.github\.com\/repos\/FounderNBL\/Beans\/issues/);
     if(opts.method==="GET")return response([]);
     if(opts.method==="POST"){
       posts++;
