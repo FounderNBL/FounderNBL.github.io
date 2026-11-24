@@ -471,6 +471,47 @@ async function founderPublish(req:Request,kind:"prepare"|"confirm"|"status"){
   return response(req,{ok:true,published:true,media_id:String(published.body.id),permalink,account:"@nbl_world"});
  }catch{return response(req,{ok:false,reason:"meta_unavailable"},503);}
 }
+// Founder-only genuine Meta inbox readiness check. No messages are read or
+// sent. Permission, Page asset and a one-item inbox GET are separate facts.
+async function checkInstagramInboxAccess(req:Request){
+ const origin=req.headers.get("origin")||"";
+ if(!ORIGINS.has(origin))return response(req,{ok:false,reason:"origin_not_allowed"},403);
+ const actor=await founderUser(req);
+ if(!actor)return response(req,{ok:false,reason:"founder_access_required"},403);
+ if(Number(req.headers.get("content-length")||0)>1000)return response(req,{ok:false,reason:"invalid_request"},413);
+ try{
+  const b=await req.json();
+  if(!b||b.action!=="check"||Array.isArray(b))return response(req,{ok:false,reason:"invalid_action"},400);
+ }catch{return response(req,{ok:false,reason:"invalid_json"},400);}
+ const grant=await founderInboxToken(actor);
+ if(!grant.token)return response(req,{ok:false,reason:grant.reason||"instagram_dm_connection_required"},409);
+ const permissions=await inspectMessagingGrant(grant.token);
+ if(permissions.status==="missing")return response(req,{
+  ok:true,ready:false,reason:"instagram_dm_permission_missing",permission:"missing",pageAccess:"unverified"},200);
+ try{
+  const ig=await officialInstagramInboxAccount(grant.token);
+  if(!ig)return response(req,{ok:true,ready:false,
+   reason:"instagram_dm_page_access_required",permission:permissions.status,
+   pageAccess:"unverified"},200);
+  const inboxId=ig.host==="graph.facebook.com"?ig.pageId:ig.id;
+  if(!inboxId)return response(req,{ok:true,ready:false,
+   reason:"instagram_dm_page_access_required",permission:permissions.status,
+   pageAccess:"unverified"},200);
+  const params:Record<string,string>={fields:"id",limit:"1"};
+  if(ig.host==="graph.facebook.com")params.platform="instagram";
+  const result=await graphInboxRead(inboxId+"/conversations",params,ig);
+  if(!result.ok)return privateGraphError(req,result.status,result.data);
+  if(!Array.isArray(result.data?.data))return response(req,{
+   ok:true,ready:false,reason:"instagram_dm_provider_response_unverified",
+   permission:permissions.status,pageAccess:"verified",inboxRead:"unverified"},200);
+  return response(req,{ok:true,ready:true,account:"@nbl_world",
+   permission:permissions.status,pageAccess:"verified",inboxRead:"verified",
+   hasAccessibleConversations:result.data.data.length>0,
+   note:"Actual Meta inbox read completed. No message or reply was sent."},200);
+ }catch{return response(req,{ok:true,ready:false,
+  reason:"instagram_dm_meta_unavailable",permission:permissions.status,
+  pageAccess:"unverified",inboxRead:"unverified"},200);}
+}
 // Founder-only Instagram Direct inbox. Meta is the source of truth: we do not
 // copy DM bodies into NBL databases, logs, analytics or public feeds. Polling
 // refreshes incoming messages while the Pulse inbox is open.
@@ -683,6 +724,7 @@ Deno.serve(async(req:Request)=>{
  if(pathname.endsWith("/webhook"))return webhook(req);
  if(req.method==="GET"&&pathname.endsWith("/callback"))return callback(req);
  if(req.method==="GET"&&pathname.endsWith("/publishing-check"))return instagramPublishingCheck(req);
+ if(req.method==="POST"&&pathname.endsWith("/inbox/check"))return checkInstagramInboxAccess(req);
  if(req.method==="POST"&&pathname.endsWith("/inbox/list"))return privateInbox(req,"list");
  if(req.method==="POST"&&pathname.endsWith("/inbox/thread"))return privateInbox(req,"thread");
  if(req.method==="POST"&&pathname.endsWith("/inbox/reply"))return privateInbox(req,"reply");
