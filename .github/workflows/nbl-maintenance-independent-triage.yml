@@ -1,0 +1,139 @@
+name: NBL Maintenance Department — independent failed-source triage
+
+# Shared verification for CURRENT Beans and Pulse. The caller's workflow_run
+# context is re-checked against the GitHub API and the current main SHA.
+# Retest uses read-only credentials; issue writing is isolated in another job.
+on:
+  workflow_call:
+    inputs:
+      component:
+        description: Exact active NBL source home (beans or pulse)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  independent-source-retest:
+    name: Foundation evidence / independent source retest
+    if: >-
+      ${{ github.event_name == 'workflow_run' &&
+          github.event.action == 'completed' &&
+          github.event.workflow_run.conclusion == 'failure' &&
+          github.event.workflow_run.event == 'push' &&
+          github.event.workflow_run.head_branch == 'main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      confirmed: ${{ steps.summary.outputs.confirmed }}
+    steps:
+      - name: Checkout NBL's existing trusted maintenance tools (not failing code)
+        uses: actions/checkout@v4
+        with:
+          repository: FounderNBL/FounderNBL.github.io
+          ref: main
+          path: nbl-maintenance-tools
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify exact completed main-run failure and source-check step
+        id: verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NBL_COMPONENT: ${{ inputs.component }}
+        run: node nbl-maintenance-tools/scripts/nbl-repair-incident-bridge.mjs verify
+      - name: Checkout the exact failed Beans/Pulse commit (no write credentials)
+        if: steps.verify.outputs.eligible == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          path: source
+          persist-credentials: false
+      - name: Independently reproduce the original offline source test
+        id: retest
+        if: steps.verify.outputs.eligible == 'true'
+        continue-on-error: true
+        working-directory: source
+        env:
+          NBL_COMPONENT: ${{ inputs.component }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$NBL_COMPONENT" in
+            beans)
+              node --test scripts/check-beans-native-dialogue.test.mjs scripts/check-one-nbl-foundation-parity.test.mjs
+              ;;
+            pulse)
+              node --check web/messenger/social-v1.mjs
+              node --check web/messenger/social-video-connect.mjs
+              node --check web/messenger/app.js
+              node --check web/messenger/call.mjs
+              node web/scripts/check-source.mjs
+              ;;
+            *)
+              echo "::error::Inactive repository not eligible for Foundation repair"
+              exit 1
+              ;;
+          esac
+      - name: Keep failed vs flaky observations separate (never spend a model)
+        if: always() && steps.verify.outputs.eligible == 'true'
+        id: summary
+        env:
+          NBL_COMPONENT: ${{ inputs.component }}
+          NBL_INSPECTOR_VERIFIED: ${{ steps.verify.outputs.eligible }}
+          NBL_RETEST_OUTCOME: ${{ steps.retest.outcome }}
+        run: node nbl-maintenance-tools/scripts/nbl-repair-incident-bridge.mjs summarize
+      - name: Preserve independent evidence for the existing Foundation/Fixer
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nbl-independent-source-triage-${{ github.run_id }}
+          path: .nbl-maintenance/independent-triage.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  record-confirmed-incident:
+    name: Record one internal repair incident (no Fixer dispatch)
+    needs: independent-source-retest
+    if: ${{ needs.independent-source-retest.outputs.confirmed == 'true' }}
+    # Serialize reports for this exact repo/commit; never race duplicate writes.
+    # Waiting runs are allowed to complete. Never cancel an active incident check.
+    concurrency:
+      group: nbl-source-incident-${{ github.repository }}-${{ github.event.workflow_run.head_sha }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+      issues: write
+    steps:
+      - name: Checkout trusted NBL verification code only
+        uses: actions/checkout@v4
+        with:
+          repository: FounderNBL/FounderNBL.github.io
+          ref: main
+          path: nbl-maintenance-tools
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Reverify GitHub run and record one review-only incident
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NBL_COMPONENT: ${{ inputs.component }}
+          NBL_RETEST_CONFIRMED: ${{ needs.independent-source-retest.outputs.confirmed }}
+        run: node nbl-maintenance-tools/scripts/nbl-repair-incident-bridge.mjs issue
+      - name: Preserve recorded issue status (never imply repair)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nbl-source-repair-incident-${{ github.run_id }}
+          path: .nbl-maintenance/independent-triage.json
+          if-no-files-found: ignore
+          retention-days: 14
