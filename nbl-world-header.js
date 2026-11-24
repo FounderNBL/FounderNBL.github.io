@@ -1429,6 +1429,8 @@
       stillStatus.textContent="Canva connected: "+String(connected.label||"Your Canva account").slice(0,90)+". You are still talking to Beans.";
       stillControls.append(stillButton("Show my Canva designs",e=>stillShowDesigns(e.currentTarget,identity,version)));
       if(state.canvaDesignWriteAvailable===true){
+        // Existing read-only grants need a fresh user-approved OAuth consent for creation.
+        stillControls.append(stillButton("Reconnect Canva for design permission",e=>stillOpenCanvaAuth(e.currentTarget)));
         const label=document.createElement("label");label.textContent="New design title";
         const title=document.createElement("input");title.type="text";title.maxLength=120;
         title.placeholder="My NBL design";label.append(title);

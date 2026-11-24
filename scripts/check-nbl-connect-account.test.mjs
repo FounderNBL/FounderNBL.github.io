@@ -52,6 +52,8 @@ test("Beans visual tools include Canva behind existing provider authorization",(
   assert.match(header,/setStillVisualTools\(true\)/);
   assert.match(header,/if\(!configured\)/);
   assert.match(header,/if\(!connected\)/);
+ assert.match(header,/Reconnect Canva for design permission/);
+ assert.match(account,/result\.providerRevoked===true/);
  assert.match(header,/mode:"beans"/);
  assert.doesNotMatch(header,/\/agent-platform\/|\/agents\/still\/chat|NBL_STILL_GOOGLE_AGENT_KEY/);
 });

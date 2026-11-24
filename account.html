@@ -512,7 +512,7 @@
           disconnect.onclick=async()=>{
             if(!confirm("Disconnect your Canva account from NBL?"))return;
             disconnect.disabled=true;
-            try{await connectFetch({operation:"canva_disconnect"});await renderConnect();}
+            try{const result=await connectFetch({operation:"canva_disconnect"});await renderConnect();nblConnectStatus.textContent=result.providerRevoked===true?"Canva disconnected and authorization revoked.":"Canva disconnected from NBL. If needed, remove Still by NBL in your Canva connected apps to revoke remaining authorization."; }
             catch(error){nblConnectStatus.textContent=error.message;disconnect.disabled=false}
           };
           canvaCard.append(canvaTitle,canvaDetails,disconnect);
