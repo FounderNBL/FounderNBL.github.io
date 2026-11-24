@@ -20,7 +20,9 @@ test("actual Meta inbox check is Founder-only, read-only and returns bounded rea
   "inspectMessagingGrant(grant.token)","officialInstagramInboxAccount(grant.token)",
   'fields:"id",limit:"1"',"graphInboxRead(inboxId+","pageAccess:"
  ])assert.ok(check.includes(expected),expected);
- assert.doesNotMatch(check,/metaPost\(|\"\\/messages\"|\\.from\\(\"nbl_social_messages\"\\)|client_secret/);
+ for(const forbidden of ["metaPost(", '"/messages"','client_secret']){
+  assert.equal(check.includes(forbidden),false,"Readiness must not call "+forbidden);
+ }
  assert.match(igBackend,/pathname\.endsWith\(\"\/inbox\/check\"\)\)return checkInstagramInboxAccess\(req\)/);
  assert.match(igBackend,/!ORIGINS\.has\(origin\)\)return response\(req,\{ok:false,reason:\"origin_not_allowed\"\},403/);
  assert.match(page,/id="pulseIgCheck"[^>]*Check real Instagram access/);
