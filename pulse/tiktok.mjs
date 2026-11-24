@@ -5,7 +5,7 @@ const key="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const args=new URL(location.href).searchParams;
 const incoming={code:args.get("code"),state:args.get("state"),error:args.get("error")};
 if(location.search)history.replaceState(null,"",location.pathname);
-let clerk,member,account="",scopes=[],creator=null,previewURL="",duration=0,job=null,busy=false,gen=0;
+let clerk,member,account="",scopes=[],creator=null,previewURL="",duration=0,job=null,busy=false,gen=0,preflightPassed=false,historyRun=0;
 const mode=()=>byId("environment").value;
 const say=s=>byId("status").textContent=s;
 const postSay=s=>byId("postingStatus").textContent=s;
@@ -20,9 +20,10 @@ async function call(action,fields={},form=null){
  const b=await r.json();if(!r.ok||!b.ok){const e=Error(String(b.reason||"request_failed").replaceAll("_"," "));e.publish_id=b.publish_id;throw e;}return b;
 }
 function clear(){
- gen++;account="";scopes=[];creator=null;job=null;duration=0;
- byId("post").hidden=true;byId("disconnect").hidden=true;byId("list").hidden=true;byId("videos").replaceChildren();byId("identity").textContent="";byId("check").hidden=true;byId("recent").hidden=true;byId("recentList").replaceChildren();postSay("");
- byId("post").reset();byId("direct").hidden=true;byId("brand").hidden=true;byId("brandedConsent").hidden=true;byId("privacy").replaceChildren(new Option("Choose privacy",""));
+ gen++;historyRun++;account="";scopes=[];creator=null;job=null;duration=0;preflightPassed=false;
+ byId("post").hidden=true;byId("disconnect").hidden=true;byId("list").hidden=true;byId("videos").replaceChildren();byId("identity").textContent="";byId("check").hidden=true;byId("recent").hidden=true;byId("recentList").replaceChildren();byId("historyShell").hidden=true;byId("historyStatus").textContent="";
+ byId("preflight").disabled=true;byId("prepare").hidden=true;byId("readiness").textContent="Not checked. No video has been sent by this check.";byId("selectedState").textContent="No video selected · nothing sent.";postSay("No new video sent in this session.");
+ byId("post").reset();byId("prepare").textContent="Prepare a video (do not send yet)";byId("direct").hidden=true;byId("brand").hidden=true;byId("brandedConsent").hidden=true;byId("privacy").replaceChildren(new Option("Choose privacy",""));
  if(previewURL)URL.revokeObjectURL(previewURL);previewURL="";byId("preview").removeAttribute("src");byId("preview").replaceChildren();byId("preview").load();byId("preview").hidden=true;
 }
 function update(){
@@ -33,7 +34,9 @@ function update(){
  for(const option of byId("privacy").options)if(option.value==="SELF_ONLY")option.disabled=paid;
  if(paid&&byId("privacy").value==="SELF_ONLY")byId("privacy").value="";
  byId("send").textContent=direct?"Publish to TikTok":"Send draft to TikTok";
- byId("send").disabled=busy||!account||!byId("consent").checked||!duration||(direct&&(!creator||!byId("privacy").value||duration>creator.max_video_post_duration_sec||(byId("commercial").checked&&!byId("own_brand").checked&&!byId("paid_brand").checked)));
+ const chosenFile=byId("file").files?.[0];
+ const validFile=!!chosenFile&&["video/mp4","video/quicktime","video/webm"].includes(chosenFile.type)&&chosenFile.size>0&&chosenFile.size<=20*1024*1024;
+ byId("send").disabled=busy||!preflightPassed||!account||!validFile||!byId("consent").checked||!Number.isFinite(duration)||duration<=0||(direct&&(!creator||!byId("privacy").value||duration>creator.max_video_post_duration_sec||(byId("commercial").checked&&!byId("own_brand").checked&&!byId("paid_brand").checked)));
 }
 async function loadCreator(){
  creator=null;update();const n=gen,m=mode();
@@ -49,7 +52,7 @@ async function loadCreator(){
 async function loadRecent(){
  const n=gen,m=mode(),a=account;
  const section=byId("recent"),list=byId("recentList");
- section.hidden=true;list.replaceChildren();
+ section.hidden=true;byId("historyShell").hidden=true;list.replaceChildren();byId("historyStatus").textContent="";
  if(!a)return;
  try{
   const b=await call("recent");
@@ -59,22 +62,72 @@ async function loadRecent(){
    const li=document.createElement("li"),button=document.createElement("button");
    button.type="button";
    const submitted=new Date(entry.created_at);
-   button.textContent="Check status · "+(Number.isFinite(submitted.getTime())?submitted.toLocaleString():"Previous TikTok submission");
+   button.textContent="Check earlier submission · "+(Number.isFinite(submitted.getTime())?submitted.toLocaleString():"Previous TikTok submission");
    button.addEventListener("click",()=>{
     if(n!==gen||m!==mode()||a!==account)return;
-    job=entry.publish_id;byId("check").hidden=false;byId("check").click();
+    void inspectHistory(entry.publish_id,button.textContent);
    });
    li.append(button);list.append(li);
   }
-  section.hidden=!list.children.length;
-  if(!job&&b.posts?.[0]?.publish_id){job=b.posts[0].publish_id;byId("check").hidden=false;}
+  section.hidden=!list.children.length;byId("historyShell").hidden=section.hidden;
+  // An old post is never auto-selected as the CURRENT upload.
  }catch(e){
   if(n===gen&&m===mode()&&a===account){
-   section.hidden=false;
-   const li=document.createElement("li");li.textContent="Previous TikTok submissions are temporarily unavailable.";list.append(li);
+   section.hidden=false;byId("historyShell").hidden=false;
+   const li=document.createElement("li");li.textContent="Earlier TikTok submissions are temporarily unavailable.";list.append(li);
   }
  }
 }
+async function inspectHistory(publishId,label){
+ const seq=++historyRun,n=gen,m=mode(),a=account;
+ const el=byId("historyStatus");el.textContent=label+" · Checking TikTok (not the current upload)…";
+ try{
+  const b=await call("status",{publish_id:publishId});
+  if(seq!==historyRun||n!==gen||m!==mode()||a!==account)return;
+  const statuses={PROCESSING_UPLOAD:"Earlier video is still processing.",PROCESSING_DOWNLOAD:"TikTok is still fetching that earlier video.",SEND_TO_USER_INBOX:"TikTok sent an earlier draft to your inbox. It is NOT a published video; try opening its notification in the TikTok mobile app.",PUBLISH_COMPLETE:"TikTok confirms this earlier submission was published.",FAILED:"TikTok reports that earlier submission failed."};
+  el.textContent=label+" · "+(statuses[b.status]||"TikTok status: "+String(b.status||"unknown"))+(b.reason?" · "+b.reason:"");
+ }catch(e){
+  if(seq===historyRun&&n===gen&&m===mode()&&a===account)el.textContent="Could not verify this earlier submission: "+e.message;
+ }
+}
+byId("preflight").addEventListener("click",async()=>{
+ if(busy||!account)return;
+ const n=gen,m=mode(),a=account;
+ busy=true;preflightPassed=false;byId("prepare").hidden=true;byId("post").hidden=true;
+ byId("preflight").disabled=true;byId("readiness").textContent="Checking connected TikTok permissions. No video will be uploaded.";
+ update();
+ try{
+  const b=await call("connection");
+  if(n!==gen||m!==mode()||a!==account)return;
+  if(!b.connected||b.account_ref!==account)throw Error("Your TikTok connection changed. Reconnect first.");
+  if(!b.scopes?.includes("video.upload")&&!b.scopes?.includes("video.publish"))throw Error("TikTok did not authorize video sharing.");
+  // This read-only creator-info request talks to TikTok, not its upload endpoint.
+  // Upload-only grants have no creator-info scope; check their saved grant only.
+  if(b.scopes.includes("video.publish")){
+   const check=await call("creator");
+   if(!check.creator||!Array.isArray(check.creator.privacy_level_options))throw Error("TikTok creator check was incomplete.");
+   creator=check.creator;
+  }
+  if(n!==gen||m!==mode()||a!==account)return;
+  preflightPassed=true;byId("prepare").hidden=false;
+  byId("readiness").textContent=b.scopes.includes("video.publish")
+   ?"TikTok verified your account through a read-only creator check. No video uploaded. Full transfer is NOT tested until you choose a file and send it."
+   :"Pulse verified the saved upload permission. TikTok transfer is NOT tested. No video uploaded.";
+ }catch(e){
+  if(n===gen&&m===mode()&&a===account){
+   preflightPassed=false;byId("readiness").textContent="Connection check failed: "+e.message+". No video sent. Reconnect TikTok or try again.";
+  }
+ }finally{
+  busy=false;if(n===gen&&m===mode()&&a===account)byId("preflight").disabled=false;update();
+ }
+});
+byId("prepare").addEventListener("click",()=>{
+ if(!preflightPassed||!account||busy)return;
+ byId("post").hidden=false;byId("prepare").textContent="Video preparation opened below";
+ if(byId("kind").value==="direct"&&scopes.includes("video.publish"))void loadCreator();
+ byId("post").scrollIntoView({behavior:"smooth",block:"start"});
+});
+
 async function connection(){
  clear();const n=gen,m=mode();
  try{
@@ -84,10 +137,12 @@ async function connection(){
   byId("disconnect").hidden=false;byId("list").hidden=!scopes.includes("video.list");
   byId("kind").options[0].disabled=!scopes.includes("video.upload");byId("kind").options[1].disabled=!scopes.includes("video.publish");
   byId("kind").value=scopes.includes("video.upload")?"draft":"direct";
-  byId("post").hidden=!scopes.includes("video.upload")&&!scopes.includes("video.publish");
+  byId("post").hidden=true;preflightPassed=false;
+  byId("preflight").disabled=!scopes.includes("video.upload")&&!scopes.includes("video.publish");
+  byId("readiness").textContent="Connected, but not tested. Run Test connection before preparing a video. No video has been sent.";
   say(m==="sandbox"?"TikTok sandbox connected: test uploads cannot be public. Public posting requires approved production access.":"TikTok production connected. Public visibility depends on TikTok approval and the available privacy choices.");
   await loadRecent();
-  if(byId("kind").value==="direct"&&!byId("post").hidden)await loadCreator();
+  // No automatic TikTok creator calls or uploads: the next check requires a tap.
  }catch(e){say(e.message);}finally{update();}
 }
 async function init(){
@@ -123,9 +178,10 @@ byId("kind").addEventListener("change",()=>{if(byId("kind").value==="direct")voi
 byId("file").addEventListener("change",()=>{
  duration=0;byId("consent").checked=false;if(previewURL)URL.revokeObjectURL(previewURL);previewURL="";
  const f=byId("file").files[0];
+ byId("selectedState").textContent=f?f.name+" · checking file, nothing sent":"No video selected · nothing sent.";
  const types=Object.freeze({"video/mp4":"video/mp4","video/quicktime":"video/quicktime","video/webm":"video/webm"});
  const safeType=Object.hasOwn(types,f?.type)?types[f.type]:null;
- if(!f||!safeType||f.size===0||f.size>20*1024*1024){byId("preview").hidden=true;postSay("Select an MP4, MOV or WebM video up to 20 MB.");update();return;}
+ if(!f||!safeType||f.size===0||f.size>20*1024*1024){byId("preview").hidden=true;byId("selectedState").textContent="Unsupported or oversized file · nothing sent.";postSay("Select an MP4, MOV or WebM video up to 20 MB.");update();return;}
  const player=byId("preview");
  player.removeAttribute("src");player.replaceChildren();
  const media=document.createElement("source");media.type=safeType;
@@ -134,11 +190,15 @@ byId("file").addEventListener("change",()=>{
  previewURL=URL.createObjectURL(safeVideo);media.src=previewURL;
  player.append(media);player.load();player.hidden=false;postSay("");update();
 });
-byId("preview").addEventListener("loadedmetadata",()=>{duration=Number.isFinite(byId("preview").duration)?byId("preview").duration:0;update();if(creator&&duration>creator.max_video_post_duration_sec)postSay("This video exceeds the creator's maximum duration.");});
+byId("preview").addEventListener("loadedmetadata",()=>{
+ duration=Number.isFinite(byId("preview").duration)?byId("preview").duration:0;
+ byId("selectedState").textContent=duration>0?"Video preview ready · "+Math.round(duration)+"s. Nothing uploaded yet.":"Could not read this video's duration · nothing sent.";
+ update();if(creator&&duration>creator.max_video_post_duration_sec)postSay("This video exceeds the creator's maximum duration.");
+});
 for(const id of ["privacy","comment","duet","stitch","commercial","own_brand","paid_brand","consent","title"])byId(id).addEventListener("change",update);
 byId("commercial").addEventListener("change",()=>{if(!byId("commercial").checked){byId("own_brand").checked=false;byId("paid_brand").checked=false;}update();});
 byId("post").addEventListener("submit",async ev=>{
- ev.preventDefault();if(byId("send").disabled||busy)return;
+ ev.preventDefault();if(!preflightPassed||byId("send").disabled||busy||!byId("consent").checked||!byId("file").files?.[0])return;
  const n=gen;busy=true;byId("environment").disabled=true;byId("connect").disabled=true;byId("disconnect").disabled=true;update();postSay("Sending your selected video to TikTok…");
  try{
   const f=new FormData();f.set("file",byId("file").files[0]);f.set("account",account);f.set("kind",byId("kind").value);f.set("duration",String(duration));f.set("title",byId("title").value);f.set("privacy",byId("privacy").value);
