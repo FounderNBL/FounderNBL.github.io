@@ -491,7 +491,7 @@ async function refreshStatus(silent = false) {
       const remaining = data.isAdmin ? null : data.allowance?.remainingSeconds;
       const extra = typeof remaining === "number" && Number.isFinite(remaining)
         ? " " + Math.ceil(remaining / 60) + " free Live minutes left this month (no rollover)." : "";
-      setStatus(data.enabled !== true ? "Pulse Live is OFF until the NBL launch is approved." : (data.isHost ? "Ready to start your Pulse Live broadcast." + extra : "No live broadcast right now."));
+      setStatus(data.enabled !== true ? "Pulse Live is OFF until the NBL launch is approved." : (data.isHost ? "Ready to start your Pulse Live broadcast." + extra : "Pulse Live is ON, but this signed-in account needs an NBL Pulse member profile before hosting."));
       show("#pulseLiveBadge", false);
       show("#pulseLiveSetup", data.enabled === true && data.isHost === true);
       show("#pulseLiveHost", false);
