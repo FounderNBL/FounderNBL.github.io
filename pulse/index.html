@@ -205,6 +205,7 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
   </nav>
   <div class="pulse-live" id="pulseLive"><strong>● Go Live</strong>
   <p class="pulse-live-status" id="pulseLiveStatus" role="status" aria-live="polite">Checking Pulse Live…</p>
+  <button id="pulseLiveCheck" type="button" class="btn small">Check real Stream readiness · no broadcast</button><p id="pulseLiveCheckStatus" class="pulse-live-meta" role="status" aria-live="polite">Not checked. This reads Stream health without starting a broadcast.</p>
   <div id="pulseLiveAdmin" hidden aria-label="Founder livestream controls">
     <button id="pulseLiveToggle" type="button" class="pulse-live-danger" aria-describedby="pulseLiveStatus">Turn Pulse Live ON</button>
   </div>
@@ -381,8 +382,9 @@ body.pulse-body .pulse-sidebar .social-tabs .pulse-legacy-message-tab{display:no
       <div class="social-list-head"><h2 id="pulseIgHeading">Instagram Direct · @nbl_world</h2><button id="pulseIgClose" type="button" class="btn small">Close inbox</button></div>
       <p class="social-meta">Founder-only business Instagram messages. Read and reply here without leaving NBL Pulse. NBL member conversations remain separate.</p>
       <p class="social-feedback" role="status" aria-live="polite" id="pulseIgStatus">Open the inbox to load conversations from Instagram.</p>
+      <p class="social-feedback" role="status" aria-live="polite" id="pulseIgCheckStatus">Not checked. This checks the real Meta inbox without sending a message or changing your account.</p>
       <div class="pulse-ig-grid">
-        <section aria-label="Instagram conversations"><h3>Conversations</h3><button class="btn small" type="button" id="pulseIgConnect">Connect Instagram DMs</button><button class="btn small" type="button" id="pulseIgRefresh">Refresh inbox</button><div id="pulseIgConversations" class="pulse-ig-conversations"></div></section>
+        <section aria-label="Instagram conversations"><h3>Conversations</h3><button class="btn small" type="button" id="pulseIgCheck">Check real Instagram access · no message sent</button><button class="btn small" type="button" id="pulseIgConnect">Connect Instagram DMs</button><button class="btn small" type="button" id="pulseIgRefresh">Refresh inbox</button><div id="pulseIgConversations" class="pulse-ig-conversations"></div></section>
         <section aria-label="Instagram direct-message thread"><h3 id="pulseIgThreadTitle">Choose a conversation</h3><div id="pulseIgThread" class="pulse-ig-thread" aria-live="polite"></div>
           <form id="pulseIgReplyForm" hidden><label for="pulseIgReplyText">Your Instagram reply</label>
             <textarea id="pulseIgReplyText" maxlength="1000" rows="3" placeholder="Write a reply"></textarea>
