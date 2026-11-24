@@ -55,6 +55,8 @@ export function mountInstagramInbox(invoke){
  const refresh=panel.querySelector("#pulseIgRefresh");
  const connect=panel.querySelector("#pulseIgConnect");
  const close=panel.querySelector("#pulseIgClose");
+ const check=panel.querySelector("#pulseIgCheck");
+ const checkStatus=panel.querySelector("#pulseIgCheckStatus");
  let selected=null,loading=false,pending=false,lastReadAt=0,readGeneration=0,canReply=false;
  const connected=new URL(location.href).searchParams.get("instagram_connect");
  const say=s=>{status.textContent=s;};
@@ -66,6 +68,21 @@ export function mountInstagramInbox(invoke){
     "Meta connected, but instagram_manage_messages is missing from the existing Facebook Login for Business configuration. Add that permission in Meta, then reconnect Instagram DMs.":
     "Instagram connection not completed ("+String(connected).slice(0,60)+"). Check Meta authorization before retrying.");
  }
+ check?.addEventListener("click",async()=>{
+  if(loading||pending||check.disabled)return;
+  check.disabled=true;
+  checkStatus.textContent="Checking actual Meta permission, Page and inbox access. No messages sent.";
+  try{
+   const result=await call("check",{action:"check"});
+   if(result.ready===true&&result.pageAccess==="verified"&&result.inboxRead==="verified"){
+    checkStatus.textContent="Meta verified @nbl_world inbox access. "+(result.hasAccessibleConversations?"At least one conversation is accessible.":"No conversations in the checked result.")+" No message sent. An eligible incoming message is still needed before replying.";
+   }else{
+    checkStatus.textContent="Instagram inbox NOT ready: "+errorText({message:result.reason||"instagram_dm_meta_unavailable"})+" No message sent.";
+   }
+  }catch(error){
+   checkStatus.textContent="Instagram check failed: "+errorText(error)+" No message sent.";
+  }finally{check.disabled=false;}
+ });
  connect.addEventListener("click",async()=>{
    connect.disabled=true;
    say("Opening official Meta authorization for @nbl_world…");
