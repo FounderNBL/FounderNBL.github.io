@@ -13,6 +13,9 @@ on:
     paths:
       - ".github/workflows/nbl-live-production-watch.yml"
       - ".github/workflows/nbl-maintenance-shared-events.yml"
+      - ".github/workflows/nbl-maintenance-independent-triage.yml"
+      - "scripts/nbl-repair-incident-bridge.mjs"
+      - "scripts/nbl-repair-incident-bridge.test.mjs"
       - "scripts/nbl-website-economy-fixer.mjs"
       - "scripts/nbl-maintenance-heartbeat.mjs"
       - "scripts/nbl-maintenance-heartbeat.test.mjs"
@@ -46,6 +49,9 @@ on:
       - "scripts/nbl-maintenance-heartbeat.mjs"
       - "scripts/nbl-maintenance-heartbeat.test.mjs"
       - ".github/workflows/nbl-maintenance-shared-events.yml"
+      - ".github/workflows/nbl-maintenance-independent-triage.yml"
+      - "scripts/nbl-repair-incident-bridge.mjs"
+      - "scripts/nbl-repair-incident-bridge.test.mjs"
 
 permissions:
   contents: read
@@ -91,7 +97,7 @@ jobs:
         run: |
           node --test scripts/nbl-website-green.test.mjs scripts/nbl-website-green-history.test.mjs scripts/nbl-website-fixer.test.mjs scripts/nbl-website-economy-fixer.test.mjs scripts/nbl-maintenance-heartbeat.test.mjs scripts/check-inspector-challenge-policy.test.mjs \
             scripts/check-official-social-world-cards.test.mjs scripts/nbl-foundation-repair-events.test.mjs scripts/nbl-repair-cross-domain.test.mjs scripts/nbl-website-repair-experiment.test.mjs scripts/nbl-website-repair-integration.test.mjs
-          node --test scripts/nbl-shared-repair-handoff.test.mjs
+          node --test scripts/nbl-repair-incident-bridge.test.mjs scripts/nbl-shared-repair-handoff.test.mjs
           node scripts/nbl-website-green.mjs source
 
       - name: Ask Cloudflare for live zone status before website tests
