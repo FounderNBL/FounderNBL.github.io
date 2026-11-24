@@ -1,0 +1,16 @@
+{
+  "name": "NBL Website | cost-aware Codespaces",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-22-bookworm",
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "4gb",
+    "storage": "16gb"
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "git.autofetch": false
+      }
+    }
+  }
+}
