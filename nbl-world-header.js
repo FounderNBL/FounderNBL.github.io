@@ -197,7 +197,6 @@
     if(!token) return {signInRequired:true,signInUrl:accountPortalUrl("/sign-in")};
     const route=portal?"/billing/portal":"/billing/checkout";
     const response=await fetch(`${NBL_CHAT_GATEWAY_API}${route}`,{
-      signal,
       method:"POST",
       headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
       body:JSON.stringify(portal?{}:{plan}),
@@ -1355,6 +1354,7 @@
     const token=await getNblBeansAuthToken();
     if(!token) throw new Error("Sign in with your NBL account first.");
     const response=await fetch(`${NBL_CHAT_GATEWAY_API}${route}`,{
+      signal,
       method:"POST",
       headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
       body:JSON.stringify(body),
