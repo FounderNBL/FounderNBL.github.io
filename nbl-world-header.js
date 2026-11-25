@@ -350,7 +350,8 @@
           signOutButton.disabled=true;
           signOutButton.textContent="Signing out…";
           try{
-            await clerk.signOut();
+            resetBeansVoice();
+        await clerk.signOut();
             render();
             if(room.key!=="home")location.assign("/");
           }catch{
@@ -646,6 +647,14 @@
             <div class="nbl-still-designs" data-nbl-still-designs hidden></div>
           </section>
         <form class="nbl-beans-form" data-nbl-beans-form>
+          <div data-nbl-speech-controls style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <button type="button" class="nbl-beans-stop" data-nbl-speech-stop hidden aria-label="Stop talking">Stop talking</button>
+            <button type="button" class="nbl-beans-stop" data-nbl-speech-mute aria-pressed="false" hidden>Mute auto speech</button>
+          </div>
+          <fieldset data-nbl-voice-settings hidden style="margin:6px 0;padding:8px;border:1px solid #796438;border-radius:8px">
+            <legend>Voice settings</legend><label>Speaking voice <select data-nbl-voice-choice><option value="official">Beans (official)</option><option value="device">Device voice (optional)</option></select></label>
+            <p>Official Beans is the default. If unavailable, replies stay in text. Choices apply to this session.</p><button type="button" data-nbl-voice-settings-close>Done</button>
+          </fieldset>
           <label for="nbl-beans-input">Message Beans</label>
           <div class="nbl-beans-tool-state" data-nbl-tool-state hidden>
             <span data-nbl-tool-mode-label>Auto</span>
@@ -668,7 +677,8 @@
                 <button type="button" data-nbl-tool="artifact"><strong>Create a PDF / file</strong><span>Build a downloadable PDF, document, spreadsheet, CSV, or presentation · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="image"><strong>Beans · Create an image</strong><span>Ask Beans to create an image with NBL’s existing OpenAI tool · eligible membership required</span></button>
                 <button type="button" data-nbl-tool="voice-mode"><strong>Beans voice mode</strong><span>Speak with Beans and hear his official voice · eligible membership required</span></button>
-                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>Beans’ official voice with verified access; browser voice otherwise</span></button>
+                <button type="button" data-nbl-tool="voice-settings"><strong>Voice settings</strong><span>Choose the speaking voice and automatic speech</span></button>
+                <button type="button" data-nbl-tool="read"><strong>Read last reply</strong><span>Use your selected voice · official Beans by default</span></button>
               </div>
               <input data-nbl-beans-file type="file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,text/plain,text/markdown,text/csv,application/json" multiple hidden>
               <input data-nbl-still-camera type="file" accept="image/*" capture="environment" hidden>
@@ -888,6 +898,31 @@
   let beansVoiceStream=null;
   let beansVoiceChunks=[];
   let beansVoicePlayer=null;
+  let beansVoiceChoice="official", beansSpeechMuted=false, beansSpeechGeneration=0, beansSpeechController=null;
+  const speechStop=beansPanel.querySelector("[data-nbl-speech-stop]");
+  const speechMute=beansPanel.querySelector("[data-nbl-speech-mute]");
+  const voiceSettings=beansPanel.querySelector("[data-nbl-voice-settings]");
+  const voiceChoice=beansPanel.querySelector("[data-nbl-voice-choice]");
+  let activeSpeechText=null;
+  const speechReadLabels=()=>{for(const button of beansLog.querySelectorAll('[data-nbl-read-reply]')){const active=activeSpeechText!==null&&button.beansReplyText===activeSpeechText;button.textContent=active?'Stop talking':'Read';button.setAttribute('aria-label',active?'Stop talking':'Read Beans reply aloud');button.setAttribute('aria-pressed',String(active));}};
+  const stopBeansSpeech=({announce=false}={})=>{
+    activeSpeechText=null;
+    speechReadLabels();
+    beansSpeechGeneration++;
+    beansSpeechController?.abort();beansSpeechController=null;
+    if(beansVoicePlayer){try{beansVoicePlayer.pause();beansVoicePlayer.removeAttribute("src");beansVoicePlayer.load();}catch{}beansVoicePlayer=null;}
+    try{window.speechSynthesis?.cancel();}catch{}
+    speechStop.hidden=true;
+    if(announce)beansStatus.textContent="Beans stopped talking.";
+  };
+  const syncSpeechMute=()=>{speechMute.hidden=!beansVoiceMode;speechMute.setAttribute("aria-pressed",String(beansSpeechMuted));speechMute.textContent=beansSpeechMuted?"Unmute auto speech":"Mute auto speech";};
+  speechStop.addEventListener("click",()=>stopBeansSpeech({announce:true}));
+  speechMute.addEventListener("click",()=>{beansSpeechMuted=!beansSpeechMuted;if(beansSpeechMuted)stopBeansSpeech();syncSpeechMute();beansStatus.textContent=beansSpeechMuted?"Automatic speech muted.":"Automatic speech unmuted.";});
+  voiceChoice.addEventListener("change",()=>{stopBeansSpeech();beansVoiceChoice=voiceChoice.value==="device"?"device":"official";});
+  beansPanel.querySelector("[data-nbl-voice-settings-close]").addEventListener("click",()=>{voiceSettings.hidden=true;});
+  const resetBeansVoice=()=>{stopBeansSpeech();beansVoiceChoice="official";voiceChoice.value="official";beansVoiceMode=false;beansSpeechMuted=false;voiceSettings.hidden=true;syncSpeechMute();};
+  window.addEventListener("pagehide",()=>stopBeansSpeech());
+  document.addEventListener("visibilitychange",()=>{if(document.hidden)stopBeansSpeech();});
   let activeBeansChatController=null;
   const beansArtifactUrls=new Set();
   window.addEventListener("pagehide",()=>{
@@ -1113,7 +1148,9 @@
       read.type="button";
       read.textContent="Read";
       read.setAttribute("aria-label","Read Beans reply aloud");
-      read.addEventListener("click",()=>{void speakBeansReply(content);});
+      read.dataset.nblReadReply="true";read.beansReplyText=String(content||"").trim();
+      read.setAttribute("aria-pressed","false");
+      read.addEventListener("click",()=>{if(activeSpeechText===read.beansReplyText){stopBeansSpeech({announce:true});return;}void speakBeansReply(content);});
       actions.append(copy,read);
       wrap.append(actions);
     }
@@ -1319,10 +1356,11 @@
     beansStatus.textContent=`${beansAttachments.length} attachment${beansAttachments.length===1?"":"s"} ready. verified membership is required to send them.`;
   };
 
-  const callBeansUtility=async(route,body={})=>{
+  const callBeansUtility=async(route,body={},signal)=>{
     const token=await getNblBeansAuthToken();
     if(!token) throw new Error("Sign in with your NBL account first.");
     const response=await fetch(`${NBL_CHAT_GATEWAY_API}${route}`,{
+      signal,
       method:"POST",
       headers:{Accept:"application/json","Content-Type":"application/json",Authorization:`Bearer ${token}`},
       body:JSON.stringify(body),
@@ -1580,6 +1618,7 @@
   };
 
   const toggleBeansVoiceRecording=async()=>{
+    stopBeansSpeech();
     if(beansVoiceRecorder?.state==="recording"){
       beansVoiceRecorder.stop();
       return;
@@ -1635,29 +1674,40 @@
     }
   };
 
-  const browserSpeakBeans=text=>{
-    if(!("speechSynthesis" in window)) throw new Error("Read aloud is not available in this browser.");
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
-  };
-
-  const speakBeansReply=async(text,{forceOpenAi=false}={})=>{
+  const speakBeansReply=async(text,{automatic=false}={})=>{
     const value=String(text||"").trim();
-    if(!value) return;
-    if(forceOpenAi||await plusVoiceEligible()){
+    if(!value||(automatic&&(!beansVoiceMode||beansSpeechMuted||beansPanel.hidden)))return;
+    stopBeansSpeech();
+    const generation=beansSpeechGeneration;
+    const current=()=>generation===beansSpeechGeneration;
+    const finish=()=>{if(current())stopBeansSpeech();};
+    const fail=message=>{if(!current())return;stopBeansSpeech();beansStatus.textContent=message;};
+    activeSpeechText=value;
+    speechReadLabels();
+    speechStop.hidden=false;
+    if(beansVoiceChoice==="device"){
       try{
-        const payload=await callBeansUtility("/voice/speak",{text:value});
-        if(typeof payload?.audio==="string"&&payload.audio.startsWith("data:audio/")){
-          try{beansVoicePlayer?.pause?.();}catch{}
-          beansVoicePlayer=new Audio(payload.audio);
-          await beansVoicePlayer.play();
-          return;
-        }
-      }catch(error){
-        if(forceOpenAi) beansStatus.textContent=error?.message||"Beans' official voice is temporarily unavailable.";
-      }
+        if(!("speechSynthesis" in window))throw Error("Device voice unavailable.");
+        const utterance=new SpeechSynthesisUtterance(value);
+        utterance.onend=finish;utterance.onerror=()=>fail("Selected device voice is unavailable.");
+        window.speechSynthesis.speak(utterance);
+      }catch(error){fail(error?.message||"Selected device voice is unavailable.");}
+      return;
     }
-    try{browserSpeakBeans(value);}catch(error){beansStatus.textContent=error?.message||"Read aloud is not available.";}
+    const controller=new AbortController();beansSpeechController=controller;
+    beansStatus.textContent="Preparing Beans’ official voice…";
+    try{
+      const payload=await callBeansUtility("/voice/speak",{text:value},controller.signal);
+      if(!current())return;
+      if(payload?.voiceProvider!=="ElevenLabs"||typeof payload.audio!=="string"||!payload.audio.startsWith("data:audio/"))throw Error("Official voice response could not be verified.");
+      const player=new Audio(payload.audio);beansVoicePlayer=player;
+      player.addEventListener("ended",finish,{once:true});
+      player.addEventListener("error",()=>fail("Beans’ official voice could not play. Reply stays in text."),{once:true});
+      await player.play();
+      if(current())beansStatus.textContent="Beans is speaking.";
+    }catch(error){
+      if(current())fail("Beans’ official voice is unavailable. Reply stays in text. "+(error?.message||""));
+    }
   };
 
   const lastBeansReply=()=>[...beansHistory].reverse().find(item=>item.role==="assistant"&&String(item.content||"").trim())?.content||"";
@@ -1775,6 +1825,7 @@
   };
 
   const startNewBeansConversation=()=>{
+    stopBeansSpeech();
     cancelActiveBeansChat();
     invalidateBeansHistoryLoad();
     beansConversationGeneration++;
@@ -1793,6 +1844,7 @@
   };
 
   const loadDrawerConversation=async(id)=>{
+    stopBeansSpeech();
     cancelActiveBeansChat();
     invalidateBeansHistoryLoad();
     const requestGeneration=beansHistoryRequestGeneration;
@@ -2081,6 +2133,7 @@
   };
 
   const closeBeans=({fromPopState=false}={})=>{
+    stopBeansSpeech();voiceSettings.hidden=true;
     setNblQuickMenu(false);
     setBeansToolMenu(false); // Reopening Beans must NEVER leave quick actions visible.
     const shouldConsumeHistory=!fromPopState&&Boolean(chatHistoryEntry)&&window.history.state?.nblChatOverlay===chatHistoryEntry;
@@ -2126,6 +2179,7 @@
   };
 
   beansForm.addEventListener("submit",async event=>{
+    stopBeansSpeech();
     event.preventDefault();
     const text=beansInput.value.trim();
     if(!text||beansSubmit.disabled) return;
@@ -2229,7 +2283,7 @@
               :payload?.authenticated
                 ?(payload?.username?`Saved to ${payload.username}'s NBL account.`:"Saved to your NBL account.")
                 :"Beans replied.";
-      if(beansVoiceMode) void speakBeansReply(reply,{forceOpenAi:true});
+      if(beansVoiceMode&&!beansSpeechMuted) void speakBeansReply(reply,{automatic:true});
       clearBeansTools();
     }catch(error){
       if(accountGeneration!==beansAccountGeneration||conversationGeneration!==beansConversationGeneration||currentClerkUserId()!==requestedUserId||error?.name==="AbortError") return;
@@ -2336,6 +2390,9 @@
       }catch(error){beansStatus.textContent=error?.message||"Saved knowledge is temporarily unavailable.";}
       return;
     }
+    if(tool==="voice-settings"){
+      setBeansToolMenu(false);voiceSettings.hidden=false;voiceChoice.focus();return;
+    }
     if(tool==="voice-mode"){
       setBeansToolMenu(false);
       if(!(await plusVoiceEligible())){
@@ -2343,6 +2400,8 @@
         return;
       }
       beansVoiceMode=!beansVoiceMode;
+      if(!beansVoiceMode)stopBeansSpeech();
+      syncSpeechMute();
       beansStatus.textContent=beansVoiceMode
         ?"Beans voice mode is on. Tap the mic to talk; Beans will speak with his official voice."
         :"Beans voice mode is off.";
@@ -2647,6 +2706,7 @@
         if(!beansPanel.hidden) void updateChatDrawerAccountAction();
         return;
       }
+      resetBeansVoice();
       beansIdentityUserId=nextUserId;
       cancelActiveBeansChat();
       beansAccountGeneration++;
