@@ -486,3 +486,18 @@ test.describe("New Beansland web app browser smoke", () => {
     expect(page.url()).toContain("/account.html?source=signout-test");
   });
 });
+
+test("Beans navigation opens the local planner and offers encoded external routes without requesting location",async({page})=>{
+  await open("/",page);
+  await page.getByRole("button",{name:"Open Beans"}).click();
+  await page.getByRole("button",{name:"Open Beans tools"}).click();
+  const [planner]=await Promise.all([page.waitForEvent("popup"),page.locator('[data-nbl-tool="navigation"]').click()]);
+  await expect(planner).toHaveURL(/navigation\.html$/);
+  await expect(planner.locator("#maps")).toHaveAttribute("aria-disabled","true");
+  await planner.locator("#destination").fill("Central Park & 5th Avenue");
+  await expect(planner.locator("#maps")).toHaveAttribute("href",/destination=Central\+Park\+%26\+5th\+Avenue/);
+  await expect(planner.locator("#waze")).toHaveAttribute("href",/^https:\/\/waze\.com\/ul\?/);
+  await planner.locator("#mode").selectOption("walking");
+  await expect(planner.locator("#waze")).toBeHidden();
+  await expect(planner.locator("#maps")).toHaveAttribute("href",/travelmode=walking/);
+});

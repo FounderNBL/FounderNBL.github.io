@@ -658,6 +658,7 @@
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
+                <button type="button" data-nbl-tool="navigation"><strong>Beans · Navigation</strong><span>Find places and open directions in Google Maps or Waze · free handoff</span></button>
                 <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
                 <button type="button" data-nbl-tool="still-camera"><strong>Beans · Camera</strong><span>Take a picture to show Beans · device permission on demand</span></button>
                  <button type="button" data-nbl-tool="still-canva"><strong>Beans · Canva designs</strong><span>Use designs from your own authorized Canva account · no shared NBL seat</span></button>
@@ -2284,6 +2285,11 @@
     const button=event.target.closest("[data-nbl-tool]");
     if(!button) return;
     const tool=button.dataset.nblTool;
+    if(tool==="navigation"){
+      setBeansToolMenu(false);
+      window.open("/navigation.html","_blank","noopener,noreferrer");
+      return;
+    }
     if(tool==="pdf-local"){
       setBeansToolMenu(false);
       try{
