@@ -903,7 +903,11 @@
   const speechMute=beansPanel.querySelector("[data-nbl-speech-mute]");
   const voiceSettings=beansPanel.querySelector("[data-nbl-voice-settings]");
   const voiceChoice=beansPanel.querySelector("[data-nbl-voice-choice]");
+  let activeSpeechText=null;
+  const speechReadLabels=()=>{for(const button of beansLog.querySelectorAll('[data-nbl-read-reply]')){const active=activeSpeechText!==null&&button.beansReplyText===activeSpeechText;button.textContent=active?'Stop talking':'Read';button.setAttribute('aria-label',active?'Stop talking':'Read Beans reply aloud');button.setAttribute('aria-pressed',String(active));}};
   const stopBeansSpeech=({announce=false}={})=>{
+    activeSpeechText=null;
+    speechReadLabels();
     beansSpeechGeneration++;
     beansSpeechController?.abort();beansSpeechController=null;
     if(beansVoicePlayer){try{beansVoicePlayer.pause();beansVoicePlayer.removeAttribute("src");beansVoicePlayer.load();}catch{}beansVoicePlayer=null;}
@@ -1144,7 +1148,9 @@
       read.type="button";
       read.textContent="Read";
       read.setAttribute("aria-label","Read Beans reply aloud");
-      read.addEventListener("click",()=>{void speakBeansReply(content);});
+      read.dataset.nblReadReply="true";read.beansReplyText=String(content||"").trim();
+      read.setAttribute("aria-pressed","false");
+      read.addEventListener("click",()=>{if(activeSpeechText===read.beansReplyText){stopBeansSpeech({announce:true});return;}void speakBeansReply(content);});
       actions.append(copy,read);
       wrap.append(actions);
     }
@@ -1676,6 +1682,8 @@
     const current=()=>generation===beansSpeechGeneration;
     const finish=()=>{if(current())stopBeansSpeech();};
     const fail=message=>{if(!current())return;stopBeansSpeech();beansStatus.textContent=message;};
+    activeSpeechText=value;
+    speechReadLabels();
     speechStop.hidden=false;
     if(beansVoiceChoice==="device"){
       try{
