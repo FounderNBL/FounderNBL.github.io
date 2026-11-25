@@ -45,3 +45,20 @@ test("Founder-uploaded illustration is used and its clickable image is not cropp
  assert.ok(!block.includes('<svg '));
  assert.match(page,/Concept illustration of the community vision/);
 });
+
+test("Freddie profile has sourced public background and keeps OMAH independent",()=>{
+ const profile=readFileSync(new URL("../freddie-pickens.html",import.meta.url),"utf8");
+ const headshot=readFileSync(new URL("../assets/community/freddie-pickens-portrait.svg",import.meta.url),"utf8");
+ assert.match(page,/href="\/freddie-pickens\.html"/);
+ assert.match(profile,/<h1>Freddie<br>Pickens<\/h1>/);
+ assert.match(profile,/Originator &amp; Community Program Lead/);
+ assert.match(profile,/Opening Minds and Hearts Inc/);
+ assert.match(profile,/filing designation <strong>“Other”<\/strong>/);
+ assert.match(profile,/OMAH is not being presented as an NBL program, sponsor, or partner/);
+ assert.match(profile,/https:\/\/www\.bizprofile\.net\/ca\/oakland\/opening-minds-and-hearts/);
+ assert.match(profile,/https:\/\/www\.omah\.org\/ongoing-explorations\/new-york/);
+ assert.match(profile,/assets\/community\/freddie-pickens-portrait\.svg/);
+ assert.match(headshot,/data:image\/webp;base64,UklG/);
+ assert.doesNotMatch(profile,/375 Putnam|42 Villanova|donation checkout|Donate Now/);
+ assert.ok(headshot.length>5300);
+});
