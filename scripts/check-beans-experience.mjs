@@ -112,4 +112,4 @@ requireText(host,'beansSpeechController?.abort()');
 requireText(host,'payload?.voiceProvider!=="ElevenLabs"');
 requireText(host,'if(beansVoiceChoice==="device")');
 requireText(host,'if(beansVoiceMode&&!beansSpeechMuted)');
-assert.equal((host.match(/speechSynthesis\\.speak\\(/g)||[]).length,1,"Only explicitly selected device voice may speak");
+assert.equal((host.match(/speechSynthesis\.speak\(/g)||[]).length,1,"Only explicitly selected device voice may speak");
