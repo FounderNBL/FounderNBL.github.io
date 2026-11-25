@@ -2131,6 +2131,23 @@
     const text=beansInput.value.trim();
     if(!text||beansSubmit.disabled) return;
 
+    // Navigation is a free local utility, not a metered AI chat request.
+    if(beansToolMode==="auto"&&!beansAttachments.length&&/^(?:(?:hey[, ]+)?beans[, ]+)?(?:please\s+)?(?:take me\b|navigate\b|directions\b|how (?:do|can) i get\b|find\b|show (?:me )?(?:traffic|live traffic|directions)\b|drive\b|walk\b|bike\b)/i.test(text)){
+      setBeansBusy(true);
+      try{
+        const nav=await import("/nbl-navigation-assistant.mjs?v=20261124");
+        const intent=nav.parseNavigationIntent(text);
+        if(intent){
+          if(beansInput.value.trim()!==text)return;
+          beansInput.value="";beansInput.style.height="";
+          appendBeansMessage("user",text);
+          nav.mountNavigation(beansLog,intent,{getToken:getNblBeansAuthToken});
+          beansStatus.textContent="Free navigation · not saved to chat history or charged to your Bag.";
+          return;
+        }
+      }catch{beansStatus.textContent="Navigation tool unavailable. Try the + menu or retry.";return;}
+      finally{setBeansBusy(false);}
+    }
     // Free chat requires a real Clerk account. Preserve unsent text on sign-in.
     let preflightToken=await getNblBeansAuthToken();
     if(!preflightToken&&currentClerkUserId()){
@@ -2287,7 +2304,7 @@
     const tool=button.dataset.nblTool;
     if(tool==="navigation"){
       setBeansToolMenu(false);
-      window.open("/navigation.html","_blank","noopener,noreferrer");
+      try{const nav=await import("/nbl-navigation-assistant.mjs?v=20261124");nav.mountNavigation(beansLog,{destination:"",origin:"",mode:"driving"},{getToken:getNblBeansAuthToken});}catch{beansStatus.textContent="Navigation is unavailable. Open the local route planner at /navigation.html.";}
       return;
     }
     if(tool==="pdf-local"){

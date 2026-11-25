@@ -9,7 +9,7 @@ export function navigationLinks({destination,origin="",mode="driving"}={}){
  const waze=new URL("https://waze.com/ul");waze.searchParams.set("q",dest);waze.searchParams.set("navigate","yes");waze.searchParams.set("utm_source","newbeansland");
  return {maps:maps.href,search:search.href,waze:travel==="driving"&&!start?waze.href:null};
 }
-if(typeof document!=="undefined"){
+if(typeof document!=="undefined"&&document.getElementById("destination")&&document.getElementById("maps")){
  const $=id=>document.getElementById(id);
  const update=()=>{
   const links=navigationLinks({destination:$("destination").value,origin:$("origin").value,mode:$("mode").value});

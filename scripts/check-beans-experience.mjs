@@ -104,3 +104,13 @@ assert.ok(!ui.includes("Stripe"),"Wardrobe is not authorized to create payments.
 assert.ok(!ui.includes("fetch("),"Personalization must never send phone photos to a remote endpoint.");
 assert.ok(!ui.includes("nblschool.com/professor-grey"),"Grey is not a Beans wardrobe or chat mode.");
 console.log("Beans experience source checks passed (five free official looks, independent local backgrounds, locked future premium).");
+
+// Free navigation parser assertions: no provider requests.
+const {parseNavigationIntent}=await import("../nbl-navigation-assistant.mjs");
+assert.equal(parseNavigationIntent("Beans, take me to Central Park").destination,"Central Park");
+assert.equal(parseNavigationIntent("Take me home").destination,"");
+assert.equal(parseNavigationIntent("How do I get to the library from Penn Station?").origin,"Penn Station");
+assert.equal(parseNavigationIntent("Find a gas station near me").destination,"gas station");
+assert.equal(parseNavigationIntent("Find my missing email"),null);
+assert.equal(parseNavigationIntent("Find a good song"),null);
+assert.equal(parseNavigationIntent("Walk to the library").mode,"walking");

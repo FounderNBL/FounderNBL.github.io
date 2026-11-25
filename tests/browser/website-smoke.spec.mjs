@@ -491,8 +491,10 @@ test("Beans navigation opens the local planner and offers encoded external route
   await open("/",page);
   await page.getByRole("button",{name:"Open Beans"}).click();
   await page.getByRole("button",{name:"Open Beans tools"}).click();
-  const [planner]=await Promise.all([page.waitForEvent("popup"),page.locator('[data-nbl-tool="navigation"]').click()]);
-  await expect(planner).toHaveURL(/navigation\.html$/);
+  await page.locator('[data-nbl-tool="navigation"]').click();
+  await expect(page.locator("[data-nbl-navigation-card]")).toBeVisible();
+  await page.goto("/navigation.html");
+  const planner=page;
   await expect(planner.locator("#maps")).toHaveAttribute("aria-disabled","true");
   await planner.locator("#destination").fill("Central Park & 5th Avenue");
   await expect(planner.locator("#maps")).toHaveAttribute("href",/destination=Central\+Park\+%26\+5th\+Avenue/);
