@@ -1277,3 +1277,14 @@ body.nbl-world-menu-open{overflow:hidden!important}
   .nbl-world-header-home .nbl-world-user .nbl-world-account{font-size:.5rem;padding:8px 6px}
 }
 
+
+/* Still: dedicated bounded overlay inside the same chat; never enlarge the composer. */
+#nbl-chat-panel-beans{min-width:0}
+#nbl-chat-panel-beans .nbl-still-tools{position:absolute;inset:8px 8px auto;z-index:13;max-height:calc(100% - 16px);min-width:0;max-width:100%;box-sizing:border-box;margin:0;overflow:auto;overscroll-behavior:contain;grid-template-columns:minmax(0,1fr);box-shadow:0 12px 36px rgba(0,0,0,.45);color:#f5ead8;background:#071421}
+#nbl-chat-panel-beans .nbl-still-tools-head{position:sticky;top:-11px;z-index:1;background:#071421;padding:4px 0}
+#nbl-chat-panel-beans .nbl-still-controls,#nbl-chat-panel-beans .nbl-still-designs{min-width:0;max-width:100%;overflow-wrap:anywhere}
+#nbl-chat-panel-beans .nbl-still-tools button,#nbl-chat-panel-beans .nbl-still-tools a{min-height:38px;min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere;box-sizing:border-box}
+#nbl-chat-panel-beans .nbl-still-controls label{min-width:0;max-width:100%;color:#f5ead8}
+#nbl-chat-panel-beans .nbl-still-designs a{flex:1 1 220px;display:block}
+.nbl-chat-drawer-head{grid-template-columns:minmax(0,1fr) 38px}
+@media(max-width:760px){.nbl-chat-drawer-head{grid-template-columns:minmax(0,1fr) 36px}}

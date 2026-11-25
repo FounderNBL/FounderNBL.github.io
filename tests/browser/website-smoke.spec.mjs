@@ -486,3 +486,26 @@ test.describe("New Beansland web app browser smoke", () => {
     expect(page.url()).toContain("/account.html?source=signout-test");
   });
 });
+
+test("Still panel is reachable on short laptops and phones without clipping or a second composer",async({page})=>{
+  for(const viewport of [{width:1366,height:600},{width:390,height:680}]){
+    await page.setViewportSize(viewport);
+    await open("/",page);
+    await page.getByRole("button",{name:"Open Beans"}).click();
+    const beans=page.locator("#nbl-beans-panel");
+    await expect(beans.locator("[data-nbl-customize-open]")).toBeVisible();
+    await expect(beans.locator(".nbl-chat-drawer-logo")).toHaveCount(0);
+    await page.getByRole("button",{name:"Open Beans tools"}).click();
+    await page.locator('[data-nbl-tool="still-canva"]').click();
+    const still=beans.locator("[data-nbl-still-tools]");
+    await expect(still).toBeVisible();
+    await expect(still).toHaveCSS("position","absolute");
+    expect(await still.evaluate(el=>!el.closest("form"))).toBe(true);
+    const close=still.locator("[data-nbl-still-close]");
+    await expect(close).toBeInViewport();
+    expect(await close.evaluate(el=>{const b=el.getBoundingClientRect();const hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return el===hit||el.contains(hit)})).toBe(true);
+    await close.click();
+    await expect(still).toBeHidden();
+    await expect(beans.locator("#nbl-beans-input")).toBeInViewport();
+  }
+});

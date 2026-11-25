@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>My Account · New Beansland</title>
   <meta name="description" content="Manage your New Beansland account, Beans history, usage and account data.">
-  <link rel="stylesheet" href="/nbl-world-header.css?v=20261113-beans-current-main">
+  <link rel="stylesheet" href="/nbl-world-header.css?v=20261124-still-fit">
   <style>
     :root{--ink:#eef4f8;--muted:#aebdca;--gold:#efc66f;--panel:rgba(9,24,38,.94);--line:rgba(239,198,111,.25);--danger:#f4a1a1}
     body{margin:0;background:radial-gradient(circle at top,#153047 0,#07131f 42%,#040b12 100%);color:var(--ink);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
@@ -26,13 +26,14 @@
     .message.user{margin-left:8%;background:#11283a}.message strong{display:block;color:var(--gold);font-size:.78rem;margin-bottom:4px}
     .signed-out{display:none}.signed-out.show{display:block}.hidden{display:none!important}
     .danger-zone{border-color:rgba(244,161,161,.3)}.danger-zone p{color:var(--muted)}
-    .fulfillment-list{display:grid;gap:12px;margin-top:14px}.fulfillment-item{border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;background:rgba(255,255,255,.025)}
+    .fulfillment-list{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin-top:14px;min-width:0}.fulfillment-item{min-width:0;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere;border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:14px;background:rgba(255,255,255,.025)}
+    #nblConnectCard{min-width:0;overflow-wrap:anywhere}#nblConnectCard button,#nblConnectCard a,#nblConnectCard select{max-width:100%;min-width:0;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere}
     .fulfillment-item h3{margin:0 0 6px;font-size:1rem}.fulfillment-meta{color:var(--muted);font-size:.9rem;line-height:1.5}.fulfillment-item input{margin-top:8px}
     .coupon-code{display:inline-block;margin:.5rem 0;padding:8px 11px;border-radius:10px;background:#06111b;border:1px solid var(--line);color:var(--gold);font:800 .95rem ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.04em}
     @media(max-width:720px){main{padding-top:96px}.grid{grid-template-columns:1fr}.card{padding:17px}}
   </style>
   <script defer src="/nbl-product-plans.js?v=20261109-live-memberships"></script>
-  <script defer src="/nbl-world-header.js?v=20261113-beans-current-main"></script>
+  <script defer src="/nbl-world-header.js?v=20261124-still-fit"></script>
 <style id="nbl-account-categories-style">.account-categories{display:grid;gap:10px;margin:14px 0}.account-category{border:1px solid rgba(214,161,75,.40);border-radius:13px;padding:0;overflow:clip;background:rgba(6,19,32,.65)}.account-category>summary{cursor:pointer;padding:16px 18px;list-style:none;display:grid;gap:4px;min-height:56px;color:#f0c56f}.account-category>summary::-webkit-details-marker,.account-fine-print>summary::-webkit-details-marker{display:none}.account-category>summary strong{font-size:1rem}.account-category>summary small{font-size:.78rem;color:#cfc3ad}.account-category[open]>summary{border-bottom:1px solid rgba(214,161,75,.3)}.account-category>.row{padding:14px;display:flex;flex-wrap:wrap;gap:9px}.account-fine-print{margin:10px 0;font-size:.84rem;color:#bba98f}.account-fine-print>summary{cursor:pointer;display:inline-flex;border-bottom:1px dashed #d6a14b;padding:5px 0;color:#efc66f}.account-fine-print .status{line-height:1.6}.account-category>summary:focus-visible,.account-fine-print>summary:focus-visible{outline:2px solid #f0c56f;outline-offset:2px}</style></head>
 <body>
   <main>
