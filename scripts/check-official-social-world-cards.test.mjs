@@ -44,3 +44,11 @@ test("Pulse icon is used without replacing the New Beansland company identity",(
  assert.match(pulse,/NBL%20Pulse_Icon\.png/);
  assert.match(pulse,/class="pulse-brand"[^>]*>[\s\S]*?\/assets\/brand\/nbl-official-mark\.png/);
 });
+
+test("Homepage consistently names the existing private messaging door Pulse Connect",()=>{
+ assert.match(door,/<h3>Pulse Connect™<\/h3>/);
+ assert.match(door,/Open Pulse Connect →/);
+ assert.match(html,/aria-label="Open Pulse Connect"/);
+ assert.match(html,/href="\/messenger\/">Pulse Connect<\/a>/);
+ assert.doesNotMatch(door,/<h3>NBL Messenger/);
+});
