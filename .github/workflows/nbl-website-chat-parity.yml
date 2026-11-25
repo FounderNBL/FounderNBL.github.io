@@ -153,5 +153,6 @@ jobs:
       - name: Check NBL Studios creator preview
         run: |
           node --check studio/creator.js
-          node --test tests/security/studios-creator.test.mjs
+          node --check studio/still.js
+          node --test tests/security/studios-creator.test.mjs scripts/check-still-independent.test.mjs scripts/check-nbl-connect-account.test.mjs
 

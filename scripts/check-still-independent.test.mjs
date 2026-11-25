@@ -1,0 +1,4 @@
+import test from "node:test";import assert from "node:assert/strict";import fs from "node:fs";
+const read=p=>fs.readFileSync(new URL("../"+p,import.meta.url),"utf8");
+test("Still is independently reachable from Studios and NBL account",()=>{assert.match(read("studios.html"),/href="\/still.html"/);assert.match(read("account.html"),/href="\/still.html"/);assert.match(read("still.html"),/href="\/tools-lab.html"/);assert.match(read("still.html"),/without a Beans subscription/);});
+test("Still uses account-scoped existing provider operations and no chat or payment route",()=>{const js=read("studio/still.js");for(const op of ["status","canva_begin","canva_designs","canva_create_design"])assert.ok(js.includes('operation:"'+op+'"'));assert.match(js,/NBLAccountBridge/);assert.match(js,/accountId\(\)!==id/);assert.match(js,/canvaDesignWriteAvailable!==true/);assert.doesNotMatch(js,/\/chat|\/billing|CLIENT_SECRET|localStorage/);});
