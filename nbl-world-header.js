@@ -1687,7 +1687,9 @@
     beansHistoryLoadingFor=null;
   };
 
+  const closeLocalNavigation=()=>beansLog.querySelector("[data-nav-close]")?.click();
   const clearBeansTranscript=status=>{
+    closeLocalNavigation();
     beansLog.replaceChildren();
     beansHistory.length=0;
     beansHistory.push({role:"assistant",content:"I'm Beans. What's up?"});
@@ -1732,6 +1734,7 @@
       const saved=Array.isArray(payload?.messages)?payload.messages:[];
       beansConversationId=payload?.conversation?.id?String(payload.conversation.id):null;
       if(saved.length){
+        closeLocalNavigation();
         beansLog.replaceChildren();
         beansHistory.length=0;
         for(const item of saved.slice(-40)){
@@ -1756,6 +1759,7 @@
 
   const replaceBeansConversation=(messages,conversationId,{status="Saved conversation opened from your NBL account.",loadedFor=null}={})=>{
     const saved=Array.isArray(messages)?messages:[];
+    closeLocalNavigation();
     beansLog.replaceChildren();
     beansHistory.length=0;
     for(const item of saved.slice(-80)){
@@ -2082,6 +2086,7 @@
   };
 
   const closeBeans=({fromPopState=false}={})=>{
+    closeLocalNavigation();
     setNblQuickMenu(false);
     setBeansToolMenu(false); // Reopening Beans must NEVER leave quick actions visible.
     const shouldConsumeHistory=!fromPopState&&Boolean(chatHistoryEntry)&&window.history.state?.nblChatOverlay===chatHistoryEntry;
@@ -2133,19 +2138,21 @@
 
     // Navigation is a free local utility, not a metered AI chat request.
     if(beansToolMode==="auto"&&!beansAttachments.length&&/^(?:(?:hey[, ]+)?beans[, ]+)?(?:please\s+)?(?:take me\b|navigate\b|directions\b|how (?:do|can) i get\b|find\b|show (?:me )?(?:traffic|live traffic|directions)\b|drive\b|walk\b|bike\b)/i.test(text)){
+      const navAccountGeneration=beansAccountGeneration,navConversationGeneration=beansConversationGeneration;
       setBeansBusy(true);
       try{
         const nav=await import("/nbl-navigation-assistant.mjs?v=20261124");
+        if(beansPanel.hidden||navAccountGeneration!==beansAccountGeneration||navConversationGeneration!==beansConversationGeneration)return;
         const intent=nav.parseNavigationIntent(text);
         if(intent){
           if(beansInput.value.trim()!==text)return;
           beansInput.value="";beansInput.style.height="";
           appendBeansMessage("user",text);
-          nav.mountNavigation(beansLog,intent,{getToken:getNblBeansAuthToken});
+          nav.mountNavigation(beansLog,intent,{getToken:getNblBeansAuthToken,getIdentity:currentClerkUserId});
           beansStatus.textContent="Free navigation · not saved to chat history or charged to your Bag.";
           return;
         }
-      }catch{beansStatus.textContent="Navigation tool unavailable. Try the + menu or retry.";return;}
+      }catch{if(!/^find\b/i.test(text)){beansStatus.textContent="Navigation tool unavailable. Try the + menu or retry.";return;}}
       finally{setBeansBusy(false);}
     }
     // Free chat requires a real Clerk account. Preserve unsent text on sign-in.
@@ -2304,7 +2311,7 @@
     const tool=button.dataset.nblTool;
     if(tool==="navigation"){
       setBeansToolMenu(false);
-      try{const nav=await import("/nbl-navigation-assistant.mjs?v=20261124");nav.mountNavigation(beansLog,{destination:"",origin:"",mode:"driving"},{getToken:getNblBeansAuthToken});}catch{beansStatus.textContent="Navigation is unavailable. Open the local route planner at /navigation.html.";}
+      try{const nav=await import("/nbl-navigation-assistant.mjs?v=20261124");nav.mountNavigation(beansLog,{destination:"",origin:"",mode:"driving"},{getToken:getNblBeansAuthToken,getIdentity:currentClerkUserId});}catch{beansStatus.textContent="Navigation is unavailable. Open the local route planner at /navigation.html.";}
       return;
     }
     if(tool==="pdf-local"){
@@ -2609,6 +2616,7 @@
         await clerk.signOut();
         cancelActiveBeansChat();
         beansAccountGeneration++;
+        closeLocalNavigation();
         setStillVisualTools(false);
         invalidateBeansHistoryLoad();
         plusAccessRequestGeneration++;
@@ -2673,6 +2681,7 @@
       beansIdentityUserId=nextUserId;
       cancelActiveBeansChat();
       beansAccountGeneration++;
+      closeLocalNavigation();
       setStillVisualTools(false);
       invalidateBeansHistoryLoad();
       drawerHistoryRequestGeneration++;
