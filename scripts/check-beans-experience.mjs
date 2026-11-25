@@ -104,3 +104,12 @@ assert.ok(!ui.includes("Stripe"),"Wardrobe is not authorized to create payments.
 assert.ok(!ui.includes("fetch("),"Personalization must never send phone photos to a remote endpoint.");
 assert.ok(!ui.includes("nblschool.com/professor-grey"),"Grey is not a Beans wardrobe or chat mode.");
 console.log("Beans experience source checks passed (five free official looks, independent local backgrounds, locked future premium).");
+
+requireText(host,'data-nbl-speech-stop');
+requireText(host,'data-nbl-voice-settings');
+requireText(host,'beansVoiceChoice="official"');
+requireText(host,'beansSpeechController?.abort()');
+requireText(host,'payload?.voiceProvider!=="ElevenLabs"');
+requireText(host,'if(beansVoiceChoice==="device")');
+requireText(host,'if(beansVoiceMode&&!beansSpeechMuted)');
+assert.equal((host.match(/speechSynthesis\\.speak\\(/g)||[]).length,1,"Only explicitly selected device voice may speak");
