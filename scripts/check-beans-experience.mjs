@@ -116,3 +116,8 @@ assert.equal((host.match(/speechSynthesis\.speak\(/g)||[]).length,1,"Only explic
 
 requireText(host,'if(activeSpeechText===read.beansReplyText){stopBeansSpeech({announce:true});return;}');
 requireText(host,"button.textContent=active?'Stop talking':'Read'");
+
+requireText(host,'event.stopPropagation(); // This is an opener, not an outside click.');
+requireText(host,'const stillResumeKey="nbl.still.oauth-return.v1"');
+requireText(host,'if(currentClerkUserId()!==resume.userId)return;');
+requireText(host,'operation:"canva_disconnect"');

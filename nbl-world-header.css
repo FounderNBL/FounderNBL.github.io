@@ -1288,3 +1288,11 @@ body.nbl-world-menu-open{overflow:hidden!important}
 #nbl-chat-panel-beans .nbl-still-designs a{flex:1 1 220px;display:block}
 .nbl-chat-drawer-head{grid-template-columns:minmax(0,1fr) 38px}
 @media(max-width:760px){.nbl-chat-drawer-head{grid-template-columns:minmax(0,1fr) 36px}}
+
+/* Functional sidebar fix: no intrinsic-width overflow or hidden card copy. */
+.nbl-beans-panel .nbl-chat-drawer-scroll{grid-template-columns:minmax(0,1fr);min-width:0;overflow-x:hidden;}
+.nbl-beans-panel .nbl-chat-drawer-scroll>*{min-width:0;max-width:100%;box-sizing:border-box;}
+.nbl-beans-panel .nbl-chat-drawer-item{box-sizing:border-box;min-width:0;max-width:100%;white-space:normal;}
+.nbl-beans-panel .nbl-chat-drawer-item>span:last-child{flex:1 1 0;min-width:0;max-width:100%;overflow-wrap:anywhere;white-space:normal;}
+.nbl-beans-panel .nbl-chat-drawer-item strong,.nbl-beans-panel .nbl-chat-drawer-item small{white-space:normal;overflow-wrap:anywhere;}
+.nbl-beans-panel .nbl-chat-drawer-item small{color:#cfc3ad;}
