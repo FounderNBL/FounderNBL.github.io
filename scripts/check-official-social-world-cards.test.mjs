@@ -44,3 +44,16 @@ test("Pulse icon is used without replacing the New Beansland company identity",(
  assert.match(pulse,/NBL%20Pulse_Icon\.png/);
  assert.match(pulse,/class="pulse-brand"[^>]*>[\s\S]*?\/assets\/brand\/nbl-official-mark\.png/);
 });
+
+test("Homepage book cover media is not downloaded by autoplay or preload",()=>{
+ const section=html.split('<section class="live-covers"')[1]?.split("</section>")[0]||"";
+ assert.equal((section.match(/data-nbl-live-cover /g)||[]).length,3);
+ assert.equal((section.match(/<video muted loop playsinline preload="none" hidden aria-hidden="true"><\/video>/g)||[]).length,3);
+ assert.doesNotMatch(section,/<video[^>]*(?:autoplay|\ssrc=)|<source\b/);
+ for(const p of ["assets/books/people-zoo/front.png","assets/books/doctor-rocketship/standard-front.png","assets/books/doctor-rocketship/islamic-front.png"])assert.ok(section.includes('src="'+p+'"'));
+ assert.ok(html.includes("video:not([data-nbl-commercial]):not(.nbl-cover-toggle video)"));
+ const script=readFileSync(new URL("../nbl-live-book-covers.js",import.meta.url),"utf8");
+ assert.match(script,/button\.addEventListener\("click"/);
+ assert.match(script,/video\.src=button\.dataset\.video/);
+ assert.match(script,/video\.removeAttribute\("src"\);video\.load\(\)/);
+});
