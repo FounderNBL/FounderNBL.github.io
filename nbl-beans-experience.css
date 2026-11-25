@@ -216,11 +216,10 @@
   }
   /* Desktop menu visibility is synchronized by JS; never show a [hidden] menu. */
   .nbl-beans-panel .nbl-chat-drawer-shade{display:none!important}
-  .nbl-beans-panel .nbl-chat-drawer-toggle{display:none}
-  .nbl-beans-panel #nbl-chat-panel-beans{
-    margin-left:clamp(250px,22vw,304px);
-  }
-  .nbl-beans-panel .nbl-chat-drawer-head button{display:none}
+  .nbl-beans-panel .nbl-chat-drawer-toggle{display:inline-flex}
+  .nbl-beans-panel #nbl-chat-panel-beans{margin-left:0;min-width:0}
+  .nbl-beans-panel.nbl-desktop-drawer-open #nbl-chat-panel-beans{margin-left:clamp(250px,22vw,304px)}
+  .nbl-beans-panel .nbl-chat-drawer-head button{display:block}
 }
 @media(max-width:1199px){
   .nbl-beans-panel .nbl-beans-card{
@@ -347,5 +346,15 @@
 .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-composer textarea{background:transparent;border:0;box-shadow:none;resize:none}
 .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-composer textarea:focus-visible{outline:2px solid #b88b44;outline-offset:1px}
 .nbl-beans-panel .nbl-chat-drawer-scroll{overflow-x:hidden}
-@media(min-width:1200px){.nbl-beans-panel .nbl-chat-drawer-head{grid-template-columns:minmax(0,1fr)}}
+@media(min-width:1200px){.nbl-beans-panel .nbl-chat-drawer-head{grid-template-columns:minmax(0,1fr) 38px}}
 @media(max-width:600px){.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-form{padding:5px 7px}.nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-composer{padding:4px}}
+
+/* Desktop-only readable, bounded disclosures; no mobile or provider changes. */
+@media(min-width:1200px){
+ .nbl-beans-panel .nbl-chat-drawer-scroll{grid-template-columns:minmax(0,1fr)}
+ .nbl-beans-panel .nbl-chat-drawer-item{min-width:0;width:100%;box-sizing:border-box;grid-template-columns:36px minmax(0,1fr)}
+ .nbl-beans-panel .nbl-chat-drawer-item strong,.nbl-beans-panel .nbl-chat-drawer-item small{white-space:normal;overflow-wrap:anywhere}
+ .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-message{min-width:0;max-width:100%;overflow-wrap:anywhere;box-sizing:border-box}
+ .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-tools-menu{grid-template-columns:minmax(0,1fr);width:280px;max-height:min(65dvh,520px)}
+ .nbl-beans-panel #nbl-chat-panel-beans .nbl-beans-tools-menu button{min-height:34px;padding:8px 12px;text-align:left;align-items:flex-start}
+}

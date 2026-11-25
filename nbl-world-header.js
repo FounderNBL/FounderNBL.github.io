@@ -1924,7 +1924,7 @@
     }
   };
 
-  // Permanent desktop sidebar: visible and interactive, never a CSS-shown [hidden] node.
+  // Desktop sidebar is opt-in and collapsible; mobile retains its existing drawer.
   const desktopBeansMenu=window.matchMedia("(min-width:1200px)");
   const syncDesktopDrawer=()=>{
     if(chatDrawerCloseTimer){
@@ -1932,12 +1932,13 @@
       chatDrawerCloseTimer=null;
     }
     if(desktopBeansMenu.matches){
-      chatDrawer.hidden=false;
-      chatDrawer.inert=false;
+      const open=chatDrawer.classList.contains("is-open");
+      chatDrawer.hidden=!open;
+      chatDrawer.inert=!open;
       chatDrawerShade.hidden=true;
-      chatDrawer.classList.remove("is-open");
-      chatDrawerToggle.setAttribute("aria-expanded","false");
-      if(!beansPanel.hidden){
+      chatDrawerToggle.setAttribute("aria-expanded",String(open));
+      beansPanel.classList.toggle("nbl-desktop-drawer-open",open);
+      if(open&&!beansPanel.hidden){
         void updateChatDrawerAccountAction();
         void renderChatDrawerHistory();
       }
@@ -1947,12 +1948,19 @@
       chatDrawerShade.hidden=true;
     }
   };
-  desktopBeansMenu.addEventListener("change",syncDesktopDrawer);
+  desktopBeansMenu.addEventListener("change",()=>{
+    chatDrawer.classList.remove("is-open");
+    beansPanel.classList.remove("nbl-desktop-drawer-open");
+    chatDrawerToggle.setAttribute("aria-expanded","false");
+    syncDesktopDrawer();
+  });
   syncDesktopDrawer();
 
   const setChatDrawerOpen=open=>{
     if(desktopBeansMenu.matches){
+      chatDrawer.classList.toggle("is-open",open);
       syncDesktopDrawer();
+      if(!open)chatDrawerToggle.focus({preventScroll:true});
       return;
     }
     if(chatDrawerCloseTimer){
@@ -2429,7 +2437,8 @@
       beansInput.focus();
     }
   });
-  chatDrawerTools?.addEventListener("click",()=>{
+  chatDrawerTools?.addEventListener("click",event=>{
+    event.stopPropagation();
     setChatDrawerOpen(false);
     setBeansToolMenu(true);
     beansToolsToggle.focus();
