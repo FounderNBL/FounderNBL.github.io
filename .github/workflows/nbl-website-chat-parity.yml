@@ -154,5 +154,6 @@ jobs:
         run: |
           node --check studio/creator.js
           node --check studio/still.js
-          node --test tests/security/studios-creator.test.mjs scripts/check-still-independent.test.mjs scripts/check-nbl-connect-account.test.mjs
+          node --check studio/google.js
+          node --test tests/security/studios-creator.test.mjs scripts/check-still-independent.test.mjs scripts/check-nbl-connect-account.test.mjs scripts/check-studio-google.test.mjs
 
