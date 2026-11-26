@@ -79,3 +79,5 @@ test("NBL Studios storefront and Creator are video-only, while video input may u
  assert.doesNotMatch(pricing,/Image and video generation using NBL Studios Credits/);
  assert.match(creator,/Starting image URL/);
 });
+
+test("Music production remains separate from free catalog, with account and explicit consent gates",()=>{const h=read("studio/music-create.html"),j=read("studio/music-create.js");assert.match(music,/href="\/studio\/music-create.html"/);assert.match(h,/id="music-form" hidden/);assert.match(j,/NBLAccountBridge/);assert.match(j,/r\.enabled===true/);assert.match(j,/!rights\.checked\|\|!consent\.checked/);for(const op of ["google_music_models","google_music_generate","google_music_status"])assert.ok(j.includes('"'+op+'"'));assert.match(j,/confirmEstimatedUsd:m\.estimatedUsd/);assert.match(j,/nbl-studios-google-private/);assert.doesNotMatch(j,/checkout|SERVICE_ROLE|localStorage|innerHTML/);});
