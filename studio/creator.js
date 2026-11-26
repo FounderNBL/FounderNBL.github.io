@@ -17,6 +17,13 @@
   let token = null;
   let wallet = null;
   let founder = false;
+  let accessKnown = false;
+  function updateAccess(){
+    for(const id of ["residentCommerce","residentQuote","residentReleaseNote","residentPricing"]) $(id).hidden=!accessKnown||founder;
+    $("walletTitle").textContent=founder?"Founder access":"Your Studio Credits";
+    els.refreshWallet.textContent=founder?"Refresh access":"Refresh wallet";
+    els.signIn.hidden=!!token;
+  }
   let latestTask = null;
   let latestKind = null;
   let pollTimer = null;
@@ -79,10 +86,10 @@
     els.imageUrl.required = needImage;
     els.modelInfo.textContent = selected
       ? ((selected.duration_seconds ? selected.duration_seconds + "-second clip · " : "") +
-         (selected.metadata?.priceLabel || priceFor(selected) + " NBL Studios Credits") +
+         (founder ? "Founder production access" : (selected.metadata?.priceLabel || priceFor(selected) + " NBL Studios Credits")) +
          (needImage ? " · Starting image required" : ""))
       : "Choose a model to see its NBL Studios Credit cost.";
-    els.createButton.disabled = creating || !selected || !token || (!founder && (!wallet || Number(wallet.balanceCredits) < priceFor(selected)));
+    els.createButton.disabled = creating || !selected || !token || !accessKnown || (!founder && (!wallet || Number(wallet.balanceCredits) < priceFor(selected)));
     if (!creating && selected && token && !founder && wallet && Number(wallet.balanceCredits) < priceFor(selected)) {
       setStatus("Your wallet needs more credits. Credit purchases are currently held for checkout verification.");
     }
@@ -93,7 +100,7 @@
     const filtered = models.filter(m => m.media_kind === mediaKind);
     els.model.replaceChildren();
     els.model.append(new Option("Choose a production model", ""));
-    filtered.forEach(m => els.model.append(new Option(m.display_name + " · " + m.studio_credit_cost + " credits", m.model_key)));
+    filtered.forEach(m => els.model.append(new Option(m.display_name + (founder||!accessKnown ? "" : " · " + m.studio_credit_cost + " credits"), m.model_key)));
     if (filtered.some(m => m.model_key === current)) els.model.value = current;
     els.model.disabled = filtered.length === 0;
     updateControls();
@@ -117,14 +124,15 @@
     try {
       const state = await request(STUDIO_API, "wallet", {}, true);
       wallet = state.wallet;
-      founder = Boolean(state.founder);
+      founder = state.founder === true;
+      accessKnown=true; updateAccess(); renderModels();
       els.balance.textContent = founder ? "Founder" : String(Number(wallet?.balanceCredits || 0));
       els.accountStatus.textContent = founder ? "Founder production access" : "Available NBL Studios Credits";
       updateControls();
     } catch (e) {
       els.accountStatus.textContent = e.message;
       els.balance.textContent = "—";
-      wallet = null;
+      wallet = null; founder=false; accessKnown=false; updateAccess();
       updateControls();
     }
   }
@@ -138,6 +146,7 @@
       const clerk = await bridge.getClerk();
       token = await bridge.getToken();
       if (!clerk?.isSignedIn || !token) {
+        token=null; founder=false; accessKnown=false; updateAccess();
         els.accountStatus.textContent = "Sign in to see your credit wallet and submit creations.";
         els.balance.textContent = "—";
       } else {
@@ -164,7 +173,7 @@
       const state = result.status || "running";
       if (result.wallet) {
         wallet = result.wallet;
-        els.balance.textContent = String(Number(wallet.balanceCredits || 0));
+        els.balance.textContent = founder ? "Founder" : String(Number(wallet.balanceCredits || 0));
         updateControls();
       }
       if (state === "succeeded") {
@@ -218,9 +227,9 @@
       els.refreshJob.hidden = false;
       if (result.wallet) {
         wallet = result.wallet;
-        els.balance.textContent = String(Number(wallet.balanceCredits || 0));
+        els.balance.textContent = founder ? "Founder" : String(Number(wallet.balanceCredits || 0));
       }
-      setStatus("Generation submitted. Reserved " + Number(result.chargedStudioCredits || 0) + " credits.", "success");
+      setStatus(founder?"Generation submitted.":"Generation submitted. Reserved " + Number(result.chargedStudioCredits || 0) + " credits.", "success");
       pollsLeft = 36;
       pollTimer = window.setTimeout(checkJob, 8000);
     } catch (error) {
@@ -233,6 +242,7 @@
   }
 
   async function buyCredits() {
+    if(founder||!accessKnown)return;
     els.buy.disabled = true;
     setStatus("Checking secure Studios checkout…");
     try {
