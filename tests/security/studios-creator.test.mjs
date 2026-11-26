@@ -12,7 +12,7 @@ test("NBL Studios creator preview remains independent and gated even when linked
   assert.match(html, /id="createForm"/);
   assert.match(html, /id="buyCredits"/);
   assert.match(html, /New credit purchases remain disabled/);
-  assert.ok(html.includes('src="./creator.js"'));
+  assert.match(html, /src="\.\/creator\.js(?:\?v=[A-Za-z0-9_-]+)?"/);
   assert.ok(css.includes(".columns"));
 });
 
@@ -45,3 +45,5 @@ test("Studio customer UI cannot offer image creation or non-video model catalogs
   assert.doesNotMatch(js,/els\.imageTab\.addEventListener/);
   assert.match(js,/document\.createElement\("video"\)/);
 });
+
+ test("Founder access hides customer commerce without removing the customer release guard",()=>{for(const id of ["residentCommerce","residentQuote","residentReleaseNote","residentPricing"])assert.match(html,new RegExp('id="'+id+'"[^>]*hidden'));assert.match(js,/!accessKnown\|\|founder/);assert.match(js,/if\(founder\|\|!accessKnown\)return/);assert.match(js,/!accessKnown\|\| \(!founder/);});
