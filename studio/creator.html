@@ -7,10 +7,10 @@
   <title>Create · NBL Studios | New Beansland</title>
   <meta name="description" content="Create short film and video clips at NBL Studios using account-bound production credits.">
   <link rel="stylesheet" href="/nbl-world-header.css">
-  <link rel="stylesheet" href="./creator.css">
+  <link rel="stylesheet" href="./creator.css"><style>[hidden]{display:none!important}</style>
   <script defer src="/nbl-product-plans.js?v=20261014-studios"></script>
   <script defer src="/nbl-world-header.js?v=20261014-studios"></script>
-  <script defer src="./creator.js"></script>
+  <script defer src="./creator.js?v=20261126-founder-controls"></script>
 </head>
 <body>
   <main class="studio-creator">
@@ -18,10 +18,10 @@
       <a class="back" href="/studios.html">← NBL Studios</a>
       <p class="eyebrow">NEW BEANSLAND · NBL STUDIOS</p>
       <h1>Make something of your own.</h1>
-      <p class="intro">Create original video and short movie clips. Choose a video model, describe your scene, and review the credit cost before generating.</p>
-      <p class="release-note" role="status">Creator preview. NBL Studios is a paid credit-based creation service. New credit purchases remain disabled until account, billing and production verification is complete. <a href="/pricing.html">See approved NBL prices</a>.</p>
+      <p class="intro">Create original video and short movie clips. Choose a production model and describe your scene.</p>
+      <p id="residentReleaseNote" class="release-note" role="status" hidden>Creator preview. NBL Studios is a paid credit-based creation service. New credit purchases remain disabled until account, billing and production verification is complete. <a href="/pricing.html">See approved NBL prices</a>.</p>
     </header>
-    <p class="release-note"><a href="/studio/google.html?kind=video">Google Veo · Economy and Premium production</a> — Founder verification. Existing production models remain below.</p>
+    <p class="release-note"><a href="/studio/google.html?kind=video">Google Veo · Text or upload image to video</a> — Founder verification. Existing production models remain below.</p>
     <div class="columns">
       <section class="panel" aria-labelledby="create-heading">
         <div class="section-top">
@@ -39,7 +39,7 @@
           <input type="url" id="imageUrl" inputmode="url" placeholder="https://…">
           <p class="hint">Use an HTTPS image you own or have permission to use. Some video models require a starting image.</p>
           <div class="action-line">
-            <p class="quoted-cost">Cost: <strong id="quotedCost">—</strong> NBL Studios Credits</p>
+            <p id="residentQuote" class="quoted-cost" hidden>Cost: <strong id="quotedCost">—</strong> NBL Studios Credits</p>
             <button id="createButton" class="primary" type="submit" disabled>Create</button>
           </div>
           <p id="createStatus" class="status" role="status" aria-live="polite">Sign in and choose a model to start.</p>
@@ -47,18 +47,18 @@
       </section>
       <aside class="sidebar">
         <section class="panel" aria-labelledby="walletTitle">
-          <h2 id="walletTitle">Your Studio Credits</h2>
+          <h2 id="walletTitle">Production access</h2>
           <p class="balance" id="balance">—</p>
           <p id="accountStatus" class="hint" aria-live="polite">Checking your account…</p>
           <div class="actions">
-            <a class="button" id="signIn" href="https://accounts.newbeansland.org/sign-in">Sign in / Create account</a>
-            <button type="button" id="refreshWallet">Refresh wallet</button>
+            <a class="button" id="signIn" hidden href="https://accounts.newbeansland.org/sign-in">Sign in / Create account</a>
+            <button type="button" id="refreshWallet">Refresh access</button>
           </div>
-          <hr>
+          <div id="residentCommerce" hidden><hr>
           <p class="package">500 Studio Credits <strong data-nbl-plan-value="studiosCredits.price">$8.99 one-time</strong></p>
           <p class="hint">Studio Credits are separate from Beans chat replies. Credits do not expire while your account remains active.</p>
           <button id="buyCredits" type="button">Get 500 credits</button>
-          <p class="hint">Checkout is temporarily held for safety verification. The button will report the current checkout status and won't charge you on this page.</p>
+          <p class="hint">Checkout is temporarily held for safety verification. The button will report the current checkout status and won't charge you on this page.</p></div>
         </section>
         <section class="panel" aria-labelledby="resultTitle">
           <h2 id="resultTitle">Your latest creation</h2>
@@ -69,7 +69,7 @@
         </section>
       </aside>
     </div>
-    <footer><a href="/">New Beansland</a> · <a href="/account.html">My Account</a> · <a href="/studios.html">NBL Studios</a> · <a href="/pricing.html">All NBL Pricing</a></footer>
+    <footer><a href="/">New Beansland</a> · <a href="/account.html">My Account</a> · <a href="/studios.html">NBL Studios</a> · <a id="residentPricing" href="/pricing.html" hidden>All NBL Pricing</a></footer>
   </main>
 </body>
 </html>
