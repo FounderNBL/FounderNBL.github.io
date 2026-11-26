@@ -1,0 +1,21 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import vm from "node:vm";
+import fs from "node:fs";
+const code=fs.readFileSync(new URL("../social-realtime.js",import.meta.url),"utf8");
+const flush=async()=>{for(let n=0;n<25;n++)await Promise.resolve();};
+test("private connection recovers after failure and stops stale callbacks",async()=>{
+ let now=100000,interval,refreshes=0;const connections=[];
+ const sdk={createClient(){const ch={on(event,filter,fn){this.broadcast=fn;return this;},subscribe(fn){this.status=fn;return this;}};const c={realtime:{async setAuth(){},disconnect(){this.disconnected=true;}},channel(topic,opts){assert.equal(opts.config.private,true);return ch;},async removeChannel(){}};connections.push({ch,c});return c;}};
+ const window={supabase:sdk,setInterval(fn){interval=fn;return 1;},clearInterval(){},addEventListener(){},removeEventListener(){}};
+ const document={hidden:false,addEventListener(){},removeEventListener(){}};
+ vm.runInNewContext(code,{window,document,Date:{now:()=>now},Promise});
+ const stop=window.NBLSocialRealtime.watchInbox("user_test",async()=>"test-token",async()=>{refreshes++;});
+ await flush();assert.equal(connections.length,1);
+ const first=connections[0];first.ch.status("SUBSCRIBED");await flush();assert.equal(refreshes,1);
+ first.ch.status("CHANNEL_ERROR");await flush();assert.equal(first.c.realtime.disconnected,true);
+ now+=46000;interval();await flush();assert.equal(connections.length,2);
+ const second=connections[1];second.ch.status("SUBSCRIBED");await flush();const before=refreshes;
+ first.ch.broadcast();first.ch.status("CLOSED");await flush();assert.equal(refreshes,before);
+ stop();await flush();second.ch.broadcast();await flush();assert.equal(refreshes,before);assert.equal(second.c.realtime.disconnected,true);
+});
