@@ -501,14 +501,14 @@
         }
         nblConnectApps.append(gmailCard);
 
-        // Canva authorization is managed inside Beans. Retain account-level revocation.
+        // Canva belongs to the NBL account. Still is an independent Studios workspace.
         // The account page does not initiate provider OAuth or create a design.
         const canvaConnected=(data.connections||[]).find(x=>x.provider==="canva");
         if(canvaConnected){
           const canvaCard=document.createElement("article");canvaCard.className="fulfillment-item";
           const canvaTitle=document.createElement("h3");canvaTitle.textContent="Canva · Connected";
           const canvaDetails=document.createElement("p");canvaDetails.className="fulfillment-meta";
-          canvaDetails.textContent="Open Beans and select + → Canva designs to use your own authorized account. Disconnect authorization here whenever you wish; Beans image creation remains separate.";
+          canvaDetails.textContent="Use your own authorized Canva account in Still at NBL Studios, or through Beans. Disconnect authorization here whenever you wish.";
           const disconnect=document.createElement("button");disconnect.type="button";disconnect.className="danger";disconnect.textContent="Disconnect Canva";
           disconnect.onclick=async()=>{
             if(!confirm("Disconnect your Canva account from NBL?"))return;
@@ -516,17 +516,23 @@
             try{const result=await connectFetch({operation:"canva_disconnect"});await renderConnect();nblConnectStatus.textContent=result.providerRevoked===true?"Canva disconnected and authorization revoked.":"Canva disconnected from NBL. If needed, remove Still by NBL in your Canva connected apps to revoke remaining authorization."; }
             catch(error){nblConnectStatus.textContent=error.message;disconnect.disabled=false}
           };
-          canvaCard.append(canvaTitle,canvaDetails,disconnect);
+          const stillLink=document.createElement("a");stillLink.className="button";stillLink.href="/still.html";stillLink.textContent="Open Still";
+          canvaCard.append(canvaTitle,canvaDetails,stillLink,disconnect);
           nblConnectApps.append(canvaCard);
+        }else{
+          const card=document.createElement("article");card.className="fulfillment-item";
+          const title=document.createElement("h3");title.textContent="Canva · Optional";
+          const details=document.createElement("p");details.className="fulfillment-meta";details.textContent="Connect your own account in Still when Canva access is available. No Beans membership is required.";
+          const link=document.createElement("a");link.className="button";link.href="/still.html";link.textContent="Manage Canva in Still";card.append(title,details,link);nblConnectApps.append(card);
         }
         nblConnectStatus.textContent=connectParam==="gmail_connected"
           ?"Your Gmail is connected read-only. You may review your authorized email above."
           :connectParam==="gmail_failed"||connectParam==="gmail_expired"||connectParam==="gmail_cancelled"
             ?"Gmail authorization did not finish. No inbox permission was granted."
           :connectParam==="canva_connected"
-          ?"Canva connected to your NBL account. Open Beans → + → Canva designs."
+          ?"Canva connected to your NBL account. Select Open Still below to continue."
           :connectParam==="canva_failed"||connectParam==="canva_expired"
-            ?"Canva authorization did not finish. Retry from the Canva tool in Beans if your NBL account is eligible."
+            ?"Canva authorization did not finish. Retry from Still if your NBL account is eligible."
           :connectParam==="github_connected"
           ?"Your GitHub connection was saved. You may inspect the repositories you approved."
           :connectParam==="github_failed"||connectParam==="github_expired"
