@@ -46,4 +46,4 @@ test("Studio customer UI cannot offer image creation or non-video model catalogs
   assert.match(js,/document\.createElement\("video"\)/);
 });
 
- test("Founder access hides customer commerce without removing the customer release guard",()=>{for(const id of ["residentCommerce","residentQuote","residentReleaseNote","residentPricing"])assert.match(html,new RegExp('id="'+id+'"[^>]*hidden'));assert.match(js,/!accessKnown\|\|founder/);assert.match(js,/if\(founder\|\|!accessKnown\)return/);assert.match(js,/!accessKnown\|\| \(!founder/);});
+ test("Founder access hides customer commerce without removing the customer release guard",()=>{for(const id of ["residentCommerce","residentQuote","residentReleaseNote","residentPricing"])assert.match(html,new RegExp('id="'+id+'"[^>]*hidden'));assert.match(js,/!accessKnown\|\|founder/);assert.match(js,/if\(founder\|\|!accessKnown\)return/);assert.match(js,/!accessKnown\s*\|\|\s*\(!founder/);});
