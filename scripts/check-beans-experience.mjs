@@ -121,3 +121,13 @@ requireText(host,'event.stopPropagation(); // This is an opener, not an outside 
 requireText(host,'const stillResumeKey="nbl.still.oauth-return.v1"');
 requireText(host,'if(currentClerkUserId()!==resume.userId)return;');
 requireText(host,'operation:"canva_disconnect"');
+
+// Free navigation parser assertions: no provider requests.
+const {parseNavigationIntent}=await import("../nbl-navigation-assistant.mjs");
+assert.equal(parseNavigationIntent("Beans, take me to Central Park").destination,"Central Park");
+assert.equal(parseNavigationIntent("Take me home").destination,"");
+assert.equal(parseNavigationIntent("How do I get to the library from Penn Station?").origin,"Penn Station");
+assert.equal(parseNavigationIntent("Find a gas station near me").destination,"gas station");
+assert.equal(parseNavigationIntent("Find my missing email"),null);
+assert.equal(parseNavigationIntent("Find a good song"),null);
+assert.equal(parseNavigationIntent("Walk to the library").mode,"walking");
