@@ -2,7 +2,7 @@
 "use strict";
 const $=id=>document.getElementById(id);
 const view=$("view"),status=$("status"),clip=$("clipPreview");
-let stream=null,recorder=null,mime="",facing="environment",photoUrl="",clipUrl="",chunks=[],bytes=0,limitTimer=null,pending=false;
+let stream=null,recorder=null,mime="",facing="environment",photoUrl="",photoBlob=null,clipUrl="",chunks=[],bytes=0,limitTimer=null,pending=false;
 const MAX_BYTES=100*1024*1024;
 const say=message=>{status.textContent=message;};
 const recording=()=>recorder&&recorder.state!=="inactive";
@@ -20,7 +20,7 @@ function controls(){
 }
 function revokePhoto(){
   if(photoUrl)URL.revokeObjectURL(photoUrl);
-  photoUrl="";$("photoSection").hidden=true;
+  photoUrl="";photoBlob=null;$("photoSection").hidden=true;
   $("photoPreview").removeAttribute("src");$("photoDownload").removeAttribute("href");
 }
 function revokeClip(){
@@ -69,7 +69,7 @@ $("takePhoto").addEventListener("click",()=>{
   ctx.drawImage(view,0,0,canvas.width,canvas.height);
   canvas.toBlob(blob=>{
     if(!blob){say("Couldn't save the picture.");return;}
-    revokePhoto();photoUrl=URL.createObjectURL(blob);
+    closePhotopea();revokePhoto();photoBlob=blob;photoUrl=URL.createObjectURL(blob);
     $("photoPreview").src=photoUrl;
     $("photoDownload").href=photoUrl;
     $("photoDownload").download="still-picture-"+Date.now()+".png";
@@ -120,13 +120,39 @@ $("pauseRecord").addEventListener("click",()=>{
   try{if(recorder.state==="recording")recorder.pause();else if(recorder.state==="paused")recorder.resume();controls();}catch{say("Pause is not available for this recording.");}
 });
 $("stopRecord").addEventListener("click",stopRecording);
-$("deletePhoto").addEventListener("click",()=>{revokePhoto();say("Picture deleted from this session.");});
+const photopeaFrame=$("photopeaFrame");
+let editorTransferStarted=false;
+function closePhotopea(){
+  $("photopeaSection").hidden=true;
+  photopeaFrame.removeAttribute("src");
+  editorTransferStarted=false;
+}
+$("editPhoto").addEventListener("click",()=>{
+  if(!photoBlob)return;
+  release();
+  editorTransferStarted=false;
+  $("photopeaSection").hidden=false;
+  photopeaFrame.src="https://www.photopea.com/";
+  say("Photopea is loading. It will receive this photo in your browser; use its File menu to save edits.");
+});
+$("closePhotopea").addEventListener("click",closePhotopea);
+window.addEventListener("message",async event=>{
+  if($("photopeaSection").hidden||event.origin!=="https://www.photopea.com"||event.source!==photopeaFrame.contentWindow||event.data!=="done"||editorTransferStarted||!photoBlob)return;
+  editorTransferStarted=true;
+  try{
+    const buffer=await photoBlob.arrayBuffer();
+    if($("photopeaSection").hidden)return;
+    photopeaFrame.contentWindow.postMessage(buffer,"https://www.photopea.com",[buffer]);
+    say("Picture handed to Photopea for editing. Your original remains unchanged.");
+  }catch{say("Could not open photo in advanced editor. Download the PNG and open it manually.");}
+});
+$("deletePhoto").addEventListener("click",()=>{closePhotopea();revokePhoto();say("Picture deleted from this session.");});
 $("deleteClip").addEventListener("click",()=>{revokeClip();say("Recording deleted from this session.");});
 $("rewind").addEventListener("click",()=>{if(Number.isFinite(clip.duration))clip.currentTime=Math.max(0,clip.currentTime-5);});
 $("forward").addEventListener("click",()=>{if(Number.isFinite(clip.duration))clip.currentTime=Math.min(clip.duration,clip.currentTime+5);});
 $("speed").addEventListener("change",()=>{clip.playbackRate=Number($("speed").value)||1;});
 $("close").addEventListener("click",()=>{release();if(window.parent!==window){window.parent.postMessage({type:"nbl-still-camera-close"},location.origin);}else{location.href="/still.html";}});
-window.addEventListener("pagehide",()=>{release();revokePhoto();revokeClip();});
+window.addEventListener("pagehide",()=>{release();closePhotopea();revokePhoto();revokeClip();});
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&stream){release();say("Camera off because this view was hidden.");}});
 controls();
 })();
