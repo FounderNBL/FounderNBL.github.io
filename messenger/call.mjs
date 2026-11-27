@@ -126,12 +126,12 @@ async function leave(){
  try{await client?.disconnectUser();}catch{}
  call=null;client=null;joined=false;mediaWarning="";
  $("#participants").hidden=true;
- $("#join").hidden=false;$("#leave").hidden=true;$("#camera").hidden=true;$("#microphone").hidden=true;$("#callSound").hidden=true;
+ $("#join").hidden=false;$("#joinAudio").hidden=false;$("#leave").hidden=true;$("#camera").hidden=true;$("#microphone").hidden=true;$("#callSound").hidden=true;
  status("Call left. Return to Messenger or rejoin while the invite is active.");
 }
-async function join(){
+async function join({audioOnly=false}={}){
  if(joined||!validCallId(callId))return;
- $("#join").disabled=true;
+ $("#join").disabled=true;$("#joinAudio").disabled=true;
  status("Checking NBL account and call permissions…");
  try{
   const access=await videoRequest("join");
@@ -141,15 +141,17 @@ async function join(){
   call=client.call(PRIVATE_CALL_TYPE,callId);
   // A blocked camera or microphone must not prevent the other participant
   // joining the call. Keep the call available and offer controls to retry.
-  let cameraReady=true,microphoneReady=true;
-  try{await call.camera.enable();}catch{cameraReady=false;}
+  let cameraReady=!audioOnly,microphoneReady=true;
+  // Audio-only mode never requests camera access or publishes video.
+  if(audioOnly){try{await call.camera.disable();}catch{throw Error("Could not confirm camera is off. Call not joined.");}}
+  else{try{await call.camera.enable();}catch{cameraReady=false;}}
   try{await call.microphone.enable();}catch{microphoneReady=false;}
-  mediaWarning=(!cameraReady||!microphoneReady)
+  mediaWarning=(!microphoneReady||(!audioOnly&&!cameraReady))
    ?"Camera or microphone permission is off. Use the controls to retry, or check your browser settings.":"";
   await call.join({create:false});
   if(clerk.user?.id!==owner||!clerk.isSignedIn)throw Error("Your NBL account changed.");
   joined=true;
-  $("#join").hidden=true;$("#leave").hidden=false;$("#camera").hidden=false;$("#microphone").hidden=false;$("#callSound").hidden=false;
+  $("#join").hidden=true;$("#joinAudio").hidden=true;$("#leave").hidden=false;$("#camera").hidden=false;$("#microphone").hidden=false;$("#callSound").hidden=false;
   $("#participants").hidden=false;
   $("#camera").textContent=cameraReady?"Turn camera off":"Turn camera on";
   $("#microphone").textContent=microphoneReady?"Mute microphone":"Unmute microphone";
@@ -159,7 +161,7 @@ async function join(){
   status(error?.message||"This call is unavailable.");
   await leave();
   status(error?.message||"This call is unavailable.");
- }finally{$("#join").disabled=false;}
+ }finally{$("#join").disabled=false;$("#joinAudio").disabled=false;}
 }
 async function boot(){
  if(!validCallId(callId)){status("This is not a valid NBL call invitation.");$("#join").disabled=true;return;}
@@ -189,7 +191,8 @@ async function boot(){
   }else status("Incoming NBL video call. Tap Join to answer.");
  }catch(error){status(error?.message||"NBL account connection unavailable.");$("#join").disabled=true;}
 }
-$("#join").addEventListener("click",()=>{void join();});
+$("#join").addEventListener("click",()=>{void join({audioOnly:false});});
+$("#joinAudio").addEventListener("click",()=>{void join({audioOnly:true});});
 $("#camera").addEventListener("click",async()=>{
  try{await call.camera.toggle();$("#camera").textContent=call.camera.state.status==="enabled"?"Turn camera off":"Turn camera on";}
  catch{status("Could not change camera.");}
