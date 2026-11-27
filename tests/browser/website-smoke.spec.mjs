@@ -178,6 +178,7 @@ test.describe("New Beansland web app browser smoke", () => {
     }));
     await open("/",page);
     await page.getByRole("button",{name:"Open Beans"}).click();
+    await page.getByRole("button",{name:"Open Beans menu"}).click();
     const drawer=page.locator("[data-nbl-chat-drawer]");
     await expect(drawer).toBeVisible();
     await expect(drawer).not.toHaveAttribute("hidden","");
@@ -232,9 +233,9 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator("#nbl-beans-title")).toBeVisible();
     await expect(page.locator(".nbl-beans-head .nbl-beans-grey-link")).toHaveCount(0);
     await expect(page.locator(".nbl-beans-head .nbl-beans-people-link")).toHaveCount(0);
-    // Desktop Beans shows a standing sidebar; mobile uses its accessible drawer toggle.
+    // Both desktop and mobile disclose the sidebar only when explicitly opened.
     const mobile=await page.evaluate(()=>matchMedia("(max-width:1199px)").matches);
-    if(mobile)await page.getByRole("button",{name:"Open Beans menu"}).click();
+    await page.getByRole("button",{name:"Open Beans menu"}).click();
     const drawer=page.locator("[data-nbl-chat-drawer]");
     await expect(drawer).toBeVisible();
     await expect(drawer.locator(".nbl-beans-library-link")).toBeVisible();
@@ -244,7 +245,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(drawer.getByRole("link",{name:/Talk to Grey/})).toHaveCount(0);
     await expect(drawer.getByRole("link",{name:/Talk to People/})).toHaveCount(0);
     await expect(drawer.getByRole("link",{name:/Privacy & AI notice/})).toHaveAttribute("href","/privacy.html");
-    if(mobile)await page.getByRole("button",{name:"Close Beans menu"}).click();
+    await page.getByRole("button",{name:"Close Beans menu"}).click();
     await expect(page.locator(".nbl-beans-avatar")).toBeVisible();
     await expect(page.locator(".nbl-beans-avatar")).toHaveAttribute("src","/Beans_Hi_Basic.png");
     await expect(page.getByRole("tab",{name:"Beans"})).toBeHidden();
@@ -275,7 +276,7 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator("[data-nbl-university-pdf-form]")).toHaveCount(1);
     await page.getByRole("button",{name:"Open Beans tools"}).click();
     if(expectBillingReleaseUi){
-      if(mobile)await page.getByRole("button",{name:"Open Beans menu"}).click();
+      await page.getByRole("button",{name:"Open Beans menu"}).click();
       await page.locator("[data-nbl-drawer-plans]").click();
       await expect(page.locator("details.nbl-drawer-category:not([hidden])")).toHaveCount(1);
       await expect(page.locator("details.nbl-drawer-category[hidden]")).toHaveCount(2);
@@ -286,7 +287,7 @@ test.describe("New Beansland web app browser smoke", () => {
        await expect(page.getByRole("button",{name:"Founder's Deluxe",exact:true})).toBeEnabled();
       await expect(page.getByRole("button",{name:/Get \+500 replies/i})).toBeVisible();
       await expect(page.getByRole("button",{name:"University membership checkout pending",exact:true})).toBeHidden();
-      if(mobile)await page.getByRole("button",{name:"Close Beans menu"}).click();
+      await page.getByRole("button",{name:"Close Beans menu"}).click();
     }
   });
 
