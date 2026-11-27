@@ -3011,6 +3011,14 @@
   document.body.prepend(header);
   document.body.append(searchPanel);
   document.body.append(beansPanel);
+  // Portable Still is opt-in, camera-off by default; never surface it on held,
+  // child-only, account, payment or protected school routes.
+  if(!/^\/(?:university(?:[\/.-]|$)|nbl-kids(?:[\/.-]|$)|games(?:[\/.-]|$)|messenger(?:\/|$)|account(?:[\/.-]|$)|checkout(?:[\/.-]|$)|privacy\.html$|terms\.html$)/i.test(location.pathname)){
+    const stillLauncher=document.createElement("script");
+    stillLauncher.src="/studio/still-launcher.js?v=20261127-portable-camera-v1";
+    stillLauncher.defer=true;
+    document.body.appendChild(stillLauncher);
+  }
   // Independent presentation layer around the existing real Beans chat.
   // No screenshot-as-a-background, no generated wardrobe, no change to the AI runtime.
   const beansExperienceScript=document.createElement("script");
