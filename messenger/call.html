@@ -14,17 +14,18 @@
 <main>
  <section class="call-panel">
   <h1>Video call</h1>
-  <p>Your NBL conversation stays yours. Choose Join to allow camera and microphone access. The other person must be a member of your direct conversation.</p>
+  <p>Your NBL conversation stays yours. Choose Join video to use your camera and microphone, or Join without camera for an audio-only connection. The other person must be a member of your direct conversation.</p>
   <p id="callStatus" role="status" aria-live="polite">Preparing your call…</p>
   <div id="participants" class="participants" aria-label="Video call participants" hidden></div>
   <div class="actions">
    <button id="join" type="button">Join video call</button>
+   <button id="joinAudio" type="button">Join without camera</button>
    <button id="camera" type="button" hidden>Turn camera off</button>
    <button id="microphone" type="button" hidden>Mute microphone</button>
    <button id="callSound" type="button" hidden>Enable call sound</button>
    <button id="leave" type="button" class="danger" hidden>Leave call</button>
   </div>
-  <p class="hint">NBL Private requires membership in the same direct conversation. Recording, broadcasting and screen sharing are disabled for this call type. Camera and microphone permissions are requested when you join. Calls may use mobile data.</p>
+  <p class="hint">NBL Private requires membership in the same direct conversation. Recording, broadcasting and screen sharing are disabled for this call type. The microphone is requested when joining without camera; the camera stays off unless you choose to enable it. Calls may use mobile data.</p>
  </section>
 </main>
 <footer>New Beansland · Pulse Connect · Human-to-human video</footer>
