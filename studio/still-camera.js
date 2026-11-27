@@ -123,12 +123,12 @@ $("pauseRecord").addEventListener("click",()=>{
 });
 $("stopRecord").addEventListener("click",stopRecording);
 const photopeaFrame=$("photopeaFrame");
-let editorTransferStarted=false,exportPending=false,exportTimeout=null;
+let editorTransferStarted=false,exportPending=false,exportFormat="",exportTimeout=null;
 function resetEditorExport(){
-  exportPending=false;
+  exportPending=false;exportFormat="";
   if(exportTimeout!==null)clearTimeout(exportTimeout);
   exportTimeout=null;
-  $("exportPhotopea").disabled=true;
+  $("exportPhotopea").disabled=true;$("exportPhotopeaPsd").disabled=true;
 }
 function closePhotopea(){
   $("photopeaSection").hidden=true;
@@ -145,31 +145,34 @@ $("editPhoto").addEventListener("click",()=>{
   say("Photopea is loading. It will receive this photo in your browser; use its File menu to save edits.");
 });
 $("closePhotopea").addEventListener("click",closePhotopea);
-$("exportPhotopea").addEventListener("click",()=>{
+function exportFromPhotopea(format){
   if($("photopeaSection").hidden||!editorTransferStarted||exportPending)return;
-  exportPending=true;$("exportPhotopea").disabled=true;
+  exportPending=true;exportFormat=format;
+  $("exportPhotopea").disabled=true;$("exportPhotopeaPsd").disabled=true;
   try{
-    photopeaFrame.contentWindow.postMessage('app.activeDocument.saveToOE("png");',"https://www.photopea.com");
+    photopeaFrame.contentWindow.postMessage('app.activeDocument.saveToOE("'+format+'");',"https://www.photopea.com");
     exportTimeout=setTimeout(()=>{
-      if(exportPending){
-        resetEditorExport();
-        $("exportPhotopea").disabled=false;
-        say("Editor export timed out. Try again or use Photopea's File menu to download.");
-      }
+      if(exportPending){resetEditorExport();$("exportPhotopea").disabled=false;$("exportPhotopeaPsd").disabled=false;say("Editor export timed out. Retry or download directly from Photopea.");}
     },30000);
-    say("Exporting your edited picture to Still library...");
-  }catch(err){resetEditorExport();$("exportPhotopea").disabled=false;say("Advanced editor export unavailable: "+err.message);}
-});
+    say("Saving "+(format==="psd"?"editable PSD":"finished PNG")+" to Still library...");
+  }catch(err){resetEditorExport();$("exportPhotopea").disabled=false;$("exportPhotopeaPsd").disabled=false;say("Advanced editor export unavailable: "+err.message);}
+}
+$("exportPhotopea").addEventListener("click",()=>exportFromPhotopea("png"));
+$("exportPhotopeaPsd").addEventListener("click",()=>exportFromPhotopea("psd"));
 window.addEventListener("message",async event=>{
   if($("photopeaSection").hidden||event.origin!=="https://www.photopea.com"||event.source!==photopeaFrame.contentWindow)return;
   if(exportPending&&event.data instanceof ArrayBuffer){
-    const binary=event.data;resetEditorExport();
+    const binary=event.data,format=exportFormat;resetEditorExport();
+    const bytes=new Uint8Array(binary,0,Math.min(8,binary.byteLength));
+    const isPng=bytes.length===8&&[137,80,78,71,13,10,26,10].every((v,i)=>bytes[i]===v);
+    const isPsd=bytes.length>=4&&String.fromCharCode(...bytes.slice(0,4))==="8BPS";
     try{
-      await saveLocal(new Blob([binary],{type:"image/png"}),{name:"still-edited-"+Date.now()+".png"});
-      say("Edited picture saved in Still library. Open Still to edit it again or download it.");
-    }catch(err){say("Couldn't save the edited PNG: "+err.message+". Download from Photopea as backup.");}
-    $("exportPhotopea").disabled=false;
-    return;
+      if(format==="png"&&!isPng||format==="psd"&&!isPsd)throw Error("Editor returned an unexpected file format.");
+      const type=format==="psd"?"image/vnd.adobe.photoshop":"image/png";
+      await saveLocal(new Blob([binary],{type}),{name:"still-"+(format==="psd"?"project":"edited")+"-"+Date.now()+"."+format});
+      say(format==="psd"?"Editable PSD project saved to Still library; reopen it later for layers.":"Edited PNG saved in Still library; download a backup when convenient.");
+    }catch(err){say("Could not save editor output: "+err.message+". Download from Photopea as a backup.");}
+    $("exportPhotopea").disabled=false;$("exportPhotopeaPsd").disabled=false;return;
   }
   if(event.data!=="done"||editorTransferStarted||!photoBlob)return;
   editorTransferStarted=true;
@@ -177,7 +180,7 @@ window.addEventListener("message",async event=>{
     const buffer=await photoBlob.arrayBuffer();
     if($("photopeaSection").hidden)return;
     photopeaFrame.contentWindow.postMessage(buffer,"https://www.photopea.com",[buffer]);
-    $("exportPhotopea").disabled=false;
+    $("exportPhotopea").disabled=false;$("exportPhotopeaPsd").disabled=false;
     say("Picture opened in Photopea. Edit it, then choose Save edited PNG to Still library. Your original remains unchanged.");
   }catch{say("Could not open photo in advanced editor. Download the PNG and open it manually.");}
 });
