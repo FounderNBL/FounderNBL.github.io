@@ -1945,12 +1945,13 @@
       chatDrawerCloseTimer=null;
     }
     if(desktopBeansMenu.matches){
-      chatDrawer.hidden=false;
-      chatDrawer.inert=false;
+      const open=chatDrawer.classList.contains("is-open");
+      chatDrawer.hidden=!open;
+      chatDrawer.inert=!open;
       chatDrawerShade.hidden=true;
-      chatDrawer.classList.remove("is-open");
-      chatDrawerToggle.setAttribute("aria-expanded","false");
-      if(!beansPanel.hidden){
+      chatDrawerToggle.setAttribute("aria-expanded",String(open));
+      beansPanel.classList.toggle("nbl-desktop-drawer-open",open);
+      if(open&&!beansPanel.hidden){
         void updateChatDrawerAccountAction();
         void renderChatDrawerHistory();
       }
@@ -1960,12 +1961,19 @@
       chatDrawerShade.hidden=true;
     }
   };
-  desktopBeansMenu.addEventListener("change",syncDesktopDrawer);
+  desktopBeansMenu.addEventListener("change",()=>{
+    chatDrawer.classList.remove("is-open");
+    beansPanel.classList.remove("nbl-desktop-drawer-open");
+    chatDrawerToggle.setAttribute("aria-expanded","false");
+    syncDesktopDrawer();
+  });
   syncDesktopDrawer();
 
   const setChatDrawerOpen=open=>{
     if(desktopBeansMenu.matches){
+      chatDrawer.classList.toggle("is-open",open);
       syncDesktopDrawer();
+      if(!open)chatDrawerToggle.focus({preventScroll:true});
       return;
     }
     if(chatDrawerCloseTimer){
