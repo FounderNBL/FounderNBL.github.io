@@ -1,5 +1,8 @@
 (()=>{
   "use strict";
+  // Read callback before the account page cleans the query string. No OAuth tokens are stored here.
+  const stillReturnStatus=new URLSearchParams(location.search).get("connect");
+  const stillResumeKey="nbl.still.oauth-return.v1";
   // Shared NBL Infinity audio loads only on real reply events. Missing asset stays silent.
   if(!document.querySelector('script[data-nbl-infinity]')){
     const soundScript=document.createElement("script");
@@ -1289,6 +1292,7 @@
     },2000);
   };
   const setBeansToolMenu=open=>{
+    if(open&&!stillTools.hidden)setStillVisualTools(false);
     beansToolsMenu.hidden=!open;
     beansToolsToggle.setAttribute("aria-expanded",open?"true":"false");
   };
@@ -1405,7 +1409,8 @@
       const result=await stillConnect({operation:"canva_begin"});
       const target=new URL(result.authorizationUrl);
       if(target.protocol!=="https:"||target.hostname!=="www.canva.com")throw Error("Invalid Canva authorization destination.");
-      // OAuth redirects to the official NBL account callback, not to a second chatbot.
+      // Resume the same signed-in member’s Still panel after the approved callback.
+      try{sessionStorage.setItem(stillResumeKey,JSON.stringify({userId:currentClerkUserId(),expiresAt:Date.now()+15*60*1000}));}catch{}
       location.assign(target.href);
     }catch(error){stillStatus.textContent=error.message||"Canva sign-in is unavailable.";button.disabled=false;}
   };
@@ -1465,6 +1470,14 @@
       }
       stillStatus.textContent="Canva connected: "+String(connected.label||"Your Canva account").slice(0,90)+". You are still talking to Beans.";
       stillControls.append(stillButton("Show my Canva designs",e=>stillShowDesigns(e.currentTarget,identity,version)));
+      stillControls.append(stillButton("Disconnect Canva",async e=>{
+        const button=e.currentTarget;
+        if(!confirm("Disconnect your Canva account from NBL?"))return;
+        button.disabled=true;
+        try{await stillConnect({operation:"canva_disconnect"});if(version===stillRequestVersion&&identity===currentClerkUserId()&&!stillTools.hidden)await loadStillVisualTools();}
+        catch(error){if(version===stillRequestVersion&&identity===currentClerkUserId()&&!stillTools.hidden)stillStatus.textContent=error.message||"Canva could not be disconnected.";}
+        finally{button.disabled=false;}
+      }));
       if(state.canvaDesignWriteAvailable===true){
         // Existing read-only grants need a fresh user-approved OAuth consent for creation.
         stillControls.append(stillButton("Reconnect Canva for design permission",e=>stillOpenCanvaAuth(e.currentTarget)));
@@ -2134,6 +2147,7 @@
 
   const closeBeans=({fromPopState=false}={})=>{
     stopBeansSpeech();voiceSettings.hidden=true;
+    if(!stillTools.hidden)setStillVisualTools(false);
     setNblQuickMenu(false);
     setBeansToolMenu(false); // Reopening Beans must NEVER leave quick actions visible.
     const shouldConsumeHistory=!fromPopState&&Boolean(chatHistoryEntry)&&window.history.state?.nblChatOverlay===chatHistoryEntry;
@@ -2360,6 +2374,7 @@
       stillCameraInput.click();
       return;
     }
+    if(tool!=="still-canva"&&!stillTools.hidden)setStillVisualTools(false);
     if(tool==="still-canva"){
       setBeansToolMenu(false);
       setStillVisualTools(true); // The existing server checks NBL identity, provider access and consent.
@@ -2429,7 +2444,8 @@
       beansInput.focus();
     }
   });
-  chatDrawerTools?.addEventListener("click",()=>{
+  chatDrawerTools?.addEventListener("click",event=>{
+    event.stopPropagation(); // This is an opener, not an outside click.
     setChatDrawerOpen(false);
     setBeansToolMenu(true);
     beansToolsToggle.focus();
@@ -2730,11 +2746,23 @@
     });
   }).catch(()=>{beansAuthNote.hidden=false;});
 
+  // Resume only a recent, same-tab Canva authorization for the same NBL member.
+  if(["canva_connected","canva_failed","canva_expired","canva_not_configured"].includes(stillReturnStatus)){
+    let resume=null;
+    try{resume=JSON.parse(sessionStorage.getItem(stillResumeKey)||"null");sessionStorage.removeItem(stillResumeKey);}catch{}
+    if(resume?.userId&&Number(resume.expiresAt)>Date.now()){
+      void getNblClerk().then(()=>{
+        if(currentClerkUserId()!==resume.userId)return;
+        openBeans();
+        setStillVisualTools(true);
+      }).catch(()=>{});
+    }
+  }
   beansToggle.addEventListener("click",openBeans);
   beansClose.addEventListener("click",closeBeans);
   beansPanel.addEventListener("click",event=>{
     if(event.target===beansPanel) closeBeans();
-    else if(!beansToolsMenu.hidden&&!event.target.closest("[data-nbl-tools-menu]")&&!event.target.closest("[data-nbl-tools-toggle]")){
+    else if(!beansToolsMenu.hidden&&!event.target.closest("[data-nbl-tools-menu],[data-nbl-tools-toggle],[data-nbl-drawer-tools]")){
       setBeansToolMenu(false);
     }
   });

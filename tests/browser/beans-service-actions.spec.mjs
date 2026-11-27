@@ -2,7 +2,7 @@ import {test,expect} from "@playwright/test";
 
 // Exercise the real website composer and renderer. Sessions and responses are
 // fixtures; this suite never contacts Clerk, a model, billing or customer data.
-async function prepare(page,{signedIn=true,reply={},chatHandler=null}={}){
+async function prepare(page,{signedIn=true,reply={},chatHandler=null,connectHandler=null}={}){
   const calls=[];
   await page.addInitScript(({signedIn})=>{
     let userId=signedIn?"user_service_fixture":null;
@@ -20,6 +20,7 @@ async function prepare(page,{signedIn=true,reply={},chatHandler=null}={}){
     const request=route.request();
     const url=new URL(request.url());
     calls.push({path:url.pathname,method:request.method(),authorization:request.headers().authorization,body:request.postDataJSON()});
+    if(url.pathname.endsWith("/nbl-core/connect")&&connectHandler)return connectHandler(route);
     if(url.pathname.endsWith("/nbl-core/chat")){
       if(chatHandler) return chatHandler(route);
       return route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":"*"},body:JSON.stringify({
@@ -158,4 +159,21 @@ test("a late service response cannot appear after the NBL account changes",async
   await expect(page.locator("[data-nbl-beans-form] button[type=submit]")).toBeEnabled();
   await expect(page.locator("[data-nbl-beans-log]")).not.toContainText("731 credits");
   await expect(page.getByRole("group",{name:"NBL services"})).toHaveCount(0);
+});
+
+test("sidebar Tools remains open after its opening click and Still does not block other tools",async({page})=>{
+ await page.setViewportSize({width:1376,height:736});
+ await prepare(page,{connectHandler:route=>route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":"*"},body:JSON.stringify({providers:[{id:"canva",configured:true}],connections:[{provider:"canva",label:"Fixture Canva"}],canvaDesignWriteAvailable:true})})});
+ await page.locator("[data-nbl-drawer-tools]").click();
+ await expect(page.locator("[data-nbl-tools-menu]")).toBeVisible();
+ await page.locator('[data-nbl-tool="still-canva"]').click();
+ await expect(page.getByRole("button",{name:"Show my Canva designs"})).toBeVisible();
+ await expect(page.getByRole("button",{name:"Disconnect Canva"})).toBeVisible();
+ await page.locator("[data-nbl-drawer-tools]").click();
+ await expect(page.locator("[data-nbl-still-tools]")).toBeHidden();
+ await expect(page.locator("[data-nbl-tools-menu]")).toBeVisible();
+ await page.locator('[data-nbl-tool="voice-settings"]').click();
+ await expect(page.locator("[data-nbl-voice-settings]")).toBeVisible();
+ const fits=await page.locator(".nbl-chat-drawer-scroll").evaluate(el=>el.scrollWidth<=el.clientWidth+1);
+ expect(fits).toBe(true);
 });
