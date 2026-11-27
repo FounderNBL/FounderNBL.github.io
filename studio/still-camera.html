@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#071421">
+<title>Still Camera · New Beansland</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}
+body{margin:0;background:#071421;color:#fff8ee;font:16px/1.5 system-ui,sans-serif}
+main{max-width:800px;margin:auto;padding:16px 16px 38px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px}
+h1{color:#edc579;font-size:1.6rem;margin:.2rem 0}h2{color:#edc579;font-size:1.18rem;margin:0 0 6px}
+p{margin:8px 0 12px}small,.hint{color:#d0c5b2}
+.panel{border:1px solid #756247;border-radius:14px;background:#152331;padding:14px;margin:12px 0}
+button,.link{font:inherit;font-weight:700;min-height:44px;padding:9px 13px;color:#171c25;background:#e4b966;border:1px solid #e4b966;border-radius:9px;cursor:pointer;text-decoration:none;display:inline-flex;justify-content:center;align-items:center}
+button.secondary,.link.secondary{background:transparent;color:#f0d09a}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+label{display:inline-flex;align-items:center;gap:6px}
+select{background:#071421;border:1px solid #a28b65;color:#fff;padding:8px;border-radius:8px;min-height:42px}
+#view{display:block;width:100%;max-height:48vh;background:#000;border-radius:10px;object-fit:contain}
+#photoPreview{display:block;width:100%;max-height:48vh;object-fit:contain}
+#clipPreview{display:block;width:100%;max-height:48vh;background:#000;border-radius:8px}
+[hidden]{display:none!important}
+#status{min-height:26px;color:#edc579}
+</style>
+<script defer src="/studio/still-camera.js?v=20261127-portable-v1"></script>
+</head>
+<body><main>
+<header><div><h1>📷 Still Camera</h1><small>NBL Studios · Free, on-device capture</small></div><button type="button" class="secondary" id="close">Close camera</button></header>
+<p class="hint">Take pictures and record video while visiting NBL World. Your camera and microphone only activate when you choose. Nothing is automatically uploaded, posted, or billed.</p>
+<section class="panel" aria-label="Camera">
+  <video id="view" autoplay playsinline muted aria-label="Live camera view"></video>
+  <div class="controls">
+    <button id="startCamera" type="button">Turn on camera</button>
+    <button id="switchCamera" type="button" class="secondary" disabled>Switch camera</button>
+    <button id="stopCamera" type="button" class="secondary" disabled>Turn off camera</button>
+    <label><input id="microphone" type="checkbox"> Include microphone when starting camera</label>
+  </div>
+  <div class="controls">
+    <label>Photo size <select id="photoScale"><option value="1">Original</option><option value=".75">75%</option><option value=".5">50%</option></select></label>
+    <button id="takePhoto" type="button" disabled>Take picture</button>
+    <button id="startRecord" type="button" disabled>Start recording</button>
+    <button id="pauseRecord" type="button" class="secondary" disabled>Pause</button>
+    <button id="stopRecord" type="button" class="secondary" disabled>Stop recording</button>
+  </div>
+  <p id="status" role="status" aria-live="polite">Camera off. Tap Turn on camera to grant permission.</p>
+  <small>Recording uses your browser's supported video format. Limit: 5 minutes or 100 MB per clip to protect phone memory. Turn off the camera when finished.</small>
+</section>
+<section class="panel" id="photoSection" hidden aria-label="Your picture">
+  <h2>Latest picture</h2><img id="photoPreview" alt="Your latest photo">
+  <div class="controls"><a id="photoDownload" class="link" download="still-picture.png">Save picture</a><button id="deletePhoto" class="secondary" type="button">Delete picture</button></div>
+  <small>For crop, resizing, backgrounds and graphics, use the existing NBL Image Lab below.</small>
+</section>
+<section class="panel" id="clipSection" hidden aria-label="Your recording">
+  <h2>Latest recording</h2><video id="clipPreview" controls playsinline preload="metadata" aria-label="Recorded clip"></video>
+  <div class="controls">
+    <button id="rewind" class="secondary" type="button">−5 seconds</button>
+    <button id="forward" class="secondary" type="button">+5 seconds</button>
+    <label>Speed <select id="speed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+  </div>
+  <div class="controls"><a id="clipDownload" class="link" download="still-recording.webm">Save video</a><button id="deleteClip" class="secondary" type="button">Delete recording</button></div>
+  <small>Playback speed doesn't change the saved file. Use Pulse Studios VideoBeats to trim and re-export a saved clip.</small>
+</section>
+<section class="panel" aria-label="Existing editing and creation tools">
+  <h2>Keep creating with Still</h2>
+  <div class="controls">
+    <a class="link secondary" href="/tools-lab.html" target="_blank" rel="noopener">NBL Image Lab</a>
+    <a class="link secondary" href="/studio/still-editor.html" target="_blank" rel="noopener">Advanced photo editor</a>
+    <a class="link secondary" href="/pulse/" target="_blank" rel="noopener">Pulse Studios VideoBeats</a>
+    <a class="link secondary" href="/still.html" target="_blank" rel="noopener">Create AI images & Canva designs</a>
+  </div>
+  <small>Save a captured file to your device, then choose it in the editor. Still does not publish a Beat or start any paid generation.</small>
+</section>
+</main></body></html>
