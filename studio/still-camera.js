@@ -2,8 +2,10 @@
 "use strict";
 const $=id=>document.getElementById(id);
 const view=$("view"),status=$("status"),clip=$("clipPreview");
-let stream=null,recorder=null,mime="",facing="environment",photoUrl="",photoBlob=null,clipUrl="",chunks=[],bytes=0,limitTimer=null,pending=false;
+let stream=null,recorder=null,mime="",facing="environment",photoUrl="",photoBlob=null,clipUrl="",clipBlob=null,chunks=[],bytes=0,limitTimer=null,pending=false;
 const MAX_BYTES=100*1024*1024;
+let savedPhotoId="",savedClipId="",savingPhoto=false,savingClip=false;
+const saveLocal=(blob,options)=>import("/studio/still-media-library.mjs").then(lib=>lib.saveStillMedia(blob,options));
 const say=message=>{status.textContent=message;};
 const recording=()=>recorder&&recorder.state!=="inactive";
 function controls(){
@@ -20,13 +22,13 @@ function controls(){
 }
 function revokePhoto(){
   if(photoUrl)URL.revokeObjectURL(photoUrl);
-  photoUrl="";photoBlob=null;$("photoSection").hidden=true;
+  photoUrl="";photoBlob=null;savedPhotoId="";$("editPhotoPulse").hidden=true;$("savePhotoLocal").disabled=false;$("photoSection").hidden=true;
   $("photoPreview").removeAttribute("src");$("photoDownload").removeAttribute("href");
 }
 function revokeClip(){
   clip.pause();clip.removeAttribute("src");clip.load();
   if(clipUrl)URL.revokeObjectURL(clipUrl);
-  clipUrl="";$("clipSection").hidden=true;$("clipDownload").removeAttribute("href");
+  clipUrl="";clipBlob=null;savedClipId="";$("editClipPulse").hidden=true;$("saveClipLocal").disabled=false;$("clipSection").hidden=true;$("clipDownload").removeAttribute("href");
 }
 function stopRecording(){
   if(limitTimer!==null){clearTimeout(limitTimer);limitTimer=null;}
@@ -100,7 +102,7 @@ $("startRecord").addEventListener("click",()=>{
         const type=thisRecorder.mimeType||mime||"video/webm";
         const blob=new Blob(chunks,{type});
         const ext=type.includes("mp4")?"mp4":"webm";
-        revokeClip();clipUrl=URL.createObjectURL(blob);
+        revokeClip();clipBlob=blob;clipUrl=URL.createObjectURL(blob);
         clip.src=clipUrl;$("clipDownload").href=clipUrl;
         $("clipDownload").download="still-recording-"+Date.now()+"."+ext;
         $("clipSection").hidden=false;
@@ -121,33 +123,92 @@ $("pauseRecord").addEventListener("click",()=>{
 });
 $("stopRecord").addEventListener("click",stopRecording);
 const photopeaFrame=$("photopeaFrame");
-let editorTransferStarted=false;
+let editorTransferStarted=false,exportPending=false,exportTimeout=null;
+function resetEditorExport(){
+  exportPending=false;
+  if(exportTimeout!==null)clearTimeout(exportTimeout);
+  exportTimeout=null;
+  $("exportPhotopea").disabled=true;
+}
 function closePhotopea(){
   $("photopeaSection").hidden=true;
   photopeaFrame.removeAttribute("src");
   editorTransferStarted=false;
+  resetEditorExport();
 }
 $("editPhoto").addEventListener("click",()=>{
   if(!photoBlob)return;
   release();
-  editorTransferStarted=false;
+  editorTransferStarted=false;resetEditorExport();
   $("photopeaSection").hidden=false;
   photopeaFrame.src="https://www.photopea.com/";
   say("Photopea is loading. It will receive this photo in your browser; use its File menu to save edits.");
 });
 $("closePhotopea").addEventListener("click",closePhotopea);
+$("exportPhotopea").addEventListener("click",()=>{
+  if($("photopeaSection").hidden||!editorTransferStarted||exportPending)return;
+  exportPending=true;$("exportPhotopea").disabled=true;
+  try{
+    photopeaFrame.contentWindow.postMessage('app.activeDocument.saveToOE("png");',"https://www.photopea.com");
+    exportTimeout=setTimeout(()=>{
+      if(exportPending){
+        resetEditorExport();
+        $("exportPhotopea").disabled=false;
+        say("Editor export timed out. Try again or use Photopea's File menu to download.");
+      }
+    },30000);
+    say("Exporting your edited picture to Still library...");
+  }catch(err){resetEditorExport();$("exportPhotopea").disabled=false;say("Advanced editor export unavailable: "+err.message);}
+});
 window.addEventListener("message",async event=>{
-  if($("photopeaSection").hidden||event.origin!=="https://www.photopea.com"||event.source!==photopeaFrame.contentWindow||event.data!=="done"||editorTransferStarted||!photoBlob)return;
+  if($("photopeaSection").hidden||event.origin!=="https://www.photopea.com"||event.source!==photopeaFrame.contentWindow)return;
+  if(exportPending&&event.data instanceof ArrayBuffer){
+    const binary=event.data;resetEditorExport();
+    try{
+      await saveLocal(new Blob([binary],{type:"image/png"}),{name:"still-edited-"+Date.now()+".png"});
+      say("Edited picture saved in Still library. Open Still to edit it again or download it.");
+    }catch(err){say("Couldn't save the edited PNG: "+err.message+". Download from Photopea as backup.");}
+    $("exportPhotopea").disabled=false;
+    return;
+  }
+  if(event.data!=="done"||editorTransferStarted||!photoBlob)return;
   editorTransferStarted=true;
   try{
     const buffer=await photoBlob.arrayBuffer();
     if($("photopeaSection").hidden)return;
     photopeaFrame.contentWindow.postMessage(buffer,"https://www.photopea.com",[buffer]);
-    say("Picture handed to Photopea for editing. Your original remains unchanged.");
+    $("exportPhotopea").disabled=false;
+    say("Picture opened in Photopea. Edit it, then choose Save edited PNG to Still library. Your original remains unchanged.");
   }catch{say("Could not open photo in advanced editor. Download the PNG and open it manually.");}
 });
-$("deletePhoto").addEventListener("click",()=>{closePhotopea();revokePhoto();say("Picture deleted from this session.");});
-$("deleteClip").addEventListener("click",()=>{revokeClip();say("Recording deleted from this session.");});
+async function savePhoto(){
+  if(!photoBlob||savingPhoto||savedPhotoId)return;
+  savingPhoto=true;$("savePhotoLocal").disabled=true;
+  try{
+    const saved=await saveLocal(photoBlob,{name:$("photoDownload").download});
+    savedPhotoId=saved.id;
+    const a=$("editPhotoPulse");a.href="/pulse/?still_media="+encodeURIComponent(saved.id);a.hidden=false;
+    say("Picture saved to this browser's Still library. Edit in Pulse or download a backup.");
+  }catch(err){say("Could not save picture locally: "+err.message);}
+  finally{savingPhoto=false;$("savePhotoLocal").disabled=!!savedPhotoId;}
+}
+async function saveClip(){
+  if(!clipBlob||savingClip||savedClipId)return;
+  savingClip=true;$("saveClipLocal").disabled=true;
+  try{
+    const saved=await saveLocal(clipBlob,{name:$("clipDownload").download});
+    savedClipId=saved.id;
+    if(saved.size<=40*1024*1024){
+      const a=$("editClipPulse");a.href="/pulse/?still_media="+encodeURIComponent(saved.id);a.hidden=false;
+      say("Video saved to Still library. Edit in Pulse to trim and export.");
+    }else say("Video saved to Still library. It exceeds Pulse's 40 MB limit; download it or record a smaller clip.");
+  }catch(err){say("Could not save video locally: "+err.message);}
+  finally{savingClip=false;$("saveClipLocal").disabled=!!savedClipId;}
+}
+$("savePhotoLocal").addEventListener("click",savePhoto);
+$("saveClipLocal").addEventListener("click",saveClip);
+$("deletePhoto").addEventListener("click",()=>{closePhotopea();revokePhoto();say("Picture preview discarded. Any Still library copy remains until you delete it there.");});
+$("deleteClip").addEventListener("click",()=>{revokeClip();say("Recording preview discarded. Any Still library copy remains until you delete it there.");});
 $("rewind").addEventListener("click",()=>{if(Number.isFinite(clip.duration))clip.currentTime=Math.max(0,clip.currentTime-5);});
 $("forward").addEventListener("click",()=>{if(Number.isFinite(clip.duration))clip.currentTime=Math.min(clip.duration,clip.currentTime+5);});
 $("speed").addEventListener("change",()=>{clip.playbackRate=Number($("speed").value)||1;});
