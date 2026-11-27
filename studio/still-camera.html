@@ -51,8 +51,13 @@ select{background:#071421;border:1px solid #a28b65;color:#fff;padding:8px;border
 </section>
 <section class="panel" id="photoSection" hidden aria-label="Your picture">
   <h2>Latest picture</h2><img id="photoPreview" alt="Your latest photo">
-  <div class="controls"><a id="photoDownload" class="link" download="still-picture.png">Save picture</a><button id="deletePhoto" class="secondary" type="button">Delete picture</button></div>
+  <div class="controls"><a id="photoDownload" class="link" download="still-picture.png">Save picture</a><button id="editPhoto" type="button">Edit picture with Photopea</button><button id="deletePhoto" class="secondary" type="button">Delete picture</button></div>
   <small>For crop, resizing, backgrounds and graphics, use the existing NBL Image Lab below.</small>
+</section>
+<section class="panel" id="photopeaSection" hidden aria-label="Advanced photo editor">
+  <h2>Advanced layer editor</h2><p class="hint">Photopea is a free, ad-supported third-party editor. You chose to send the captured photo to its browser editor. Nothing is uploaded to NBL; use Photopea's File menu to export your changes.</p>
+  <button id="closePhotopea" type="button" class="secondary">Close photo editor</button>
+  <iframe id="photopeaFrame" title="Photopea advanced photo editor" style="display:block;width:100%;height:68dvh;min-height:460px;margin-top:10px;border:1px solid #d6ab60;border-radius:10px;background:#000" allow="fullscreen" referrerpolicy="no-referrer"></iframe>
 </section>
 <section class="panel" id="clipSection" hidden aria-label="Your recording">
   <h2>Latest recording</h2><video id="clipPreview" controls playsinline preload="metadata" aria-label="Recorded clip"></video>
