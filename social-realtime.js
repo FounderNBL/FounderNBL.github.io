@@ -20,11 +20,12 @@ async function loadSDK(){
     tag.onerror=()=>reject(new Error("Supabase Realtime SDK download failed"));
     document.head.append(tag);
   });
+  sdkPromise=sdkPromise.catch(error=>{sdkPromise=null;throw error;});
   return sdkPromise;
 }
 function watchTopic(topic,getToken,onRefresh){
   if(!/^nbl-social:(thread:[0-9a-f-]{36}|inbox:[a-zA-Z0-9_-]{3,128})$/.test(String(topic||"")))return ()=>{};
-  let active=true,subscribed=false,client=null,channel=null,refreshPending=false;
+  let active=true,subscribed=false,client=null,channel=null,refreshPending=false,connecting=false,tokenRefreshing=false;
   let lastFetched=Date.now(),lastReconnect=0,tokenUpdated=0;
   const notify=()=>{
     if(!active||document.hidden||refreshPending)return;
@@ -33,9 +34,17 @@ function watchTopic(topic,getToken,onRefresh){
       .catch(()=>{})
       .finally(()=>{lastFetched=Date.now();refreshPending=false;});
   };
+  function dropConnection(){
+    const oldClient=client,oldChannel=channel;
+    channel=null;client=null;subscribed=false;
+    if(oldClient){
+      const removed=oldChannel?Promise.resolve().then(()=>oldClient.removeChannel(oldChannel)):Promise.resolve();
+      void removed.catch(()=>{}).finally(()=>{try{oldClient.realtime.disconnect();}catch{}});
+    }
+  }
   async function connect(){
-    if(!active||channel||Date.now()-lastReconnect<45000)return;
-    lastReconnect=Date.now();
+    if(!active||channel||connecting||Date.now()-lastReconnect<45000)return;
+    connecting=true;lastReconnect=Date.now();
     try{
       const sdk=await loadSDK();if(!active)return;
       const token=await getToken();if(!active||!token)return;
@@ -43,32 +52,33 @@ function watchTopic(topic,getToken,onRefresh){
         auth:{autoRefreshToken:false,persistSession:false,detectSessionInUrl:false},
         realtime:{params:{eventsPerSecond:5}}
       });
-      await client.realtime.setAuth(token);if(!active){void client.realtime.disconnect();return;}
-      channel=client.channel(topic,{config:{private:true}});
-      channel.on("broadcast",{event:"changed"},()=>notify())
+      const ownClient=client;
+      await ownClient.realtime.setAuth(token);if(!active||client!==ownClient)return;
+      const ownChannel=ownClient.channel(topic,{config:{private:true}});
+      channel=ownChannel;
+      ownChannel.on("broadcast",{event:"changed"},()=>{if(channel===ownChannel)notify();})
         .subscribe(state=>{
-          if(!active)return;
+          if(!active||channel!==ownChannel)return;
           subscribed=state==="SUBSCRIBED";
-          if(state==="CHANNEL_ERROR"||state==="TIMED_OUT"||state==="CLOSED"){
-            subscribed=false;
-          }
+          if(subscribed)notify();
+          if(state==="CHANNEL_ERROR"||state==="TIMED_OUT"||state==="CLOSED")dropConnection();
         });
       tokenUpdated=Date.now();
-    }catch{
-      subscribed=false;
-      if(channel&&client){void client.removeChannel(channel).catch(()=>{});}
-      channel=null;
-    }
+    }catch{dropConnection();}finally{connecting=false;}
   }
   const pulse=window.setInterval(()=>{
     if(!active||document.hidden)return;
     if(!subscribed&&Date.now()-lastFetched>14000)notify();
     if(subscribed&&Date.now()-lastFetched>60000)notify();
     if(!channel&&Date.now()-lastReconnect>45000)void connect();
-    if(client&&channel&&Date.now()-tokenUpdated>90000){
-      void getToken().then(token=>{
-        if(active&&token){tokenUpdated=Date.now();return client.realtime.setAuth(token);}
-      }).catch(()=>{subscribed=false;});
+    if(client&&channel&&!tokenRefreshing&&Date.now()-tokenUpdated>90000){
+      const ownClient=client,ownChannel=channel;
+      tokenRefreshing=true;
+      void Promise.resolve().then(getToken).then(token=>{
+        if(!active||client!==ownClient||channel!==ownChannel)return;
+        if(!token){dropConnection();return;}
+        tokenUpdated=Date.now();return ownClient.realtime.setAuth(token);
+      }).catch(()=>{if(client===ownClient&&channel===ownChannel)dropConnection();}).finally(()=>{tokenRefreshing=false;});
     }
   },4000);
   const visible=()=>{
@@ -82,9 +92,7 @@ function watchTopic(topic,getToken,onRefresh){
     window.clearInterval(pulse);
     document.removeEventListener("visibilitychange",visible);
     window.removeEventListener("online",visible);
-    if(channel&&client)void client.removeChannel(channel).catch(()=>{});
-    else if(client)void client.realtime.disconnect();
-    channel=null;
+    dropConnection();
   };
 }
 function watchThread(threadId,getToken,onRefresh){

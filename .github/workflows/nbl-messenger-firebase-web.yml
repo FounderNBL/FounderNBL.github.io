@@ -5,6 +5,8 @@ on:
     paths:
       - "messenger/firebase-web.js"
       - "messenger/index.html"
+      - "social-realtime.js"
+      - "scripts/check-pulse-connect-realtime.test.mjs"
       - "messenger/FIREBASE_WEB_INTEGRATION.md"
       - "privacy.html"
       - "scripts/check-messenger-firebase-web.mjs"
@@ -26,6 +28,8 @@ jobs:
         run: node scripts/check-messenger-firebase-web.mjs
       - name: Preserve independent Messenger safety contracts
         run: node scripts/check-messenger-separation.mjs
+      - name: Verify private realtime recovery
+        run: node --test scripts/check-pulse-connect-realtime.test.mjs
       - name: Explain this offline check
         if: always()
         run: |
