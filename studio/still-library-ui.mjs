@@ -17,9 +17,9 @@ async function refresh(){
     for(const item of items){
       const article=document.createElement("article");article.className="still-local-item";
       const label=document.createElement("strong");label.textContent=item.name;
-      const details=document.createElement("small");details.textContent=(item.kind==="video"?"Video":"Photo")+" · "+fileSize(item.size)+" · "+date(item.createdAt);
+      const details=document.createElement("small");details.textContent=(item.kind==="video"?"Video":item.kind==="project"?"Layered PSD project":"Photo")+" · "+fileSize(item.size)+" · "+date(item.createdAt);
       const row=document.createElement("div");row.className="still-local-actions";
-      row.append(button("Preview",async()=>{
+      if(item.kind!=="project")row.append(button("Preview",async()=>{
         const old=article.querySelector("[data-still-preview]");if(old){old.remove();return;}
         try{
           const record=await getStillMedia(item.id);if(!record)throw Error("File was deleted.");
@@ -43,6 +43,8 @@ async function refresh(){
       if(item.kind==="image"){
         row.append(link("Edit in Pulse", "/pulse/?still_media="+encodeURIComponent(item.id)));
         row.append(link("Advanced editor", "/studio/still-editor.html?still_media="+encodeURIComponent(item.id)));
+      }else if(item.kind==="project"){
+        row.append(link("Reopen layered project", "/studio/still-editor.html?still_media="+encodeURIComponent(item.id)));
       }else if(item.size<=40*1024*1024){
         row.append(link("Edit in Pulse", "/pulse/?still_media="+encodeURIComponent(item.id)));
       }else{
@@ -61,7 +63,7 @@ input?.addEventListener("change",async()=>{
   const files=Array.from(input.files||[]);if(!files.length)return;
   input.disabled=true;
   let count=0,errors=[];
-  try{for(const file of files){try{await saveStillMedia(file);count++;}catch(err){errors.push(file.name+": "+err.message);}}}
+  try{for(const file of files){try{let source=file;if(/\.psd$/i.test(file.name)&&file.size>=4){const head=new Uint8Array(await file.slice(0,4).arrayBuffer());if(String.fromCharCode(...head)==="8BPS")source=new File([file],file.name,{type:"image/vnd.adobe.photoshop"});}await saveStillMedia(source);count++;}catch(err){errors.push(file.name+": "+err.message);}}}
   finally{input.value="";input.disabled=false;}
   say(count+" file(s) saved to this browser."+(errors.length?" "+errors.slice(0,3).join(" "):""));
   await refresh();
