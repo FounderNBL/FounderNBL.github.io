@@ -71,3 +71,15 @@ test("Beans composer keeps the message field widest and exposes real microphone 
   await field.fill("Test the welcome dismissal");
   await expect(page.locator("[data-nbl-beans-presence]")).toBeHidden();
 });
+
+test("Beans handles a direct navigation request locally without AI calls or location access",async({page})=>{
+ let aiCalls=0;await page.route("**/functions/v1/nbl-foundation-runtime**",r=>{if(r.request().method()==="POST")aiCalls++;return r.abort();});
+ await page.goto("/",{waitUntil:"domcontentloaded"});await page.getByRole("button",{name:"Open Beans"}).click();
+ const input=page.locator("#nbl-beans-input");await input.fill("Beans, take me to Central Park");await input.press("Enter");
+ const nav=page.locator("[data-nbl-navigation-card]");await expect(nav).toBeVisible();
+ await expect(nav.locator("[data-nav-destination]")).toHaveValue("Central Park");
+ await expect(nav.getByRole("link",{name:"Open navigation"})).toHaveAttribute("href",/destination=Central\+Park/);
+ await expect(nav.locator("iframe")).toHaveCount(0);expect(aiCalls).toBe(0);
+ await nav.getByRole("button",{name:"Close navigation"}).click();await expect(nav).toHaveCount(0);
+ await input.fill("Take me home");await input.press("Enter");await expect(page.locator("[data-nav-destination]")).toHaveValue("");
+});
