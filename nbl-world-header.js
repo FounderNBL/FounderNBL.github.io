@@ -1950,6 +1950,7 @@
       chatDrawer.inert=!open;
       chatDrawerShade.hidden=true;
       chatDrawerToggle.setAttribute("aria-expanded",String(open));
+      chatDrawerToggle.setAttribute("aria-label",open?"Hide Beans sidebar":"Open Beans menu");
       beansPanel.classList.toggle("nbl-desktop-drawer-open",open);
       if(open&&!beansPanel.hidden){
         void updateChatDrawerAccountAction();
