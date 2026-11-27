@@ -3,6 +3,7 @@
 const DB_NAME="nbl-still-media-v1", STORE="items", MAX_COUNT=40;
 export const STILL_IMAGE_TYPES=new Set(["image/png","image/jpeg","image/webp"]);
 export const STILL_VIDEO_TYPES=new Set(["video/mp4","video/webm"]);
+export const STILL_PROJECT_TYPES=new Set(["image/vnd.adobe.photoshop","application/vnd.adobe.photoshop"]);
 export const STILL_MAX_IMAGE_BYTES=24*1024*1024;
 export const STILL_MAX_VIDEO_BYTES=100*1024*1024;
 export const STILL_TOTAL_BYTES=250*1024*1024;
@@ -54,14 +55,14 @@ export function stillFile(item){
 export async function saveStillMedia(input,options={}){
   if(!(input instanceof Blob)||input.size<1)throw Error("Choose a nonempty picture or video.");
   const type=String(input.type||"").split(";")[0].toLowerCase();
-  const kind=STILL_IMAGE_TYPES.has(type)?"image":STILL_VIDEO_TYPES.has(type)?"video":null;
-  if(!kind)throw Error("Still saves PNG, JPG, WebP, MP4 and WebM files.");
+  const kind=STILL_IMAGE_TYPES.has(type)?"image":STILL_VIDEO_TYPES.has(type)?"video":STILL_PROJECT_TYPES.has(type)?"project":null;
+  if(!kind)throw Error("Still saves PNG, JPG, WebP, PSD, MP4 and WebM files.");
   const cap=kind==="image"?STILL_MAX_IMAGE_BYTES:STILL_MAX_VIDEO_BYTES;
-  if(input.size>cap)throw Error(kind==="image"?"Images may be up to 24 MB.":"Recordings may be up to 100 MB.");
+  if(input.size>cap)throw Error(kind==="image"?"Images may be up to 24 MB.":"PSD projects and recordings may be up to 100 MB.");
   const before=await listStillMedia();
   if(before.length>=MAX_COUNT||before.reduce((total,x)=>total+x.size,0)+input.size>STILL_TOTAL_BYTES)throw Error("Your local Still library is full (40 files or 250 MB). Download and delete items to make room.");
   if(!crypto?.randomUUID)throw Error("A secure browser is required to save local Still media.");
-  const ext=type==="image/jpeg"?"jpg":type.split("/")[1];
+  const ext=kind==="project"?"psd":type==="image/jpeg"?"jpg":type.split("/")[1];
   const raw=String(options.name||input.name||"still-"+kind+"-"+Date.now()+"."+ext);
   const name=raw.replace(/[\/\\\x00-\x1f]/g,"_").slice(0,100)||"still."+ext;
   const item={id:crypto.randomUUID(),name,kind,type,size:input.size,createdAt:Date.now(),blob:input};
