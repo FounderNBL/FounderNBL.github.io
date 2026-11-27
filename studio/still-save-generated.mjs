@@ -1,9 +1,14 @@
 // Opt-in local copy of an ALREADY generated Studio result. This never submits a generation
 // or charges a user. It fetches only trusted signed NBL output URLs on a user click.
 const MAX_IMAGE=24*1024*1024,MAX_VIDEO=100*1024*1024;
-function detectType(blob){
-  const type=blob.type.split(";")[0].toLowerCase();
-  if(["image/png","image/jpeg","image/webp","video/mp4","video/webm"].includes(type))return type;
+async function detectType(blob){
+  const bytes=new Uint8Array(await blob.slice(0,16).arrayBuffer());
+  const ascii=(start,len)=>String.fromCharCode(...bytes.slice(start,start+len));
+  if(bytes.length>=8&&[137,80,78,71,13,10,26,10].every((b,i)=>bytes[i]===b))return "image/png";
+  if(bytes.length>=3&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255)return "image/jpeg";
+  if(bytes.length>=12&&ascii(0,4)==="RIFF"&&ascii(8,4)==="WEBP")return "image/webp";
+  if(bytes.length>=8&&ascii(4,4)==="ftyp")return "video/mp4";
+  if(bytes.length>=4&&[26,69,223,163].every((b,i)=>bytes[i]===b))return "video/webm";
   return "";
 }
 export function attachGeneratedSave(container,anchor,outputUrl,kind){
@@ -28,7 +33,7 @@ export function attachGeneratedSave(container,anchor,outputUrl,kind){
       if(Number(res.headers.get("Content-Length")||0)>cap)throw Error("Generated file is too large for the local Still library.");
       const file=await res.blob();
       if(file.size<1||file.size>cap)throw Error("Generated file is empty or exceeds Still's local storage limit.");
-      const type=detectType(file);
+      const type=await detectType(file);
       if(kind==="image"&&!type.startsWith("image/")||kind==="video"&&!type.startsWith("video/"))
         throw Error("The provider returned a format Still cannot store. Download and convert it before importing.");
       const ext=type==="image/jpeg"?"jpg":type.split("/")[1];
