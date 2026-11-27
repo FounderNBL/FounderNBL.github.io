@@ -19,9 +19,9 @@ test("Clerk is one shared NBL account; Beans does not wait for a loaded script a
  assert.match(header,/void updateChatDrawerAccountAction\(\);\s*clerk\.addListener/);
 });
 
-test("Wide desktop drawer is truly open, while 960–1199px laptops use the usable toggle",()=>{
+test("Desktop drawer is explicitly collapsible, while 960–1199px laptops retain the usable toggle",()=>{
  assert.match(header,/const desktopBeansMenu=window\.matchMedia\("\(min-width:1200px\)"\)/);
- assert.match(header,/chatDrawer\.hidden=false;\s*chatDrawer\.inert=false;/);
+ assert.match(header,/chatDrawer\.hidden=!open;\s*chatDrawer\.inert=!open;/);
  assert.match(header,/chatDrawer\.hidden=true;\s*chatDrawer\.inert=true;/);
  assert.match(header,/if\(event\.key!=="Tab"\|\|desktopBeansMenu\.matches\) return;/);
  assert.doesNotMatch(css,/nbl-chat-drawer\[hidden\]\{display:flex!important\}/);
