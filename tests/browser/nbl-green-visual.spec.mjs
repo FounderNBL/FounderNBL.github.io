@@ -57,3 +57,36 @@ test("Messenger public door never displays private threads to signed-out visitor
  await expect(page.locator("[data-chat-app]")).toBeHidden();
  await expect(page.locator("[data-chat-messages]")).not.toContainText("PRIVATE_A_THREAD");
 });
+
+test("Three live covers are static until activated; only one may load at a time",async({page})=>{
+ const mediaRequests=[];
+ page.on("request",r=>{if(/(?:live-cover\.mp4|doctor-rocketship-live-cover\.mp4|doc-rock-islamic-digital\.mp4)(?:\?|$)/.test(r.url()))mediaRequests.push(r.url());});
+ if(!await visit(page))return;
+ const cards=page.locator("[data-nbl-live-cover]");
+ await expect(cards).toHaveCount(3);
+ for(let i=0;i<3;i++){
+   const c=cards.nth(i);await c.scrollIntoViewIfNeeded();
+   await expect(c.locator("img")).toBeVisible();
+   await expect.poll(()=>c.locator("img").evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+   await expect(c.locator("video")).toBeHidden();
+   expect(await c.locator("video").getAttribute("src")).toBeNull();
+   await expect(c).toHaveAttribute("aria-pressed","false");
+ }
+ expect(mediaRequests).toEqual([]);
+ // Exercise actual source assignment on user click. Codec support may vary across browser hosts.
+ // Hold media requests until state can be checked, without claiming playback proof.
+ const held=new Set();
+ await page.route("**/*.mp4",async route=>{const url=route.request().url();if(!/(?:live-cover\.mp4|doctor-rocketship-live-cover\.mp4|doc-rock-islamic-digital\.mp4)$/.test(url))return route.continue();held.add(route);});
+ await cards.nth(0).click();
+ await expect(cards.nth(0).locator("video")).toHaveAttribute("src","assets/books/people-zoo/live-cover.mp4");
+ await expect(cards.nth(0)).toHaveAttribute("aria-pressed","true");
+ await cards.nth(1).click();
+ await expect(cards.nth(0)).toHaveAttribute("aria-pressed","false");
+ expect(await cards.nth(0).locator("video").getAttribute("src")).toBeNull();
+ await expect(cards.nth(0).locator("img")).toBeVisible();
+ await expect(cards.nth(1).locator("video")).toHaveAttribute("src","doctor-rocketship-live-cover.mp4");
+ await cards.nth(1).click();
+ await expect(cards.nth(1)).toHaveAttribute("aria-pressed","false");
+ expect(await cards.nth(1).locator("video").getAttribute("src")).toBeNull();
+ for(const route of held)await route.abort().catch(()=>{});
+});
