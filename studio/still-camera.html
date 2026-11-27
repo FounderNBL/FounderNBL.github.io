@@ -26,7 +26,7 @@ select{background:#071421;border:1px solid #a28b65;color:#fff;padding:8px;border
 [hidden]{display:none!important}
 #status{min-height:26px;color:#edc579}
 </style>
-<script defer src="/studio/still-camera.js?v=20261127-portable-v1"></script>
+<script defer src="/studio/still-camera.js?v=20261127-customer-v2"></script>
 </head>
 <body><main>
 <header><div><h1>📷 Still Camera</h1><small>NBL Studios · Free, on-device capture</small></div><button type="button" class="secondary" id="close">Close camera</button></header>
@@ -51,12 +51,12 @@ select{background:#071421;border:1px solid #a28b65;color:#fff;padding:8px;border
 </section>
 <section class="panel" id="photoSection" hidden aria-label="Your picture">
   <h2>Latest picture</h2><img id="photoPreview" alt="Your latest photo">
-  <div class="controls"><a id="photoDownload" class="link" download="still-picture.png">Save picture</a><button id="editPhoto" type="button">Edit picture with Photopea</button><button id="deletePhoto" class="secondary" type="button">Delete picture</button></div>
+  <div class="controls"><a id="photoDownload" class="link" download="still-picture.png">Download picture</a><button id="savePhotoLocal" type="button">Save to Still library</button><a id="editPhotoPulse" class="link secondary" hidden target="_blank" rel="noopener noreferrer">Edit in Pulse</a><button id="editPhoto" type="button">Edit with Photopea</button><button id="deletePhoto" class="secondary" type="button">Discard preview</button></div>
   <small>For crop, resizing, backgrounds and graphics, use the existing NBL Image Lab below.</small>
 </section>
 <section class="panel" id="photopeaSection" hidden aria-label="Advanced photo editor">
   <h2>Advanced layer editor</h2><p class="hint">Photopea is a free, ad-supported third-party editor. You chose to send the captured photo to its browser editor. Nothing is uploaded to NBL; use Photopea's File menu to export your changes.</p>
-  <button id="closePhotopea" type="button" class="secondary">Close photo editor</button>
+  <div class="controls"><button id="exportPhotopea" type="button" disabled>Save edited PNG to Still library</button><button id="closePhotopea" type="button" class="secondary">Close photo editor</button><a class="link secondary" href="/still.html#still-local-heading" target="_blank" rel="noopener noreferrer">Open Still library</a></div>
   <iframe id="photopeaFrame" title="Photopea advanced photo editor" style="display:block;width:100%;height:68dvh;min-height:460px;margin-top:10px;border:1px solid #d6ab60;border-radius:10px;background:#000" allow="fullscreen" referrerpolicy="no-referrer"></iframe>
 </section>
 <section class="panel" id="clipSection" hidden aria-label="Your recording">
@@ -66,8 +66,8 @@ select{background:#071421;border:1px solid #a28b65;color:#fff;padding:8px;border
     <button id="forward" class="secondary" type="button">+5 seconds</button>
     <label>Speed <select id="speed"><option value=".5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
   </div>
-  <div class="controls"><a id="clipDownload" class="link" download="still-recording.webm">Save video</a><button id="deleteClip" class="secondary" type="button">Delete recording</button></div>
-  <small>Playback speed doesn't change the saved file. Use Pulse Studios VideoBeats to trim and re-export a saved clip.</small>
+  <div class="controls"><a id="clipDownload" class="link" download="still-recording.webm">Download video</a><button id="saveClipLocal" type="button">Save to Still library</button><a id="editClipPulse" class="link secondary" hidden target="_blank" rel="noopener noreferrer">Edit in Pulse</a><button id="deleteClip" class="secondary" type="button">Discard preview</button></div>
+  <small>Playback speed doesn't change the saved file. Save clips up to 40 MB to the Still library, then open them directly in Pulse VideoBeats. Pulse editing trims to 60 seconds.</small>
 </section>
 <section class="panel" aria-label="Existing editing and creation tools">
   <h2>Keep creating with Still</h2>
@@ -77,6 +77,6 @@ select{background:#071421;border:1px solid #a28b65;color:#fff;padding:8px;border
     <a class="link secondary" href="/pulse/" target="_blank" rel="noopener">Pulse Studios VideoBeats</a>
     <a class="link secondary" href="/still.html" target="_blank" rel="noopener">Create AI images & Canva designs</a>
   </div>
-  <small>Save a captured file to your device, then choose it in the editor. Still does not publish a Beat or start any paid generation.</small>
+  <small>Save a captured file to the local Still library to reopen it or edit in Pulse without downloading and re-uploading. Download a backup, too. Still never publishes or starts paid generation.</small>
 </section>
 </main></body></html>
