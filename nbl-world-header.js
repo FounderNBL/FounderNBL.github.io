@@ -669,6 +669,7 @@
             <div class="nbl-beans-tools-wrap">
               <button class="nbl-beans-tool-toggle" type="button" data-nbl-tools-toggle aria-expanded="false" aria-controls="nbl-beans-tools-menu" aria-label="Open Beans tools">+</button>
               <div class="nbl-beans-tools-menu" id="nbl-beans-tools-menu" data-nbl-tools-menu hidden>
+                <button type="button" data-nbl-tool="navigation"><strong>Beans · Navigation</strong><span>Find places and open directions in Google Maps or Waze · free handoff</span></button>
                 <button type="button" data-nbl-tool="pdf-local"><strong>NBL PDF Reader · Free</strong><span>Open and scan your PDF on this device; no upload or AI credits</span></button>
                 <button type="button" data-nbl-tool="still-camera"><strong>Beans · Camera</strong><span>Take a picture to show Beans · device permission on demand</span></button>
                  <button type="button" data-nbl-tool="still-canva"><strong>Beans · Canva designs</strong><span>Use designs from your own authorized Canva account · no shared NBL seat</span></button>
@@ -1749,7 +1750,9 @@
     beansHistoryLoadingFor=null;
   };
 
+  const closeLocalNavigation=()=>beansLog.querySelector("[data-nav-close]")?.click();
   const clearBeansTranscript=status=>{
+    closeLocalNavigation();
     beansLog.replaceChildren();
     beansHistory.length=0;
     beansHistory.push({role:"assistant",content:"I'm Beans. What's up?"});
@@ -1794,6 +1797,7 @@
       const saved=Array.isArray(payload?.messages)?payload.messages:[];
       beansConversationId=payload?.conversation?.id?String(payload.conversation.id):null;
       if(saved.length){
+        closeLocalNavigation();
         beansLog.replaceChildren();
         beansHistory.length=0;
         for(const item of saved.slice(-40)){
@@ -1818,6 +1822,7 @@
 
   const replaceBeansConversation=(messages,conversationId,{status="Saved conversation opened from your NBL account.",loadedFor=null}={})=>{
     const saved=Array.isArray(messages)?messages:[];
+    closeLocalNavigation();
     beansLog.replaceChildren();
     beansHistory.length=0;
     for(const item of saved.slice(-80)){
@@ -2155,6 +2160,7 @@
   };
 
   const closeBeans=({fromPopState=false}={})=>{
+    closeLocalNavigation();
     stopBeansSpeech();voiceSettings.hidden=true;
     if(!stillTools.hidden)setStillVisualTools(false);
     setNblQuickMenu(false);
@@ -2207,6 +2213,25 @@
     const text=beansInput.value.trim();
     if(!text||beansSubmit.disabled) return;
 
+    // Navigation is a free local utility, not a metered AI chat request.
+    if(beansToolMode==="auto"&&!beansAttachments.length&&/^(?:(?:hey[, ]+)?beans[, ]+)?(?:please\s+)?(?:take me\b|navigate\b|directions\b|how (?:do|can) i get\b|find\b|show (?:me )?(?:traffic|live traffic|directions)\b|drive\b|walk\b|bike\b)/i.test(text)){
+      const navAccountGeneration=beansAccountGeneration,navConversationGeneration=beansConversationGeneration;
+      setBeansBusy(true);
+      try{
+        const nav=await import("/nbl-navigation-assistant.mjs?v=20261124");
+        if(beansPanel.hidden||navAccountGeneration!==beansAccountGeneration||navConversationGeneration!==beansConversationGeneration)return;
+        const intent=nav.parseNavigationIntent(text);
+        if(intent){
+          if(beansInput.value.trim()!==text)return;
+          beansInput.value="";beansInput.style.height="";
+          appendBeansMessage("user",text);
+          nav.mountNavigation(beansLog,intent,{getToken:getNblBeansAuthToken,getIdentity:currentClerkUserId});
+          beansStatus.textContent="Free navigation · not saved to chat history or charged to your Bag.";
+          return;
+        }
+      }catch{if(!/^find\b/i.test(text)){beansStatus.textContent="Navigation tool unavailable. Try the + menu or retry.";return;}}
+      finally{setBeansBusy(false);}
+    }
     // Free chat requires a real Clerk account. Preserve unsent text on sign-in.
     let preflightToken=await getNblBeansAuthToken();
     if(!preflightToken&&currentClerkUserId()){
@@ -2361,6 +2386,11 @@
     const button=event.target.closest("[data-nbl-tool]");
     if(!button) return;
     const tool=button.dataset.nblTool;
+    if(tool==="navigation"){
+      setBeansToolMenu(false);
+      try{const nav=await import("/nbl-navigation-assistant.mjs?v=20261124");nav.mountNavigation(beansLog,{destination:"",origin:"",mode:"driving"},{getToken:getNblBeansAuthToken,getIdentity:currentClerkUserId});}catch{beansStatus.textContent="Navigation is unavailable. Open the local route planner at /navigation.html.";}
+      return;
+    }
     if(tool==="pdf-local"){
       setBeansToolMenu(false);
       try{
@@ -2670,6 +2700,7 @@
         await clerk.signOut();
         cancelActiveBeansChat();
         beansAccountGeneration++;
+        closeLocalNavigation();
         setStillVisualTools(false);
         invalidateBeansHistoryLoad();
         plusAccessRequestGeneration++;
@@ -2735,6 +2766,7 @@
       beansIdentityUserId=nextUserId;
       cancelActiveBeansChat();
       beansAccountGeneration++;
+      closeLocalNavigation();
       setStillVisualTools(false);
       invalidateBeansHistoryLoad();
       drawerHistoryRequestGeneration++;
