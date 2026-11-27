@@ -164,11 +164,13 @@ test("a late service response cannot appear after the NBL account changes",async
 test("sidebar Tools remains open after its opening click and Still does not block other tools",async({page})=>{
  await page.setViewportSize({width:1376,height:736});
  await prepare(page,{connectHandler:route=>route.fulfill({status:200,contentType:"application/json",headers:{"Access-Control-Allow-Origin":"*"},body:JSON.stringify({providers:[{id:"canva",configured:true}],connections:[{provider:"canva",label:"Fixture Canva"}],canvaDesignWriteAvailable:true})})});
+ await page.getByRole("button",{name:"Open Beans menu"}).click();
  await page.locator("[data-nbl-drawer-tools]").click();
  await expect(page.locator("[data-nbl-tools-menu]")).toBeVisible();
  await page.locator('[data-nbl-tool="still-canva"]').click();
  await expect(page.getByRole("button",{name:"Show my Canva designs"})).toBeVisible();
  await expect(page.getByRole("button",{name:"Disconnect Canva"})).toBeVisible();
+ await page.getByRole("button",{name:"Open Beans menu"}).click();
  await page.locator("[data-nbl-drawer-tools]").click();
  await expect(page.locator("[data-nbl-still-tools]")).toBeHidden();
  await expect(page.locator("[data-nbl-tools-menu]")).toBeVisible();
