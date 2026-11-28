@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071421">
+<title>Still · Advanced Photo Editor</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#071421;color:#fff4e0;font:16px/1.5 system-ui,sans-serif}
+main{max-width:1250px;margin:0 auto;padding:16px}
+h1{color:#ebc278;margin:8px 0}p{max-width:900px}
+a{color:#ebc278}button{font:700 1rem system-ui;background:#e0b768;color:#061425;border:0;border-radius:8px;min-height:44px;padding:10px 16px;cursor:pointer}
+button:focus-visible{outline:3px solid white;outline-offset:3px}
+#editor{width:100%;height:78dvh;border:1px solid #e0b768;border-radius:12px;background:#101a27}
+[hidden]{display:none!important}
+</style></head><body><main>
+<a href="/still.html">← Still</a><h1>Advanced Photo Editing</h1>
+<p>Still uses the existing Photopea editor for layers, masks, filters and detailed editing. This is a third-party, ad-supported editor, not software owned by NBL. Opening it connects your browser to Photopea; only choose files you want to edit there. NBL does not automatically send your photos or charge Studio Credits.</p>
+<button id="launch" type="button">Open free photo editor</button>
+<button id="save" type="button" hidden disabled>Save finished PNG to Still library</button>
+<button id="saveProject" type="button" hidden disabled>Save editable PSD to Still library</button>
+<a id="openSaved" href="/still.html#still-local-heading" hidden>Open my Still library</a>
+<p id="editorStatus" role="status" aria-live="polite">The editor is closed. Open it when you are ready to edit.</p>
+<button id="close" type="button" hidden>Close editor</button>
+<iframe id="editor" title="Photopea advanced image editor" allow="fullscreen" referrerpolicy="no-referrer" hidden></iframe>
+<p><small>Need the local NBL-only basic image tools instead? <a href="/tools-lab.html">Open Image Lab</a>.</small></p>
+</main><script type="module" src="/studio/still-editor-bridge.mjs?v=20261127-customer-v1"></script></body></html>
