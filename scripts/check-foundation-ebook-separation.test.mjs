@@ -24,7 +24,7 @@ test("$29.99 Foundation Materials contains only 2 physical books and first month
  assert.doesNotMatch(header,/Two books, course materials and one month of Beans/);
 });
 
-test("University ebooks stay protected and .org only forwards to the free school tour",()=>{
+test("University ebooks stay protected and .org only forwards to the paused school",()=>{
  for(const content of [campus,campusAlias]){
    assert.match(content,/url=https:\/\/nblschool\.com\//);
    assert.doesNotMatch(content,/data-coursework-pdf|data-grey-log|data-study-lab/);
