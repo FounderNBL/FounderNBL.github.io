@@ -17,9 +17,9 @@ test.describe("New Beansland web app browser smoke", () => {
     await expect(page.locator('.world-card[href="https://nblschool.com/"]')).toBeVisible();
     await expect(page.locator('.world-card[href="studio/"]')).toBeVisible();
     await expect(page.locator('.world-card[href="studios.html"]')).toBeVisible();
-    await expect(page.locator('.world-card[href="games.html"]')).toBeVisible();
+    await expect(page.locator('.world-card[href="games.html"]')).toHaveCount(0);
     await expect(page.locator('.world-card[href="clothing.html"]')).toBeVisible();
-    await expect(page.locator('.world-grid .world-card')).toHaveCount(6);
+    await expect(page.locator('.world-grid .world-card')).toHaveCount(5);
     await expect(page.locator('.world-grid .world-card').last()).toHaveAttribute('href','https://nblschool.com/');
   });
 
@@ -29,12 +29,11 @@ test.describe("New Beansland web app browser smoke", () => {
     const cards=[
       ["clothing.html","NBL_Clothing_Co.png"],
       ["books.html","NBL_Books.png"],
-      ["games.html","NBL_Games.png"],
       ["studio/","NBL_Music_Productions%20(1).png"],
       ["studios.html","NBL_Studios.png"],
       ["https://nblschool.com/","NBL_University.png"]
     ];
-    await expect(page.locator(".world-card.official-art")).toHaveCount(6);
+    await expect(page.locator(".world-card.official-art")).toHaveCount(5);
     for(const [href,name] of cards) {
       const img=page.locator('.world-card.official-art[href="'+href+'"] .media img');
       await expect.poll(async()=>img.getAttribute("src")).toContain(name);
@@ -47,7 +46,7 @@ test.describe("New Beansland web app browser smoke", () => {
     const order=await page.locator(".world-grid .world-card").evaluateAll(nodes=>nodes.map(node=>node.getAttribute("href")));
     expect(order).toEqual(cards.map(([href])=>href));
 
-    // All six cards must be visually even on both desktop and phone viewports,
+    // All five cards must be visually even on both desktop and phone viewports,
     // despite portrait book art and landscape studio, clothing, and games art.
     const layout=await page.locator(".world-grid .world-card").evaluateAll(nodes=>nodes.map(card=>{
       // Layout size, excluding transient .reveal scale animations.
