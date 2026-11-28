@@ -49,7 +49,6 @@ test("Founder's five homepage destinations preserve the approved order with Univ
  assert.ok(grid.includes('href="studio/"'),"Music remains a separate free showcase");
  assert.ok(source.includes('.world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))'),"desktop grid must be three columns for the 3-by-2 cards");
  assert.ok(!grid.includes('href="games.html"'),"held Games destination must be absent from homepage");
- assert.match(grid,/href="games\.html"[\s\S]*?<span class="status">Coming Soon<\/span>[\s\S]*?All NBL Games experiences, including Founder’s Office and Block Boss, are coming soon\./,"Games card must state that every listed game is coming soon");
  assert.doesNotMatch(grid,/Founder’s Office is open/,"homepage must not claim any NBL game is open");
 });
 
