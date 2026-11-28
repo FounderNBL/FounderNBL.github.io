@@ -35,7 +35,7 @@ test("University ebooks stay protected and .org only forwards to the paused scho
  assert.match(university,/href="https:\/\/nblschool\.com\//);
  assert.match(cashier,/if\(!item\.plan\)/);
  assert.match(cashier,/No ebooks, digital course materials, coursework, or University enrollment are included/);
- assert.match(university,/Classes, tuition and enrollment remain closed\./);
+ assert.match(university,/The University is coming soon\. Classes, tuition, and enrollment are closed\./);
 });
 test("already-built NBL Music catalog and NBL Books digital Payhip/Reader remain independent",()=>{
  assert.match(musicPage,/<h1>NBL Music Productions<\/h1>/);
