@@ -5,7 +5,6 @@ const source=readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const approved=[
  ["NBL_Books.png","e7397f38","books.html"],
  ["NBL_Clothing_Co.png","f06b568f","clothing.html"],
- ["NBL_Games.png","1ff58013","games.html"],
  ["NBL_Music_Productions%20(1).png","32e2b3ba","studio/"],
  ["NBL_Studios.png","c342a8ee","studios.html"],
  ["NBL_University.png","5fa210ae","https://nblschool.com/"]
@@ -17,15 +16,15 @@ test("exact uploaded assets survive and browser references are cache refreshed",
   assert.ok(source.includes('href="'+href+'"'),href+" was changed");
  }
 });
-test("all six World Cards have equal 4:3 frames and uncropped artwork",()=>{
+test("all five World Cards have equal 4:3 frames and uncropped artwork",()=>{
  const grid=source.slice(source.indexOf('<div class="world-grid">'),source.indexOf('</div></section>',source.indexOf('<div class="world-grid">')));
  const cards=[...grid.matchAll(/<a class="world-card official-art reveal" href="([^"]+)" style="--nbl-world-card-art:url\('([^']+)'\)"><div class="media"><img src="([^"]+)"/g)];
- assert.equal(cards.length,6,"all six approved cards must use the same background-fill/foreground-art system");
+ assert.equal(cards.length,5,"all five active cards must use the same background-fill/foreground-art system");
  for(const [,href,background,foreground] of cards){
   assert.equal(background,foreground,"soft backdrop must use the SAME Founder-approved image as the visible cover for "+href);
   assert.ok(href,"Each card must remain clickable");
  }
- assert.match(source,/\.world-card\.official-art\{aspect-ratio:4\/3;/,"All six cards must be equal 4:3 frames");
+ assert.match(source,/\.world-card\.official-art\{aspect-ratio:4\/3;/,"All five cards must be equal 4:3 frames");
  assert.match(source,/grid-auto-rows:1fr;align-items:stretch/,"Grid must keep equal row heights");
  assert.match(source,/\.world-card\.official-art \.media::before\{/,"Letterbox fill must use a background layer");
  assert.match(source,/background-image:var\(--nbl-world-card-art\)/,"Letterbox fill must reuse original art, never a replacement image");
@@ -36,9 +35,9 @@ test("all six World Cards have equal 4:3 frames and uncropped artwork",()=>{
  assert.match(source,/\.world-card\.official-art:focus-visible\{/);
  assert.match(source,/@media\(max-width:520px\)\{\.world-card\.official-art\{width:100%;max-width:520px/,"Mobile cards should use the available width");
 });
-test("Founder's six homepage destinations preserve the approved order with University last",()=>{
+test("Founder's five homepage destinations preserve the approved order with University last",()=>{
  const grid=source.slice(source.indexOf('<div class="world-grid">'),source.indexOf('</div></section>',source.indexOf('<div class="world-grid">')));
- const names=["NBL Clothing Co.","NBL Books","NBL Games","NBL Music Productions","NBL Studios","New Beansland University"];
+ const names=["NBL Clothing Co.","NBL Books","NBL Music Productions","NBL Studios","New Beansland University"];
  const actual=grid.split('<h3>').slice(1).map(part=>part.split('</h3>')[0]);
  assert.deepEqual(actual,names,"no extra homepage destinations or reordered cards");
  assert.ok(!grid.includes("The City"),"The City belongs inside Stories, not as a homepage card");
@@ -49,8 +48,7 @@ test("Founder's six homepage destinations preserve the approved order with Unive
  assert.ok(grid.includes('href="studios.html"'),"Studios goes to its video-production page, not the music studio");
  assert.ok(grid.includes('href="studio/"'),"Music remains a separate free showcase");
  assert.ok(source.includes('.world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))'),"desktop grid must be three columns for the 3-by-2 cards");
- assert.ok(grid.includes('href="games.html"'),"existing Games homepage destination must remain");
- assert.match(grid,/href="games\.html"[\s\S]*?<span class="status">Coming Soon<\/span>[\s\S]*?All NBL Games experiences, including Founder’s Office and Block Boss, are coming soon\./,"Games card must state that every listed game is coming soon");
+ assert.ok(!grid.includes('href="games.html"'),"held Games destination must be absent from homepage");
  assert.doesNotMatch(grid,/Founder’s Office is open/,"homepage must not claim any NBL game is open");
 });
 
