@@ -226,7 +226,7 @@ requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridg
 requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership card is missing.");
 requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
-requireText(account,'href="https://nblschool.com/">Take the free campus tour',"Account must route students to free tours.");
+requireText(account,'href="https://nblschool.com/">See the University\'s Coming Soon page',"Account must link to the paused University.");
 forbidText(account,'data-account-billing-plan="foundation_student_continuation"',"Account must not show University continuation checkout.");
 requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
 requireText(account,"renderMembership","Account membership meter rendering is missing.");
