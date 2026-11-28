@@ -6,7 +6,8 @@ const valid=id=>typeof id==="string"&&/^[A-Za-z0-9._:-]{1,160}$/.test(id);
 const escape=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
 function imageURL(raw){
  try{const u=new URL(raw);if(u.protocol==="https:"&&!u.username&&!u.password&&u.href.length<=1600&&
- (u.hostname.endsWith(".stream-io-cdn.com")||u.href===base+"/NBL-Brand.png"))return u.href;}catch{}
+ (u.hostname.endsWith(".stream-io-cdn.com")||
+  (u.hostname==="newbeansland.org"&&/^\/(?:assets\/|studio\/|[A-Za-z0-9_-]+\.(?:png|jpe?g|webp)$)/i.test(u.pathname)&&/\.(?:png|jpe?g|webp)$/i.test(u.pathname))))return u.href;}catch{}
  return base+"/NBL-Brand.png";
 }
 export function render(meta,id){
@@ -32,7 +33,11 @@ export async function handle(request,fetcher=fetch){
  const id=url.searchParams.get("post");
  if(!valid(id))return new Response("Post not found",{status:404});
  const destination=base+"/pulse/?post="+encodeURIComponent(id);
- const fallback=()=>new Response(null,{status:302,headers:{location:destination,"cache-control":"no-store"}});
+ // A temporary metadata error must not redirect Facebook into the generic Pulse
+ // homepage card. Let crawlers retry this exact post URL instead.
+ const fallback=()=>new Response("Pulse preview temporarily unavailable",{status:503,headers:{
+  "content-type":"text/plain; charset=utf-8","cache-control":"no-store","retry-after":"60"
+ }});
  try{
   const source=new URL(backend);source.searchParams.set("post",id);source.searchParams.set("format","json");
   const result=await fetcher(source.toString(),{headers:{accept:"application/json"},redirect:"error",signal:AbortSignal.timeout(10000)});

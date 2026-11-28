@@ -10,9 +10,13 @@ export function escapeShareHTML(input){
 export function safePulsePhoto(url){
   try{
     const u=new URL(String(url||""));
-    return u.protocol==="https:"&&!u.username&&!u.password&&
-      u.hostname.toLowerCase().endsWith(".stream-io-cdn.com")&&
-      u.href.length<=1600 ? u.href:null;
+    // Public, first-party NBL artwork is safe to preview too; reject arbitrary third-party hosts.
+    const stream=u.hostname.toLowerCase().endsWith(".stream-io-cdn.com");
+    const firstParty=u.hostname==="newbeansland.org" &&
+      /^\/(?:assets\/|studio\/|[A-Za-z0-9_-]+\.(?:png|jpe?g|webp)$)/i.test(u.pathname) &&
+      /\.(?:png|jpe?g|webp)$/i.test(u.pathname);
+    return u.protocol==="https:"&&!u.username&&!u.password&&!u.port&&
+      (stream||firstParty)&&u.href.length<=1600 ? u.href:null;
   }catch{return null;}
 }
 export function pulseShareMetadata(activity){

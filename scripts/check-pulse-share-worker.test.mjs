@@ -23,11 +23,11 @@ test("private, deleted and moderated activities have no public metadata",()=>{
  for(const patch of [{visibility:"private"},{deleted:true},{deleted_at:"now"},{moderation:{action:"shadow_block"}}])
   assert.equal(pulseShareMetadata({...activity,...patch}),null);
 });
-test("errors fall back to the original post, not raw code, and missing posts remain missing",async()=>{
+test("temporary metadata failures remain retryable, not generic homepage redirects",async()=>{
  const req=new Request(url);
  for(const status of [500,503]){
   const r=await handle(req,async()=>new Response("oops",{status}));
-  assert.equal(r.status,302);assert.equal(r.headers.get("location"),base+"/pulse/?post="+id);
+  assert.equal(r.status,503);assert.equal(r.headers.get("retry-after"),"60");assert.equal(r.headers.get("location"),null);
  }
  assert.equal((await handle(req,async()=>new Response(null,{status:404}))).status,404);
 });
@@ -38,4 +38,16 @@ test("safe escaping, correct HEAD and no arbitrary redirects or request methods"
  assert.equal(await (await handle(new Request(url,{method:"HEAD"}),fake)).text(),"");
  assert.equal((await handle(new Request(url,{method:"POST"}),fake)).status,405);
  assert.equal((await handle(new Request(base+"/pulse/share?post=https://evil.example"),fake)).status,404);
+});
+
+test("NBL-hosted public photo is used in OG preview without allowing arbitrary hosts",async()=>{
+ const ownPhoto=base+"/assets/studio/finished-cover.webp";
+ const meta=pulseShareMetadata({...activity,attachments:[{type:"image",image_url:ownPhoto}]});
+ assert.equal(meta.image,ownPhoto);
+ const response=await handle(new Request(url),async()=>Response.json(meta));
+ const html=await response.text();
+ assert.equal(response.status,200);
+ assert.ok(html.includes('property="og:image" content="'+ownPhoto+'"'));
+ assert.ok(!html.includes("NBL_Pulse_Worldcard.png"));
+ assert.equal(pulseShareMetadata({...activity,attachments:[{type:"image",image_url:"https://evil.example/cover.png"}]}).image,base+"/NBL-Brand.png");
 });
