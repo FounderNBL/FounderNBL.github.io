@@ -1,11 +1,11 @@
 name: NBL Website Health Inspector
 
 # One NBL Maintenance Department: full website checks only on relevant changes/manual run.
-# Twice-daily lightweight heartbeat only; deep checks are event/manual initiated.
+# Daily lightweight heartbeat only; deep checks are event/manual initiated.
 on:
   schedule:
     # Minimal anonymous heartbeat only. No University, Desk, Playground or games.
-    - cron: "47 1,13 * * *"
+    - cron: "47 13 * * *"
   workflow_dispatch:
   push:
     # Run the deep website inspection only for relevant main source changes.
@@ -63,7 +63,7 @@ permissions:
 
 jobs:
   security-heartbeat:
-    name: Low-cost twice-daily HTTPS + Core readiness heartbeat
+    name: Low-cost daily HTTPS + Core readiness heartbeat
     if: ${{ github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
