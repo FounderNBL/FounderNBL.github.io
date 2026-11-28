@@ -1,0 +1,28 @@
+{
+  "name": "NBL Blue",
+  "version": "2026-11-23-source-derived-v1",
+  "colorSpace": "sRGB",
+  "hex": "#071421",
+  "rgb": [
+    7,
+    20,
+    33
+  ],
+  "hsl": {
+    "h": 210,
+    "s": 65,
+    "l": 7.84
+  },
+  "source": {
+    "homepage": {
+      "path": "index.html",
+      "token": "--navy"
+    },
+    "worldHeader": {
+      "path": "nbl-world-header.css",
+      "token": "--nbl-world-panel"
+    }
+  },
+  "status": "brand reference; not trademark registration",
+  "notes": "Token definition mirrors existing website CSS; no UI change."
+}
