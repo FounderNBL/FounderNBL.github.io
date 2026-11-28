@@ -157,10 +157,10 @@ requireText(header,"window.history.pushState({...window.history.state,nblChatOve
 requireText(header,"const shouldConsumeHistory=!fromPopState","Closing Chat does not distinguish UI-close from browser Back.");
 requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Chat leaves a duplicate same-page history entry behind.");
 
-requireText(home,"Free Tours Open · Classes Closed","Homepage must show tours open and University classes closed.");
+requireText(home,"Coming Soon · University Closed","Homepage must show the University paused.");
 requireText(home,"No tuition, enrollment or classes.","Homepage must explicitly reject University payments and classes.");
-requireText(home,"Tour the Real School","Homepage must point visitors to the free University tour.");
-requireText(university,"Classes, tuition and enrollment remain closed.","University must explicitly refuse tuition while closed.");
+requireText(home,"University Coming Soon","Homepage must link to the paused University.");
+requireText(university,"The University is coming soon. Classes, tuition, and enrollment are closed.","University must explicitly refuse tuition while closed.");
 requireText(books,"https://books.newbeansland.org/","Connected NBL Books Payhip custom domain is missing from the bookstore.");
 requireText(books,"Digital · Payhip","Books no longer states the digital Payhip route.");
 requireText(books,"Physical · Lulu","Books no longer states the physical Lulu route.");
@@ -226,7 +226,7 @@ requireText(header,"window.NBLBillingBridge","Shared authenticated billing bridg
 requireText(header,"meter:requestNblMeter","Shared membership meter bridge is missing.");
 requireText(account,'id="membershipCard"',"Account membership card is missing.");
 requireText(account,'data-account-billing-plan="beans"',"Account Beans checkout control is missing.");
-requireText(account,'href="https://nblschool.com/">Take the free campus tour',"Account must route students to free tours.");
+requireText(account,'href="https://nblschool.com/">See the University\'s Coming Soon page',"Account must link to the paused University.");
 forbidText(account,'data-account-billing-plan="foundation_student_continuation"',"Account must not show University continuation checkout.");
 requireText(account,'data-account-billing-plan="topup_500"',"Account Get More checkout control is missing.");
 requireText(account,"renderMembership","Account membership meter rendering is missing.");

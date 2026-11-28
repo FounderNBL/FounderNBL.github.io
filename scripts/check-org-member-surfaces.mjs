@@ -25,11 +25,11 @@ if(!errors.length){
   const social=read("social-realtime.js");
   const terms=read("terms.html");
   const signIn="https://accounts.newbeansland.org";
-  need(university,'url=https://nblschool.com/',"Old tuition page must lead to the independent tour-only school.");
+  need(university,'url=https://nblschool.com/',"Old tuition page must lead to the independent closed school.");
   const cashier=read("university.html"),interest=read("nbl-university-early-interest.js");
   forbid(cashier,'data-nbl-university-interest-form',"The .org University page must not duplicate public sign-up.");
   need(cashier,'https://nblschool.com/',"The school domain must stay linked.");
-  need(cashier,'Classes, tuition and enrollment remain closed.',"University must show closed academic and payment status.");
+  need(cashier,'Classes, tuition, and enrollment are closed.',"University must show academic and payment closure.");
   need(interest,'nbl-university-early-interest',"Free signup must use the existing authenticated interest ledger.");
   forbid(cashier,'/billing/checkout',"No University billing route may be shown at the school entrance.");
   need(header,'href="https://nblschool.com/professor-grey.html"',"Talk to Grey must use school.com.");
@@ -60,4 +60,4 @@ if(!errors.length){
   }
 }
 if(errors.length){console.error("[org-member-surfaces] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
-console.log("[org-member-surfaces] PASS: .org keeps member messages and student protection; independent school offers public tours without tuition.");
+console.log("[org-member-surfaces] PASS: .org keeps member messages and student protection; independent school is Coming Soon without tuition.");

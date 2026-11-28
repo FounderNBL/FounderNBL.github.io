@@ -81,7 +81,7 @@ test("Vault and public catalog preserve active prices while University is closed
    assert.ok(pricing.includes('data-nbl-plan-value="'+key+'.price"'),"Catalog missing "+key);
  }
  assert.match(pricing,/University is under construction/);
- assert.match(account,/Take the free campus tour/);
+ assert.match(account,/See the University.s Coming Soon page/);
  assert.match(html,/No University purchase or subscription can be started/);
  assert.doesNotMatch(html,/<article class="rate-card"><h3.*Full NBLU Experience/is);
  assert.match(html,/id="university-prices"/);
@@ -114,6 +114,6 @@ test("Public pricing keeps three categories, account keeps Beans and closed Univ
  assert.match(html,/addEventListener\("hashchange",revealVaultCategory\)/);
  assert.match(html,/id="pricing"/);
  assert.match(html,/id="university-prices"/);
- assert.match(arrival,/Classes, tuition and enrollment remain closed\./);
+ assert.match(arrival,/Classes, tuition, and enrollment are closed\./);
  assert.doesNotMatch(arrival,/nblu-pay|billing\/checkout/);
 });

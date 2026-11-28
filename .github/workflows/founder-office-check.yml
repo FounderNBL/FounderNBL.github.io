@@ -1,28 +1,16 @@
-name: Founder’s Office reading page check
+name: Founder Office and Games hibernation — manual source check
+# No automated game/office checks while department is dormant.
 on:
-  pull_request:
-    paths:
-      - "founder-office.html"
-      - "scripts/check-founder-office.mjs"
-      - ".github/workflows/founder-office-check.yml"
-  push:
-    branches: [main]
-    paths:
-      - "founder-office.html"
-      - "scripts/check-founder-office.mjs"
-      - ".github/workflows/founder-office-check.yml"
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  verify-office:
+  verify-hibernation:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Validate Office read-only layout and existing image files
-        run: |
-          node --check scripts/check-founder-office.mjs
-          node scripts/check-founder-office.mjs
+      - run: node scripts/check-founder-office.mjs

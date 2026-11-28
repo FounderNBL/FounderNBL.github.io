@@ -32,7 +32,8 @@
       "/block-boss/",
       "/campus/",
       "/playground/",
-      "/desk/"
+      "/desk/",
+      "/founder-office.html"
     ],
     "excludedOperations": [
       "billing and Stripe",
@@ -142,7 +143,6 @@
       "/messenger/",
       "/books.html",
       "/stories.html",
-      "/founder-office.html",
       "/studio/",
       "/privacy.html"
     ],
