@@ -158,8 +158,8 @@ requireText(header,"const shouldConsumeHistory=!fromPopState","Closing Chat does
 requireText(header,"if(shouldConsumeHistory) window.history.back();","Closing Chat leaves a duplicate same-page history entry behind.");
 
 requireText(home,"Coming Soon · University Closed","Homepage must show the University paused.");
-requireText(home,"No tuition, enrollment or classes.","Homepage must explicitly reject University payments and classes.");
-requireText(home,"University Coming Soon","Homepage must link to the paused University.");
+requireText(home,"No public tours, tuition, enrollment or classes.","Homepage must explicitly reject University visits, payments and classes.");
+requireText(home,"University Closed · Status Only","Homepage must label the University as closed to visitors.");
 requireText(university,"The University is coming soon. Classes, tuition, and enrollment are closed.","University must explicitly refuse tuition while closed.");
 requireText(books,"https://books.newbeansland.org/","Connected NBL Books Payhip custom domain is missing from the bookstore.");
 requireText(books,"Digital · Payhip","Books no longer states the digital Payhip route.");
